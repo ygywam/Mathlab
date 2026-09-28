@@ -1,0 +1,1035 @@
+<!-- 거스름돈 타이쿤 (Change Tycoon) Gen-3 표준 완결판 -->
+<style>
+  .game-change-tycoon {
+    width: 100%;
+    min-height: 100%;
+    padding: 24px;
+    box-sizing: border-box;
+    color: #1f2937;
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    border-radius: 24px;
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  .game-change-tycoon * { box-sizing: border-box; }
+  
+  .game-change-tycoon .ct-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
+  .game-change-tycoon .title-area h2 { margin: 0 0 6px; font-size: clamp(1.6rem, 3vw, 2.3rem); color: #78350f; font-weight: 900; display: flex; align-items: center; gap: 8px; }
+  .game-change-tycoon .title-area p { margin: 0; color: #92400e; font-size: 1.05rem; font-weight: 600; }
+  .game-change-tycoon .stats-bar { display: flex; gap: 12px; font-weight: 800; font-size: 1.05rem; flex-wrap: wrap; align-items: center; }
+  
+  .game-change-tycoon .stat-badge { background: #ffffff; padding: 8px 16px; border-radius: 14px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border: 2px solid #fcd34d; color: #92400e; display: flex; align-items: center; gap: 6px; }
+  .game-change-tycoon .stat-badge.score { color: #b45309; border-color: #fbbf24; background: #fffbeb; }
+  .game-change-tycoon .stat-badge.combo { color: #ea580c; border-color: #fdba74; background: #fff7ed; }
+  .game-change-tycoon .stat-badge.life { color: #dc2626; border-color: #fecaca; background: #fef2f2; }
+  .game-change-tycoon .stat-badge.timer { color: #7c2d12; border-color: #fca5a5; background: #ffe4e6; animation: pulseTimer 1s infinite; display: none; }
+  @keyframes pulseTimer { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+  
+  @keyframes howtoPulse {
+    0% { transform: scale(1); box-shadow: 0 4px 10px rgba(217, 119, 6, 0.3); }
+    50% { transform: scale(1.05); box-shadow: 0 6px 18px rgba(217, 119, 6, 0.6); }
+    100% { transform: scale(1); box-shadow: 0 4px 10px rgba(217, 119, 6, 0.3); }
+  }
+  .game-change-tycoon .btn-howto {
+    background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 14px;
+    font-size: 1.05rem;
+    font-weight: 900;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(217, 119, 6, 0.3);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+    animation: howtoPulse 2.5s infinite;
+  }
+  .game-change-tycoon .btn-howto:hover {
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 8px 20px rgba(217, 119, 6, 0.5);
+    background: linear-gradient(135deg, #b45309 0%, #92400e 100%);
+    animation: none;
+  }
+
+  .game-change-tycoon .main-layout { display: flex; gap: 24px; flex-wrap: wrap; }
+  
+  .game-change-tycoon .game-area { flex: 1; min-width: 320px; display: flex; flex-direction: column; gap: 20px; }
+  .game-change-tycoon .card { background: #ffffff; border-radius: 20px; padding: 24px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.08); border: 2px solid #fef08a; }
+  
+  /* 손님 카운터 영역 */
+  .game-change-tycoon .counter-box {
+    background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+    border: 3px solid #f59e0b;
+    border-radius: 20px;
+    padding: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 20px;
+    position: relative;
+    box-shadow: 0 8px 20px rgba(245, 158, 11, 0.15);
+  }
+  
+  .game-change-tycoon .customer-avatar {
+    font-size: 4.5rem;
+    background: #ffffff;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+    border: 4px solid #fbbf24;
+    animation: bounceCustomer 2s infinite ease-in-out;
+  }
+  @keyframes bounceCustomer { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+
+  .game-change-tycoon .order-speech {
+    flex: 1;
+    min-width: 260px;
+    background: #ffffff;
+    border-radius: 18px;
+    padding: 20px;
+    border: 2px solid #fcd34d;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.04);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .game-change-tycoon .order-row { display: flex; justify-content: space-between; align-items: center; font-size: 1.15rem; font-weight: 800; color: #451a03; border-bottom: 1px dashed #fde68a; padding-bottom: 8px; }
+  .game-change-tycoon .order-row:last-child { border-bottom: none; padding-bottom: 0; }
+  .game-change-tycoon .price-val { color: #dc2626; font-size: 1.3rem; }
+  .game-change-tycoon .paid-val { color: #2563eb; font-size: 1.3rem; }
+  
+  .game-change-tycoon .change-due-box {
+    background: #f8fafc;
+    border: 2px solid #cbd5e1;
+    border-radius: 14px;
+    padding: 12px 16px;
+    text-align: center;
+    margin-top: 4px;
+  }
+  .game-change-tycoon .change-due-label { font-size: 0.9rem; color: #64748b; font-weight: 700; margin-bottom: 4px; }
+  .game-change-tycoon .change-due-val { font-size: 1.5rem; font-weight: 900; color: #0f172a; }
+
+  /* 화폐 서랍 (트레이 추가 버튼들) */
+  .game-change-tycoon .drawer-section h3 { margin: 0 0 14px; font-size: 1.2rem; color: #78350f; font-weight: 900; display: flex; align-items: center; gap: 8px; }
+  .game-change-tycoon .currency-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+  }
+  
+  .game-change-tycoon .btn-curr {
+    background: #ffffff;
+    border: 3px solid #f59e0b;
+    border-radius: 16px;
+    padding: 14px 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.15s;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    position: relative;
+    overflow: hidden;
+  }
+  .game-change-tycoon .btn-curr:hover:not(:disabled) { transform: translateY(-3px); box-shadow: 0 8px 16px rgba(245, 158, 11, 0.25); background: #fffbeb; }
+  .game-change-tycoon .btn-curr:active:not(:disabled) { transform: scale(0.96); }
+  .game-change-tycoon .btn-curr:disabled { opacity: 0.45; border-color: #cbd5e1; background: #f1f5f9; cursor: not-allowed; }
+  
+  .game-change-tycoon .btn-curr.bill { border-color: #3b82f6; background: #eff6ff; }
+  .game-change-tycoon .btn-curr.bill:hover:not(:disabled) { background: #dbeafe; box-shadow: 0 8px 16px rgba(59, 130, 246, 0.25); }
+  
+  .game-change-tycoon .curr-icon { font-size: 1.8rem; margin-bottom: 4px; }
+  .game-change-tycoon .curr-name { font-size: 1.15rem; font-weight: 900; color: #1e293b; }
+  
+  .game-change-tycoon .soldout-badge {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-12deg);
+    background: #dc2626;
+    color: white;
+    font-size: 0.95rem;
+    font-weight: 900;
+    padding: 4px 12px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    border: 2px solid white;
+    pointer-events: none;
+  }
+
+  /* 손님에게 줄 거스름돈 트레이 */
+  .game-change-tycoon .tray-section {
+    background: #fffbeb;
+    border: 3px dashed #f59e0b;
+    border-radius: 20px;
+    padding: 20px;
+    min-height: 140px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .game-change-tycoon .tray-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px; }
+  .game-change-tycoon .tray-title { font-size: 1.15rem; font-weight: 900; color: #92400e; margin: 0; }
+  .game-change-tycoon .tray-total { font-size: 1.4rem; font-weight: 900; color: #b45309; }
+  
+  .game-change-tycoon .tray-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    min-height: 60px;
+    align-items: center;
+    padding: 10px 0;
+  }
+  .game-change-tycoon .tray-empty-msg { color: #a1a1aa; font-size: 1rem; font-weight: 700; text-align: center; width: 100%; margin: auto 0; }
+
+  .game-change-tycoon .tray-chip {
+    background: #ffffff;
+    border: 2px solid #fbbf24;
+    border-radius: 30px;
+    padding: 8px 14px;
+    font-size: 1rem;
+    font-weight: 900;
+    color: #78350f;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    transition: all 0.15s;
+    animation: popIn 0.2s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+  }
+  .game-change-tycoon .tray-chip:hover { background: #fee2e2; border-color: #ef4444; color: #b91c1c; transform: scale(1.05); }
+  .game-change-tycoon .tray-chip.bill { border-color: #60a5fa; color: #1e3a8a; }
+  .game-change-tycoon .tray-chip.bill:hover { background: #fee2e2; border-color: #ef4444; color: #b91c1c; }
+  @keyframes popIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+  /* 컨트롤 버튼 영역 */
+  .game-change-tycoon .action-row { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-top: 10px; }
+  
+  .game-change-tycoon .btn-submit {
+    background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+    color: white;
+    border: none;
+    padding: 16px 36px;
+    font-size: 1.3rem;
+    font-weight: 900;
+    border-radius: 18px;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 6px 15px rgba(22, 163, 74, 0.35);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 2;
+    min-width: 220px;
+    justify-content: center;
+  }
+  .game-change-tycoon .btn-submit:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(22, 163, 74, 0.45); }
+  .game-change-tycoon .btn-submit:disabled { background: #94a3b8; cursor: not-allowed; box-shadow: none; }
+  
+  .game-change-tycoon .btn-clear {
+    background: #ffffff;
+    border: 2px solid #f87171;
+    color: #dc2626;
+    padding: 16px 24px;
+    font-size: 1.1rem;
+    font-weight: 800;
+    border-radius: 18px;
+    cursor: pointer;
+    transition: all 0.15s;
+    flex: 1;
+    min-width: 140px;
+  }
+  .game-change-tycoon .btn-clear:hover:not(:disabled) { background: #fef2f2; }
+  .game-change-tycoon .btn-clear:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .game-change-tycoon .btn-secondary { background: #e5e7eb; color: #374151; border: none; padding: 12px 20px; font-size: 1rem; border-radius: 12px; cursor: pointer; font-weight: 700; transition: all 0.15s; }
+  .game-change-tycoon .btn-secondary:hover:not(:disabled) { background: #d1d5db; }
+
+  .game-change-tycoon .result-area { text-align: center; margin-top: 16px; padding: 18px; border-radius: 16px; display: none; font-weight: 800; font-size: 1.15rem; }
+  .game-change-tycoon .result-area.show { display: block; animation: fadeIn 0.4s; }
+  .game-change-tycoon .result-area.success { background: #dcfce7; border: 2px solid #86efac; color: #166534; }
+  .game-change-tycoon .result-area.error { background: #fee2e2; border: 2px solid #fca5a5; color: #991b1b; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+
+  .game-change-tycoon .hint-box { background: #fffbeb; border: 2px solid #fde68a; padding: 16px 20px; border-radius: 16px; margin-top: 16px; display: none; }
+  .game-change-tycoon .hint-box h4 { margin: 0 0 8px; color: #b45309; font-size: 1.1rem; font-weight: 900; }
+  .game-change-tycoon .hint-box p { margin: 0; color: #78350f; font-size: 1rem; line-height: 1.5; font-weight: 600; }
+  
+  .game-change-tycoon .sidebar { width: 320px; display: flex; flex-direction: column; gap: 16px; flex-shrink: 0; }
+  @media (max-width: 768px) { .game-change-tycoon .sidebar { width: 100%; } }
+
+  .game-change-tycoon .diff-selector { display: flex; gap: 6px; background: #f1f5f9; p: 6px; border-radius: 14px; padding: 6px; }
+  .game-change-tycoon .diff-btn { flex: 1; padding: 10px 8px; border: none; border-radius: 10px; font-weight: 800; font-size: 0.95rem; cursor: pointer; color: #64748b; background: transparent; transition: all 0.2s; }
+  .game-change-tycoon .diff-btn.active { background: #ffffff; color: #78350f; box-shadow: 0 2px 6px rgba(0,0,0,0.08); }
+
+  .game-change-tycoon .rank-item {
+    display: flex; justify-content: space-between; align-items: center;
+    background: #f8fafc; border: 1px solid #cbd5e1;
+    padding: 10px 14px; border-radius: 12px; margin-bottom: 8px;
+    font-size: 0.95rem; color: #334155; font-weight: 700;
+  }
+  .game-change-tycoon .rank-num { color: #d97706; font-weight: 900; margin-right: 8px; }
+  .game-change-tycoon .rank-score { color: #78350f; font-weight: 900; }
+</style>
+<script>
+(function() {
+  const ALL_CURRENCIES = [
+    { val: 5000, name: '5,000원', type: 'bill', icon: '💵' },
+    { val: 1000, name: '1,000원', type: 'bill', icon: '💵' },
+    { val: 500, name: '500원', type: 'coin', icon: '🪙' },
+    { val: 100, name: '100원', type: 'coin', icon: '🪙' },
+    { val: 50, name: '50원', type: 'coin', icon: '🪙' },
+    { val: 10, name: '10원', type: 'coin', icon: '🪙' }
+  ];
+
+  const CUSTOMER_AVATARS = ['👦', '👩', '👴', '👮', '🧑‍🏫', '👧', '👨‍🍳', '🧑‍💼', '👩‍🦰', '🧑‍🚀'];
+
+  const ChangeTycoon = {
+    id: 'change-tycoon',
+    container: null,
+    state: {
+      difficulty: 'easy', // 'easy', 'normal', 'hard'
+      roundIdx: 0,
+      maxRounds: 10,
+      score: 0,
+      combo: 0,
+      lives: 3,
+      price: 0,
+      paid: 0,
+      changeDue: 0,
+      tray: [], // array of currency values e.g. [1000, 500, 100]
+      soldOutCurrencies: [], // array of values e.g. [500]
+      avatar: '👦',
+      timer: 60,
+      isAnswered: false,
+      isGameOver: false,
+      hintUsed: false,
+      startTime: 0
+    },
+    timers: [],
+    timerId: null,
+
+    mount(container, context) {
+      let target = null;
+      if (typeof container === 'string') target = document.querySelector(container);
+      else if (container instanceof HTMLElement) target = container;
+      if (!target) target = document.getElementById('mathlab-view') || document.getElementById('new-root') || document.getElementById('game-container');
+
+      // 💡 [자가 복구 엔진] 컨테이너가 없거나 가려져 있다면, 100% 보이는 전용 도화지 생성!
+      if (!target || target === document.body) {
+        let host = document.getElementById('change-tycoon-force-host');
+        if (!host) {
+          host = document.createElement('div'); host.id = 'change-tycoon-force-host';
+          host.style.cssText = 'width:100%; max-width:960px; margin:0 auto; padding:20px 10px; box-sizing:border-box; z-index:999; position:relative; background:#ffffff; min-height:650px; display:block; border-radius:24px;';
+          const header = document.querySelector('header, .navbar, #app-header, .top-bar');
+          if (header && header.parentNode) header.parentNode.insertBefore(host, header.nextSibling);
+          else document.body.appendChild(host);
+        }
+        target = host;
+      }
+
+      this.container = target;
+      this.container.style.display = 'block'; this.container.style.visibility = 'visible'; this.container.style.opacity = '1'; this.container.style.minHeight = '650px';
+
+      let parent = this.container.parentElement;
+      while (parent && parent !== document.body && parent !== document.documentElement) {
+        if (parent.style && parent.style.display === 'none') parent.style.display = 'block';
+        if (parent.style && parent.style.visibility === 'hidden') parent.style.visibility = 'visible';
+        parent = parent.parentElement;
+      }
+
+      this.restoreGlobalNavigation();
+      this.resetGame();
+    },
+
+    restoreGlobalNavigation() {
+      const navElements = document.querySelectorAll('header, .navbar, #app-header, .top-bar, #floating-home-btn, .floating-home, [id*="home"], [class*="floating"]');
+      navElements.forEach(el => { if (el && el.style && el.style.display === 'none') el.style.display = ''; });
+    },
+
+    setDifficulty(diff) {
+      if (this.state.difficulty === diff && !this.state.isGameOver && this.state.roundIdx === 0) return;
+      this.state.difficulty = diff;
+      this.resetGame();
+    },
+
+    resetGame() {
+      if (window.MathLabCleanup && typeof window.MathLabCleanup.clearTimers === 'function') {
+        window.MathLabCleanup.clearTimers(this.timers);
+      }
+      this.timers.forEach(clearTimeout);
+      this.timers = [];
+      if (this.timerId) { clearInterval(this.timerId); this.timerId = null; }
+      
+      this.state.roundIdx = 0;
+      this.state.score = 0;
+      this.state.combo = 0;
+      this.state.lives = 3;
+      this.state.isGameOver = false;
+      
+      this.setupRound();
+    },
+    
+    setupRound() {
+      if (this.state.roundIdx >= this.state.maxRounds || this.state.lives <= 0) {
+        this.gameOver(this.state.lives > 0);
+        return;
+      }
+
+      if (this.timerId) { clearInterval(this.timerId); this.timerId = null; }
+
+      this.state.tray = [];
+      this.state.hintUsed = false;
+      this.state.isAnswered = false;
+      this.state.startTime = Date.now();
+      this.state.avatar = CUSTOMER_AVATARS[Math.floor(Math.random() * CUSTOMER_AVATARS.length)];
+      
+      // 난이도별 화폐 및 품절 설정
+      if (this.state.difficulty === 'easy') {
+        // 100원 단위, 50원/10원 제외
+        this.state.soldOutCurrencies = [50, 10];
+        const prices = [1000, 1200, 1500, 1800, 2000, 2500, 2700, 3000, 3200, 3500, 3800, 4000, 4500];
+        this.state.price = prices[Math.floor(Math.random() * prices.length)];
+        this.state.paid = 5000;
+        if (this.state.price >= 4000 && Math.random() > 0.5) this.state.paid = 10000;
+      } else if (this.state.difficulty === 'normal') {
+        // 10원 단위, 모든 화폐 사용 가능
+        this.state.soldOutCurrencies = [];
+        const base = Math.floor(Math.random() * 450) * 10 + 500; // 500원 ~ 4990원
+        this.state.price = base;
+        this.state.paid = base <= 3000 ? 5000 : 10000;
+      } else {
+        // 도전 모드: 1개 화폐 랜덤 품절 + 타이머 60초
+        const possibleSoldOuts = [500, 100, 50];
+        this.state.soldOutCurrencies = [possibleSoldOuts[Math.floor(Math.random() * possibleSoldOuts.length)]];
+        const base = Math.floor(Math.random() * 450) * 10 + 500;
+        this.state.price = base;
+        this.state.paid = base <= 3000 ? 5000 : 10000;
+        
+        // 타이머 시작
+        this.state.timer = 40;
+        this.timerId = setInterval(() => {
+          if (this.state.isAnswered || this.state.isGameOver) return;
+          this.state.timer--;
+          this.updateTimerUI();
+          if (this.state.timer <= 0) {
+            clearInterval(this.timerId); this.timerId = null;
+            this.handleTimeout();
+          }
+        }, 1000);
+      }
+
+      // 만약 지불금액이 10000원인데 5000원 지폐가 품절이면 안되므로 보정
+      this.state.changeDue = this.state.paid - this.state.price;
+
+      this.render();
+    },
+
+    updateTimerUI() {
+      const el = this.container?.querySelector('.stat-badge.timer');
+      const valEl = el?.querySelector('.timer-val');
+      if (valEl) valEl.textContent = `${this.state.timer}초`;
+    },
+
+    handleTimeout() {
+      this.state.isAnswered = true;
+      this.state.combo = 0;
+      this.state.lives--;
+      this.state.score = Math.max(0, this.state.score - 5);
+
+      const resArea = this.container?.querySelector('.result-area');
+      if (resArea) {
+        resArea.className = 'result-area show error';
+        resArea.innerHTML = `⏰ <strong>시간 초과! 손님이 떠났습니다! (생명 -1)</strong><br>제한 시간 내에 거스름돈을 계산해야 합니다.`;
+      }
+      this.updateStatsUI();
+
+      const t = setTimeout(() => {
+        if (this.state.lives <= 0) this.gameOver(false);
+        else this.setupRound();
+      }, 2000);
+      this.timers.push(t);
+    },
+
+    addToTray(val) {
+      if (this.state.isAnswered || this.state.isGameOver) return;
+      if (this.state.soldOutCurrencies.includes(val)) return;
+      this.state.tray.push(val);
+      this.updateTrayUI();
+    },
+
+    removeFromTray(idx) {
+      if (this.state.isAnswered || this.state.isGameOver) return;
+      this.state.tray.splice(idx, 1);
+      this.updateTrayUI();
+    },
+
+    clearTray() {
+      if (this.state.isAnswered || this.state.isGameOver) return;
+      this.state.tray = [];
+      this.updateTrayUI();
+    },
+
+    getMinCoinsNeeded(amount, availableDenoms) {
+      const target = Math.floor(amount / 10);
+      const coins = availableDenoms.map(d => Math.floor(d / 10)).filter(c => c > 0);
+      const dp = new Array(target + 1).fill(Infinity);
+      dp[0] = 0;
+      for (let i = 1; i <= target; i++) {
+        for (let c of coins) {
+          if (i >= c && dp[i - c] + 1 < dp[i]) {
+            dp[i] = dp[i - c] + 1;
+          }
+        }
+      }
+      return dp[target] === Infinity ? 0 : dp[target];
+    },
+
+    getGreedyRecommendation(amount, availableDenoms) {
+      const sorted = [...availableDenoms].sort((a, b) => b - a);
+      for (let c of sorted) {
+        if (amount >= c) return c;
+      }
+      return null;
+    },
+
+    submitChange() {
+      if (this.state.isAnswered || this.state.isGameOver) return;
+      this.state.isAnswered = true;
+      if (this.timerId) { clearInterval(this.timerId); this.timerId = null; }
+
+      const currentTotal = this.state.tray.reduce((a, b) => a + b, 0);
+      const resArea = this.container.querySelector('.result-area');
+      
+      if (currentTotal === this.state.changeDue) {
+        // 금액 정확 일치! 최소 개수 검증
+        const available = ALL_CURRENCIES.map(c => c.val).filter(v => !this.state.soldOutCurrencies.includes(v));
+        const minCount = this.getMinCoinsNeeded(this.state.changeDue, available);
+        const userCount = this.state.tray.length;
+        
+        let pts = 10;
+        const timeDiff = (Date.now() - this.state.startTime) / 1000;
+        if (timeDiff <= 5) pts += 3; // 스피드 보너스
+        
+        let isMinCount = (userCount <= minCount);
+        if (isMinCount) pts += 5; // 최소 화폐 구성 보너스
+        if (this.state.hintUsed) pts = Math.max(3, pts - 5);
+        
+        this.state.combo++;
+        if (this.state.combo >= 3) pts += 5;
+        this.state.score += pts;
+
+        if (resArea) {
+          if (isMinCount) {
+            resArea.className = 'result-area show success';
+            resArea.innerHTML = `🎉 <strong>완벽한 거스름돈 구성! (+${pts}점)</strong><br>정확한 금액(${currentTotal.toLocaleString()}원)을 최소 개수(${userCount}개)로 드렸습니다! 손님이 매우 만족합니다! 😆`;
+          } else {
+            resArea.className = 'result-area show success';
+            resArea.innerHTML = `😊 <strong>거스름돈 금액 일치! (+${pts - 5}점)</strong><br>금액은 정확하지만, 최소 개수(<strong>${minCount}개</strong>)로 주시면 더 좋습니다! (현재 ${userCount}개 사용)`;
+          }
+        }
+
+        const t = setTimeout(() => {
+          this.state.roundIdx++;
+          this.setupRound();
+        }, 1800);
+        this.timers.push(t);
+      } else {
+        // 금액 불일치
+        this.state.combo = 0;
+        this.state.lives--;
+        this.state.score = Math.max(0, this.state.score - 5);
+        
+        const diff = Math.abs(currentTotal - this.state.changeDue);
+        const isMore = currentTotal > this.state.changeDue;
+        
+        if (resArea) {
+          resArea.className = 'result-area show error';
+          resArea.innerHTML = `❌ <strong>거스름돈 오류! 손님이 불만족합니다! (생명 -1)</strong><br>손님이 받아야 할 거스름돈보다 <strong>${diff.toLocaleString()}원 ${isMore ? '더 많이(초과)' : '더 적게(부족)'}</strong> 주셨습니다!`;
+        }
+
+        const t = setTimeout(() => {
+          if (this.state.lives <= 0) {
+            this.gameOver(false);
+          } else {
+            this.state.isAnswered = false;
+            this.render();
+          }
+        }, 2200);
+        this.timers.push(t);
+      }
+
+      this.updateStatsUI();
+    },
+
+    gameOver(cleared) {
+      if (cleared && !this.state.isGameOver) {
+        this.state.score += 50; // 클리어 보너스
+      }
+      this.state.isGameOver = true;
+      if (this.timerId) { clearInterval(this.timerId); this.timerId = null; }
+      this.render();
+      
+      if (this.state.score > 0) {
+        const t = setTimeout(() => {
+          this.showInlineRankingModal('board-change-tycoon', this.state.score, { cleared: cleared, difficulty: this.state.difficulty });
+        }, 600);
+        this.timers.push(t);
+      }
+    },
+
+    showHowToPlayModal() {
+      document.getElementById('mathlab-ct-howto-modal')?.remove();
+      const modalHtml = `
+        <div id="mathlab-ct-howto-modal" style="position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(15,23,42,0.8); backdrop-filter:blur(8px); display:flex; align-items:center; justify-content:center; z-index:999999; padding:20px; box-sizing:border-box; font-family:'Pretendard',sans-serif; animation: fadeIn 0.3s;">
+          <div style="background:#ffffff; border-radius:28px; padding:32px 28px; max-width:620px; width:100%; max-height:85vh; overflow-y:auto; box-shadow:0 25px 50px -12px rgba(0,0,0,0.4); border:4px solid #f59e0b; position:relative;">
+            
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #e2e8f0; padding-bottom:16px; margin-bottom:20px;">
+              <div style="display:flex; align-items:center; gap:10px;">
+                <span style="font-size:36px;">🪙</span>
+                <div>
+                  <h2 style="margin:0; font-size:24px; font-weight:900; color:#78350f;">거스름돈 타이쿤 게임 방법</h2>
+                  <p style="margin:4px 0 0; font-size:13px; color:#92400e; font-weight:700;">최소 화폐 개수로 거스름돈을 드리는 스마트 가게 주인 되기!</p>
+                </div>
+              </div>
+              <button id="ct-howto-close-top" style="background:#f1f5f9; border:none; width:40px; height:40px; border-radius:50%; font-size:20px; cursor:pointer; color:#64748b; font-weight:bold; display:flex; align-items:center; justify-content:center; transition:background 0.2s;">✕</button>
+            </div>
+
+            <div style="display:flex; flex-direction:column; gap:16px; text-align:left; color:#334155;">
+              <div style="background:#fffbeb; border-left:5px solid #f59e0b; padding:16px; border-radius:12px;">
+                <h3 style="margin:0 0 6px; font-size:16px; color:#b45309; font-weight:900;">🎯 1. 게임의 목표</h3>
+                <p style="margin:0; font-size:14px; line-height:1.5; font-weight:600;">손님이 지불한 금액에서 물건 가격을 뺀 <strong>정확한 거스름돈</strong>을 계산하고, 지폐와 동전의 <strong>개수가 최소가 되도록</strong> 구성해 손님에게 건네주는 게임입니다.</p>
+              </div>
+
+              <div style="background:#eff6ff; border-left:5px solid #3b82f6; padding:16px; border-radius:12px;">
+                <h3 style="margin:0 0 6px; font-size:16px; color:#1e40af; font-weight:900;">🧮 2. 거스름돈 계산 방법</h3>
+                <p style="margin:0; font-size:14px; line-height:1.5; font-weight:600;">
+                  <strong style="color:#1d4ed8;">거스름돈 = 손님 지불 금액 - 물건 가격</strong><br>
+                  예) 3,250원 물건을 사고 5,000원을 내면 ➔ 5,000 - 3,250 = <strong style="color:#dc2626;">1,750원</strong>을 거슬러 주어야 합니다!
+                </p>
+              </div>
+
+              <div style="background:#f0fdf4; border:1px solid #86efac; padding:18px; border-radius:16px;">
+                <h3 style="margin:0 0 10px; font-size:16px; color:#15803d; font-weight:900;">🪙 3. 최소 화폐 개수 (그리디 전략)</h3>
+                <p style="margin:0 0 8px; font-size:13.5px; line-height:1.5; font-weight:600; color:#166534;">
+                  동전과 지폐 개수를 최소로 하려면 <strong>가장 단위가 큰 화폐부터</strong> 차례로 채워야 합니다!
+                </p>
+                <div style="background:#ffffff; p:10px; border-radius:10px; padding:10px; font-size:13px; font-weight:800; color:#0f172a;">
+                  💡 1,750원 최소 구성: <span style="color:#2563eb;">1,000원 1장</span> + <span style="color:#d97706;">500원 1개</span> + <span style="color:#16a34a;">100원 2개</span> + <span style="color:#9333ea;">50원 1개</span> (총 5개)
+                </div>
+                <p style="margin:8px 0 0; font-size:12.5px; color:#15803d; font-weight:700;">
+                  ※ <strong>도전(품절) 모드</strong>에서는 특정 화폐(예: 500원)가 품절됩니다! 이때는 남아있는 화폐 조합 중 가장 적은 개수를 찾아야 합니다.
+                </p>
+              </div>
+
+              <div style="background:#f8fafc; border-left:5px solid #64748b; padding:16px; border-radius:12px;">
+                <h3 style="margin:0 0 6px; font-size:16px; color:#334155; font-weight:900;">🕹️ 4. 조작 방법 및 팁</h3>
+                <ul style="margin:0; padding-left:20px; font-size:13.5px; line-height:1.6; font-weight:600; color:#475569;">
+                  <li>하단의 <strong>화폐 버튼</strong>을 눌러 거스름돈 트레이에 담으세요.</li>
+                  <li>잘못 담았을 때는 트레이의 화폐를 <strong>클릭하여 제거</strong>할 수 있습니다.</li>
+                  <li>트레이 합계가 맞으면 <strong style="color:#15803d;">[🤝 거스름돈 건네주기]</strong>를 누르세요!</li>
+                  <li>⚡ 3연속 정답 시 콤보 보너스(+5점), 최소 개수 구성 시 보너스(+5점)가 주어집니다!</li>
+                </ul>
+              </div>
+            </div>
+
+            <button id="ct-howto-close-btn" style="width:100%; margin-top:24px; padding:16px; border-radius:16px; font-size:16px; font-weight:900; background:linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color:#ffffff; border:none; cursor:pointer; box-shadow:0 8px 16px rgba(245,158,11,0.3); transition:transform 0.15s;">
+              🚀 이해했습니다! 가게 오픈하기
+            </button>
+
+          </div>
+        </div>
+      `;
+      document.body.insertAdjacentHTML('beforeend', modalHtml);
+      
+      const closeModal = () => document.getElementById('mathlab-ct-howto-modal')?.remove();
+      document.getElementById('ct-howto-close-top')?.addEventListener('click', closeModal);
+      document.getElementById('ct-howto-close-btn')?.addEventListener('click', closeModal);
+      document.getElementById('mathlab-ct-howto-modal')?.addEventListener('click', (e) => {
+        if (e.target.id === 'mathlab-ct-howto-modal') closeModal();
+      });
+    },
+
+    showInlineRankingModal(boardId, score, metadata) {
+      document.getElementById('mathlab-inline-ranking-modal')?.remove();
+      const gameName = '거스름돈 타이쿤';
+      const modalHtml = `
+        <div id="mathlab-inline-ranking-modal" style="position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(15,23,42,0.75); backdrop-filter:blur(6px); display:flex; align-items:center; justify-content:center; z-index:999999; padding:20px; box-sizing:border-box; font-family:'Pretendard',sans-serif;">
+          <div style="background:#ffffff; border-radius:24px; padding:28px 24px; max-width:400px; width:100%; box-shadow:0 20px 40px rgba(0,0,0,0.3); text-align:center; border:3px solid #f59e0b;">
+            <div style="font-size:42px; margin-bottom:10px;">🪙🏆</div>
+            <h2 style="margin:0 0 8px; font-size:24px; font-weight:900; color:#78350f;">명예의 전당 등록</h2>
+            <p style="margin:0 0 20px; font-size:14px; color:#92400e;">거스름돈 타이쿤 가게 영업을 마쳤습니다!<br>이름을 남겨 Top 5 랭킹에 도전하세요!</p>
+            <div style="background:#fffbeb; border:1px solid #fcd34d; border-radius:16px; padding:14px; margin-bottom:20px;">
+              <div style="font-size:13px; color:#b45309; font-weight:800; margin-bottom:4px;">🏆 최종 달성 점수</div>
+              <div style="font-size:32px; font-weight:900; color:#d97706;">${score} <span style="font-size:18px;">점</span></div>
+            </div>
+            <input type="text" id="inline-rank-nickname" placeholder="우승자 닉네임 입력 (예: 스마트사장님)" maxlength="10" style="width:100%; padding:14px 16px; font-size:16px; font-weight:700; border:2px solid #cbd5e1; border-radius:14px; outline:none; text-align:center; margin-bottom:20px; box-sizing:border-box;">
+            <div style="display:flex; gap:10px;">
+              <button id="inline-rank-cancel" style="flex:1; padding:14px; border-radius:14px; font-size:15px; font-weight:800; background:#e2e8f0; color:#475569; border:none; cursor:pointer;">건너뛰기</button>
+              <button id="inline-rank-submit" style="flex:2; padding:14px; border-radius:14px; font-size:15px; font-weight:800; background:#f59e0b; color:#ffffff; border:none; cursor:pointer;">🚀 등록하기</button>
+            </div>
+          </div>
+        </div>
+      `;
+      document.body.insertAdjacentHTML('beforeend', modalHtml);
+      const inputEl = document.getElementById('inline-rank-nickname'); if (inputEl) inputEl.focus();
+      const closeAndClean = () => document.getElementById('mathlab-inline-ranking-modal')?.remove();
+      document.getElementById('inline-rank-cancel')?.addEventListener('click', closeAndClean);
+      const doSubmit = () => {
+        let nickname = (inputEl?.value.trim() || '스마트사장님');
+        
+        if (typeof window.submitRanking === 'function') {
+          try { window.submitRanking(gameName, score, true, nickname, boardId); } catch(e){}
+        } else if (typeof google !== 'undefined' && google.script && google.script.run && typeof google.script.run.saveGameScore === 'function') {
+          try {
+            const sheetId = (typeof getLeaderboardSheetId === 'function') ? getLeaderboardSheetId() : '';
+            const meta = (typeof getLeaderboardMeta === 'function') ? getLeaderboardMeta() : {};
+            google.script.run.withSuccessHandler(() => { this.loadLeaderboard(); }).saveGameScore(sheetId, gameName, nickname, score, true, meta);
+          } catch(e){}
+        }
+
+        let ranks = JSON.parse(localStorage.getItem(`rank_${boardId}`) || '[]');
+        ranks.push({ ...(metadata || {}), nickname: nickname, score: score, date: new Date().toISOString() });
+        ranks.sort((a, b) => (b.score || 0) - (a.score || 0));
+        localStorage.setItem(`rank_${boardId}`, JSON.stringify(ranks.slice(0, 50)));
+        closeAndClean(); this.loadLeaderboard();
+      };
+      document.getElementById('inline-rank-submit')?.addEventListener('click', doSubmit);
+      inputEl?.addEventListener('keydown', (e) => { if (e.key === 'Enter') doSubmit(); });
+    },
+
+    updateStatsUI() {
+      const root = this.container?.querySelector('.game-change-tycoon');
+      if (!root) return;
+      
+      const scoreEl = root.querySelector('.score-val'); if (scoreEl) scoreEl.textContent = `${this.state.score}점`;
+      const comboEl = root.querySelector('.combo-val'); if (comboEl) comboEl.textContent = `${this.state.combo}연속`;
+      const lifeEl = root.querySelector('.life-val'); if (lifeEl) lifeEl.textContent = '❤️'.repeat(Math.max(0, this.state.lives));
+    },
+
+    updateTrayUI() {
+      const root = this.container?.querySelector('.game-change-tycoon');
+      if (!root) return;
+      
+      const itemsEl = root.querySelector('.tray-items');
+      const totalEl = root.querySelector('.tray-total-val');
+      
+      const total = this.state.tray.reduce((a, b) => a + b, 0);
+      if (totalEl) totalEl.textContent = `${total.toLocaleString()} 원`;
+      
+      if (!itemsEl) return;
+      if (this.state.tray.length === 0) {
+        itemsEl.innerHTML = '<div class="tray-empty-msg">아래 화폐 버튼을 클릭하여 손님에게 줄 거스름돈을 담으세요.</div>';
+        return;
+      }
+      
+      itemsEl.innerHTML = this.state.tray.map((val, idx) => {
+        const curr = ALL_CURRENCIES.find(c => c.val === val) || { name: `${val}원`, icon: '🪙', type: 'coin' };
+        return `
+          <div class="tray-chip ${curr.type}" data-idx="${idx}" title="클릭하면 트레이에서 뺍니다">
+            <span>${curr.icon}</span> ${curr.name} <span style="font-size:0.8rem; opacity:0.6;">✕</span>
+          </div>
+        `;
+      }).join('');
+      
+      itemsEl.querySelectorAll('.tray-chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+          const idx = parseInt(chip.getAttribute('data-idx'), 10);
+          this.removeFromTray(idx);
+        });
+      });
+    },
+
+    render() {
+      const isCleared = this.state.roundIdx >= this.state.maxRounds;
+      const trayTotal = this.state.tray.reduce((a, b) => a + b, 0);
+      
+      const html = `
+        <div class="game-change-tycoon">
+          <div class="ct-header">
+            <div class="title-area">
+              <h2>🪙 거스름돈 타이쿤</h2>
+              <p>정확한 거스름돈을 최소 개수의 화폐로 거슬러 주는 스마트 가게 운영!</p>
+            </div>
+            <div class="stats-bar">
+              <button class="btn-howto" id="ct-btn-howto-top">❓ 게임 방법 가이드</button>
+              <div class="stat-badge">🚩 스테이지: ${Math.min(this.state.roundIdx + 1, this.state.maxRounds)}/${this.state.maxRounds}</div>
+              <div class="stat-badge score"><span class="score-val">${this.state.score}점</span></div>
+              <div class="stat-badge combo">🔥 콤보: <span class="combo-val">${this.state.combo}연속</span></div>
+              <div class="stat-badge life">생명: <span class="life-val">${'❤️'.repeat(Math.max(0, this.state.lives))}</span></div>
+              <div class="stat-badge timer" style="display: ${this.state.difficulty === 'hard' ? 'flex' : 'none'};">⏱️ <span class="timer-val">${this.state.timer}초</span></div>
+            </div>
+          </div>
+          
+          <div class="main-layout">
+            <div class="game-area">
+              ${this.state.isGameOver ? `
+                <div class="card" style="text-align:center; padding: 40px;">
+                  <h3 style="font-size: 2rem; color: #78350f; margin-top: 0;">${isCleared ? '🏆 거스름돈 타이쿤 영업 마스터 완료!' : '💥 영업 종료! 다시 도전하세요!'}</h3>
+                  <p style="font-size: 1.2rem; color: #92400e;">최종 달성 점수: <strong>${this.state.score}점</strong></p>
+                  <button class="btn-submit" id="ct-btn-restart-big" style="margin: 24px auto 0; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">🔄 새 영업 시작하기</button>
+                </div>
+              ` : `
+                <div class="counter-box">
+                  <div class="customer-avatar">${this.state.avatar}</div>
+                  <div class="order-speech">
+                    <div class="order-row">
+                      <span>🛒 구입 물건 가격</span>
+                      <span class="price-val">${this.state.price.toLocaleString()} 원</span>
+                    </div>
+                    <div class="order-row">
+                      <span>💵 손님 지불 금액</span>
+                      <span class="paid-val">${this.state.paid.toLocaleString()} 원</span>
+                    </div>
+                    <div class="change-due-box">
+                      <div class="change-due-label">💡 손님에게 거슬러 주어야 할 금액</div>
+                      <div class="change-due-val">${this.state.changeDue.toLocaleString()} 원</div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="card drawer-section">
+                  <h3>💵 화폐 서랍 (클릭하여 트레이에 담기)</h3>
+                  <div class="currency-grid">
+                    ${ALL_CURRENCIES.map(c => {
+                      const isSoldOut = this.state.soldOutCurrencies.includes(c.val);
+                      return `
+                        <button class="btn-curr ${c.type}" data-val="${c.val}" ${isSoldOut || this.state.isAnswered ? 'disabled' : ''}>
+                          <span class="curr-icon">${c.icon}</span>
+                          <span class="curr-name">${c.name}</span>
+                          ${isSoldOut ? '<span class="soldout-badge">품절 🚫</span>' : ''}
+                        </button>
+                      `;
+                    }).join('')}
+                  </div>
+                </div>
+
+                <div class="tray-section">
+                  <div class="tray-header">
+                    <h3 class="tray-title">🍽️ 거스름돈 트레이 (클릭하면 빼기)</h3>
+                    <div class="tray-total">합계: <span class="tray-total-val">${trayTotal.toLocaleString()} 원</span></div>
+                  </div>
+                  <div class="tray-items"></div>
+                </div>
+                
+                <div class="action-row">
+                  <button class="btn-submit" id="ct-btn-submit" ${this.state.isAnswered ? 'disabled' : ''}>🤝 거스름돈 건네주기</button>
+                  <button class="btn-clear" id="ct-btn-clear" ${this.state.isAnswered ? 'disabled' : ''}>🗑️ 트레이 비우기</button>
+                </div>
+                
+                <div class="result-area"></div>
+
+                <div class="hint-box" style="display: ${this.state.hintUsed ? 'block' : 'none'};">
+                  <h4>💡 그리디 화폐 추천 힌트 (-5점 페널티)</h4>
+                  <p class="hint-text-val"></p>
+                </div>
+                
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
+                  <button class="btn-secondary" id="ct-btn-hint" ${this.state.isAnswered ? 'disabled' : ''}>💡 추천 화폐 힌트 (-5점)</button>
+                  <button class="btn-secondary" id="ct-btn-reset-round" ${this.state.isAnswered ? 'disabled' : ''}>🔄 현재 손님 다시 주문받기</button>
+                </div>
+              `}
+            </div>
+            
+            <div class="sidebar">
+              <div class="card" style="padding:16px;">
+                <h3 style="margin-top:0; font-size:1.05rem; color:#78350f; margin-bottom:10px;">⚙️ 난이도 선택</h3>
+                <div class="diff-selector">
+                  <button class="diff-btn ${this.state.difficulty === 'easy' ? 'active' : ''}" data-diff="easy">쉬움</button>
+                  <button class="diff-btn ${this.state.difficulty === 'normal' ? 'active' : ''}" data-diff="normal">보통</button>
+                  <button class="diff-btn ${this.state.difficulty === 'hard' ? 'active' : ''}" data-diff="hard">도전(품절)</button>
+                </div>
+              </div>
+
+              <div class="card" style="padding:16px;">
+                <h3 style="margin-top:0; font-size:1.1rem; border-bottom:1px solid #fde68a; padding-bottom:12px; color:#78350f; text-align:center;">🏆 명예의 전당 (Top 5)</h3>
+                <div id="board-change-tycoon">
+                  <p style="color:#a1a1aa; font-size:0.95rem; text-align:center; margin:16px 0;">로딩 중...</p>
+                </div>
+              </div>
+              
+              <div class="card" style="padding:16px;">
+                <button class="btn-secondary" style="width:100%; margin-bottom:12px; padding:12px;" id="ct-btn-restart-side">🔄 처음부터 다시 시작</button>
+                <button class="btn-secondary" style="width:100%; padding:12px; background:#d97706; color:#ffffff;" id="ct-btn-home">🏠 홈으로</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      this.container.innerHTML = html;
+      this.bindEvents();
+      this.updateTrayUI();
+      this.loadLeaderboard();
+    },
+
+    bindEvents() {
+      const root = this.container?.querySelector('.game-change-tycoon');
+      if (!root) return;
+      
+      const btnHowToTop = root.querySelector('#ct-btn-howto-top');
+      if (btnHowToTop) btnHowToTop.addEventListener('click', () => this.showHowToPlayModal());
+
+      root.querySelectorAll('.diff-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const diff = btn.getAttribute('data-diff');
+          this.setDifficulty(diff);
+        });
+      });
+
+      root.querySelectorAll('.btn-curr').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const val = parseInt(btn.getAttribute('data-val'), 10);
+          this.addToTray(val);
+        });
+      });
+
+      const btnSubmit = root.querySelector('#ct-btn-submit');
+      if (btnSubmit) btnSubmit.addEventListener('click', () => this.submitChange());
+      
+      const btnClear = root.querySelector('#ct-btn-clear');
+      if (btnClear) btnClear.addEventListener('click', () => this.clearTray());
+
+      const btnHint = root.querySelector('#ct-btn-hint');
+      if (btnHint) btnHint.addEventListener('click', () => {
+        this.state.hintUsed = true;
+        const hintEl = root.querySelector('.hint-box');
+        const hintTextEl = root.querySelector('.hint-text-val');
+        
+        const currentTotal = this.state.tray.reduce((a, b) => a + b, 0);
+        const rem = this.state.changeDue - currentTotal;
+        if (rem <= 0) {
+          if (hintTextEl) hintTextEl.textContent = '이미 거스름돈 금액이 충분하거나 초과되었습니다!';
+        } else {
+          const avail = ALL_CURRENCIES.map(c => c.val).filter(v => !this.state.soldOutCurrencies.includes(v));
+          const rec = this.getGreedyRecommendation(rem, avail);
+          if (rec) {
+            const curr = ALL_CURRENCIES.find(c => c.val === rec);
+            if (hintTextEl) hintTextEl.textContent = `남은 차액 ${rem.toLocaleString()}원을 채우기 위해 가장 큰 단위인 [ ${curr.name} ]을(를) 트레이에 추가해보세요!`;
+          } else {
+            if (hintTextEl) hintTextEl.textContent = `남은 금액(${rem.toLocaleString()}원)을 만들 수 있는 작은 화폐를 추가해보세요!`;
+          }
+        }
+        if (hintEl) hintEl.style.display = 'block';
+        btnHint.disabled = true;
+      });
+      
+      const btnResetRound = root.querySelector('#ct-btn-reset-round');
+      if (btnResetRound) btnResetRound.addEventListener('click', () => this.setupRound());
+
+      const btnRestartBig = root.querySelector('#ct-btn-restart-big');
+      if (btnRestartBig) btnRestartBig.addEventListener('click', () => this.resetGame());
+      
+      const btnRestartSide = root.querySelector('#ct-btn-restart-side');
+      if (btnRestartSide) btnRestartSide.addEventListener('click', () => this.resetGame());
+
+      const btnHome = root.querySelector('#ct-btn-home');
+      if (btnHome) {
+        btnHome.addEventListener('click', (e) => {
+          e.preventDefault();
+          const topBottomHome = document.getElementById('mathlab-floating-home') || document.querySelector('#legacy-back-home-btn') || document.querySelector('.floating-home');
+          if (topBottomHome) topBottomHome.click();
+          else if (typeof window.MathLabRenderHome === 'function') window.MathLabRenderHome();
+          else if (typeof window.goHome === 'function') window.goHome();
+          else location.reload();
+        });
+      }
+    },
+    
+    loadLeaderboard() {
+      try {
+        if (typeof window.loadGameLeaderboard === 'function') {
+          window.loadGameLeaderboard('거스름돈 타이쿤', true, 'board-change-tycoon');
+        } else {
+          const localRanks = JSON.parse(localStorage.getItem('rank_board-change-tycoon') || '[]');
+          this.renderRankList(localRanks.slice(0, 5));
+        }
+      } catch (e) {
+        console.error('[ChangeTycoon] 명예의 전당 로드 오류:', e);
+        const localRanks = JSON.parse(localStorage.getItem('rank_board-change-tycoon') || '[]');
+        this.renderRankList(localRanks.slice(0, 5));
+      }
+    },
+
+    renderRankList(ranks) {
+      const el = this.container?.querySelector('#board-change-tycoon');
+      if (!el) return;
+
+      if (!ranks || ranks.length === 0) {
+        el.innerHTML = '<div style="text-align:center; color:#a1a1aa; padding: 12px 0;">아직 등록된 랭킹이 없습니다. 첫 주인공이 되어보세요!</div>';
+        return;
+      }
+
+      const escapeHTML = (str) => {
+        if (!str) return '';
+        return String(str).replace(/[&<>"']/g, function(match) {
+          const escape = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+          return escape[match];
+        });
+      };
+      el.innerHTML = ranks.map((r, i) => `
+        <div class="rank-item">
+          <div><span class="rank-num">${i + 1}위</span> ${escapeHTML(r.nickname || '익명')}</div>
+          <div class="rank-score">${r.score || 0}점</div>
+        </div>
+      `).join('');
+    },
+
+    destroy() {
+      if (window.MathLabCleanup && typeof window.MathLabCleanup.clearTimers === 'function') {
+        window.MathLabCleanup.clearTimers(this.timers);
+      }
+      this.timers.forEach(clearTimeout);
+      this.timers = [];
+      if (this.timerId) { clearInterval(this.timerId); this.timerId = null; }
+      document.getElementById('mathlab-inline-ranking-modal')?.remove();
+      document.getElementById('mathlab-ct-howto-modal')?.remove();
+      const host = document.getElementById('change-tycoon-force-host'); if (host) host.remove();
+      if (this.container) this.container.innerHTML = '';
+      this.container = null;
+    }
+  };
+
+  if (!window.MathLabGames) {
+    window.MathLabGames = {
+      registry: {},
+      register(app) { this.registry[app.id] = app; },
+      get(id) { return this.registry[id]; },
+      mount(id, container, context) {
+        if (this.registry[id]) this.registry[id].mount(container, context);
+      }
+    };
+  }
+  
+  if (typeof window.MathLabGames.register === 'function') {
+    if (!window.MathLabGames.get?.('change-tycoon')) {
+      window.MathLabGames.register(ChangeTycoon);
+    }
+  }
+
+  window.launchChangeTycoonGame = function() {
+    if (typeof window.MathLabGames !== 'undefined' && typeof window.MathLabGames.mount === 'function') {
+      try {
+        window.MathLabGames.mount('change-tycoon');
+        return;
+      } catch(e) {
+        console.warn('MathLabGames mount 실패, 직접 마운트 시도:', e);
+      }
+    }
+    const target = document.getElementById('mathlab-view') || document.getElementById('new-root') || document.body;
+    ChangeTycoon.mount(target);
+  };
+})();
+</script>

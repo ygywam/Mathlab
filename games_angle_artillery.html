@@ -1,0 +1,1094 @@
+<!-- 각도기 포격전 (Angle Artillery) Gen-3 표준 완결판 - 고대비 디자인 & 호도법 도전 모드 & 명예의 전당 완비 -->
+<style>
+  .game-angle-artillery {
+    width: 100%;
+    min-height: 100%;
+    padding: 24px;
+    box-sizing: border-box;
+    color: #ffffff;
+    background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #172554 100%);
+    border-radius: 24px;
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+    user-select: none;
+    -webkit-user-select: none;
+    border: 3px solid #3b82f6;
+    box-shadow: inset 0 0 50px rgba(0,0,0,0.8);
+  }
+
+  .game-angle-artillery * { box-sizing: border-box; }
+  
+  /* 고대비 가독성 극대화 상단 헤더 */
+  .game-angle-artillery .aa-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; flex-wrap: wrap; gap: 14px; }
+  .game-angle-artillery .title-area h2 { 
+    margin: 0 0 8px; 
+    font-size: clamp(1.8rem, 3vw, 2.5rem); 
+    color: #ffffff !important; 
+    font-weight: 900; 
+    display: flex; 
+    align-items: center; 
+    gap: 12px; 
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.8), 0 4px 10px rgba(0,0,0,0.8); 
+  }
+  .game-angle-artillery .title-area p { 
+    margin: 0; 
+    color: #fef08a !important; 
+    font-size: 1.15rem; 
+    font-weight: 800; 
+    text-shadow: 0 2px 4px rgba(0,0,0,0.7); 
+  }
+  .game-angle-artillery .stats-bar { display: flex; gap: 12px; font-weight: 800; font-size: 1.05rem; flex-wrap: wrap; align-items: center; }
+  
+  .game-angle-artillery .stat-badge { 
+    background: #0f172a; 
+    padding: 10px 18px; 
+    border-radius: 16px; 
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5); 
+    border: 2px solid #60a5fa; 
+    color: #ffffff; 
+    display: flex; 
+    align-items: center; 
+    gap: 8px; 
+    font-weight: 900; 
+    font-size: 1.1rem;
+  }
+  .game-angle-artillery .stat-badge.score { color: #fef08a; border-color: #f59e0b; background: #271c14; }
+  .game-angle-artillery .stat-badge.stage { color: #ffffff; border-color: #38bdf8; background: #0f172a; }
+  .game-angle-artillery .stat-badge.ammo { color: #fca5a5; border-color: #ef4444; background: #451a1a; }
+  
+  @keyframes aaHowtoPulse {
+    0% { transform: scale(1); box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4); }
+    50% { transform: scale(1.05); box-shadow: 0 6px 20px rgba(59, 130, 246, 0.9); }
+    100% { transform: scale(1); box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4); }
+  }
+  .game-angle-artillery .btn-howto {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: #ffffff !important;
+    border: 2px solid #93c5fd;
+    padding: 12px 22px;
+    border-radius: 16px;
+    font-size: 1.1rem;
+    font-weight: 900;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+    animation: aaHowtoPulse 2.5s infinite;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+  }
+  .game-angle-artillery .btn-howto:hover {
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 8px 24px rgba(59, 130, 246, 0.8);
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    animation: none;
+  }
+
+  .game-angle-artillery .main-layout { display: flex; gap: 24px; flex-wrap: wrap; }
+  .game-angle-artillery .game-area { flex: 1; min-width: 320px; display: flex; flex-direction: column; gap: 20px; }
+  .game-angle-artillery .card { background: #0f172a; border-radius: 20px; padding: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.6); border: 2px solid #3b82f6; }
+  
+  /* 포격 보드 컨테이너 */
+  .game-angle-artillery .board-card {
+    background: radial-gradient(circle at center, #1e1b4b 0%, #090d16 80%);
+    border: 4px solid #3b82f6;
+    border-radius: 28px;
+    padding: 22px;
+    text-align: center;
+    position: relative;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.7), inset 0 0 30px rgba(59, 130, 246, 0.3);
+  }
+
+  .game-angle-artillery .mission-tag { 
+    font-size: 1.15rem; 
+    font-weight: 900; 
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); 
+    color: #ffffff !important; 
+    padding: 10px 24px; 
+    border-radius: 24px; 
+    display: inline-block; 
+    margin-bottom: 18px; 
+    border: 2px solid #fef08a; 
+    box-shadow: 0 6px 15px rgba(245, 158, 11, 0.5); 
+    text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+  }
+
+  /* SVG 보드 래퍼 */
+  .game-angle-artillery .svg-wrapper {
+    width: 100%;
+    max-width: 640px;
+    margin: 0 auto 16px;
+    background: #060913;
+    border-radius: 20px;
+    border: 2px solid #475569;
+    box-shadow: inset 0 0 30px rgba(0,0,0,0.9);
+    overflow: hidden;
+    position: relative;
+  }
+  .game-angle-artillery svg { width: 100%; height: auto; display: block; }
+
+  /* 조작 및 각도 입력 패널 */
+  .game-angle-artillery .control-panel {
+    background: #1e293b;
+    border: 2px solid #3b82f6;
+    border-radius: 22px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+  }
+  
+  .game-angle-artillery .angle-input-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  
+  .game-angle-artillery .slider-box {
+    flex: 1;
+    min-width: 220px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #0f172a;
+    padding: 12px 18px;
+    border-radius: 16px;
+    border: 1px solid #475569;
+  }
+  .game-angle-artillery input[type="range"] {
+    flex: 1;
+    height: 10px;
+    accent-color: #3b82f6;
+    cursor: pointer;
+  }
+
+  .game-angle-artillery .number-input-box {
+    display: flex;
+    align-items: center;
+    background: #0f172a;
+    border: 2px solid #60a5fa;
+    border-radius: 16px;
+    padding: 6px 14px;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+  }
+  .game-angle-artillery input[type="number"] {
+    width: 70px;
+    background: transparent;
+    border: none;
+    color: #fef08a;
+    font-size: 1.6rem;
+    font-weight: 900;
+    text-align: center;
+    outline: none;
+  }
+  .game-angle-artillery .unit-label {
+    color: #ffffff;
+    font-size: 1.4rem;
+    font-weight: 900;
+    margin-left: 4px;
+  }
+
+  .game-angle-artillery .btn-fire {
+    background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+    color: #ffffff !important;
+    border: 2px solid #fca5a5;
+    padding: 16px 36px;
+    font-size: 1.4rem;
+    font-weight: 900;
+    border-radius: 18px;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(239, 68, 68, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.15s;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.6);
+  }
+  .game-angle-artillery .btn-fire:hover:not(:disabled) {
+    transform: translateY(-3px) scale(1.03);
+    box-shadow: 0 10px 28px rgba(239, 68, 68, 0.9);
+    background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+  }
+  .game-angle-artillery .btn-fire:active:not(:disabled) { transform: translateY(1px); }
+  .game-angle-artillery .btn-fire:disabled { opacity: 0.4; cursor: not-allowed; border-color: #475569; background: #334155; box-shadow: none; }
+
+  .game-angle-artillery .power-toggle { display: flex; gap: 8px; justify-content: center; align-items: center; }
+  .game-angle-artillery .power-btn {
+    padding: 8px 16px;
+    background: #0f172a;
+    border: 2px solid #475569;
+    color: #cbd5e1;
+    font-weight: 800;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .game-angle-artillery .power-btn.active {
+    background: #3b82f6;
+    border-color: #93c5fd;
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.5);
+  }
+
+  .game-angle-artillery .feedback-area {
+    margin-top: 16px;
+    padding: 18px;
+    border-radius: 18px;
+    font-weight: 800;
+    font-size: 1.25rem;
+    line-height: 1.6;
+    display: none;
+  }
+  .game-angle-artillery .feedback-area.show { display: block; animation: fadeIn 0.3s; }
+  .game-angle-artillery .feedback-area.hit { background: #064e3b; border: 2px solid #34d399; color: #ffffff; }
+  .game-angle-artillery .feedback-area.miss { background: #451a1a; border: 2px solid #f87171; color: #ffffff; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+
+  .game-angle-artillery .sidebar { width: 320px; display: flex; flex-direction: column; gap: 16px; flex-shrink: 0; }
+  @media (max-width: 768px) { .game-angle-artillery .sidebar { width: 100%; } }
+
+  .game-angle-artillery .diff-selector { display: flex; gap: 6px; background: #090d16; border-radius: 16px; padding: 6px; border: 2px solid #3b82f6; }
+  .game-angle-artillery .diff-btn { flex: 1; padding: 12px 6px; border: none; border-radius: 12px; font-weight: 900; font-size: 0.9rem; cursor: pointer; color: #cbd5e1; background: transparent; transition: all 0.2s; }
+  .game-angle-artillery .diff-btn.active { background: #3b82f6; color: #ffffff !important; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+
+  .game-angle-artillery .rank-item {
+    display: flex; justify-content: space-between; align-items: center;
+    background: #0f172a; border: 1px solid #3b82f6;
+    padding: 12px 16px; border-radius: 14px; margin-bottom: 8px;
+    font-size: 1rem; color: #ffffff; font-weight: 800;
+  }
+  .game-angle-artillery .rank-num { color: #fbbf24; font-weight: 900; margin-right: 8px; }
+  .game-angle-artillery .rank-score { color: #38bdf8; font-weight: 900; }
+  
+  .game-angle-artillery .btn-secondary { background: #1e293b; color: #ffffff !important; border: 2px solid #3b82f6; padding: 14px; font-size: 1.05rem; border-radius: 14px; cursor: pointer; font-weight: 900; transition: all 0.15s; }
+  .game-angle-artillery .btn-secondary:hover:not(:disabled) { background: #2563eb; border-color: #93c5fd; }
+</style>
+<script>
+(function() {
+  // 18개 스테이지 데이터 (쉬움 6문항, 보통 6문항, 도전(호도법) 6문항)
+  // 640x420 캔버스 기준: 포대는 좌측 하단 (x: 80, y: 360)에 고정
+  const STAGES = {
+    easy: [
+      { name: '초원 연습 표적', desc: '발사 각도 30° 근처를 겨냥해 첫 번째 타겟을 명중하세요!', targetX: 450, targetY: 360, targetR: 28, obsX: 250, obsH: 60, obsW: 40, idealAngle: 30 },
+      { name: '언덕 너머 요새', desc: '가로막힌 언덕을 넘기 위해 45° 각도로 포탄을 곡사 발사하세요.', targetX: 520, targetY: 360, targetR: 26, obsX: 300, obsH: 120, obsW: 50, idealAngle: 45 },
+      { name: '고지대 타겟전', desc: '높은 언덕 위에 위치한 타겟입니다. 60° 높은 각도로 사격하세요!', targetX: 400, targetY: 220, targetR: 30, obsX: 220, obsH: 100, obsW: 40, idealAngle: 60 },
+      { name: '원거리 해안포', desc: '멀리 떨어진 함선 타겟입니다. 가장 멀리 날아가는 최적 각도를 찾아보세요.', targetX: 560, targetY: 360, targetR: 25, obsX: 320, obsH: 80, obsW: 50, idealAngle: 40 },
+      { name: '근접 고각 사격', desc: '가까운 성벽 바로 뒤에 있는 타겟! 75° 고각으로 성벽을 넘기세요.', targetX: 280, targetY: 360, targetR: 28, obsX: 180, obsH: 160, obsW: 30, idealAngle: 75 },
+      { name: '계곡 틈새 요격', desc: '깊은 계곡 너머의 요새입니다. 각도기의 눈금을 잘 확인해 발사하세요.', targetX: 480, targetY: 280, targetR: 26, obsX: 280, obsH: 140, obsW: 45, idealAngle: 50 }
+    ],
+    normal: [
+      { name: '정밀 요격 작전 1', desc: '1° 단위 정밀 사격! 장애물을 스치듯 넘겨 타겟을 명중하세요.', targetX: 500, targetY: 340, targetR: 20, obsX: 280, obsH: 150, obsW: 40, idealAngle: 48 },
+      { name: '성곽 돌파 포격', desc: '높은 성벽이 앞을 가로막고 있습니다. 각도를 정밀하게 조율하세요.', targetX: 440, targetY: 300, targetR: 20, obsX: 250, obsH: 190, obsW: 40, idealAngle: 63 },
+      { name: '이중 언덕 넘기', desc: '거대한 언덕 둔덕 너머에 숨은 표적입니다.', targetX: 540, targetY: 360, targetR: 18, obsX: 320, obsH: 140, obsW: 60, idealAngle: 43 },
+      { name: '초고각 절벽 요격', desc: '깎아지른 절벽 바로 뒤의 표적입니다. 80° 고각 사격을 시도하세요.', targetX: 250, targetY: 360, targetR: 22, obsX: 160, obsH: 210, obsW: 30, idealAngle: 80 },
+      { name: '원거리 정밀 타격', desc: '작은 표적이 멀리 있습니다. 각도 1도의 오차도 허용되지 않습니다.', targetX: 580, targetY: 340, targetR: 16, obsX: 330, obsH: 110, obsW: 50, idealAngle: 41 },
+      { name: '움직이는 바람 요새', desc: '정밀한 포물선 곡률을 계산하여 타겟의 정중앙을 타격하세요.', targetX: 470, targetY: 250, targetR: 18, obsX: 270, obsH: 170, obsW: 45, idealAngle: 56 }
+    ],
+    hard: [
+      { name: '[호도법] π/6 (30°)', desc: '호도법 각도 π/6 라디안은 몇 도(°)일까요? 각도를 변환하여 발사하세요!', targetX: 450, targetY: 360, targetR: 22, obsX: 250, obsH: 70, obsW: 40, idealAngle: 30, radText: 'π / 6 rad' },
+      { name: '[호도법] π/4 (45°)', desc: '호도법 각도 π/4 라디안! 가장 멀리 날아가는 45° 각도입니다.', targetX: 530, targetY: 360, targetR: 20, obsX: 300, obsH: 130, obsW: 50, idealAngle: 45, radText: 'π / 4 rad' },
+      { name: '[호도법] π/3 (60°)', desc: '호도법 각도 π/3 라디안! 높은 장애물을 넘기는 60° 고각 사격입니다.', targetX: 410, targetY: 230, targetR: 20, obsX: 230, obsH: 120, obsW: 40, idealAngle: 60, radText: 'π / 3 rad' },
+      { name: '[호도법] 2π/9 (40°)', desc: '호도법 각도 2π/9 라디안(40°)을 계산하여 원거리 표적을 타격하세요.', targetX: 550, targetY: 360, targetR: 18, obsX: 310, obsH: 90, obsW: 45, idealAngle: 40, radText: '2π / 9 rad' },
+      { name: '[호도법] 5π/12 (75°)', desc: '호도법 각도 5π/12 라디안(75°)! 성벽 바로 뒤를 노리는 초고각 포격!', targetX: 280, targetY: 360, targetR: 20, obsX: 180, obsH: 170, obsW: 30, idealAngle: 75, radText: '5π / 12 rad' },
+      { name: '[호도법] 5π/18 (50°)', desc: '호도법 5π/18 라디안(50°)! 호도법 마스터를 위한 최종 관문입니다.', targetX: 480, targetY: 270, targetR: 18, obsX: 280, obsH: 150, obsW: 45, idealAngle: 50, radText: '5π / 18 rad' }
+    ]
+  };
+
+  const AngleArtillery = {
+    id: 'angle-artillery',
+    container: null,
+    state: {
+      difficulty: 'easy',
+      roundIdx: 0,
+      maxRounds: 6,
+      score: 0,
+      combo: 0,
+      angle: 45,
+      power: 'standard', // 'standard' (v0=82) or 'high' (v0=96)
+      ammo: 5,
+      isFiring: false,
+      isGameOver: false,
+      trail: [], // 포탄 궤적 좌표들 [{x, y}]
+      lastHitText: '',
+      animFrameId: null
+    },
+    timers: [],
+
+    mount(container, context) {
+      let target = null;
+      if (typeof container === 'string') target = document.querySelector(container);
+      else if (container instanceof HTMLElement) target = container;
+      if (!target) target = document.getElementById('mathlab-view') || document.getElementById('new-root') || document.getElementById('game-container');
+
+      // 💡 [자가 복구 엔진]
+      if (!target || target === document.body) {
+        let host = document.getElementById('angle-artillery-force-host');
+        if (!host) {
+          host = document.createElement('div'); host.id = 'angle-artillery-force-host';
+          host.style.cssText = 'width:100%; max-width:960px; margin:0 auto; padding:20px 10px; box-sizing:border-box; z-index:999; position:relative; background:#0f172a; min-height:650px; display:block; border-radius:24px;';
+          const header = document.querySelector('header, .navbar, #app-header, .top-bar');
+          if (header && header.parentNode) header.parentNode.insertBefore(host, header.nextSibling);
+          else document.body.appendChild(host);
+        }
+        target = host;
+      }
+
+      this.container = target;
+      this.container.style.display = 'block'; this.container.style.visibility = 'visible'; this.container.style.opacity = '1'; this.container.style.minHeight = '650px';
+
+      // 🌟 부모 DOM 트리 가시화 방어 (빈 화면 방지)
+      let parent = this.container.parentElement;
+      while (parent && parent !== document.body && parent !== document.documentElement) {
+        if (parent.style && parent.style.display === 'none') parent.style.display = 'block';
+        if (parent.style && parent.style.visibility === 'hidden') parent.style.visibility = 'visible';
+        parent = parent.parentElement;
+      }
+
+
+
+      this.restoreGlobalNavigation();
+      this.resetGame();
+    },
+
+    restoreGlobalNavigation() {
+      const navElements = document.querySelectorAll('header, .navbar, #app-header, .top-bar, #floating-home-btn, .floating-home, [id*="home"], [class*="floating"]');
+      navElements.forEach(el => { if (el && el.style && el.style.display === 'none') el.style.display = ''; });
+    },
+
+    setDifficulty(diff) {
+      if (this.state.difficulty === diff && !this.state.isGameOver && this.state.roundIdx === 0) return;
+      this.state.difficulty = diff;
+      this.resetGame();
+    },
+
+    resetGame() {
+      if (window.MathLabCleanup && typeof window.MathLabCleanup.clearTimers === 'function') {
+        window.MathLabCleanup.clearTimers(this.timers);
+      }
+      this.timers.forEach(clearTimeout);
+      this.timers = [];
+      if (this.state.animFrameId) { cancelAnimationFrame(this.state.animFrameId); this.state.animFrameId = null; }
+      
+      this.state.roundIdx = 0;
+      this.state.score = 0;
+      this.state.combo = 0;
+      this.state.isGameOver = false;
+      this.state.power = 'standard';
+      
+      this.setupRound();
+    },
+    
+    setupRound() {
+      const stageList = STAGES[this.state.difficulty] || STAGES.easy;
+      this.state.maxRounds = stageList.length;
+      
+      if (this.state.roundIdx >= stageList.length) {
+        this.gameOver(true);
+        return;
+      }
+
+      const curStage = stageList[this.state.roundIdx];
+      this.state.ammo = (this.state.difficulty === 'hard') ? 3 : 5;
+      this.state.isFiring = false;
+      this.state.trail = [];
+      this.state.angle = curStage ? (curStage.idealAngle || 45) : 45; // 초기 추천 각도로 시작
+      
+      this.render();
+    },
+
+    setAngle(val) {
+      if (this.state.isFiring || this.state.isGameOver) return;
+      let newAng = parseInt(val, 10);
+      if (isNaN(newAng)) newAng = 0;
+      newAng = Math.max(0, Math.min(90, newAng));
+      this.state.angle = newAng;
+      
+      const slider = this.container?.querySelector('#aa-angle-slider');
+      const numInput = this.container?.querySelector('#aa-angle-number');
+      if (slider && parseInt(slider.value, 10) !== newAng) slider.value = newAng;
+      if (numInput && parseInt(numInput.value, 10) !== newAng) numInput.value = newAng;
+      
+      this.updateSVG();
+    },
+
+    setPower(mode) {
+      if (this.state.isFiring || this.state.isGameOver) return;
+      this.state.power = mode;
+      const root = this.container?.querySelector('.game-angle-artillery');
+      root?.querySelectorAll('.power-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-power') === mode);
+      });
+    },
+
+    // 포물선 발사 시뮬레이션
+    fireArtillery() {
+      if (this.state.isFiring || this.state.isGameOver || this.state.ammo <= 0) return;
+      
+      this.state.isFiring = true;
+      this.state.ammo--;
+      this.state.trail = [];
+      this.updateStatsUI();
+      
+      const btnFire = this.container?.querySelector('#aa-btn-fire');
+      if (btnFire) btnFire.disabled = true;
+      
+      const stageList = STAGES[this.state.difficulty] || STAGES.easy;
+      const curStage = stageList[this.state.roundIdx];
+      
+      // 물리 초기 조건 (x0=80, y0=360)
+      const x0 = 80;
+      const y0 = 360;
+      const rad = (this.state.angle * Math.PI) / 180;
+      
+      // 속도 설정: 각 난이도별 최적 각도에서 타겟에 도달하도록 v0 계산
+      let v0 = 82;
+      if (curStage) {
+        // 이상적인 각도 curStage.idealAngle 에서 targetX, targetY에 명중하도록 v0 맞춤
+        const idealRad = (curStage.idealAngle * Math.PI) / 180;
+        const dx = curStage.targetX - x0;
+        const dy = y0 - curStage.targetY; // SVG 상단이 0이므로 상향이 +dy
+        const g = 18; // 캔버스 스케일 중력 상수
+        // 포물선 공식: dy = dx * tan(theta) - (g * dx^2) / (2 * v0^2 * cos^2(theta))
+        // v0^2 = (g * dx^2) / [2 * cos^2(theta) * (dx * tan(theta) - dy)]
+        const denom = 2 * Math.pow(Math.cos(idealRad), 2) * (dx * Math.tan(idealRad) - dy);
+        if (denom > 0) {
+          v0 = Math.sqrt((g * Math.pow(dx, 2)) / denom);
+        }
+      }
+      if (this.state.power === 'high') v0 *= 1.15;
+      
+      const vx = v0 * Math.cos(rad);
+      const vy = v0 * Math.sin(rad);
+      const g = 18; // 중력 상수
+      
+      let t = 0;
+      const dt = 0.08;
+      
+      const step = () => {
+        t += dt;
+        const curX = x0 + vx * t;
+        const curY = y0 - (vy * t - 0.5 * g * t * t);
+        
+        this.state.trail.push({ x: curX, y: curY });
+        this.updateSVG();
+        
+        // 1. 바닥 또는 화면 밖 탈출 판정
+        if (curY >= 370 || curX >= 640) {
+          this.handleImpact(curX, curY, false, 'ground');
+          return;
+        }
+        
+        // 2. 장애물 충돌 판정
+        if (curStage) {
+          const obsLeft = curStage.obsX - curStage.obsW / 2;
+          const obsRight = curStage.obsX + curStage.obsW / 2;
+          const obsTop = 360 - curStage.obsH;
+          if (curX >= obsLeft && curX <= obsRight && curY >= obsTop && curY <= 360) {
+            this.handleImpact(curX, curY, false, 'obstacle');
+            return;
+          }
+        }
+        
+        // 3. 타겟 명중 판정
+        if (curStage) {
+          const dist = Math.hypot(curX - curStage.targetX, curY - curStage.targetY);
+          if (dist <= curStage.targetR + 12) {
+            this.handleImpact(curStage.targetX, curStage.targetY, true, 'target');
+            return;
+          }
+        }
+        
+        this.state.animFrameId = requestAnimationFrame(step);
+      };
+      
+      this.state.animFrameId = requestAnimationFrame(step);
+    },
+
+    handleImpact(x, y, isHit, hitType) {
+      this.state.isFiring = false;
+      const stageList = STAGES[this.state.difficulty] || STAGES.easy;
+      const curStage = stageList[this.state.roundIdx];
+      
+      const feedbackEl = this.container?.querySelector('.feedback-area');
+      
+      if (isHit) {
+        this.state.combo++;
+        let pts = 10;
+        if (this.state.ammo === ((this.state.difficulty === 'hard') ? 2 : 4)) pts += 5; // 첫 발 명중 보너스
+        pts += (this.state.combo - 1) * 3; // 콤보 보너스
+        this.state.score += pts;
+        
+        if (feedbackEl) {
+          feedbackEl.className = 'feedback-area show hit';
+          feedbackEl.innerHTML = `
+            🎉 🎯 <strong>정확하게 명중했습니다! (+${pts}점)</strong><br>
+            발사 각도 <strong>${this.state.angle}°</strong>의 포물선이 장애물 너머 요새를 타격했습니다! ${this.state.combo > 1 ? `(🔥 ${this.state.combo}연속 명중!)` : ''}
+          `;
+        }
+        
+        this.updateStatsUI();
+        const t = setTimeout(() => {
+          this.state.roundIdx++;
+          this.setupRound();
+        }, 2200);
+        this.timers.push(t);
+      } else {
+        this.state.combo = 0;
+        let diffMsg = '';
+        if (curStage) {
+          if (hitType === 'obstacle') {
+            diffMsg = `💥 장애물 벽에 가로막혔습니다! 고각으로 넘기기 위해 <strong>더 큰 각도(↑)</strong>를 입력해 보세요!`;
+          } else if (x < curStage.targetX - 20) {
+            diffMsg = `포탄이 타겟보다 <strong>앞에 떨어졌습니다.</strong> 각도를 더 조율해 포탄을 더 멀리 보내세요!`;
+          } else {
+            diffMsg = `포탄이 타겟을 <strong>넘어가 떨어졌습니다.</strong> 각도를 조절하여 궤적을 수정하세요!`;
+          }
+        }
+        
+        if (feedbackEl) {
+          feedbackEl.className = 'feedback-area show miss';
+          feedbackEl.innerHTML = `
+            ❌ <strong>아깝게 빗나갔습니다!</strong><br>
+            ${diffMsg} (남은 포탄: <strong style="color:#fca5a5;">${this.state.ammo}발</strong>)
+          `;
+        }
+        
+        this.updateStatsUI();
+        const btnFire = this.container?.querySelector('#aa-btn-fire');
+        if (btnFire) btnFire.disabled = (this.state.ammo <= 0);
+        
+        if (this.state.ammo <= 0) {
+          const t = setTimeout(() => {
+            if (feedbackEl) {
+              feedbackEl.className = 'feedback-area show miss';
+              feedbackEl.innerHTML = `💥 <strong>탄약 소진! 라운드 실패!</strong><br>모든 포탄을 사용했습니다. 다음 스테이지로 넘어갑니다.`;
+            }
+            const t2 = setTimeout(() => {
+              this.state.roundIdx++;
+              this.setupRound();
+            }, 2000);
+            this.timers.push(t2);
+          }, 1500);
+          this.timers.push(t);
+        }
+      }
+    },
+
+    gameOver(cleared) {
+      if (cleared && !this.state.isGameOver) {
+        this.state.score += 50; // 최종 클리어 보너스
+      }
+      this.state.isGameOver = true;
+      if (this.state.animFrameId) { cancelAnimationFrame(this.state.animFrameId); this.state.animFrameId = null; }
+      this.render();
+      
+      if (this.state.score > 0) {
+        const t = setTimeout(() => {
+          this.showInlineRankingModal('board-angle-artillery', this.state.score, { cleared: cleared, difficulty: this.state.difficulty });
+        }, 600);
+        this.timers.push(t);
+      }
+    },
+
+    showHowToPlayModal() {
+      document.getElementById('mathlab-aa-howto-modal')?.remove();
+      const modalHtml = `
+        <div id="mathlab-aa-howto-modal" style="position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(15,23,42,0.88); backdrop-filter:blur(8px); display:flex; align-items:center; justify-content:center; z-index:999999; padding:20px; box-sizing:border-box; font-family:'Pretendard',sans-serif; animation: fadeIn 0.3s;">
+          <div style="background:#0f172a; border-radius:28px; padding:32px 28px; max-width:640px; width:100%; max-height:85vh; overflow-y:auto; box-shadow:0 25px 50px -12px rgba(0,0,0,0.8); border:4px solid #3b82f6; position:relative; color:#ffffff;">
+            
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #334155; padding-bottom:16px; margin-bottom:20px;">
+              <div style="display:flex; align-items:center; gap:12px;">
+                <span style="font-size:38px;">📐</span>
+                <div>
+                  <h2 style="margin:0; font-size:26px; font-weight:900; color:#ffffff !important; text-shadow:0 0 15px rgba(255,255,255,0.7);">각도기 포격전 게임 방법</h2>
+                  <p style="margin:4px 0 0; font-size:14px; color:#fef08a !important; font-weight:800;">발사 각도를 조율해 장애물 너머의 타겟을 명중하는 각도 감각 게임!</p>
+                </div>
+              </div>
+              <button id="aa-howto-close-top" style="background:#1e293b; border:none; width:44px; height:44px; border-radius:50%; font-size:22px; cursor:pointer; color:#ffffff; font-weight:bold; display:flex; align-items:center; justify-content:center; transition:background 0.2s;">✕</button>
+            </div>
+
+            <div style="display:flex; flex-direction:column; gap:16px; text-align:left; color:#ffffff;">
+              <div style="background:#1e1b4b; border-left:6px solid #8b5cf6; padding:18px; border-radius:14px; border: 1px solid #4f46e5;">
+                <h3 style="margin:0 0 8px; font-size:17px; color:#fef08a !important; font-weight:900;">🎯 1. 게임의 목표</h3>
+                <p style="margin:0; font-size:14.5px; line-height:1.6; font-weight:800; color:#ffffff;">화면 좌측 포대에서 발사 각도(°)를 설정하여, 중앙의 장애물(언덕/성벽)을 넘겨 우측의 타겟을 정확히 맞추세요!</p>
+              </div>
+
+              <!-- 💡 2번 항목: 수식을 KaTeX 전용 span 태그로 보호하여 부드럽고 정확하게 변환 -->
+              <div style="background:#0f172a; border:2px solid #60a5fa; padding:18px; border-radius:16px;">
+                <h3 style="margin:0 0 10px; font-size:17px; color:#38bdf8 !important; font-weight:900;">✨ 2. 각도기 읽기 및 발사 조작</h3>
+                <ul style="margin:0; padding-left:20px; font-size:14px; line-height:1.7; font-weight:800; color:#ffffff;">
+                  <li><strong>각도 조절:</strong> 하단의 슬라이더를 움직이거나 숫자를 직접 입력하면 포신의 각도가 움직입니다.</li>
+                  <li><strong>각도기 오버레이:</strong> 포대 위에 반투명 각도기가 겹쳐 보여 각도의 크기(<span class="katex-math" data-tex="0^\circ \sim 90^\circ">$0^\circ\sim 90^\circ$</span>)를 시각적으로 읽을 수 있습니다!</li>
+                  <li><strong>포물선 궤적:</strong> 포탄은 중력에 의해 곡선을 그리며 날아갑니다. 장애물 높이에 맞춰 고각/저각 사격을 결정하세요.</li>
+                </ul>
+              </div>
+
+              <!-- 💡 3번 항목: 파이 및 분수 표기를 정통 LaTeX 문법으로 분리 렌더링 -->
+              <div style="background:#271c14; border-left:6px solid #f59e0b; padding:18px; border-radius:14px; border: 1px solid #d97706;">
+                <h3 style="margin:0 0 8px; font-size:17px; color:#fef08a !important; font-weight:900;">🔥 3. 도전 모드 (호도법 π 표기)</h3>
+                <p style="margin:0; font-size:14px; line-height:1.6; font-weight:800; color:#ffffff;">
+                  도전 모드에서는 각도가 호도법(라디안)으로 제시됩니다!<br>
+                  💡 <strong>변환 팁:</strong> <span class="katex-math" data-tex="\pi = 180^\circ">$\pi = 180^\circ$</span>입니다. 예) <span class="katex-math" data-tex="\frac{\pi}{6} = 30^\circ">$\pi/6 = 30^\circ$</span>, <span class="katex-math" data-tex="\frac{\pi}{4} = 45^\circ">$\pi/4 = 45^\circ$</span>, <span class="katex-math" data-tex="\frac{\pi}{3} = 60^\circ">$\pi/3 = 60^\circ$</span>로 변환하여 발사하세요!
+                </p>
+              </div>
+            </div>
+
+            <button id="aa-howto-close-btn" style="width:100%; margin-top:24px; padding:18px; border-radius:16px; font-size:17px; font-weight:900; background:linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color:#ffffff !important; border:none; cursor:pointer; box-shadow:0 8px 20px rgba(59,130,246,0.5); transition:transform 0.15s;">
+              🚀 이해했습니다! 각도기 포격 개시
+            </button>
+
+          </div>
+        </div>
+      `;
+      document.body.insertAdjacentHTML('beforeend', modalHtml);
+      
+      // 💡 [핵심 추가]: 모달 생성 직후 내부의 모든 .katex-math 수식만 정밀 타겟팅하여 KaTeX 렌더링 수행!
+      const modalEl = document.getElementById('mathlab-aa-howto-modal');
+      if (modalEl) {
+        if (typeof katex !== 'undefined') {
+          modalEl.querySelectorAll('.katex-math').forEach(span => {
+            const tex = span.getAttribute('data-tex') || span.textContent.replace(/^\$|\$$/g, '').trim();
+            try {
+              katex.render(tex, span, { displayMode: false, throwOnError: false });
+            } catch(e) { console.warn('KaTeX render error:', e); }
+          });
+        } else if (typeof window.renderMathInElement === 'function') {
+          try { window.renderMathInElement(modalEl, false); } catch(e){}
+        }
+      }
+
+      const closeModal = () => document.getElementById('mathlab-aa-howto-modal')?.remove();
+      document.getElementById('aa-howto-close-top')?.addEventListener('click', closeModal);
+      document.getElementById('aa-howto-close-btn')?.addEventListener('click', closeModal);
+      document.getElementById('mathlab-aa-howto-modal')?.addEventListener('click', (e) => {
+        if (e.target.id === 'mathlab-aa-howto-modal') closeModal();
+      });
+    },
+
+    showInlineRankingModal(boardId, score, metadata) {
+      document.getElementById('mathlab-inline-ranking-modal')?.remove();
+      const gameName = '각도기 포격전';
+      const modalHtml = `
+        <div id="mathlab-inline-ranking-modal" style="position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(15,23,42,0.88); backdrop-filter:blur(8px); display:flex; align-items:center; justify-content:center; z-index:999999; padding:20px; box-sizing:border-box; font-family:'Pretendard',sans-serif;">
+          <div style="background:#0f172a; border-radius:26px; padding:30px 26px; max-width:420px; width:100%; box-shadow:0 20px 40px rgba(0,0,0,0.8); text-align:center; border:4px solid #3b82f6; color:#ffffff;">
+            <div style="font-size:46px; margin-bottom:10px;">📐🏆</div>
+            <h2 style="margin:0 0 8px; font-size:26px; font-weight:900; color:#ffffff !important; text-shadow:0 0 15px rgba(255,255,255,0.7);">명예의 전당 등록</h2>
+            <p style="margin:0 0 20px; font-size:15px; color:#fef08a !important; font-weight:800;">6개 포격 작전 도전을 마쳤습니다!<br>이름을 남겨 Top 5 엘리트 포병 랭킹에 도전하세요!</p>
+            <div style="background:#1e1b4b; border:2px solid #3b82f6; border-radius:18px; padding:16px; margin-bottom:20px;">
+              <div style="font-size:14px; color:#e0e7ff; font-weight:800; margin-bottom:4px;">🏆 최종 달성 점수</div>
+              <div style="font-size:36px; font-weight:900; color:#fbbf24;">${score} <span style="font-size:20px;">점</span></div>
+            </div>
+            <input type="text" id="inline-rank-nickname" placeholder="포병지휘관 닉네임 (예: 각도마스터)" maxlength="10" style="width:100%; padding:14px 16px; font-size:16px; font-weight:800; border:2px solid #60a5fa; background:#1e293b; color:#ffffff; border-radius:14px; outline:none; text-align:center; margin-bottom:20px; box-sizing:border-box;">
+            <div style="display:flex; gap:10px;">
+              <button id="inline-rank-cancel" style="flex:1; padding:14px; border-radius:14px; font-size:15px; font-weight:800; background:#1e293b; color:#ffffff; border:1px solid #60a5fa; cursor:pointer;">건너뛰기</button>
+              <button id="inline-rank-submit" style="flex:2; padding:14px; border-radius:14px; font-size:15px; font-weight:900; background:linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color:#ffffff !important; border:none; cursor:pointer; box-shadow:0 4px 10px rgba(59,130,246,0.5);">🚀 등록하기</button>
+            </div>
+          </div>
+        </div>
+      `;
+      document.body.insertAdjacentHTML('beforeend', modalHtml);
+      const inputEl = document.getElementById('inline-rank-nickname'); if (inputEl) inputEl.focus();
+      const closeAndClean = () => document.getElementById('mathlab-inline-ranking-modal')?.remove();
+      document.getElementById('inline-rank-cancel')?.addEventListener('click', closeAndClean);
+      const doSubmit = () => {
+        let nickname = (inputEl?.value.trim() || '각도마스터');
+        
+        if (typeof window.submitRanking === 'function') {
+          try { window.submitRanking(gameName, score, true, nickname, boardId); } catch(e){}
+        } else if (typeof google !== 'undefined' && google.script && google.script.run && typeof google.script.run.saveGameScore === 'function') {
+          try {
+            const sheetId = (typeof getLeaderboardSheetId === 'function') ? getLeaderboardSheetId() : '';
+            const meta = (typeof getLeaderboardMeta === 'function') ? getLeaderboardMeta() : {};
+            google.script.run.withSuccessHandler(() => { this.loadLeaderboard(); }).saveGameScore(sheetId, gameName, nickname, score, true, meta);
+          } catch(e){}
+        }
+
+        let ranks = JSON.parse(localStorage.getItem(`rank_${boardId}`) || '[]');
+        ranks.push({ ...(metadata || {}), nickname: nickname, score: score, date: new Date().toISOString() });
+        ranks.sort((a, b) => (b.score || 0) - (a.score || 0));
+        localStorage.setItem(`rank_${boardId}`, JSON.stringify(ranks.slice(0, 50)));
+        closeAndClean(); this.loadLeaderboard();
+      };
+      document.getElementById('inline-rank-submit')?.addEventListener('click', doSubmit);
+      inputEl?.addEventListener('keydown', (e) => { if (e.key === 'Enter') doSubmit(); });
+    },
+
+    updateStatsUI() {
+      const root = this.container?.querySelector('.game-angle-artillery');
+      if (!root) return;
+      const scoreEl = root.querySelector('.score-val'); if (scoreEl) scoreEl.textContent = `${this.state.score}점`;
+      const ammoEl = root.querySelector('.ammo-val'); if (ammoEl) ammoEl.textContent = `${this.state.ammo}발`;
+    },
+
+    updateSVG() {
+      const root = this.container?.querySelector('.game-angle-artillery');
+      if (!root) return;
+      const svgEl = root.querySelector('#aa-svg-canvas');
+      if (!svgEl) return;
+
+      const stageList = STAGES[this.state.difficulty] || STAGES.easy;
+      const curStage = stageList[this.state.roundIdx] || stageList[0];
+      
+      const x0 = 80;
+      const y0 = 360;
+
+      // 1. 반투명 각도기 오버레이 렌더링 (중심 x0, y0, 반지름 100)
+      let protractorHtml = `
+        <g class="protractor-layer" opacity="0.65">
+          <path d="M ${x0 - 10} ${y0} A 110 110 0 0 1 ${x0 + 110} ${y0} Z" fill="rgba(30, 41, 59, 0.7)" stroke="#60a5fa" stroke-width="2" />
+          <path d="M ${x0} ${y0} A 100 100 0 0 1 ${x0 + 100} ${y0}" fill="none" stroke="#93c5fd" stroke-width="2" stroke-dasharray="4,3" />
+      `;
+      
+      // 각도기 눈금 (0, 30, 45, 60, 90도)
+      [0, 15, 30, 45, 60, 75, 90].forEach(deg => {
+        const rad = (deg * Math.PI) / 180;
+        const x1 = x0 + 90 * Math.cos(rad);
+        const y1 = y0 - 90 * Math.sin(rad);
+        const x2 = x0 + 105 * Math.cos(rad);
+        const y2 = y0 - 105 * Math.sin(rad);
+        const tx = x0 + 118 * Math.cos(rad);
+        const ty = y0 - 118 * Math.sin(rad);
+        protractorHtml += `
+          <line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#fef08a" stroke-width="2" />
+          <text x="${tx}" y="${ty + 4}" font-size="11" font-weight="900" fill="#ffffff" text-anchor="middle">${deg}°</text>
+        `;
+      });
+      protractorHtml += `</g>`;
+
+      // 2. 포대 및 회전 포신 렌더링
+      const barrelRad = (this.state.angle * Math.PI) / 180;
+      const barrelLen = 70;
+      const bx = x0 + barrelLen * Math.cos(barrelRad);
+      const by = y0 - barrelLen * Math.sin(barrelRad);
+      
+      const cannonHtml = `
+        <!-- 바퀴 및 포대 바닥 -->
+        <circle cx="${x0}" cy="${y0 + 4}" r="22" fill="#334155" stroke="#60a5fa" stroke-width="3" />
+        <circle cx="${x0}" cy="${y0 + 4}" r="8" fill="#94a3b8" />
+        <!-- 회전 포신 -->
+        <line x1="${x0}" y1="${y0}" x2="${bx}" y2="${by}" stroke="#ef4444" stroke-width="14" stroke-linecap="round" />
+        <line x1="${x0}" y1="${y0}" x2="${bx}" y2="${by}" stroke="#fca5a5" stroke-width="6" stroke-linecap="round" />
+      `;
+
+      // 3. 장애물 (언덕/성벽)
+      let obsHtml = '';
+      if (curStage) {
+        const obsLeft = curStage.obsX - curStage.obsW / 2;
+        const obsTop = 360 - curStage.obsH;
+        obsHtml = `
+          <g class="obstacle">
+            <rect x="${obsLeft}" y="${obsTop}" width="${curStage.obsW}" height="${curStage.obsH}" rx="6" fill="url(#obsGrad)" stroke="#64748b" stroke-width="3" />
+            <text x="${curStage.obsX}" y="${obsTop - 10}" font-size="13" font-weight="900" fill="#cbd5e1" text-anchor="middle">🚧 성벽 (${curStage.obsH}m)</text>
+          </g>
+        `;
+      }
+
+      // 4. 타겟 (요새)
+      let targetHtml = '';
+      if (curStage) {
+        targetHtml = `
+          <g class="target" transform="translate(${curStage.targetX}, ${curStage.targetY})">
+            <circle cx="0" cy="0" r="${curStage.targetR}" fill="rgba(239, 68, 68, 0.25)" stroke="#ef4444" stroke-width="3" />
+            <circle cx="0" cy="0" r="${curStage.targetR * 0.6}" fill="#f59e0b" stroke="#ffffff" stroke-width="2" />
+            <circle cx="0" cy="0" r="${curStage.targetR * 0.25}" fill="#ffffff" />
+            <text x="0" y="${-curStage.targetR - 10}" font-size="14" font-weight="900" fill="#fef08a" text-anchor="middle">🎯 목표</text>
+          </g>
+        `;
+      }
+
+      // 5. 포탄 궤적 잔상
+      let trailHtml = '';
+      if (this.state.trail && this.state.trail.length > 1) {
+        const pointsStr = this.state.trail.map(p => `${p.x},${p.y}`).join(' ');
+        trailHtml += `<polyline points="${pointsStr}" fill="none" stroke="#fbbf24" stroke-width="4" stroke-dasharray="6,4" opacity="0.85" />`;
+        const lastP = this.state.trail[this.state.trail.length - 1];
+        trailHtml += `<circle cx="${lastP.x}" cy="${lastP.y}" r="8" fill="#ffffff" stroke="#ef4444" stroke-width="3" />`;
+      }
+
+      svgEl.innerHTML = `
+        <defs>
+          <linearGradient id="obsGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#475569" />
+            <stop offset="100%" stop-color="#1e293b" />
+          </linearGradient>
+        </defs>
+        <!-- 지면선 -->
+        <line x1="0" y1="365" x2="640" y2="365" stroke="#60a5fa" stroke-width="4" />
+        <rect x="0" y="367" width="640" height="53" fill="#0f172a" />
+        <text x="320" y="395" font-size="14" font-weight="900" fill="#64748b" text-anchor="middle">📍 사격장 지면 (0m)</text>
+        
+        ${protractorHtml}
+        ${obsHtml}
+        ${targetHtml}
+        ${trailHtml}
+        ${cannonHtml}
+      `;
+    },
+
+    render() {
+      const isCleared = this.state.roundIdx >= this.state.maxRounds;
+      const stageList = STAGES[this.state.difficulty] || STAGES.easy;
+      const curStage = stageList[this.state.roundIdx] || stageList[0];
+
+      const html = `
+        <div class="game-angle-artillery">
+          <div class="aa-header">
+            <div class="title-area">
+              <h2>📐 각도기 포격전 (Angle Artillery)</h2>
+              <p>발사 각도를 정밀하게 조율하여 장애물 너머의 표적을 맞추세요!</p>
+            </div>
+            <div class="stats-bar">
+              <button class="btn-howto" id="aa-btn-howto-top">❓ 게임 방법 가이드</button>
+              <div class="stat-badge stage">🚩 작전: ${Math.min(this.state.roundIdx + 1, this.state.maxRounds)}/${this.state.maxRounds} (${curStage?.name || ''})</div>
+              <div class="stat-badge score"><span class="score-val">${this.state.score}점</span></div>
+              <div class="stat-badge ammo">💣 남은 포탄: <span class="ammo-val">${this.state.ammo}발</span></div>
+            </div>
+          </div>
+          
+          <div class="main-layout">
+            <div class="game-area">
+              ${this.state.isGameOver ? `
+                <div class="card" style="text-align:center; padding: 40px;">
+                  <h3 style="font-size: 2.4rem; color: #ffffff !important; margin-top: 0; text-shadow:0 0 15px rgba(255,255,255,0.7);">${isCleared ? '🏆 전설의 엘리트 포병 지휘관 달성!' : '💥 탄약 소진! 작전을 다시 시도하세요!'}</h3>
+                  <p style="font-size: 1.4rem; color: #f8fafc; font-weight: 800;">최종 달성 점수: <strong style="color:#fef08a;">${this.state.score}점</strong></p>
+                  <button class="btn-howto" id="aa-btn-restart-big" style="margin: 24px auto 0; max-width: 280px; padding: 18px; font-size: 1.3rem; justify-content:center;">🔄 새 포격 작전 시작</button>
+                </div>
+              ` : `
+                <div class="board-card">
+                  <div class="mission-tag">✨ ${curStage?.name || ''} : ${curStage?.desc || ''}</div>
+                  
+                  <div class="svg-wrapper">
+                    <svg id="aa-svg-canvas" viewBox="0 0 640 420"></svg>
+                  </div>
+                  
+                  <div class="control-panel">
+                    ${this.state.difficulty === 'hard' ? `
+                      <div style="background:#451a1a; border:2px solid #ef4444; padding:12px; border-radius:14px; color:#fef08a; font-size:1.2rem; font-weight:900;">
+                        🔥 목표 각도(호도법): <span style="color:#ffffff; font-size:1.5rem; text-decoration:underline;">${curStage?.radText || ''}</span> ➔ 도(°)로 변환하여 사격하세요!
+                      </div>
+                    ` : ''}
+                    
+                    <div class="angle-input-row">
+                      <div class="slider-box">
+                        <span style="font-size:1.2rem; font-weight:900; color:#93c5fd;">📐 발사 각도:</span>
+                        <input type="range" id="aa-angle-slider" min="0" max="90" step="${this.state.difficulty === 'easy' ? '5' : '1'}" value="${this.state.angle}" ${this.state.isFiring ? 'disabled' : ''}>
+                      </div>
+                      <div class="number-input-box">
+                        <input type="number" id="aa-angle-number" min="0" max="90" step="1" value="${this.state.angle}" ${this.state.isFiring ? 'disabled' : ''}>
+                        <span class="unit-label">°</span>
+                      </div>
+                      <button class="btn-fire" id="aa-btn-fire" ${this.state.isFiring || this.state.ammo <= 0 ? 'disabled' : ''}>🚀 포탄 발사!</button>
+                    </div>
+
+                    ${this.state.difficulty === 'normal' ? `
+                      <div class="power-toggle">
+                        <span style="color:#cbd5e1; font-weight:800; font-size:1rem; margin-right:6px;">⚡ 화력 선택:</span>
+                        <button class="power-btn ${this.state.power === 'standard' ? 'active' : ''}" data-power="standard">일반 장약 (기본 파워)</button>
+                        <button class="power-btn ${this.state.power === 'high' ? 'active' : ''}" data-power="high">강력 장약 (하이 파워)</button>
+                      </div>
+                    ` : ''}
+                  </div>
+                </div>
+                
+                <div class="feedback-area"></div>
+              `}
+            </div>
+            
+            <div class="sidebar">
+              <div class="card" style="padding:18px;">
+                <h3 style="margin-top:0; font-size:1.2rem; color:#ffffff !important; margin-bottom:12px; text-shadow:0 0 10px rgba(255,255,255,0.5);">⚙️ 난이도 선택</h3>
+                <div class="diff-selector">
+                  <button class="diff-btn ${this.state.difficulty === 'easy' ? 'active' : ''}" data-diff="easy">쉬움 (5°단위)</button>
+                  <button class="diff-btn ${this.state.difficulty === 'normal' ? 'active' : ''}" data-diff="normal">보통 (1°정밀)</button>
+                  <button class="diff-btn ${this.state.difficulty === 'hard' ? 'active' : ''}" data-diff="hard">도전 (호도법)</button>
+                </div>
+              </div>
+
+              <div class="card" style="padding:18px;">
+                <h3 style="margin-top:0; font-size:1.2rem; border-bottom:2px solid #3b82f6; padding-bottom:12px; color:#ffffff !important; text-align:center; text-shadow:0 0 10px rgba(255,255,255,0.5);">🏆 명예의 전당 (Top 5)</h3>
+                <div id="board-angle-artillery">
+                  <p style="color:#94a3b8; font-size:1rem; text-align:center; margin:16px 0;">로딩 중...</p>
+                </div>
+              </div>
+              
+              <div class="card" style="padding:18px;">
+                <button class="btn-secondary" style="width:100%; margin-bottom:12px; padding:14px;" id="aa-btn-restart-side">🔄 처음부터 다시 작전</button>
+                <button class="btn-secondary" style="width:100%; padding:14px; background:#1d4ed8; color:#ffffff !important; border:none;" id="aa-btn-home">🏠 홈으로</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      this.container.innerHTML = html;
+      this.bindEvents();
+      this.updateSVG();
+      this.loadLeaderboard();
+    },
+
+    bindEvents() {
+      const root = this.container?.querySelector('.game-angle-artillery');
+      if (!root) return;
+      
+      const btnHowToTop = root.querySelector('#aa-btn-howto-top');
+      if (btnHowToTop) btnHowToTop.addEventListener('click', () => this.showHowToPlayModal());
+
+      root.querySelectorAll('.diff-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const diff = btn.getAttribute('data-diff');
+          this.setDifficulty(diff);
+        });
+      });
+
+      const slider = root.querySelector('#aa-angle-slider');
+      if (slider) {
+        slider.addEventListener('input', (e) => this.setAngle(e.target.value));
+        slider.addEventListener('change', (e) => this.setAngle(e.target.value));
+      }
+
+      const numInput = root.querySelector('#aa-angle-number');
+      if (numInput) {
+        numInput.addEventListener('input', (e) => {
+          let val = parseInt(e.target.value, 10);
+          if (!isNaN(val)) this.setAngle(val);
+        });
+      }
+
+      const btnFire = root.querySelector('#aa-btn-fire');
+      if (btnFire) btnFire.addEventListener('click', () => this.fireArtillery());
+
+      root.querySelectorAll('.power-btn').forEach(btn => {
+        btn.addEventListener('click', () => this.setPower(btn.getAttribute('data-power')));
+      });
+
+      const btnRestartBig = root.querySelector('#aa-btn-restart-big');
+      if (btnRestartBig) btnRestartBig.addEventListener('click', () => this.resetGame());
+      
+      const btnRestartSide = root.querySelector('#aa-btn-restart-side');
+      if (btnRestartSide) btnRestartSide.addEventListener('click', () => this.resetGame());
+
+      const keyHandler = (e) => {
+        if (!this.container || !document.body.contains(this.container)) {
+          window.removeEventListener('keydown', keyHandler);
+          return;
+        }
+        if (this.state.isFiring || this.state.isGameOver) return;
+
+        if (e.key === 'ArrowRight' || e.key === 'ArrowUp') {
+          e.preventDefault();
+          this.setAngle(this.state.angle + (this.state.difficulty === 'easy' ? 5 : 1));
+        } else if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') {
+          e.preventDefault();
+          this.setAngle(this.state.angle - (this.state.difficulty === 'easy' ? 5 : 1));
+        } else if (e.key === ' ' || e.key === 'Enter') {
+          e.preventDefault();
+          this.fireArtillery();
+        }
+      };
+      window.removeEventListener('keydown', this._keyHandler);
+      this._keyHandler = keyHandler;
+      window.addEventListener('keydown', this._keyHandler);
+
+      const btnHome = root.querySelector('#aa-btn-home');
+      if (btnHome) {
+        btnHome.addEventListener('click', (e) => {
+          e.preventDefault();
+          const topBottomHome = document.getElementById('mathlab-floating-home') || document.querySelector('#legacy-back-home-btn') || document.querySelector('.floating-home');
+          if (topBottomHome) topBottomHome.click();
+          else if (typeof window.MathLabRenderHome === 'function') window.MathLabRenderHome();
+          else if (typeof window.goHome === 'function') window.goHome();
+          else location.reload();
+        });
+      }
+    },
+
+    loadLeaderboard() {
+      try {
+        if (typeof window.loadGameLeaderboard === 'function') {
+          window.loadGameLeaderboard('각도기 포격전', true, 'board-angle-artillery');
+        } else {
+          const localRanks = JSON.parse(localStorage.getItem('rank_board-angle-artillery') || '[]');
+          this.renderRankList(localRanks.slice(0, 5));
+        }
+      } catch (e) {
+        console.error('[AngleArtillery] 명예의 전당 로드 오류:', e);
+        const localRanks = JSON.parse(localStorage.getItem('rank_board-angle-artillery') || '[]');
+        this.renderRankList(localRanks.slice(0, 5));
+      }
+    },
+
+    renderRankList(ranks) {
+      const el = this.container?.querySelector('#board-angle-artillery');
+      if (!el) return;
+
+      if (!ranks || ranks.length === 0) {
+        el.innerHTML = '<div style="text-align:center; color:#94a3b8; padding: 12px 0;">아직 등록된 랭킹이 없습니다. 첫 주인공이 되어보세요!</div>';
+        return;
+      }
+
+      const escapeHTML = (str) => {
+        if (!str) return '';
+        return String(str).replace(/[&<>"']/g, function(match) {
+          const escape = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+          return escape[match];
+        });
+      };
+      el.innerHTML = ranks.map((r, i) => `
+        <div class="rank-item">
+          <div><span class="rank-num">${i + 1}위</span> ${escapeHTML(r.nickname || '익명')}</div>
+          <div class="rank-score">${r.score || 0}점</div>
+        </div>
+      `).join('');
+    },
+
+    destroy() {
+      if (window.MathLabCleanup && typeof window.MathLabCleanup.clearTimers === 'function') {
+        window.MathLabCleanup.clearTimers(this.timers);
+      }
+      this.timers.forEach(clearTimeout);
+      this.timers = [];
+      if (this.state.animFrameId) { cancelAnimationFrame(this.state.animFrameId); this.state.animFrameId = null; }
+      if (this._keyHandler) window.removeEventListener('keydown', this._keyHandler);
+      document.getElementById('mathlab-inline-ranking-modal')?.remove();
+      document.getElementById('mathlab-aa-howto-modal')?.remove();
+      const host = document.getElementById('angle-artillery-force-host'); if (host) host.remove();
+      if (this.container) this.container.innerHTML = '';
+      this.container = null;
+    }
+  };
+
+  if (!window.MathLabGames) {
+    window.MathLabGames = {
+      registry: {},
+      register(app) { this.registry[app.id] = app; },
+      get(id) { return this.registry[id]; },
+      mount(id, container, context) {
+        if (this.registry[id]) this.registry[id].mount(container, context);
+      }
+    };
+  }
+  
+  if (typeof window.MathLabGames.register === 'function') {
+    if (!window.MathLabGames.get?.('angle-artillery')) {
+      window.MathLabGames.register(AngleArtillery);
+    }
+  }
+
+  window.launchAngleArtilleryGame = function() {
+    if (typeof window.MathLabGames !== 'undefined' && typeof window.MathLabGames.mount === 'function') {
+      try {
+        window.MathLabGames.mount('angle-artillery');
+        return;
+      } catch(e) {
+        console.warn('MathLabGames mount 실패, 직접 마운트 시도:', e);
+      }
+    }
+    const target = document.getElementById('mathlab-view') || document.getElementById('new-root') || document.body;
+    AngleArtillery.mount(target);
+  };
+})();
+</script>

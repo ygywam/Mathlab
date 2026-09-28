@@ -1,0 +1,2559 @@
+<style>
+  #euler-path-game,
+  #euler-path-game * {
+    box-sizing: border-box;
+  }
+
+  #euler-path-game {
+    width: 100%;
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 24px;
+    color: #1f2937;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+
+  #euler-path-game .ep-hero {
+    display: grid;
+    gap: 10px;
+    margin-bottom: 18px;
+    padding: 20px;
+    border-radius: 22px;
+    background: linear-gradient(135deg, #eef2ff 0%, #f8fafc 52%, #ecfeff 100%);
+    border: 1px solid rgba(99, 102, 241, 0.18);
+    box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
+  }
+
+  #euler-path-game .ep-title {
+    margin: 0;
+    font-size: clamp(1.5rem, 3vw, 2.2rem);
+    line-height: 1.2;
+    color: #111827;
+  }
+
+  #euler-path-game .ep-subtitle {
+    margin: 0;
+    color: #4b5563;
+    line-height: 1.65;
+  }
+
+  #euler-path-game .ep-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 280px;
+    gap: 16px;
+    align-items: start;
+  }
+
+  #euler-path-game .ep-panel {
+    border: 1px solid #e5e7eb;
+    border-radius: 20px;
+    background: #ffffff;
+    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.06);
+    overflow: hidden;
+  }
+
+  #euler-path-game .ep-board-wrap {
+    padding: 16px;
+  }
+
+  #euler-path-game .ep-board-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+
+  #euler-path-game .ep-puzzle-title {
+    margin: 0;
+    font-size: 1.05rem;
+    color: #111827;
+  }
+
+  #euler-path-game .ep-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 28px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #3730a3;
+    background: #eef2ff;
+  }
+
+  #euler-path-game .ep-svg {
+    width: 100%;
+    min-height: 360px;
+    border-radius: 18px;
+    background:
+      radial-gradient(circle at 15% 18%, rgba(129, 140, 248, 0.12), transparent 30%),
+      radial-gradient(circle at 85% 82%, rgba(45, 212, 191, 0.12), transparent 28%),
+      #f8fafc;
+    border: 1px solid #e5e7eb;
+    touch-action: manipulation;
+  }
+
+  #euler-path-game .ep-edge {
+    stroke: #94a3b8;
+    stroke-width: 7;
+    stroke-linecap: round;
+    transition: stroke 160ms ease, opacity 160ms ease;
+  }
+
+  #euler-path-game .ep-edge-hit {
+    stroke: transparent;
+    stroke-width: 28;
+    stroke-linecap: round;
+    cursor: pointer;
+  }
+
+  #euler-path-game .ep-edge-used {
+    stroke: #4f46e5;
+  }
+
+  #euler-path-game .ep-edge-available {
+    stroke: #f59e0b;
+  }
+
+  #euler-path-game .ep-node {
+    fill: #ffffff;
+    stroke: #334155;
+    stroke-width: 4;
+    cursor: pointer;
+    transition: transform 160ms ease, fill 160ms ease, stroke 160ms ease;
+  }
+
+  #euler-path-game .ep-node-current {
+    fill: #fef3c7;
+    stroke: #f59e0b;
+  }
+
+  #euler-path-game .ep-node-start {
+    fill: #dcfce7;
+    stroke: #22c55e;
+  }
+
+  #euler-path-game .ep-node-label {
+    font-size: 18px;
+    font-weight: 800;
+    fill: #1f2937;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  #euler-path-game .ep-side {
+    display: grid;
+    gap: 12px;
+  }
+
+  #euler-path-game .ep-card,
+  #euler-path-game .ep-leaderboard {
+    padding: 16px;
+    border: 1px solid #e5e7eb;
+    border-radius: 18px;
+    background: #ffffff;
+    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.05);
+  }
+
+  #euler-path-game .ep-card h3,
+  #euler-path-game .ep-leaderboard h3 {
+    margin: 0 0 10px;
+    font-size: 1rem;
+    color: #111827;
+  }
+
+  #euler-path-game .ep-status {
+    min-height: 48px;
+    padding: 12px;
+    border-radius: 14px;
+    background: #f8fafc;
+    color: #374151;
+    line-height: 1.5;
+    font-weight: 650;
+  }
+
+  #euler-path-game .ep-status.success {
+    background: #ecfdf5;
+    color: #047857;
+  }
+
+  #euler-path-game .ep-status.warn {
+    background: #fffbeb;
+    color: #92400e;
+  }
+
+  #euler-path-game .ep-status.danger {
+    background: #fef2f2;
+    color: #b91c1c;
+  }
+
+  #euler-path-game .ep-stats {
+    display: grid;
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  #euler-path-game .ep-stat {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 9px 10px;
+    border-radius: 12px;
+    background: #f9fafb;
+    color: #4b5563;
+    font-size: 0.92rem;
+  }
+
+  #euler-path-game .ep-stat strong {
+    color: #111827;
+  }
+
+  #euler-path-game .ep-buttons,
+  #euler-path-game .ep-levels {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  #euler-path-game button {
+    border: 0;
+    border-radius: 12px;
+    padding: 10px 12px;
+    font-weight: 800;
+    cursor: pointer;
+    color: #ffffff;
+    background: #4f46e5;
+    transition: transform 120ms ease, filter 120ms ease, background 120ms ease;
+  }
+
+  #euler-path-game button:hover {
+    filter: brightness(1.04);
+    transform: translateY(-1px);
+  }
+
+  #euler-path-game button:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+    transform: none;
+  }
+
+  #euler-path-game .ep-btn-secondary {
+    color: #374151;
+    background: #e5e7eb;
+  }
+
+  #euler-path-game .ep-btn-warn {
+    background: #f59e0b;
+  }
+
+  #euler-path-game .ep-btn-danger {
+    background: #ef4444;
+  }
+
+  #euler-path-game .ep-btn-level {
+    color: #3730a3;
+    background: #eef2ff;
+  }
+
+  #euler-path-game .ep-btn-level.active {
+    color: #ffffff;
+    background: #4f46e5;
+  }
+
+  #euler-path-game details {
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    background: #ffffff;
+    overflow: hidden;
+  }
+
+  #euler-path-game summary {
+    padding: 14px 16px;
+    cursor: pointer;
+    font-weight: 850;
+    color: #111827;
+    background: #f8fafc;
+  }
+
+  #euler-path-game .ep-detail-body {
+    padding: 14px 16px;
+    color: #4b5563;
+    line-height: 1.65;
+  }
+
+  #euler-path-game .ep-detail-body ul {
+    margin: 8px 0 0;
+    padding-left: 20px;
+  }
+
+  #euler-path-game .ep-bottom {
+    display: grid;
+    gap: 12px;
+    margin-top: 16px;
+  }
+
+  #euler-path-game .ep-leaderboard {
+    border-color: #fbbf24;
+  }
+
+  #euler-path-game .ep-leaderboard h3 {
+    text-align: center;
+  }
+
+  #euler-path-game #board-euler-path {
+    min-height: 48px;
+  }
+
+  @media (max-width: 820px) {
+    #euler-path-game {
+      padding: 16px;
+    }
+
+    #euler-path-game .ep-layout {
+      grid-template-columns: 1fr;
+    }
+
+    #euler-path-game .ep-svg {
+      min-height: 300px;
+    }
+  }
+</style>
+
+<script>
+(function () {
+  if (!window.MathLabGames) {
+    console.error('MathLabGames를 찾을 수 없습니다. js_registry include 위치를 확인하세요.');
+    return;
+  }
+
+  const GAME_NAME = '한붓그리기';
+  const BOARD_ID = 'board-euler-path';
+  const MAX_LIVES = 3;
+  const LEVEL_ORDER = ['easy', 'normal', 'hard'];
+  const LEVEL_LABELS = { easy: '쉬움', normal: '보통', hard: '어려움' };
+  const PUZZLES = [
+  {
+    "id": "easy-house",
+    "level": "easy",
+    "title": "집 모양 경로",
+    "nodes": [
+      {
+        "id": "A",
+        "x": 80,
+        "y": 210
+      },
+      {
+        "id": "B",
+        "x": 240,
+        "y": 210
+      },
+      {
+        "id": "C",
+        "x": 240,
+        "y": 90
+      },
+      {
+        "id": "D",
+        "x": 80,
+        "y": 90
+      },
+      {
+        "id": "E",
+        "x": 160,
+        "y": 35
+      }
+    ],
+    "edges": [
+      [
+        "C",
+        "B"
+      ],
+      [
+        "B",
+        "A"
+      ],
+      [
+        "A",
+        "D"
+      ],
+      [
+        "D",
+        "E"
+      ],
+      [
+        "E",
+        "C"
+      ],
+      [
+        "C",
+        "D"
+      ]
+    ],
+    "solutionPath": [
+      "C",
+      "B",
+      "A",
+      "D",
+      "E",
+      "C",
+      "D"
+    ],
+    "answerType": "possible",
+    "oddNodes": [
+      "C",
+      "D"
+    ],
+    "answerText": "가능 / 예시 순서: C → B → A → D → E → C → D"
+  },
+  {
+    "id": "easy-corridor",
+    "level": "easy",
+    "title": "긴 복도 경로",
+    "nodes": [
+      {
+        "id": "A",
+        "x": 45,
+        "y": 160
+      },
+      {
+        "id": "B",
+        "x": 100,
+        "y": 95
+      },
+      {
+        "id": "C",
+        "x": 160,
+        "y": 160
+      },
+      {
+        "id": "D",
+        "x": 220,
+        "y": 95
+      },
+      {
+        "id": "E",
+        "x": 280,
+        "y": 160
+      },
+      {
+        "id": "F",
+        "x": 220,
+        "y": 235
+      }
+    ],
+    "edges": [
+      [
+        "A",
+        "B"
+      ],
+      [
+        "B",
+        "C"
+      ],
+      [
+        "C",
+        "D"
+      ],
+      [
+        "D",
+        "E"
+      ],
+      [
+        "E",
+        "F"
+      ]
+    ],
+    "solutionPath": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F"
+    ],
+    "answerType": "possible",
+    "oddNodes": [
+      "A",
+      "F"
+    ],
+    "answerText": "가능 / 예시 순서: A → B → C → D → E → F"
+  },
+  {
+    "id": "easy-flag",
+    "level": "easy",
+    "title": "삼각 깃발",
+    "nodes": [
+      {
+        "id": "A",
+        "x": 85,
+        "y": 230
+      },
+      {
+        "id": "B",
+        "x": 85,
+        "y": 80
+      },
+      {
+        "id": "C",
+        "x": 230,
+        "y": 150
+      },
+      {
+        "id": "D",
+        "x": 230,
+        "y": 230
+      },
+      {
+        "id": "E",
+        "x": 160,
+        "y": 40
+      }
+    ],
+    "edges": [
+      [
+        "D",
+        "A"
+      ],
+      [
+        "A",
+        "B"
+      ],
+      [
+        "B",
+        "C"
+      ],
+      [
+        "C",
+        "A"
+      ],
+      [
+        "A",
+        "E"
+      ],
+      [
+        "E",
+        "C"
+      ],
+      [
+        "C",
+        "D"
+      ]
+    ],
+    "solutionPath": [
+      "D",
+      "A",
+      "B",
+      "C",
+      "A",
+      "E",
+      "C",
+      "D"
+    ],
+    "answerType": "possible",
+    "oddNodes": [],
+    "answerText": "가능 / 예시 순서: D → A → B → C → A → E → C → D"
+  },
+  {
+    "id": "easy-star-four",
+    "level": "easy",
+    "title": "네 갈래 별",
+    "nodes": [
+      {
+        "id": "O",
+        "x": 160,
+        "y": 160
+      },
+      {
+        "id": "A",
+        "x": 160,
+        "y": 40
+      },
+      {
+        "id": "B",
+        "x": 280,
+        "y": 160
+      },
+      {
+        "id": "C",
+        "x": 160,
+        "y": 280
+      },
+      {
+        "id": "D",
+        "x": 40,
+        "y": 160
+      }
+    ],
+    "edges": [
+      [
+        "O",
+        "A"
+      ],
+      [
+        "O",
+        "B"
+      ],
+      [
+        "O",
+        "C"
+      ],
+      [
+        "O",
+        "D"
+      ]
+    ],
+    "answerReason": "홀수 차수 정점이 4개 이상입니다.",
+    "answerType": "impossible",
+    "oddNodes": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "answerText": "불가능 / 홀수 차수 정점 4개: A, B, C, D"
+  },
+  {
+    "id": "easy-six-ends",
+    "level": "easy",
+    "title": "갈림길 복도",
+    "nodes": [
+      {
+        "id": "A",
+        "x": 45,
+        "y": 160
+      },
+      {
+        "id": "B",
+        "x": 115,
+        "y": 160
+      },
+      {
+        "id": "C",
+        "x": 185,
+        "y": 160
+      },
+      {
+        "id": "D",
+        "x": 255,
+        "y": 160
+      },
+      {
+        "id": "E",
+        "x": 185,
+        "y": 70
+      },
+      {
+        "id": "F",
+        "x": 255,
+        "y": 250
+      }
+    ],
+    "edges": [
+      [
+        "A",
+        "B"
+      ],
+      [
+        "B",
+        "C"
+      ],
+      [
+        "C",
+        "D"
+      ],
+      [
+        "C",
+        "E"
+      ],
+      [
+        "D",
+        "F"
+      ]
+    ],
+    "answerReason": "홀수 차수 정점이 4개 이상입니다.",
+    "answerType": "impossible",
+    "oddNodes": [
+      "A",
+      "C",
+      "E",
+      "F"
+    ],
+    "answerText": "불가능 / 홀수 차수 정점 4개: A, C, E, F"
+  },
+  {
+    "id": "easy-twist",
+    "level": "easy",
+    "title": "엇갈린 T길",
+    "nodes": [
+      {
+        "id": "A",
+        "x": 55,
+        "y": 90
+      },
+      {
+        "id": "B",
+        "x": 140,
+        "y": 90
+      },
+      {
+        "id": "C",
+        "x": 225,
+        "y": 90
+      },
+      {
+        "id": "D",
+        "x": 225,
+        "y": 210
+      },
+      {
+        "id": "E",
+        "x": 140,
+        "y": 210
+      },
+      {
+        "id": "F",
+        "x": 55,
+        "y": 210
+      }
+    ],
+    "edges": [
+      [
+        "A",
+        "B"
+      ],
+      [
+        "B",
+        "C"
+      ],
+      [
+        "C",
+        "D"
+      ],
+      [
+        "C",
+        "E"
+      ],
+      [
+        "D",
+        "F"
+      ]
+    ],
+    "answerReason": "홀수 차수 정점이 4개 이상입니다.",
+    "answerType": "impossible",
+    "oddNodes": [
+      "A",
+      "C",
+      "E",
+      "F"
+    ],
+    "answerText": "불가능 / 홀수 차수 정점 4개: A, C, E, F"
+  },
+  {
+    "id": "normal-diamond",
+    "level": "normal",
+    "title": "마름모 네트워크",
+    "nodes": [
+      {
+        "id": "A",
+        "x": 160,
+        "y": 30
+      },
+      {
+        "id": "B",
+        "x": 290,
+        "y": 120
+      },
+      {
+        "id": "C",
+        "x": 250,
+        "y": 255
+      },
+      {
+        "id": "D",
+        "x": 70,
+        "y": 255
+      },
+      {
+        "id": "E",
+        "x": 30,
+        "y": 120
+      },
+      {
+        "id": "F",
+        "x": 160,
+        "y": 145
+      }
+    ],
+    "edges": [
+      [
+        "A",
+        "B"
+      ],
+      [
+        "B",
+        "C"
+      ],
+      [
+        "C",
+        "D"
+      ],
+      [
+        "D",
+        "E"
+      ],
+      [
+        "E",
+        "A"
+      ],
+      [
+        "A",
+        "F"
+      ],
+      [
+        "F",
+        "B"
+      ],
+      [
+        "B",
+        "D"
+      ],
+      [
+        "D",
+        "F"
+      ],
+      [
+        "F",
+        "C"
+      ]
+    ],
+    "solutionPath": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "A",
+      "F",
+      "B",
+      "D",
+      "F",
+      "C"
+    ],
+    "answerType": "possible",
+    "oddNodes": [
+      "A",
+      "C"
+    ],
+    "answerText": "가능 / 예시 순서: A → B → C → D → E → A → F → B → D → F → C"
+  },
+  {
+    "id": "normal-lantern",
+    "level": "normal",
+    "title": "등불 경로",
+    "nodes": [
+      {
+        "id": "A",
+        "x": 160,
+        "y": 30
+      },
+      {
+        "id": "B",
+        "x": 270,
+        "y": 95
+      },
+      {
+        "id": "C",
+        "x": 270,
+        "y": 220
+      },
+      {
+        "id": "D",
+        "x": 160,
+        "y": 285
+      },
+      {
+        "id": "E",
+        "x": 50,
+        "y": 220
+      },
+      {
+        "id": "F",
+        "x": 50,
+        "y": 95
+      },
+      {
+        "id": "G",
+        "x": 160,
+        "y": 160
+      }
+    ],
+    "edges": [
+      [
+        "A",
+        "B"
+      ],
+      [
+        "B",
+        "C"
+      ],
+      [
+        "C",
+        "D"
+      ],
+      [
+        "D",
+        "E"
+      ],
+      [
+        "E",
+        "F"
+      ],
+      [
+        "F",
+        "A"
+      ],
+      [
+        "A",
+        "G"
+      ],
+      [
+        "G",
+        "C"
+      ],
+      [
+        "C",
+        "F"
+      ],
+      [
+        "F",
+        "D"
+      ],
+      [
+        "D",
+        "G"
+      ],
+      [
+        "G",
+        "B"
+      ]
+    ],
+    "solutionPath": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F",
+      "A",
+      "G",
+      "C",
+      "F",
+      "D",
+      "G",
+      "B"
+    ],
+    "answerType": "possible",
+    "oddNodes": [
+      "A",
+      "B"
+    ],
+    "answerText": "가능 / 예시 순서: A → B → C → D → E → F → A → G → C → F → D → G → B"
+  },
+  {
+    "id": "normal-bridge",
+    "level": "normal",
+    "title": "다리 네트워크",
+    "nodes": [
+      {
+        "id": "A",
+        "x": 55,
+        "y": 80
+      },
+      {
+        "id": "B",
+        "x": 160,
+        "y": 45
+      },
+      {
+        "id": "C",
+        "x": 265,
+        "y": 80
+      },
+      {
+        "id": "D",
+        "x": 265,
+        "y": 220
+      },
+      {
+        "id": "E",
+        "x": 160,
+        "y": 275
+      },
+      {
+        "id": "F",
+        "x": 55,
+        "y": 220
+      }
+    ],
+    "edges": [
+      [
+        "A",
+        "B"
+      ],
+      [
+        "B",
+        "D"
+      ],
+      [
+        "D",
+        "C"
+      ],
+      [
+        "C",
+        "A"
+      ],
+      [
+        "A",
+        "E"
+      ],
+      [
+        "E",
+        "B"
+      ],
+      [
+        "B",
+        "C"
+      ],
+      [
+        "C",
+        "F"
+      ],
+      [
+        "F",
+        "D"
+      ],
+      [
+        "D",
+        "E"
+      ],
+      [
+        "E",
+        "F"
+      ]
+    ],
+    "solutionPath": [
+      "A",
+      "B",
+      "D",
+      "C",
+      "A",
+      "E",
+      "B",
+      "C",
+      "F",
+      "D",
+      "E",
+      "F"
+    ],
+    "answerType": "possible",
+    "oddNodes": [
+      "A",
+      "F"
+    ],
+    "answerText": "가능 / 예시 순서: A → B → D → C → A → E → B → C → F → D → E → F"
+  },
+  {
+    "id": "normal-gate",
+    "level": "normal",
+    "title": "막힌 성문",
+    "nodes": [
+      {
+        "id": "A",
+        "x": 80,
+        "y": 70
+      },
+      {
+        "id": "B",
+        "x": 240,
+        "y": 70
+      },
+      {
+        "id": "C",
+        "x": 280,
+        "y": 170
+      },
+      {
+        "id": "D",
+        "x": 160,
+        "y": 260
+      },
+      {
+        "id": "E",
+        "x": 40,
+        "y": 170
+      },
+      {
+        "id": "F",
+        "x": 160,
+        "y": 150
+      }
+    ],
+    "edges": [
+      [
+        "A",
+        "B"
+      ],
+      [
+        "B",
+        "C"
+      ],
+      [
+        "C",
+        "D"
+      ],
+      [
+        "D",
+        "E"
+      ],
+      [
+        "E",
+        "A"
+      ],
+      [
+        "A",
+        "F"
+      ],
+      [
+        "B",
+        "F"
+      ],
+      [
+        "C",
+        "F"
+      ],
+      [
+        "D",
+        "F"
+      ]
+    ],
+    "answerReason": "홀수 차수 정점이 4개 이상입니다.",
+    "answerType": "impossible",
+    "oddNodes": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "answerText": "불가능 / 홀수 차수 정점 4개: A, B, C, D"
+  },
+  {
+    "id": "normal-cross-square",
+    "level": "normal",
+    "title": "십자 광장",
+    "nodes": [
+      {
+        "id": "A",
+        "x": 80,
+        "y": 80
+      },
+      {
+        "id": "B",
+        "x": 240,
+        "y": 80
+      },
+      {
+        "id": "C",
+        "x": 240,
+        "y": 240
+      },
+      {
+        "id": "D",
+        "x": 80,
+        "y": 240
+      },
+      {
+        "id": "O",
+        "x": 160,
+        "y": 160
+      }
+    ],
+    "edges": [
+      [
+        "A",
+        "B"
+      ],
+      [
+        "B",
+        "C"
+      ],
+      [
+        "C",
+        "D"
+      ],
+      [
+        "D",
+        "A"
+      ],
+      [
+        "O",
+        "A"
+      ],
+      [
+        "O",
+        "B"
+      ],
+      [
+        "O",
+        "C"
+      ],
+      [
+        "O",
+        "D"
+      ]
+    ],
+    "answerReason": "홀수 차수 정점이 4개 이상입니다.",
+    "answerType": "impossible",
+    "oddNodes": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "answerText": "불가능 / 홀수 차수 정점 4개: A, B, C, D"
+  },
+  {
+    "id": "normal-hex-chords",
+    "level": "normal",
+    "title": "여섯 문 회랑",
+    "nodes": [
+      {
+        "id": "A",
+        "x": 160,
+        "y": 35
+      },
+      {
+        "id": "B",
+        "x": 270,
+        "y": 95
+      },
+      {
+        "id": "C",
+        "x": 270,
+        "y": 225
+      },
+      {
+        "id": "D",
+        "x": 160,
+        "y": 285
+      },
+      {
+        "id": "E",
+        "x": 50,
+        "y": 225
+      },
+      {
+        "id": "F",
+        "x": 50,
+        "y": 95
+      }
+    ],
+    "edges": [
+      [
+        "A",
+        "B"
+      ],
+      [
+        "B",
+        "C"
+      ],
+      [
+        "C",
+        "D"
+      ],
+      [
+        "D",
+        "E"
+      ],
+      [
+        "E",
+        "F"
+      ],
+      [
+        "F",
+        "A"
+      ],
+      [
+        "A",
+        "D"
+      ],
+      [
+        "B",
+        "E"
+      ]
+    ],
+    "answerReason": "홀수 차수 정점이 4개 이상입니다.",
+    "answerType": "impossible",
+    "oddNodes": [
+      "A",
+      "B",
+      "D",
+      "E"
+    ],
+    "answerText": "불가능 / 홀수 차수 정점 4개: A, B, D, E"
+  },
+  {
+    "id": "hard-city",
+    "level": "hard",
+    "title": "도시 순찰 경로",
+    "nodes": [
+      {
+        "id": "A",
+        "x": 70,
+        "y": 70
+      },
+      {
+        "id": "B",
+        "x": 160,
+        "y": 40
+      },
+      {
+        "id": "C",
+        "x": 255,
+        "y": 70
+      },
+      {
+        "id": "D",
+        "x": 300,
+        "y": 160
+      },
+      {
+        "id": "E",
+        "x": 245,
+        "y": 255
+      },
+      {
+        "id": "F",
+        "x": 160,
+        "y": 285
+      },
+      {
+        "id": "G",
+        "x": 75,
+        "y": 255
+      },
+      {
+        "id": "H",
+        "x": 30,
+        "y": 160
+      },
+      {
+        "id": "I",
+        "x": 160,
+        "y": 160
+      }
+    ],
+    "edges": [
+      [
+        "A",
+        "B"
+      ],
+      [
+        "B",
+        "C"
+      ],
+      [
+        "C",
+        "D"
+      ],
+      [
+        "D",
+        "E"
+      ],
+      [
+        "E",
+        "F"
+      ],
+      [
+        "F",
+        "G"
+      ],
+      [
+        "G",
+        "H"
+      ],
+      [
+        "H",
+        "A"
+      ],
+      [
+        "A",
+        "I"
+      ],
+      [
+        "I",
+        "C"
+      ],
+      [
+        "C",
+        "E"
+      ],
+      [
+        "E",
+        "G"
+      ],
+      [
+        "G",
+        "B"
+      ],
+      [
+        "B",
+        "I"
+      ],
+      [
+        "I",
+        "D"
+      ],
+      [
+        "D",
+        "F"
+      ],
+      [
+        "F",
+        "H"
+      ]
+    ],
+    "solutionPath": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F",
+      "G",
+      "H",
+      "A",
+      "I",
+      "C",
+      "E",
+      "G",
+      "B",
+      "I",
+      "D",
+      "F",
+      "H"
+    ],
+    "answerType": "possible",
+    "oddNodes": [
+      "A",
+      "H"
+    ],
+    "answerText": "가능 / 예시 순서: A → B → C → D → E → F → G → H → A → I → C → E → G → B → I → D → F → H"
+  },
+  {
+    "id": "hard-grid-route",
+    "level": "hard",
+    "title": "격자 순찰 루트",
+    "nodes": [
+      {
+        "id": "A",
+        "x": 60,
+        "y": 60
+      },
+      {
+        "id": "B",
+        "x": 160,
+        "y": 60
+      },
+      {
+        "id": "C",
+        "x": 260,
+        "y": 60
+      },
+      {
+        "id": "D",
+        "x": 60,
+        "y": 160
+      },
+      {
+        "id": "E",
+        "x": 160,
+        "y": 160
+      },
+      {
+        "id": "F",
+        "x": 260,
+        "y": 160
+      },
+      {
+        "id": "G",
+        "x": 60,
+        "y": 260
+      },
+      {
+        "id": "H",
+        "x": 160,
+        "y": 260
+      },
+      {
+        "id": "I",
+        "x": 260,
+        "y": 260
+      }
+    ],
+    "edges": [
+      [
+        "A",
+        "B"
+      ],
+      [
+        "B",
+        "C"
+      ],
+      [
+        "C",
+        "F"
+      ],
+      [
+        "F",
+        "I"
+      ],
+      [
+        "I",
+        "H"
+      ],
+      [
+        "H",
+        "G"
+      ],
+      [
+        "G",
+        "D"
+      ],
+      [
+        "D",
+        "A"
+      ],
+      [
+        "A",
+        "E"
+      ],
+      [
+        "E",
+        "B"
+      ],
+      [
+        "B",
+        "D"
+      ],
+      [
+        "D",
+        "E"
+      ],
+      [
+        "E",
+        "F"
+      ]
+    ],
+    "solutionPath": [
+      "A",
+      "B",
+      "C",
+      "F",
+      "I",
+      "H",
+      "G",
+      "D",
+      "A",
+      "E",
+      "B",
+      "D",
+      "E",
+      "F"
+    ],
+    "answerType": "possible",
+    "oddNodes": [
+      "A",
+      "F"
+    ],
+    "answerText": "가능 / 예시 순서: A → B → C → F → I → H → G → D → A → E → B → D → E → F"
+  },
+  {
+    "id": "hard-constellation",
+    "level": "hard",
+    "title": "별자리 회로",
+    "nodes": [
+      {
+        "id": "A",
+        "x": 160,
+        "y": 30
+      },
+      {
+        "id": "B",
+        "x": 255,
+        "y": 65
+      },
+      {
+        "id": "C",
+        "x": 300,
+        "y": 155
+      },
+      {
+        "id": "D",
+        "x": 255,
+        "y": 250
+      },
+      {
+        "id": "E",
+        "x": 160,
+        "y": 285
+      },
+      {
+        "id": "F",
+        "x": 65,
+        "y": 250
+      },
+      {
+        "id": "G",
+        "x": 25,
+        "y": 155
+      },
+      {
+        "id": "H",
+        "x": 65,
+        "y": 65
+      }
+    ],
+    "edges": [
+      [
+        "A",
+        "B"
+      ],
+      [
+        "B",
+        "C"
+      ],
+      [
+        "C",
+        "D"
+      ],
+      [
+        "D",
+        "A"
+      ],
+      [
+        "A",
+        "E"
+      ],
+      [
+        "E",
+        "B"
+      ],
+      [
+        "B",
+        "F"
+      ],
+      [
+        "F",
+        "C"
+      ],
+      [
+        "C",
+        "G"
+      ],
+      [
+        "G",
+        "D"
+      ],
+      [
+        "D",
+        "H"
+      ],
+      [
+        "H",
+        "E"
+      ],
+      [
+        "E",
+        "F"
+      ],
+      [
+        "F",
+        "G"
+      ],
+      [
+        "G",
+        "H"
+      ],
+      [
+        "H",
+        "A"
+      ]
+    ],
+    "solutionPath": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "A",
+      "E",
+      "B",
+      "F",
+      "C",
+      "G",
+      "D",
+      "H",
+      "E",
+      "F",
+      "G",
+      "H",
+      "A"
+    ],
+    "answerType": "possible",
+    "oddNodes": [],
+    "answerText": "가능 / 예시 순서: A → B → C → D → A → E → B → F → C → G → D → H → E → F → G → H → A"
+  },
+  {
+    "id": "hard-broken-patrol",
+    "level": "hard",
+    "title": "끊어진 순찰망",
+    "nodes": [
+      {
+        "id": "A",
+        "x": 70,
+        "y": 55
+      },
+      {
+        "id": "B",
+        "x": 160,
+        "y": 35
+      },
+      {
+        "id": "C",
+        "x": 255,
+        "y": 55
+      },
+      {
+        "id": "D",
+        "x": 295,
+        "y": 155
+      },
+      {
+        "id": "E",
+        "x": 245,
+        "y": 255
+      },
+      {
+        "id": "F",
+        "x": 160,
+        "y": 285
+      },
+      {
+        "id": "G",
+        "x": 75,
+        "y": 255
+      },
+      {
+        "id": "H",
+        "x": 35,
+        "y": 155
+      },
+      {
+        "id": "I",
+        "x": 160,
+        "y": 160
+      }
+    ],
+    "edges": [
+      [
+        "A",
+        "B"
+      ],
+      [
+        "B",
+        "C"
+      ],
+      [
+        "C",
+        "D"
+      ],
+      [
+        "D",
+        "E"
+      ],
+      [
+        "E",
+        "F"
+      ],
+      [
+        "F",
+        "G"
+      ],
+      [
+        "G",
+        "H"
+      ],
+      [
+        "H",
+        "A"
+      ],
+      [
+        "A",
+        "I"
+      ],
+      [
+        "B",
+        "I"
+      ],
+      [
+        "C",
+        "I"
+      ],
+      [
+        "D",
+        "I"
+      ],
+      [
+        "E",
+        "I"
+      ]
+    ],
+    "answerReason": "홀수 차수 정점이 4개 이상입니다.",
+    "answerType": "impossible",
+    "oddNodes": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "I"
+    ],
+    "answerText": "불가능 / 홀수 차수 정점 6개: A, B, C, D, E, I"
+  },
+  {
+    "id": "hard-crowded-hub",
+    "level": "hard",
+    "title": "과밀 허브",
+    "nodes": [
+      {
+        "id": "O",
+        "x": 160,
+        "y": 160
+      },
+      {
+        "id": "A",
+        "x": 160,
+        "y": 35
+      },
+      {
+        "id": "B",
+        "x": 270,
+        "y": 95
+      },
+      {
+        "id": "C",
+        "x": 270,
+        "y": 225
+      },
+      {
+        "id": "D",
+        "x": 160,
+        "y": 285
+      },
+      {
+        "id": "E",
+        "x": 50,
+        "y": 225
+      },
+      {
+        "id": "F",
+        "x": 50,
+        "y": 95
+      }
+    ],
+    "edges": [
+      [
+        "O",
+        "A"
+      ],
+      [
+        "O",
+        "B"
+      ],
+      [
+        "O",
+        "C"
+      ],
+      [
+        "O",
+        "D"
+      ],
+      [
+        "O",
+        "E"
+      ],
+      [
+        "O",
+        "F"
+      ],
+      [
+        "A",
+        "B"
+      ],
+      [
+        "B",
+        "C"
+      ],
+      [
+        "C",
+        "D"
+      ],
+      [
+        "D",
+        "A"
+      ]
+    ],
+    "answerReason": "홀수 차수 정점이 4개 이상입니다.",
+    "answerType": "impossible",
+    "oddNodes": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F"
+    ],
+    "answerText": "불가능 / 홀수 차수 정점 6개: A, B, C, D, E, F"
+  },
+  {
+    "id": "hard-3x3-grid",
+    "level": "hard",
+    "title": "뒤틀린 격자",
+    "nodes": [
+      {
+        "id": "A",
+        "x": 60,
+        "y": 60
+      },
+      {
+        "id": "B",
+        "x": 160,
+        "y": 60
+      },
+      {
+        "id": "C",
+        "x": 260,
+        "y": 60
+      },
+      {
+        "id": "D",
+        "x": 60,
+        "y": 160
+      },
+      {
+        "id": "E",
+        "x": 160,
+        "y": 160
+      },
+      {
+        "id": "F",
+        "x": 260,
+        "y": 160
+      },
+      {
+        "id": "G",
+        "x": 60,
+        "y": 260
+      },
+      {
+        "id": "H",
+        "x": 160,
+        "y": 260
+      },
+      {
+        "id": "I",
+        "x": 260,
+        "y": 260
+      }
+    ],
+    "edges": [
+      [
+        "A",
+        "B"
+      ],
+      [
+        "B",
+        "C"
+      ],
+      [
+        "D",
+        "E"
+      ],
+      [
+        "E",
+        "F"
+      ],
+      [
+        "G",
+        "H"
+      ],
+      [
+        "H",
+        "I"
+      ],
+      [
+        "A",
+        "D"
+      ],
+      [
+        "D",
+        "G"
+      ],
+      [
+        "B",
+        "E"
+      ],
+      [
+        "E",
+        "H"
+      ],
+      [
+        "C",
+        "F"
+      ],
+      [
+        "F",
+        "I"
+      ]
+    ],
+    "answerReason": "홀수 차수 정점이 4개 이상입니다.",
+    "answerType": "impossible",
+    "oddNodes": [
+      "B",
+      "D",
+      "F",
+      "H"
+    ],
+    "answerText": "불가능 / 홀수 차수 정점 4개: B, D, F, H"
+  }
+];
+
+  function edgeKey(a, b) { return [a, b].sort().join('__'); }
+  function getNode(puzzle, id) { return puzzle.nodes.find((node) => node.id === id); }
+  function escapeHTML(str) { return String(str || '').replace(/[&<>'"]/g, s => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[s])); }
+  function safeToast(message, isError) {
+    if (typeof window.showToast === 'function') window.showToast(message, !!isError);
+    else console.log(message);
+  }
+
+  const EulerPathGame = {
+    container: null,
+    root: null,
+    level: 'easy',
+    puzzleIndexByLevel: { easy: 0, normal: 0, hard: 0 },
+    state: null,
+    totalScore: 0,
+    lives: MAX_LIVES,
+    clearedRounds: 0,
+    gameOver: false,
+    allClear: false,
+
+    mount(container) {
+      const view = document.getElementById('mathlab-view');
+      this.container = container || view;
+      if (!this.container || typeof this.container.innerHTML === 'undefined') {
+        console.error('[EulerPath] 렌더링할 컨테이너를 찾을 수 없습니다.', container);
+        return;
+      }
+      if (!this.state || this.gameOver || this.allClear) this.startSession();
+      this.renderAndBind();
+    },
+
+    startSession() {
+      this.totalScore = 0;
+      this.lives = MAX_LIVES;
+      this.clearedRounds = 0;
+      this.gameOver = false;
+      this.allClear = false;
+      this.level = 'easy';
+      this.puzzleIndexByLevel = { easy: 0, normal: 0, hard: 0 };
+      this.startPuzzle(this.getCurrentPuzzle(), '쉬움 1번 문제부터 시작합니다.');
+    },
+
+    reset() {
+      if (this.gameOver || this.allClear) this.startSession();
+      else this.startPuzzle(this.getCurrentPuzzle(), '현재 문제를 다시 시작합니다.');
+      this.renderAndBind();
+    },
+
+    destroy() {
+      document.getElementById('mathlab-inline-ranking-modal')?.remove();
+      if (this.container) this.container.innerHTML = '';
+      this.root = null;
+    },
+
+    getPuzzlesByLevel(level) { return PUZZLES.filter((puzzle) => puzzle.level === level); },
+
+    getCurrentPuzzle() {
+      const list = this.getPuzzlesByLevel(this.level);
+      const index = this.puzzleIndexByLevel[this.level] || 0;
+      return list[Math.min(index, list.length - 1)] || PUZZLES[0];
+    },
+
+    startPuzzle(puzzle, message) {
+      this.state = {
+        puzzle,
+        currentNodeId: null,
+        startNodeId: null,
+        usedEdges: new Set(),
+        path: [],
+        message: message || '시작할 정점을 선택하거나, 불가능한 문제라고 판단되면 [불가능]을 누르세요.',
+        tone: 'normal',
+        completed: false,
+        roundOver: false,
+        lastAnswerText: ''
+      };
+    },
+
+    setLevel(level) {
+      this.level = level;
+      this.startPuzzle(this.getCurrentPuzzle(), `${LEVEL_LABELS[level]} 단계로 이동했습니다.`);
+      this.renderAndBind();
+    },
+
+    nextPuzzle() {
+      if (this.gameOver || this.allClear) { this.startSession(); this.renderAndBind(); return; }
+      const currentLevel = this.level;
+      const list = this.getPuzzlesByLevel(currentLevel);
+      this.puzzleIndexByLevel[currentLevel] = (this.puzzleIndexByLevel[currentLevel] || 0) + 1;
+      if (this.puzzleIndexByLevel[currentLevel] >= list.length) {
+        const currentLevelIndex = LEVEL_ORDER.indexOf(currentLevel);
+        if (currentLevelIndex < LEVEL_ORDER.length - 1) {
+          const nextLevel = LEVEL_ORDER[currentLevelIndex + 1];
+          this.level = nextLevel;
+          this.puzzleIndexByLevel[nextLevel] = 0;
+          this.startPuzzle(this.getCurrentPuzzle(), `레벨업! ${LEVEL_LABELS[nextLevel]} 단계로 올라갑니다.`);
+        } else {
+          this.allClear = true;
+          this.state.roundOver = true;
+          this.state.completed = true;
+          this.state.tone = 'success';
+          this.state.message = `전체 레벨 완료! 최종 점수는 ${this.totalScore}점입니다. 명예의 전당에 도전하세요!`;
+          setTimeout(() => this.showInlineRankingModal(), 1200);
+        }
+      } else {
+        const nextNumber = this.puzzleIndexByLevel[currentLevel] + 1;
+        this.startPuzzle(this.getCurrentPuzzle(), `${LEVEL_LABELS[currentLevel]} ${nextNumber}번 문제입니다.`);
+      }
+      this.renderAndBind();
+    },
+
+    moveToNode(nodeId) {
+      if (!this.state || this.gameOver || this.allClear || this.state.roundOver || this.state.completed) return;
+      if (!this.state.currentNodeId) {
+        this.state.currentNodeId = nodeId;
+        this.state.startNodeId = nodeId;
+        this.state.message = `${nodeId}에서 출발합니다. 연결된 선을 선택하세요.`;
+        this.state.tone = 'normal';
+        this.renderAndBind();
+        return;
+      }
+      const current = this.state.currentNodeId;
+      const key = edgeKey(current, nodeId);
+      const connected = this.state.puzzle.edges.some(([a, b]) => edgeKey(a, b) === key);
+      if (!connected) {
+        this.state.message = `${current}와 ${nodeId}는 직접 연결  어 있지 않습니다.`;
+        this.state.tone = 'warn';
+        this.renderAndBind();
+        return;
+      }
+      if (this.state.usedEdges.has(key)) {
+        this.state.message = '이미 지난 선은 다시 지날 수 없습니다.';
+        this.state.tone = 'warn';
+        this.renderAndBind();
+        return;
+      }
+      this.state.usedEdges.add(key);
+      this.state.path.push({ from: current, to: nodeId, key });
+      this.state.currentNodeId = nodeId;
+      if (this.state.usedEdges.size === this.state.puzzle.edges.length) this.completePossiblePuzzle();
+      else {
+        const available = this.getAvailableEdges(nodeId).length;
+        if (available > 0) {
+          this.state.message = `${nodeId}에 도착했습니다. 다음 선을 선택하세요.`;
+          this.state.tone = 'normal';
+        } else { this.failRound('더 이상 이동할 수 없습니다. 완성하지 못했으므로 생명 1개가 차감됩니다.'); return; }
+      }
+      this.renderAndBind();
+    },
+
+    moveByEdge(key) {
+      if (!this.state || this.gameOver || this.allClear || this.state.roundOver) return;
+      if (!this.state.currentNodeId) {
+        this.state.message = '먼저 시작 정점을 선택하세요.';
+        this.state.tone = 'warn';
+        this.renderAndBind();
+        return;
+      }
+      const edge = this.state.puzzle.edges.find(([a, b]) => edgeKey(a, b) === key);
+      if (!edge) return;
+      const [a, b] = edge;
+      if (a !== this.state.currentNodeId && b !== this.state.currentNodeId) {
+        this.state.message = '현재 정점과 연결된 선만 선택할 수 있습니다.';
+        this.state.tone = 'warn';
+        this.renderAndBind();
+        return;
+      }
+      this.moveToNode(a === this.state.currentNodeId ? b : a);
+    },
+
+    completePossiblePuzzle() {
+      if (!this.isPuzzlePossible(this.state.puzzle)) {
+        this.failRound('이 문제는 사실 불가능한 문제입니다. [불가능]을 선택해야 합니다.');
+        return;
+      }
+      const gained = 100 + Math.max(0, this.lives - 1) * 10 + this.getLevelBonus();
+      this.totalScore += gained;
+      this.clearedRounds += 1;
+      this.state.completed = true;
+      this.state.roundOver = true;
+      this.state.lastAnswerText = this.getAnswerText(this.state.puzzle);
+      this.state.message = `성공! 모든 선을 정확히 한 번씩 지났습니다. +${gained}점`;
+      this.state.tone = 'success';
+    },
+
+    claimImpossible() {
+      if (!this.state || this.gameOver || this.allClear || this.state.roundOver) return;
+      if (!this.isPuzzlePossible(this.state.puzzle)) {
+        const gained = 80 + Math.max(0, this.lives - 1) * 10 + this.getLevelBonus();
+        this.totalScore += gained;
+        this.clearedRounds += 1;
+        this.state.roundOver = true;
+        this.state.completed = true;
+        this.state.lastAnswerText = this.getAnswerText(this.state.puzzle);
+        this.state.message = `정답! 이 퍼즐은 한붓그리기가 불가능합니다. +${gained}점`;
+        this.state.tone = 'success';
+      } else { this.failRound('오답입니다. 이 퍼즐은 한붓그리기가 가능합니다. 생명 1개가 차감됩니다.'); return; }
+      this.renderAndBind();
+    },
+
+    giveUpRound() {
+      if (!this.state || this.gameOver || this.allClear || this.state.roundOver) return;
+      this.failRound('이번 문제를 완성하지 못했습니다. 생명 1개가 차감됩니다.');
+    },
+
+    failRound(message) {
+      this.lives = Math.max(0, this.lives - 1);
+      this.state.roundOver = true;
+      this.state.completed = false;
+      this.state.lastAnswerText = this.state.lastAnswerText || this.getAnswerText(this.state.puzzle);
+      this.state.message = this.lives > 0 ? `${message} 남은 생명: ${this.lives}개` : `${message} 생명이 모두 소진되어 게임이 종료되었습니다.`;
+      this.state.tone = this.lives > 0 ? 'warn' : 'danger';
+      if (this.lives <= 0) { this.gameOver = true; setTimeout(() => this.showInlineRankingModal(), 1200); }
+      this.renderAndBind();
+    },
+
+    undo() {
+      if (!this.state || this.gameOver || this.allClear || this.state.roundOver) return;
+      if (this.state.path.length === 0) {
+        this.state.message = '되돌릴 이동이 없습니다.';
+        this.state.tone = 'warn';
+        this.renderAndBind();
+        return;
+      }
+      const last = this.state.path.pop();
+      this.state.usedEdges.delete(last.key);
+      this.state.currentNodeId = last.from;
+      this.state.completed = false;
+      this.state.message = `${last.from}으로 한 단계 되돌렸습니다.`;
+      this.state.tone = 'normal';
+      this.renderAndBind();
+    },
+
+    getAvailableEdges(nodeId) {
+      if (!this.state || !nodeId) return [];
+      return this.state.puzzle.edges.filter(([a, b]) => {
+        const key = edgeKey(a, b);
+        return !this.state.usedEdges.has(key) && (a === nodeId || b === nodeId);
+      });
+    },
+
+    getDegreeInfo(puzzle) {
+      const degrees = {};
+      puzzle.nodes.forEach((node) => { degrees[node.id] = 0; });
+      puzzle.edges.forEach(([a, b]) => { degrees[a] += 1; degrees[b] += 1; });
+      const oddNodes = Object.keys(degrees).filter((id) => degrees[id] % 2 === 1);
+      return { degrees, oddNodes };
+    },
+
+    isConnected(puzzle) {
+      if (!puzzle.nodes.length) return false;
+      const adjacency = {};
+      puzzle.nodes.forEach((node) => adjacency[node.id] = []);
+      puzzle.edges.forEach(([a, b]) => { adjacency[a].push(b); adjacency[b].push(a); });
+      const seen = new Set();
+      const stack = [puzzle.nodes[0].id];
+      while (stack.length) {
+        const node = stack.pop();
+        if (seen.has(node)) continue;
+        seen.add(node);
+        adjacency[node].forEach((next) => { if (!seen.has(next)) stack.push(next); });
+      }
+      return seen.size === puzzle.nodes.length;
+    },
+
+    isPuzzlePossible(puzzle) {
+      const info = this.getDegreeInfo(puzzle);
+      return this.isConnected(puzzle) && (info.oddNodes.length === 0 || info.oddNodes.length === 2);
+    },
+
+    getAnswerText(puzzle) {
+      const info = this.getDegreeInfo(puzzle);
+      const oddText = info.oddNodes.length ? info.oddNodes.join(', ') : '없음';
+      if (this.isPuzzlePossible(puzzle)) {
+        const path = puzzle.solutionPath && puzzle.solutionPath.length ? puzzle.solutionPath.join(' → ') : '가능한 경로가 존재합니다.';
+        return `정답: 가능 / 예시 순서: ${path} / 홀수 차수 정점: ${oddText}`;
+      }
+      return `정답: 불가능 / 이유: 홀수 차수 정점이 ${info.oddNodes.length}개입니다. (${oddText})`;
+    },
+
+    getLevelBonus() {
+      if (this.level === 'normal') return 20;
+      if (this.level === 'hard') return 40;
+      return 0;
+    },
+
+    getProgressText() {
+      const list = this.getPuzzlesByLevel(this.level);
+      const current = Math.min((this.puzzleIndexByLevel[this.level] || 0) + 1, list.length);
+      return `${LEVEL_LABELS[this.level]} ${current} / ${list.length}`;
+    },
+
+    renderAndBind() { this.render(); this.bindEvents(); this.loadLeaderboard(); },
+
+    render() {
+      const puzzle = this.state.puzzle;
+      const usedCount = this.state.usedEdges.size;
+      const totalCount = puzzle.edges.length;
+      const statusClass = this.state.tone === 'success' ? 'success' : this.state.tone === 'danger' ? 'danger' : this.state.tone === 'warn' ? 'warn' : '';
+      const nextLabel = (this.gameOver || this.allClear) ? '새 게임 시작' : '다음 문제';
+      const canPlay = !this.gameOver && !this.allClear && !this.state.roundOver;
+      this.container.innerHTML = `
+        <div id="euler-path-game" class="game-euler-path">
+          <section class="ep-hero">
+            <h2 class="ep-title">✏️ 한붓그리기</h2>
+            <p class="ep-subtitle">모든 선을 한 번씩만 지나는 경로를 찾으세요. 불가능하다고 판단되면 [불가능]을 선택합니다. 쉬움 문제를 모두 마치면 보통, 보통을 모두 마치면 어려움으로 자동 레벨업됩니다.</p>
+          </section>
+          <section class="ep-layout">
+            <div class="ep-panel"><div class="ep-board-wrap"><div class="ep-board-head"><h3 class="ep-puzzle-title">${puzzle.title}</h3><span class="ep-badge">${this.getProgressText()}</span></div>${this.renderSvg()}</div></div>
+            <aside class="ep-side">
+              <div class="ep-card"><h3>난이도</h3><div class="ep-levels">${this.renderLevelButton('easy', '쉬움')}${this.renderLevelButton('normal', '보통')}${this.renderLevelButton('hard', '어려움')}</div></div>
+              <div class="ep-card"><h3>현재 상태</h3><div class="ep-status ${statusClass}">${this.state.message}</div><div class="ep-stats">
+                <div class="ep-stat"><span>점수</span><strong>${this.totalScore}점</strong></div>
+                <div class="ep-stat"><span>생명</span><strong>${'❤️'.repeat(this.lives) || '0'}</strong></div>
+                <div class="ep-stat"><span>문제 진행</span><strong>${this.getProgressText()}</strong></div>
+                <div class="ep-stat"><span>지난 선</span><strong>${usedCount} / ${totalCount}</strong></div>
+                <div class="ep-stat"><span>현재 정점</span><strong>${this.state.currentNodeId || '-'}</strong></div>
+                <div class="ep-stat"><span>성공 라운드</span><strong>${this.clearedRounds}</strong></div>
+              </div></div>
+              <div class="ep-card"><h3>조작</h3><div class="ep-buttons">
+                <button type="button" data-action="undo" class="ep-btn-secondary" ${canPlay ? '' : 'disabled'}>되돌리기</button>
+                <button type="button" data-action="impossible" class="ep-btn-warn" ${canPlay ? '' : 'disabled'}>불가능</button>
+                <button type="button" data-action="giveup" class="ep-btn-danger" ${canPlay ? '' : 'disabled'}>실패 처리</button>
+                <button type="button" data-action="restart" class="ep-btn-secondary">다시 시작</button>
+                <button type="button" data-action="next">${nextLabel}</button>
+                <button type="button" data-action="submit-score">점수 등록</button>
+                <button type="button" data-action="home" class="ep-btn-home" style="background:#475569; color:#ffffff; font-weight:700;">🏠 홈으로</button>
+              </div></div>
+            </aside>
+          </section>
+          <section class="ep-bottom">
+            <details ${this.state.lastAnswerText || this.allClear || this.gameOver ? 'open' : ''}><summary>정답 확인</summary><div class="ep-detail-body"><p>${this.state.lastAnswerText || '라운드가 끝나면 정답과 예시 순서가 표시됩니다.'}</p></div></details>
+            <details><summary>사용설명서</summary><div class="ep-detail-body"><ul><li>첫 번째 클릭은 시작 정점을 고르는 동작입니다.</li><li>현재 정점과 연결된 미사용 선만 지나갈 수 있습니다.</li><li>한붓그리기가 불가능하다고 판단되면 [불가능]을 누릅니다.</li><li>라운드가 끝난 뒤 [다음 문제]를 누르면 다음 문항으로 이동합니다.</li></ul></div></details>
+            <details><summary>수학 개념: 오일러 경로</summary><div class="ep-detail-body"><p>그래프는 점과 선으로 관계를 나타낸 구조입니다. 점은 정점, 선은 변이라고 부릅니다.</p><ul><li>오일러 경로: 모든 변을 정확히 한 번씩 지나는 경로</li><li>오일러 회로: 시작점으로 다시 돌아오는 오일러 경로</li><li>가능/불가능 판단은 이 게임의 핵심이므로, 현재 퍼즐의 판정 정보는 라운드 종료 전에는 표시하지 않습니다.</li></ul></div></details>
+            <div class="ep-leaderboard"><h3>🏆 명예의 전당 (누적 점수)</h3><div id="board-euler-path"><p>랭킹 로딩 중...</p></div></div>
+          </section>
+        </div>`;
+    },
+
+    renderLevelButton(level, label) {
+      const active = this.level === level ? 'active' : '';
+      return `<button type="button" class="ep-btn-level ${active}" data-level="${level}">${label}</button>`;
+    },
+
+    renderSvg() {
+      const puzzle = this.state.puzzle;
+      const availableKeys = new Set(this.state.currentNodeId ? this.getAvailableEdges(this.state.currentNodeId).map(([a, b]) => edgeKey(a, b)) : []);
+      const edgeLines = puzzle.edges.map(([a, b]) => {
+        const from = getNode(puzzle, a), to = getNode(puzzle, b), key = edgeKey(a, b);
+        const used = this.state.usedEdges.has(key), available = availableKeys.has(key);
+        const className = ['ep-edge', used ? 'ep-edge-used' : '', available ? 'ep-edge-available' : ''].filter(Boolean).join(' ');
+        return `<line class="${className}" x1="${from.x}" y1="${from.y}" x2="${to.x}" y2="${to.y}"></line><line class="ep-edge-hit" x1="${from.x}" y1="${from.y}" x2="${to.x}" y2="${to.y}" data-edge="${key}"></line>`;
+      }).join('');
+      const nodeCircles = puzzle.nodes.map((node) => {
+        const isCurrent = this.state.currentNodeId === node.id, isStart = this.state.startNodeId === node.id;
+        const className = ['ep-node', isStart ? 'ep-node-start' : '', isCurrent ? 'ep-node-current' : ''].filter(Boolean).join(' ');
+        return `<circle class="${className}" cx="${node.x}" cy="${node.y}" r="18" data-node="${node.id}"></circle><text class="ep-node-label" x="${node.x}" y="${node.y + 6}" text-anchor="middle">${node.id}</text>`;
+      }).join('');
+      return `<svg class="ep-svg" viewBox="0 0 330 320" role="img" aria-label="한붓그리기 그래프 퍼즐">${edgeLines}${nodeCircles}</svg>`;
+    },
+
+    submitScore() {
+      if (this.totalScore <= 0) {
+        safeToast('등록할 점수가 없습니다. 문제를 풀고 점수를 획득해 보세요!', true);
+        return;
+      }
+      this.showInlineRankingModal();
+    },
+
+    showInlineRankingModal() {
+      document.getElementById('mathlab-inline-ranking-modal')?.remove();
+      const score = Math.max(0, this.totalScore);
+      const modalHtml = `
+        <div id="mathlab-inline-ranking-modal" style="position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(15,23,42,0.85); backdrop-filter:blur(6px); display:flex; align-items:center; justify-content:center; z-index:999999; padding:20px; box-sizing:border-box; font-family:system-ui, sans-serif;">
+          <div style="background:#ffffff; border-radius:24px; padding:28px 22px; max-width:400px; width:100%; box-shadow:0 25px 50px rgba(0,0,0,0.5); text-align:center; border:3px solid #6366f1;">
+            <div style="font-size:44px; margin-bottom:8px;">✏️👑</div>
+            <h2 style="margin:0 0 6px; font-size:24px; font-weight:900; color:#1e293b;">명예의 전당 등록</h2>
+            <p style="margin:0 0 18px; font-size:14px; color:#64748b;">한붓그리기 퍼즐을 훌륭하게 수행했습니다!<br>이름(닉네임)을 남겨 랭킹에 도전하세요.</p>
+            <div style="background:#eef2ff; border:1px solid #c7d2fe; border-radius:16px; padding:14px; margin-bottom:20px;">
+              <div style="font-size:13px; color:#4338ca; font-weight:800; margin-bottom:4px;">🏆 획득 누적 점수 (${LEVEL_LABELS[this.level] || '기본'} • ${this.clearedRounds}라운드 성공)</div>
+              <div style="font-size:34px; font-weight:900; color:#3730a3;">${score} <span style="font-size:18px;">점</span></div>
+            </div>
+            <input type="text" id="inline-rank-nickname" placeholder="우승자 닉네임 (예: 한붓마스터)" maxlength="12" style="width:100%; padding:12px 14px; font-size:16px; font-weight:700; border:2px solid #cbd5e1; border-radius:12px; outline:none; text-align:center; margin-bottom:18px; box-sizing:border-box;">
+            <div style="display:flex; gap:10px;">
+              <button id="inline-rank-cancel" style="flex:1; padding:12px; border-radius:12px; font-size:15px; font-weight:800; background:#e2e8f0; color:#475569; border:none; cursor:pointer;">건너뛰기</button>
+              <button id="inline-rank-submit" style="flex:2; padding:12px; border-radius:12px; font-size:15px; font-weight:800; background:#6366f1; color:#ffffff; border:none; cursor:pointer;">🚀 등록하기</button>
+            </div>
+          </div>
+        </div>
+      `;
+      document.body.insertAdjacentHTML('beforeend', modalHtml);
+      const inputEl = document.getElementById('inline-rank-nickname'); if (inputEl) inputEl.focus();
+      const closeAndClean = () => document.getElementById('mathlab-inline-ranking-modal')?.remove();
+      document.getElementById('inline-rank-cancel')?.addEventListener('click', closeAndClean);
+      const doSubmit = () => {
+        let nickname = (inputEl?.value.trim() || '한붓마스터');
+        const metadata = { level: this.level, clearedRounds: this.clearedRounds };
+
+        // 🚨 [패치 완료] 1. 공식 시스템 및 구글 시트 투웨이 저장 호출!
+        if (typeof window.submitRanking === 'function') {
+          try {
+            const nickArg = { value: nickname, trim: function () { return nickname.trim(); }, toString: function() { return nickname; } };
+            window.submitRanking(GAME_NAME, score, true, nickArg, BOARD_ID);
+          } catch(e){}
+        } else if (typeof google !== 'undefined' && google.script && google.script.run && typeof google.script.run.saveGameScore === 'function') {
+          try {
+            const sheetId = (typeof getLeaderboardSheetId === 'function') ? getLeaderboardSheetId() : '';
+            const meta = (typeof getLeaderboardMeta === 'function') ? getLeaderboardMeta() : {};
+            google.script.run.withSuccessHandler(() => { this.loadLeaderboard(); }).saveGameScore(sheetId, GAME_NAME, nickname, score, true, meta);
+          } catch(e){}
+        }
+
+        // 🚨 [패치 완료] 2. 닉네임 덮어쓰기 방어를 위해 metadata 먼저 분해 후 nickname 배치
+        let ranks = JSON.parse(localStorage.getItem(`rank_${BOARD_ID}`) || '[]');
+        ranks.push({ ...metadata, nickname: nickname, score: score, date: new Date().toISOString() });
+        ranks.sort((a, b) => (b.score || 0) - (a.score || 0));
+        localStorage.setItem(`rank_${BOARD_ID}`, JSON.stringify(ranks.slice(0, 50)));
+        closeAndClean();
+        this.loadLeaderboard();
+        safeToast(`🎉 '${nickname}'님의 점수(${score}점)가 명예의 전당에 등록되었습니다!`, false);
+      };
+      document.getElementById('inline-rank-submit')?.addEventListener('click', doSubmit);
+      inputEl?.addEventListener('keydown', (e) => { if (e.key === 'Enter') doSubmit(); });
+    },
+
+    loadLeaderboard() {
+      if (typeof window.loadGameLeaderboard === 'function') {
+        window.loadGameLeaderboard(GAME_NAME, true, BOARD_ID);
+      } else {
+        const localRanks = JSON.parse(localStorage.getItem(`rank_${BOARD_ID}`) || '[]');
+        this.renderRankList(localRanks.slice(0, 5));
+      }
+    },
+
+    renderRankList(ranks) {
+      const board = document.getElementById(BOARD_ID);
+      if (!board) return;
+      if (!ranks || ranks.length === 0) {
+        board.innerHTML = '<p style="text-align:center; color:#94a3b8; margin:10px 0;">아직 등록된 랭킹이 없습니다. 첫 주인공이 되어보세요!</p>';
+        return;
+      }
+      board.innerHTML = '<ul style="list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:8px;">' + ranks.map((r, i) => `
+        <li style="display:flex; justify-content:space-between; align-items:center; background:#f8fafc; padding:8px 12px; border-radius:10px; border:1px solid #e2e8f0; font-size:14px; font-weight:700;">
+          <span><strong style="color:#4338ca; margin-right:6px;">${i + 1}위</strong> ${typeof escapeHTML === 'function' ? escapeHTML(r.nickname || '익명') : (r.nickname || '익명')}</span>
+          <span style="color:#111827;">${r.score || 0}점</span>
+        </li>
+      `).join('') + '</ul>';
+    },
+
+    bindEvents() {
+      this.root = this.container.querySelector('#euler-path-game');
+      if (!this.root) { console.error('[EulerPath] #euler-path-game root를 찾을 수 없습니다.'); return; }
+      this.root.querySelectorAll('[data-node]').forEach((nodeEl) => nodeEl.addEventListener('click', () => this.moveToNode(nodeEl.getAttribute('data-node'))));
+      this.root.querySelectorAll('[data-edge]').forEach((edgeEl) => edgeEl.addEventListener('click', () => this.moveByEdge(edgeEl.getAttribute('data-edge'))));
+      this.root.querySelectorAll('[data-level]').forEach((button) => button.addEventListener('click', () => this.setLevel(button.getAttribute('data-level'))));
+      const actionMap = {
+        undo: () => this.undo(),
+        impossible: () => this.claimImpossible(),
+        giveup: () => this.giveUpRound(),
+        restart: () => this.reset(),
+        next: () => this.nextPuzzle(),
+        'submit-score': () => this.submitScore(),
+        home: () => {
+          this.destroy();
+          if (window.LegacyBridge && typeof window.LegacyBridge.backHome === 'function') {
+            try { window.LegacyBridge.backHome(); return; } catch(err){}
+          }
+          if (typeof window.goHome === 'function') {
+            window.goHome();
+            const dash = document.getElementById('dashboard-screen');
+            if (dash) dash.style.display = '';
+          } else {
+            location.reload();
+          }
+        }
+      };
+      Object.keys(actionMap).forEach((action) => { const button = this.root.querySelector(`[data-action="${action}"]`); if (button) button.addEventListener('click', actionMap[action]); });
+    }
+  };
+
+  window.EulerPathGame = EulerPathGame;
+
+  function registerEulerPath() {
+    if (window.MathLabGames && typeof window.MathLabGames.register === 'function') {
+      window.MathLabGames.register({
+        id: 'euler-path',
+        title: '한붓그리기',
+        icon: '✏️',
+        description: '모든 선을 한 번씩만 지나 목표 경로를 완성합니다',
+        sourceType: 'new',
+        mount(container, context) { EulerPathGame.mount(container, context); },
+        reset() { EulerPathGame.reset(); },
+        destroy() { EulerPathGame.destroy(); }
+      });
+    }
+  }
+
+  registerEulerPath();
+  document.addEventListener('DOMContentLoaded', registerEulerPath);
+  setTimeout(registerEulerPath, 300);
+
+  window.launchEulerPathGame = function () {
+    if (!window.MathLabGames) {
+      safeToast('MathLabGames를 찾을 수 없습니다. load 타이밍이나 include 위치를 확인하세요.', true);
+      return;
+    }
+    if (window.LegacyBridge) {
+      window.LegacyBridge.hideAllLegacySections();
+      window.LegacyBridge.showNewRoot();
+    }
+    try {
+      window.MathLabGames.mount('euler-path');
+    } catch (error) {
+      console.error('한붓그리기 실행 오류:', error);
+      safeToast('한붓그리기 실행 중 오류가 발생했습니다: ' + (error && error.message ? error.message : error), true);
+    }
+  };
+})();
+</script>

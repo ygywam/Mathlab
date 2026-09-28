@@ -1,0 +1,1191 @@
+<style>
+  /* Gen-3 Slate & Dark Navy Theme */
+  .game-card-master {
+    position: relative;
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto;
+    font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+    background: #0f172a; /* Slate 900 */
+    color: #f8fafc;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 600px;
+    box-sizing: border-box;
+  }
+  .game-card-master * { box-sizing: border-box; }
+
+  /* Header */
+  .game-card-master .cm-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background: #1e293b; /* Slate 800 */
+    border-bottom: 2px solid #334155;
+  }
+  .game-card-master .cm-title {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #38bdf8;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .game-card-master .cm-header-btns {
+    display: flex;
+    gap: 10px;
+  }
+  .game-card-master .cm-btn {
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+    background: #334155;
+    color: #f8fafc;
+  }
+  .game-card-master .cm-btn:hover { background: #475569; transform: translateY(-2px); }
+  .game-card-master .cm-btn-primary { background: #0284c7; }
+  .game-card-master .cm-btn-primary:hover { background: #0369a1; }
+  .game-card-master .cm-btn-home { background: #ef4444; }
+  .game-card-master .cm-btn-home:hover { background: #dc2626; }
+
+  /* Main Arena */
+  .game-card-master .cm-arena {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    position: relative;
+    background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
+  }
+
+  /* Status Bar (HP & Combo) */
+  .game-card-master .cm-status-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+  }
+  .game-card-master .cm-entity-status {
+    width: 40%;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .game-card-master .cm-entity-name {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #e2e8f0;
+  }
+  .game-card-master .cm-hp-bar-bg {
+    width: 100%;
+    height: 12px;
+    background: #334155;
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .game-card-master .cm-hp-bar-fill {
+    height: 100%;
+    background: #10b981;
+    width: 100%;
+    transition: width 0.3s ease, background 0.3s ease;
+  }
+  .game-card-master .cm-player-hp .cm-hp-bar-fill { background: #38bdf8; }
+  .game-card-master .cm-monster-hp .cm-hp-bar-fill { background: #ef4444; }
+  .game-card-master .cm-combo-box {
+    text-align: center;
+  }
+  .game-card-master .cm-combo-text {
+    font-size: 1.8rem;
+    font-weight: 900;
+    color: #facc15;
+    text-shadow: 0 0 10px rgba(250, 204, 21, 0.5);
+    transition: transform 0.2s;
+  }
+  .game-card-master .cm-score-text {
+    font-size: 1.1rem;
+    color: #94a3b8;
+    margin-top: 5px;
+  }
+
+  /* Battle Area */
+  .game-card-master .cm-battle-area {
+    display: flex;
+    flex: 1;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+  }
+
+  /* Player Side */
+  .game-card-master .cm-player-side {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+  }
+  
+  /* Problem Card */
+  .game-card-master .cm-problem-card {
+    background: #ffffff;
+    color: #0f172a;
+    width: 100%;
+    max-width: 380px;
+    min-height: 200px;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    border: 4px solid #334155;
+    transition: transform 0.3s, border-color 0.3s;
+  }
+  .game-card-master .cm-problem-text {
+    font-size: 1.3rem;
+    font-weight: 700;
+    line-height: 1.5;
+    word-break: keep-all;
+  }
+  .game-card-master .cm-boss-badge {
+    position: absolute;
+    top: -15px;
+    background: #ef4444;
+    color: #fff;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-weight: 800;
+    font-size: 0.9rem;
+    box-shadow: 0 4px 10px rgba(239, 68, 68, 0.5);
+    display: none;
+  }
+
+  /* Controls (Judge & Calc) */
+  .game-card-master .cm-controls {
+    width: 100%;
+    max-width: 380px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    background: #1e293b;
+    padding: 15px;
+    border-radius: 12px;
+    border: 1px solid #334155;
+  }
+  
+  .game-card-master .cm-step-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #cbd5e1;
+    text-align: center;
+    margin-bottom: 5px;
+  }
+
+  .game-card-master .cm-judge-btns {
+    display: flex;
+    gap: 10px;
+  }
+  .game-card-master .cm-judge-btn {
+    flex: 1;
+    padding: 15px;
+    font-size: 1.2rem;
+    font-weight: 800;
+    border-radius: 8px;
+    border: 2px solid #475569;
+    background: #0f172a;
+    color: #e2e8f0;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .game-card-master .cm-judge-btn:hover { background: #334155; border-color: #94a3b8; }
+  .game-card-master .cm-judge-btn.selected { background: #0284c7; border-color: #38bdf8; color: #fff; }
+
+  .game-card-master .cm-calc-area {
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .game-card-master .cm-calc-input-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #0f172a;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #475569;
+  }
+  .game-card-master .cm-calc-formula {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: #38bdf8;
+    min-width: 60px;
+    text-align: center;
+  }
+  .game-card-master .cm-calc-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-size: 1.4rem;
+    font-weight: 700;
+    text-align: center;
+    outline: none;
+  }
+  .game-card-master .cm-attack-btn {
+    padding: 12px;
+    font-size: 1.2rem;
+    font-weight: 800;
+    background: #facc15;
+    color: #854d0e;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.1s, filter 0.2s;
+  }
+  .game-card-master .cm-attack-btn:hover { filter: brightness(1.1); }
+  .game-card-master .cm-attack-btn:active { transform: scale(0.95); }
+
+  /* Monster Side */
+  .game-card-master .cm-monster-side {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+  }
+  
+  .game-card-master .cm-monster-sprite.hit {
+    animation: cmShake 0.4s;
+    filter: drop-shadow(0 10px 20px rgba(239, 68, 68, 0.8));
+  }
+  .game-card-master .cm-monster-sprite.attack {
+    animation: cmDash 0.4s;
+  }
+  
+  
+  .game-card-master .cm-timer-container { width: 100%; height: 8px; background: #334155; border-radius: 4px; margin-top: 15px; overflow: hidden; }
+  .game-card-master .cm-timer-fill { height: 100%; width: 100%; background: #fbbf24; transition: width 1s linear; }
+  .game-card-master .cm-hp-bar-bg { position: relative; }
+  .game-card-master .cm-hp-text { position: absolute; width: 100%; text-align: center; top: 0; left: 0; color: white; font-size: 0.75rem; font-weight: bold; line-height: 12px; pointer-events: none; text-shadow: 1px 1px 2px black; }
+  .game-card-master .cm-collection-area { margin-top: 15px; background: rgba(30, 41, 59, 0.8); padding: 10px; border-radius: 8px; min-height: 50px; }
+  .game-card-master .cm-collection-title { font-size: 0.85rem; color: #94a3b8; margin-bottom: 5px; font-weight: bold; }
+  .game-card-master .cm-collection-list { display: flex; gap: 5px; flex-wrap: wrap; }
+  .game-card-master .cm-collection-item { width: 32px; height: 32px; object-fit: contain; border-radius: 4px; border: 1px solid #475569; background: #0f172a; }
+  
+  .game-card-master .cm-monster-sprite { font-size: initial; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5)); transition: transform 0.3s; position: relative; }
+  .game-card-master .cm-monster-img { width: 140px; height: 140px; object-fit: contain; transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+  .game-card-master .cm-pokeball-anim { position: absolute; width: 60px; height: 60px; left: 50%; top: 50%; transform: translate(-50%, -50%) scale(0); opacity: 0; transition: all 0.4s ease; z-index: 10; pointer-events:none;}
+  .game-card-master .cm-pokeball-anim.active { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+  .game-card-master .cm-monster-sprite.hit { animation: cmShake 0.4s; filter: drop-shadow(0 10px 20px rgba(239, 68, 68, 0.8)); }
+  .game-card-master .cm-monster-sprite.attack { animation: cmDash 0.4s; }
+
+  .game-card-master .cm-dmg-float {
+    position: absolute;
+    font-size: 2rem;
+    font-weight: 900;
+    color: #ef4444;
+    text-shadow: 0 2px 5px rgba(0,0,0,0.8);
+    pointer-events: none;
+    opacity: 0;
+  }
+  .game-card-master .cm-dmg-float.show {
+    animation: cmFloatUp 1s forwards;
+  }
+
+  /* Screens (Intro / Game Over) */
+  .game-card-master .cm-overlay-screen {
+    position: absolute;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.9);
+    backdrop-filter: blur(5px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+    text-align: center;
+    padding: 20px;
+  }
+  .game-card-master .cm-overlay-screen h2 {
+    font-size: 2.5rem;
+    color: #38bdf8;
+    margin-bottom: 10px;
+  }
+  .game-card-master .cm-overlay-screen p {
+    font-size: 1.1rem;
+    color: #cbd5e1;
+    max-width: 500px;
+    line-height: 1.6;
+    margin-bottom: 30px;
+  }
+  .game-card-master .cm-start-btn {
+    padding: 15px 40px;
+    font-size: 1.4rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #0284c7, #3b82f6);
+    color: #fff;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    box-shadow: 0 10px 20px rgba(2, 132, 199, 0.4);
+    transition: transform 0.2s;
+  }
+  .game-card-master .cm-start-btn:hover { transform: scale(1.05); }
+
+  /* Bottom Ranking Board */
+  .game-card-master .bottom-ranking-card {
+    background: #1e293b;
+    border-top: 2px solid #334155;
+    padding: 15px 20px;
+  }
+  .game-card-master .ranking-title {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #facc15;
+    margin-bottom: 10px;
+  }
+  .game-card-master .cm-ranking-list {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  /* Animations */
+  @keyframes cmShake {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-15px) rotate(-5deg); }
+    50% { transform: translateX(15px) rotate(5deg); }
+    75% { transform: translateX(-15px) rotate(-5deg); }
+    100% { transform: translateX(0); }
+  }
+  @keyframes cmDash {
+    0% { transform: translateX(0); }
+    50% { transform: translateX(-100px) scale(1.2); }
+    100% { transform: translateX(0); }
+  }
+  @keyframes cmFloatUp {
+    0% { transform: translateY(0) scale(1); opacity: 1; }
+    100% { transform: translateY(-50px) scale(1.5); opacity: 0; }
+  }
+
+  /* Toast & Modals */
+  .cm-toast {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(15, 23, 42, 0.95);
+    color: #fff;
+    padding: 12px 24px;
+    border-radius: 30px;
+    font-weight: 700;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    z-index: 9999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s, top 0.3s;
+    border: 1px solid #334155;
+  }
+  .cm-toast.show { opacity: 1; top: 40px; }
+  .cm-toast.error { border-color: #ef4444; color: #f87171; }
+  .cm-toast.success { border-color: #10b981; color: #34d399; }
+
+  .cm-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(5px);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+  }
+  .cm-modal {
+    background: #1e293b;
+    width: 90%;
+    max-width: 500px;
+    border-radius: 16px;
+    padding: 30px;
+    border: 1px solid #334155;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    text-align: center;
+    color: #f8fafc;
+  }
+  .cm-modal h3 { font-size: 1.5rem; margin-bottom: 15px; color: #38bdf8; }
+  .cm-modal p { font-size: 1.05rem; line-height: 1.6; color: #cbd5e1; margin-bottom: 20px; text-align: left; }
+  .cm-modal input {
+    width: 100%;
+    padding: 12px;
+    font-size: 1.1rem;
+    border-radius: 8px;
+    border: 1px solid #475569;
+    background: #0f172a;
+    color: #fff;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  .cm-modal .cm-modal-close {
+    padding: 10px 20px;
+    background: #0284c7;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  @media (max-width: 768px) {
+    .game-card-master .cm-battle-area { flex-direction: column; }
+    .game-card-master .cm-monster-side { order: -1; margin-bottom: 20px; }
+  }
+</style>
+
+<script>
+const CardMaster = (function() {
+  let host = null;
+  let state = 'intro'; // intro, play, gameover
+  
+  let score = 0;
+  let combo = 0;
+  let stage = 1;
+  let playerHp = 100;
+  let monsterHp = 100;
+  let maxMonsterHp = 100;
+  let isBoss = false;
+  
+  let currentProblem = null;
+  let selectedType = null; // 'P' or 'C'
+  
+  let timerInterval;
+  let timeLeft = 30;
+  let maxTime = 30;
+  let collectedMonsters = [];
+  
+  const MONSTERS = ['👾', '👹', '👺', '👻', '👽', '🤖', '🐲'];
+  const BOSS = '💀';
+  let currentMonster = '👾';
+
+  const problemBank = [
+    { text: "서로 다른 {n}명 중 {r}명을 뽑아 일렬로 세우기", type: "P", desc: "순서가 중요하므로 순열(P)입니다." },
+    { text: "서로 다른 {n}권의 책 중 {r}권을 골라 책꽂이에 나란히 꽂기", type: "P", desc: "위치(순서)가 달라지면 다른 경우이므로 순열(P)입니다." },
+    { text: "{n}명의 학생 중 회장 1명, 부회장 1명 선출하기", type: "P", desc: "직책이 다르므로 뽑는 순서가 중요합니다. (순열 P)" },
+    { text: "1부터 {n}까지 숫자 중 서로 다른 {r}개를 뽑아 {r}자리 자연수 만들기", type: "P", desc: "숫자의 자리가 바뀌면 다른 수가 되므로 순열(P)입니다." },
+    { text: "서로 다른 {n}가지 아이스크림 중 {r}가지를 고르기", type: "C", desc: "고르기만 하므로 순서와 무관합니다. (조합 C)" },
+    { text: "{n}명의 학생 중 대표 {r}명 선출하기", type: "C", desc: "직책이 같으므로 순서에 상관없이 뽑기만 합니다. (조합 C)" },
+    { text: "서로 다른 {n}개의 점 중 {r}개를 이어 다각형 만들기", type: "C", desc: "어떤 점을 먼저 고르든 같은 다각형이 되므로 조합(C)입니다." },
+    { text: "서로 다른 {n}종류의 과일 중 {r}가지를 선택해 샐러드 만들기", type: "C", desc: "과일이 섞이므로 넣는 순서는 무관합니다. (조합 C)" }
+  ];
+
+  const bossBank = [
+    { text: "서로 다른 {n}명을 원탁에 앉히기", type: "원순열", formula: "(n-1)!", desc: "회전하여 일치하는 것은 같은 것으로 보므로 원순열입니다." },
+    { text: "서로 다른 {n}개의 숫자 중 중복을 허락해 {r}자리 비밀번호 만들기", type: "중복순열", formula: "n^r", desc: "중복해서 뽑아 일렬로 나열하므로 중복순열입니다." },
+    { text: "서로 다른 {n}가지 맛 사탕 중 중복을 허락해 {r}개를 고르기", type: "중복조합", formula: "nHr", desc: "순서 없이 중복을 허락하여 고르므로 중복조합입니다." }
+  ];
+
+  function factorial(n) {
+    if (n <= 1) return 1;
+    return n * factorial(n - 1);
+  }
+  function permutation(n, r) {
+    if (r === 0) return 1;
+    return factorial(n) / factorial(n - r);
+  }
+  function combination(n, r) {
+    if (r === 0) return 1;
+    return permutation(n, r) / factorial(r);
+  }
+
+  function escapeHTML(str) {
+    if (!str) return '';
+    return str.replace(/[&<>'"]/g, tag => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+    }[tag]));
+  }
+
+  function showToast(msg, type = 'normal') {
+    let toast = document.getElementById('cm-toast');
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.id = 'cm-toast';
+      toast.className = 'cm-toast';
+      document.body.appendChild(toast);
+    }
+    toast.className = 'cm-toast ' + type + ' show';
+    toast.textContent = msg;
+    setTimeout(() => { toast.classList.remove('show'); }, 2500);
+  }
+
+  
+  function startTimer() {
+    clearInterval(timerInterval);
+    timerInterval = setInterval(() => {
+      if (state !== 'play') return;
+      timeLeft--;
+      updateUITimer();
+      
+      if (timeLeft <= 0) {
+        playerHp -= 15;
+        showToast('시간 초과! 데미지 15', 'error');
+        if (host) {
+            const playerSide = host.querySelector('.cm-player-side');
+            if (playerSide) showFloatingText(playerSide, '-15', '#ef4444');
+        }
+        
+        if (playerHp <= 0) {
+          state = 'gameover';
+          clearInterval(timerInterval);
+          if (host && host.querySelector('#cm-final-score')) host.querySelector('#cm-final-score').textContent = score;
+        } else {
+          timeLeft = maxTime;
+        }
+        updateUI();
+      }
+    }, 1000);
+  }
+  
+  function updateUITimer() {
+    if (!host) return;
+    const fill = host.querySelector('#cm-timer-fill');
+    if (fill) fill.style.width = (timeLeft / maxTime) * 100 + '%';
+  }
+
+  function updateUI() {
+    if (!host) return;
+    const sIntro = host.querySelector('#cm-screen-intro');
+    const sPlay = host.querySelector('#cm-screen-play');
+    const sOver = host.querySelector('#cm-screen-gameover');
+    
+    if (sIntro) sIntro.style.display = state === 'intro' ? 'flex' : 'none';
+    if (sPlay) sPlay.style.display = state === 'play' ? 'flex' : 'none';
+    if (sOver) sOver.style.display = state === 'gameover' ? 'flex' : 'none';
+
+    if (state === 'play') {
+      host.querySelector('#cm-player-hp-fill').style.width = Math.max(0, (playerHp / 100) * 100) + '%';
+      if(host.querySelector('#cm-player-hp-text')) host.querySelector('#cm-player-hp-text').textContent = `${Math.max(0, playerHp)} / 100`;
+      host.querySelector('#cm-monster-hp-fill').style.width = Math.max(0, (monsterHp / maxMonsterHp) * 100) + '%';
+      if(host.querySelector('#cm-monster-hp-text')) host.querySelector('#cm-monster-hp-text').textContent = `${Math.max(0, monsterHp)} / ${maxMonsterHp}`;
+      host.querySelector('#cm-combo-val').textContent = combo;
+      host.querySelector('#cm-score-val').textContent = score;
+      host.querySelector('#cm-stage-num').textContent = stage;
+      if(host.querySelector('#cm-monster-emoji')) host.querySelector('#cm-monster-emoji').textContent = currentMonster;
+      
+      const collList = host.querySelector('#cm-collection-list');
+      if (collList) {
+          collList.innerHTML = '';
+          collectedMonsters.forEach(emoji => {
+            const span = document.createElement('span');
+            span.textContent = emoji;
+            span.style.fontSize = '24px';
+            collList.appendChild(span);
+          });
+      }
+      
+      updateUITimer();
+
+      if (currentProblem) {
+        host.querySelector('#cm-problem-text').textContent = currentProblem.text;
+        const bossBadge = host.querySelector('#cm-boss-badge');
+        if (isBoss) {
+          bossBadge.style.display = 'block';
+          bossBadge.textContent = '보스전 심화: ' + currentProblem.type;
+        } else {
+          bossBadge.style.display = 'none';
+        }
+      }
+
+      
+      const calcArea = host.querySelector('#cm-calc-area');
+      const judgeBtns = host.querySelector('#cm-judge-btns');
+      
+      if (isBoss) {
+        if(judgeBtns) judgeBtns.style.display = 'none';
+        if(calcArea) {
+            calcArea.style.display = 'flex';
+            host.querySelector('#cm-calc-formula').innerHTML = currentProblem.formulaStr + ' =';
+        }
+      } else {
+        if(judgeBtns) judgeBtns.style.display = 'flex';
+        host.querySelector('#cm-btn-p').classList.toggle('selected', selectedType === 'P');
+        host.querySelector('#cm-btn-c').classList.toggle('selected', selectedType === 'C');
+        
+        if (selectedType) {
+          if(calcArea) calcArea.style.display = 'flex';
+          host.querySelector('#cm-calc-formula').innerHTML = `<sub>${currentProblem.n}</sub>${selectedType}<sub>${currentProblem.r}</sub> =`;
+        } else {
+          if(calcArea) calcArea.style.display = 'none';
+        }
+      }
+
+    }
+  }
+
+  function generateStage() {
+    isBoss = (stage % 5 === 0);
+    if (isBoss) {
+      currentMonster = BOSS;
+      maxMonsterHp = 150 + stage * 40;
+    } else {
+      currentMonster = MONSTERS[Math.floor(Math.random() * MONSTERS.length)];
+      maxMonsterHp = 50 + stage * 30;
+    }
+    monsterHp = maxMonsterHp;
+    
+    timeLeft = Math.max(10, 30 - Math.floor(stage / 2) * 2);
+    maxTime = timeLeft;
+    startTimer();
+    
+    generateProblem();
+  }
+
+  function generateProblem() {
+    let templateObj;
+    let n, r, ans;
+    let formulaStr = '';
+
+    if (isBoss) {
+      templateObj = bossBank[Math.floor(Math.random() * bossBank.length)];
+      if (templateObj.type === '원순열') {
+        n = Math.floor(Math.random() * 3) + 4; // 4~6
+        r = n;
+        ans = factorial(n - 1);
+        formulaStr = `원순열(${n})`;
+      } else if (templateObj.type === '중복순열') {
+        n = Math.floor(Math.random() * 3) + 3; // 3~5
+        r = Math.floor(Math.random() * 3) + 2; // 2~4
+        ans = Math.pow(n, r);
+        formulaStr = `<sub>${n}</sub>Π<sub>${r}</sub>`;
+      } else if (templateObj.type === '중복조합') {
+        n = Math.floor(Math.random() * 2) + 3; // 3~4
+        r = Math.floor(Math.random() * 3) + 2; // 2~4
+        ans = combination(n + r - 1, r);
+        formulaStr = `<sub>${n}</sub>H<sub>${r}</sub>`;
+      }
+    } else {
+      templateObj = problemBank[Math.floor(Math.random() * problemBank.length)];
+      n = Math.floor(Math.random() * (9 - 4 + 1)) + 4; // 4~9
+      r = Math.floor(Math.random() * (Math.min(4, n-1) - 2 + 1)) + 2; // 2~4
+      
+      if (templateObj.type === 'P') {
+        ans = permutation(n, r);
+      } else {
+        ans = combination(n, r);
+      }
+    }
+
+    let text = templateObj.text.replace(/\{n\}/g, n).replace(/\{r\}/g, r);
+    
+    currentProblem = {
+      text: text,
+      type: templateObj.type,
+      n: n,
+      r: r,
+      ans: ans,
+      desc: templateObj.desc,
+      formulaStr: formulaStr
+    };
+    
+    selectedType = null;
+    if (host) {
+      host.querySelector('#cm-calc-input').value = '';
+    }
+  }
+
+  function checkAnswer() {
+    if (!isBoss && !selectedType) return;
+    const inputVal = parseInt(host.querySelector('#cm-calc-input').value, 10);
+    
+    if (isNaN(inputVal)) {
+      showToast('계산값을 입력하세요.', 'error');
+      return;
+    }
+
+    // Boss exception logic
+    if (isBoss) {
+      if (inputVal === currentProblem.ans) {
+        processHit(true);
+      } else {
+        processHit(false, '오답! ' + currentProblem.desc + ` 정답은 ${currentProblem.ans}`);
+      }
+      return;
+    }
+
+    // Normal stage logic
+    if (selectedType === currentProblem.type && inputVal === currentProblem.ans) {
+      processHit(true);
+    } else if (selectedType !== currentProblem.type) {
+      processHit(false, '판별 오류! ' + currentProblem.desc);
+    } else {
+      processHit(false, `계산 오류! 정답은 ${currentProblem.ans} 입니다.`);
+    }
+  }
+
+  function processHit(isCorrect, errMsg = '') {
+    const monsterEl = host.querySelector('#cm-monster');
+    const playerSide = host.querySelector('.cm-player-side');
+    
+    if (isCorrect) {
+      combo++;
+      const baseDmg = isBoss ? 50 : 30;
+      const dmg = baseDmg + (combo * 5);
+      score += dmg;
+      monsterHp -= dmg;
+      
+      showFloatingText(monsterEl.parentElement, `-${dmg}`, '#38bdf8');
+      monsterEl.classList.add('hit');
+      setTimeout(()=>monsterEl.classList.remove('hit'), 400);
+      showToast(`${combo} 콤보! 강력한 공격!`, 'success');
+
+      if (monsterHp <= 0) {
+        clearInterval(timerInterval);
+        updateUI();
+        
+        const mEmoji = host.querySelector('#cm-monster-emoji');
+        const pBall = host.querySelector('#cm-pokeball-img');
+        if (mEmoji && pBall) {
+            mEmoji.style.transform = 'scale(0)';
+            pBall.classList.add('active');
+        }
+        
+        setTimeout(() => {
+          if (pBall) pBall.classList.remove('active');
+          if (mEmoji) mEmoji.style.transform = 'scale(1)';
+          
+          if (!isBoss || stage % 5 === 0) {
+            collectedMonsters.push(currentMonster);
+          }
+          
+          stage++;
+          score += (isBoss ? 50 : 20);
+          showToast(isBoss ? '보스 포획 성공! +50점' : '포켓몬 포획 성공! +20점', 'success');
+          generateStage();
+          updateUI();
+        }, 1200);
+      } else {
+        generateProblem();
+        updateUI();
+      }
+    } else {
+      combo = 0;
+      const dmg = isBoss ? 30 : 15;
+      playerHp -= dmg;
+      
+      monsterEl.classList.add('attack');
+      setTimeout(()=>monsterEl.classList.remove('attack'), 400);
+      
+      showFloatingText(playerSide, `-${dmg}`, '#ef4444');
+      showToast(errMsg, 'error');
+      
+      // show guide modal
+      showGuideModal('오답 해설', errMsg + (isBoss ? '' : `<br><br>올바른 수식: <b><sub>${currentProblem.n}</sub>${currentProblem.type}<sub>${currentProblem.r}</sub> = ${currentProblem.ans}</b>`));
+
+      if (playerHp <= 0) {
+        state = 'gameover';
+        if (host.querySelector('#cm-final-score')) {
+          host.querySelector('#cm-final-score').textContent = score;
+        }
+      }
+      
+      selectedType = null;
+      if(host) host.querySelector('#cm-calc-input').value = '';
+      updateUI();
+    }
+  }
+
+  function showFloatingText(parent, text, color) {
+    const el = document.createElement('div');
+    el.className = 'cm-dmg-float show';
+    el.textContent = text;
+    el.style.color = color;
+    el.style.top = '20%';
+    el.style.left = '50%';
+    el.style.transform = 'translate(-50%, -50%)';
+    parent.appendChild(el);
+    setTimeout(() => el.remove(), 1000);
+  }
+
+  function resetGame(startPlay = true) {
+    score = 0;
+    combo = 0;
+    stage = 1;
+    playerHp = 100;
+    state = startPlay ? 'play' : 'intro';
+    collectedMonsters = [];
+    clearInterval(timerInterval);
+    generateStage();
+    updateUI();
+  }
+
+  function showGuideModal(title, content) {
+    let modal = document.getElementById('cm-guide-modal');
+    if (!modal) {
+      modal = document.createElement('div');
+      modal.id = 'cm-guide-modal';
+      modal.className = 'cm-modal-overlay';
+      modal.innerHTML = `
+        <div class="cm-modal">
+          <h3 id="cm-guide-title"></h3>
+          <p id="cm-guide-content"></p>
+          <button class="cm-modal-close" onclick="document.getElementById('cm-guide-modal').style.display='none'">확인</button>
+        </div>
+      `;
+      document.body.appendChild(modal);
+    }
+    document.getElementById('cm-guide-title').textContent = title;
+    document.getElementById('cm-guide-content').innerHTML = content;
+    modal.style.display = 'flex';
+  }
+
+  function showRankingModal() {
+    let modal = document.getElementById('cm-ranking-modal');
+    if (!modal) {
+      modal = document.createElement('div');
+      modal.id = 'cm-ranking-modal';
+      modal.className = 'cm-modal-overlay';
+      modal.innerHTML = `
+        <div class="cm-modal">
+          <h3>🏆 명예의 전당 등록</h3>
+          <p>최종 점수: <strong id="cm-rank-score" style="color:#facc15; font-size:1.5rem;"></strong> 점</p>
+          <input type="text" id="cm-rank-name" placeholder="닉네임 (10자 이내)" maxlength="10">
+          <button class="cm-modal-close" id="cm-rank-submit">등록하기</button>
+          <button class="cm-modal-close" style="background:#475569; margin-left:10px;" onclick="document.getElementById('cm-ranking-modal').style.display='none'">닫기</button>
+        </div>
+      `;
+      document.body.appendChild(modal);
+      
+      document.getElementById('cm-rank-submit').addEventListener('click', () => {
+        const nameInput = document.getElementById('cm-rank-name');
+        let name = nameInput.value.trim();
+        if (!name) { showToast('닉네임을 입력하세요.', 'error'); return; }
+        name = escapeHTML(name);
+        
+        // Save to local storage for now (fallback), if submitRankingScore exists, call it.
+        let meta = { collection: collectedMonsters };
+        if (typeof submitRankingScore === 'function') {
+          submitRankingScore('card-master', name, score, meta);
+        } else {
+          let list = JSON.parse(localStorage.getItem('mathlab_lb_card-master') || '[]');
+          list.push({ nickname: name, score: score, meta: meta });
+          list.sort((a,b) => b.score - a.score);
+          localStorage.setItem('mathlab_lb_card-master', JSON.stringify(list));
+        }
+        
+        showToast('명예의 전당에 등록되었습니다!', 'success');
+        document.getElementById('cm-ranking-modal').style.display = 'none';
+        renderBottomLeaderboard();
+        resetGame(false);
+      });
+    }
+    document.getElementById('cm-rank-score').textContent = score;
+    document.getElementById('cm-rank-name').value = '';
+    modal.style.display = 'flex';
+  }
+
+  function mount(container, context = {}) {
+    if (typeof container === 'string') host = document.querySelector(container);
+    else if (container instanceof HTMLElement) host = container;
+    
+    if (!host) host = window.MathLabUtils?.getMountContainer ? window.MathLabUtils.getMountContainer(container) : document.getElementById('mathlab-view');
+    if (!host || !(host instanceof HTMLElement)) host = document.getElementById('new-root') || document.getElementById('game-container') || document.getElementById('mathlab-view');
+
+    // 푸터 위 호스트 생성
+    if (!host || !(host instanceof HTMLElement) || host === document.body) {
+      let createdHost = document.getElementById('card-master-force-host');
+      if (!createdHost) {
+        createdHost = document.createElement('div');
+        createdHost.id = 'card-master-force-host';
+        document.body.appendChild(createdHost);
+      }
+      host = createdHost;
+    }
+
+    const footerEl = document.querySelector('footer, #footer, .app-footer') || 
+                     Array.from(document.querySelectorAll('div, p, span')).find(el => el.textContent && el.textContent.includes('2026 기록조율사'));
+    if (footerEl && host && typeof host.compareDocumentPosition === 'function' && (host.compareDocumentPosition(footerEl) & Node.DOCUMENT_POSITION_PRECEDING)) {
+      footerEl.parentNode.insertBefore(host, footerEl);
+    }
+
+    host.style.display = '';
+    host.style.visibility = 'visible';
+    host.style.opacity = '1';
+
+    let parent = host.parentElement;
+    while (parent && parent !== document.body && parent !== document.documentElement) {
+      if (parent.style && parent.style.display === 'none') parent.style.display = 'block';
+      if (parent.style && parent.style.visibility === 'hidden') parent.style.visibility = 'visible';
+      parent = parent.parentElement;
+    }
+
+    document.querySelectorAll('header, .navbar, #app-header, .top-bar, #floating-home-btn, .floating-home').forEach(el => {
+      if (el && el.style && el.style.display === 'none') el.style.display = '';
+    });
+
+    host.innerHTML = `
+      <div class="game-card-master" id="cm-main-container">
+        
+        <!-- Header -->
+        <div class="cm-header">
+          <div class="cm-title">🃏 순열 조합 카드 마스터</div>
+          <div class="cm-header-btns">
+            <button class="cm-btn cm-btn-primary" id="cm-btn-guide">📖 게임 방법</button>
+            <button class="cm-btn cm-btn-home" id="cm-btn-home">🏠 홈으로</button>
+          </div>
+        </div>
+
+        <!-- Intro Screen -->
+        <div class="cm-overlay-screen" id="cm-screen-intro">
+          <h2>순열 조합 카드 마스터</h2>
+          <p>주어진 상황이 순열(P)인지 조합(C)인지 판별하고 값을 계산하여 몬스터를 처치하세요!<br>연속으로 맞히면 콤보가 쌓여 공격력이 증가합니다.</p>
+          <button class="cm-start-btn" id="cm-btn-start">게임 시작</button>
+        </div>
+
+        <!-- Game Over Screen -->
+        <div class="cm-overlay-screen" id="cm-screen-gameover" style="display:none;">
+          <h2 style="color:#ef4444;">게임 오버</h2>
+          <p>플레이어의 체력이 모두 소진되었습니다.<br>최종 점수: <strong id="cm-final-score" style="color:#facc15; font-size:1.5rem;">0</strong> 점</p>
+          <div style="display:flex; gap:15px;">
+            <button class="cm-start-btn" id="cm-btn-retry">다시 하기</button>
+            <button class="cm-start-btn" style="background:#f59e0b;" id="cm-btn-rank">🏆 랭킹 등록</button>
+          </div>
+        </div>
+
+        <!-- Play Arena -->
+        <div class="cm-arena" id="cm-screen-play" style="display:none;">
+          
+          <div class="cm-status-bar">
+            <div class="cm-entity-status cm-player-hp">
+              <div class="cm-entity-name">🧑‍🎓 플레이어 HP</div>
+              <div class="cm-hp-bar-bg"><div class="cm-hp-bar-fill" id="cm-player-hp-fill" style="width:100%;"></div><div id="cm-player-hp-text" class="cm-hp-text">100 / 100</div></div>
+              
+              <div class="cm-collection-area">
+                <div class="cm-collection-title">내 콜렉션 🎒</div>
+                <div class="cm-collection-list" id="cm-collection-list"></div>
+              </div>
+            </div>
+            
+            <div class="cm-combo-box">
+              <div class="cm-combo-text"><span id="cm-combo-val">0</span> COMBO</div>
+              <div class="cm-score-text">점수: <span id="cm-score-val">0</span> | 스테이지: <span id="cm-stage-num">1</span></div>
+              <div class="cm-timer-container"><div id="cm-timer-fill" class="cm-timer-fill"></div></div>
+            </div>
+
+            <div class="cm-entity-status cm-monster-hp" style="text-align:right; align-items:flex-end;">
+              <div class="cm-entity-name">몬스터 HP 👹</div>
+              <div class="cm-hp-bar-bg"><div class="cm-hp-bar-fill" id="cm-monster-hp-fill" style="width:100%;"></div><div id="cm-monster-hp-text" class="cm-hp-text">100 / 100</div></div>
+            </div>
+          </div>
+
+          <div class="cm-battle-area">
+            <div class="cm-player-side">
+              
+              <div class="cm-problem-card">
+                <div class="cm-boss-badge" id="cm-boss-badge">보스전 심화</div>
+                <div class="cm-problem-text" id="cm-problem-text">문제가 로딩 중입니다...</div>
+              </div>
+
+              <div class="cm-controls">
+                <div class="cm-step-title">STEP 1: 순열/조합 판별</div>
+                <div class="cm-judge-btns" id="cm-judge-btns">
+                  <button class="cm-judge-btn" id="cm-btn-p">순열 (P)</button>
+                  <button class="cm-judge-btn" id="cm-btn-c">조합 (C)</button>
+                </div>
+
+                <div class="cm-calc-area" id="cm-calc-area">
+                  <div class="cm-step-title">STEP 2: 계산 및 공격</div>
+                  <div class="cm-calc-input-wrapper">
+                    <span class="cm-calc-formula" id="cm-calc-formula"></span>
+                    <input type="number" class="cm-calc-input" id="cm-calc-input" placeholder="정답">
+                    <button class="cm-attack-btn" id="cm-btn-attack">공격 🚀</button>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <div class="cm-monster-side">
+              <div class="cm-monster-sprite" id="cm-monster" style="position:relative;">
+                <span id="cm-monster-emoji" style="font-size: 80px; display:inline-block; transition: transform 0.5s;">👾</span>
+                <img id="cm-pokeball-img" class="cm-pokeball-anim" src="assets/pokeball.jpg">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 🌟 하단 상시 명예의 전당 랭킹 보드 -->
+        <div class="bottom-ranking-card" id="board-card-master-wrapper">
+          <div class="ranking-title">🏆 명예의 전당 (실시간 랭킹 보드)</div>
+          <div class="cm-ranking-list" id="board-card-master">
+            <p style="text-align:center; color:#94a3b8; padding:12px 0;">랭킹 데이터를 불러오는 중...</p>
+          </div>
+        </div>
+
+      </div>
+    `;
+
+    bindEvents();
+    renderBottomLeaderboard();
+    
+    if (state !== 'play') {
+      resetGame(false);
+    } else {
+      updateUI();
+    }
+  }
+
+  function bindEvents() {
+    host.querySelector('#cm-btn-start').addEventListener('click', () => resetGame(true));
+    host.querySelector('#cm-btn-retry').addEventListener('click', () => resetGame(true));
+    host.querySelector('#cm-btn-rank').addEventListener('click', showRankingModal);
+    
+    host.querySelector('#cm-btn-guide').addEventListener('click', () => {
+      showGuideModal('게임 방법 안내', `
+        <b>1. 순열과 조합 판별</b><br>
+        - 상황에서 순서가 중요하면 <b>순열 (P)</b><br>
+        - 순서가 상관없으면 <b>조합 (C)</b><br><br>
+        <b>2. 공식 계산</b><br>
+        - nPr = n! / (n-r)!<br>
+        - nCr = nPr / r!<br><br>
+        <b>3. 보스전</b><br>
+        - 5스테이지마다 원순열, 중복순열, 중복조합 심화 문제가 출제됩니다. 판별 없이 바로 계산을 수행하세요!
+      `);
+    });
+
+    host.querySelector('#cm-btn-home').addEventListener('click', goHome);
+
+    host.querySelector('#cm-btn-p').addEventListener('click', () => {
+      if (isBoss) { showToast('보스전은 자동 판별됩니다.', 'normal'); return; }
+      selectedType = 'P'; updateUI();
+    });
+    host.querySelector('#cm-btn-c').addEventListener('click', () => {
+      if (isBoss) { showToast('보스전은 자동 판별됩니다.', 'normal'); return; }
+      selectedType = 'C'; updateUI();
+    });
+
+    host.querySelector('#cm-btn-attack').addEventListener('click', checkAnswer);
+    host.querySelector('#cm-calc-input').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') checkAnswer();
+    });
+  }
+
+  function renderBottomLeaderboard() {
+    if (typeof loadGameLeaderboard === 'function') {
+      loadGameLeaderboard('card-master', true, 'board-card-master');
+    } else {
+      try {
+        let list = JSON.parse(localStorage.getItem('mathlab_lb_card-master') || '[]');
+        const bottomEl = document.getElementById('board-card-master');
+        if (bottomEl) {
+          if (list.length === 0) {
+            bottomEl.innerHTML = '<p style="text-align:center; color:#94a3b8; padding:12px 0;">아직 등록된 기록이 없습니다. 첫 번째 도전을 완료해보세요!</p>';
+          } else {
+            bottomEl.innerHTML = list.slice(0, 5).map((item, idx) => `
+              <div style="display:flex; flex-direction:column; background:#0f172a; padding:10px 14px; border-radius:10px; border:1px solid #334155; margin-bottom:6px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <span style="font-weight:800; color:${idx === 0 ? '#facc15' : '#cbd5e1'};">${idx === 0 ? '👑 1위' : `${idx + 1}위`} - ${escapeHTML(item.nickname)}</span>
+                  <span style="color:#38bdf8; font-weight:900;">${item.score}점</span>
+                </div>
+                ${item.meta && item.meta.collection && item.meta.collection.length > 0 ? `
+                  <div style="display:flex; gap:3px; flex-wrap:wrap; margin-top:8px; font-size:18px;">
+                    ${item.meta.collection.join('')}
+                  </div>
+                ` : ''}
+              </div>
+            `).join('');
+          }
+        }
+      } catch(e) {}
+    }
+  }
+
+  function goHome() {
+    if (typeof timerInterval !== 'undefined' && timerInterval) clearInterval(timerInterval);
+    if (host) {
+      host.style.display = 'none';
+      host.innerHTML = '';
+    }
+    const legacyHost = document.getElementById('mathlab-view');
+    if (legacyHost) {
+      legacyHost.style.display = 'none';
+      legacyHost.innerHTML = '';
+    }
+    const forceHost = document.getElementById('card-master-force-host');
+    if (forceHost) {
+      forceHost.style.display = 'none';
+      forceHost.innerHTML = '';
+    }
+
+    if (window.LegacyBridge && typeof window.LegacyBridge.backHome === 'function') {
+      window.LegacyBridge.backHome();
+    } else if (typeof window.goHome === 'function') {
+      window.goHome();
+    }
+  }
+
+  function destroy() {
+    state = 'intro';
+    if (host) { host.innerHTML = ''; }
+  }
+
+  return { mount, resetGame, destroy, goHome };
+})();
+
+function registerCardMaster() {
+  if (typeof window.MathLabGames !== 'undefined' && typeof window.MathLabGames.register === 'function') {
+    if (!window.MathLabGames.get('card-master')) {
+      try {
+        window.MathLabGames.register({
+          id: 'card-master',
+          title: '순열 조합 카드 마스터',
+          icon: '🃏',
+          sourceType: 'new',
+          players: '1인',
+          isMultiplayer: false,
+          mount(container, context) { CardMaster.mount(container, context); },
+          reset() { CardMaster.resetGame(false); },
+          destroy() { CardMaster.destroy(); },
+          goHome() { CardMaster.goHome(); }
+        });
+      } catch (e) {
+        console.warn('card-master 등록 방어:', e);
+      }
+    }
+  }
+}
+
+registerCardMaster();
+window.addEventListener('DOMContentLoaded', registerCardMaster);
+setTimeout(registerCardMaster, 100);
+setTimeout(registerCardMaster, 500);
+
+window.CardMaster = CardMaster;
+
+window.initCardMasterGame = function() {
+  registerCardMaster();
+  if (window.LegacyBridge && typeof window.LegacyBridge.hideAllLegacySections === 'function') {
+    window.LegacyBridge.hideAllLegacySections();
+    window.LegacyBridge.showNewRoot();
+  }
+  if (typeof window.MathLabGames !== 'undefined' && typeof window.MathLabGames.mount === 'function') {
+    try { window.MathLabGames.mount('card-master'); return; } catch(e) {}
+  }
+  const targetEl = document.getElementById('mathlab-view') || document.getElementById('new-root') || document.getElementById('game-card-master');
+  CardMaster.mount(targetEl);
+};
+
+window.launchMathLabGame = window.launchMathLabGame || function(id) {
+  if (id === 'card-master') {
+    window.initCardMasterGame();
+  }
+};
+</script>

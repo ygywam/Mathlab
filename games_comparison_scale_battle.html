@@ -1,0 +1,501 @@
+<!-- 12번 크기 비교 저울 배틀 (Comparison Scale Battle) 승자 판정 & 홈 버튼 & 실시간 랭킹 시트 연동 완결판 -->
+<script>
+(function () {
+  function escapeHTML(str) { return String(str || '').replace(/[&<>'"]/g, s => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[s])); }
+  const ScaleBattleGame = {
+    score: 0, combo: 0, maxCombo: 0, timer: 60, timerId: null, lives: 3, gameOver: false, hintUsed: false,
+    currentLeft: null, currentRight: null, correctAnswer: '', containerEl: null, keyHandler: null,
+
+    mount(container) {
+      // 1. 컨테이너 찾기
+      let target = null;
+      if (typeof container === 'string') target = document.querySelector(container);
+      else if (container instanceof HTMLElement) target = container;
+      if (!target) target = document.getElementById('mathlab-view') || document.getElementById('new-root') || document.getElementById('game-container');
+
+      // 2. 💡 [자가 복구 엔진] 컨테이너가 없거나 가려져 있다면, 100% 보이는 전용 도화지 생성!
+      if (!target || target === document.body) {
+        let host = document.getElementById('scale-battle-force-host');
+        if (!host) {
+          host = document.createElement('div');
+          host.id = 'scale-battle-force-host';
+          host.style.cssText = 'width:100%; max-width:960px; margin:0 auto; padding:20px 10px; box-sizing:border-box; z-index:999; position:relative; background:#ffffff; min-height:650px; display:block;';
+          const header = document.querySelector('header, .navbar, #app-header, .top-bar');
+          if (header && header.parentNode) header.parentNode.insertBefore(host, header.nextSibling);
+          else document.body.appendChild(host);
+        }
+        target = host;
+      }
+
+      this.containerEl = target;
+      this.containerEl.style.display = 'block';
+      this.containerEl.style.visibility = 'visible';
+      this.containerEl.style.opacity = '1';
+      this.containerEl.style.minHeight = '650px';
+
+      // 3. 부모 요소들이 숨겨져 있으면 전부 켜주기 (백지 방지!)
+      let parent = this.containerEl.parentElement;
+      while (parent && parent !== document.body && parent !== document.documentElement) {
+        if (parent.style && parent.style.display === 'none') parent.style.display = 'block';
+        if (parent.style && parent.style.visibility === 'hidden') parent.style.visibility = 'visible';
+        parent = parent.parentElement;
+      }
+
+      this.restoreGlobalNavigation();
+      this.renderStyleAndDOM();
+      this.bindEvents();
+      this.resetGame();
+      this.loadLeaderboard();
+    },
+
+    restoreGlobalNavigation() {
+      const navElements = document.querySelectorAll('header, .navbar, #app-header, .top-bar, #floating-home-btn, .floating-home, [id*="home"], [class*="floating"]');
+      navElements.forEach(el => { if (el && el.style && el.style.display === 'none') el.style.display = ''; });
+    },
+
+    renderStyleAndDOM() {
+      if (!this.containerEl) return;
+      this.containerEl.innerHTML = `
+        <style>
+          .game-scale-battle { font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif; max-width: 960px; margin: 0 auto; padding: 14px 10px; color: #1e293b; user-select: none; box-sizing: border-box; width: 100%; }
+          .game-scale-battle * { box-sizing: border-box; }
+          .game-scale-battle .battle-header { text-align: center; background: linear-gradient(135deg, #eff6ff, #dbeafe); border: 2px solid #93c5fd; border-radius: 24px; padding: 20px 14px; margin-bottom: 16px; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.08); }
+          .game-scale-battle .title-row { display: flex; justify-content: center; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
+          .game-scale-battle .title-text { font-size: 28px; font-weight: 900; color: #1d4ed8; margin: 0; }
+          .game-scale-battle .title-badge { background: #1e40af; color: #ffffff; padding: 4px 14px; border-radius: 20px; font-size: 13px; font-weight: 800; }
+          .game-scale-battle .desc-text { color: #475569; font-size: 14px; margin: 0 0 14px; line-height: 1.5; word-break: keep-all; }
+          .game-scale-battle .stats-bar { display: flex; justify-content: space-around; align-items: center; background: #ffffff; border: 1px solid #bfdbfe; border-radius: 16px; padding: 12px; gap: 8px; flex-wrap: wrap; font-weight: 800; font-size: 15px; }
+          .game-scale-battle .stat-item span { color: #2563eb; font-size: 18px; }
+          .game-scale-battle .main-grid { display: grid; grid-template-columns: 1.3fr 1fr; gap: 18px; }
+          @media (max-width: 768px) { .game-scale-battle .main-grid { grid-template-columns: 1fr; } }
+          .game-scale-battle .play-area { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 24px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); display: flex; flex-direction: column; gap: 16px; align-items: center; }
+          .game-scale-battle .status-banner { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 12px; text-align: center; font-weight: 800; font-size: 14px; color: #334155; width: 100%; word-break: keep-all; }
+          .game-scale-battle .status-banner.success { background: #dcfce7; color: #15803d; border-color: #86efac; }
+          .game-scale-battle .status-banner.error { background: #fee2e2; color: #b91c1c; border-color: #fecaca; }
+          .game-scale-battle .scale-box { position: relative; width: 100%; max-width: 440px; height: 210px; display: flex; align-items: center; justify-content: center; margin: 10px 0; }
+          .game-scale-battle .scale-base { position: absolute; bottom: 10px; width: 120px; height: 16px; background: #64748b; border-radius: 8px; }
+          .game-scale-battle .scale-pillar { position: absolute; bottom: 26px; width: 16px; height: 90px; background: #94a3b8; border-radius: 4px; }
+          .game-scale-battle .scale-fulcrum { position: absolute; bottom: 110px; width: 28px; height: 28px; background: #3b82f6; border-radius: 50%; border: 4px solid #ffffff; box-shadow: 0 2px 6px rgba(0,0,0,0.2); z-index: 3; }
+          .game-scale-battle .scale-beam { position: absolute; bottom: 120px; width: 340px; height: 12px; background: #475569; border-radius: 6px; transform-origin: center center; transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
+          .game-scale-battle .scale-beam.tilt-left { transform: rotate(-12deg); }
+          .game-scale-battle .scale-beam.tilt-right { transform: rotate(12deg); }
+          .game-scale-battle .scale-beam.tilt-equal { transform: rotate(0deg); }
+          .game-scale-battle .pan-left, .game-scale-battle .pan-right { position: absolute; top: -110px; width: 140px; display: flex; flex-direction: column; align-items: center; }
+          .game-scale-battle .pan-left { left: 0; } .game-scale-battle .pan-right { right: 0; }
+          .game-scale-battle .pan-string { width: 2px; height: 40px; background: #94a3b8; }
+          .game-scale-battle .pan-plate { width: 130px; height: 12px; background: #cbd5e1; border-radius: 6px; border-bottom: 4px solid #94a3b8; }
+          .game-scale-battle .num-card { width: 120px; height: 70px; background: #ffffff; border: 3px solid #3b82f6; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 26px; font-weight: 900; color: #1e293b; box-shadow: 0 8px 16px rgba(59, 130, 246, 0.15); margin-bottom: 4px; }
+          .game-scale-battle .num-card.frac { font-size: 24px; color: #b45309; border-color: #f59e0b; background: #fffbeb; }
+          .game-scale-battle .num-card.dec { font-size: 26px; color: #1d4ed8; border-color: #3b82f6; background: #eff6ff; }
+          .game-scale-battle .num-card.pct { font-size: 26px; color: #15803d; border-color: #10b981; background: #ecfdf5; }
+          .game-scale-battle .frac-layout { display: flex; flex-direction: column; align-items: center; line-height: 1; }
+          .game-scale-battle .frac-num { border-bottom: 2px solid currentColor; padding: 0 6px 2px; } .game-scale-battle .frac-den { padding: 2px 6px 0; }
+          .game-scale-battle .choice-row { display: flex; gap: 10px; width: 100%; justify-content: center; margin-top: 10px; }
+          .game-scale-battle .btn-choice { flex: 1; padding: 14px 8px; border-radius: 16px; font-size: 15px; font-weight: 900; border: none; cursor: pointer; transition: all 0.15s; display: flex; flex-direction: column; align-items: center; gap: 4px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); }
+          .game-scale-battle .btn-choice:active { transform: scale(0.96); }
+          .game-scale-battle .btn-left { background: #fef3c7; color: #b45309; border: 2px solid #fde68a; } .game-scale-battle .btn-left:hover { background: #fde68a; }
+          .game-scale-battle .btn-equal { background: #f1f5f9; color: #334155; border: 2px solid #cbd5e1; } .game-scale-battle .btn-equal:hover { background: #e2e8f0; }
+          .game-scale-battle .btn-right { background: #dbeafe; color: #1d4ed8; border: 2px solid #bfdbfe; } .game-scale-battle .btn-right:hover { background: #bfdbfe; }
+          .game-scale-battle .action-row { display: flex; gap: 10px; width: 100%; flex-wrap: wrap; margin-top: 10px; }
+          .game-scale-battle .btn-action { flex: 1; min-width: 100px; padding: 12px; border-radius: 14px; font-size: 14px; font-weight: 800; border: none; cursor: pointer; transition: all 0.2s; text-align: center; }
+          .game-scale-battle .btn-hint { background: #fef9c3; color: #a16207; border: 1px solid #fde047; } .game-scale-battle .btn-hint:hover { background: #fde047; }
+          .game-scale-battle .btn-restart { background: #2563eb; color: #ffffff; box-shadow: 0 4px 10px rgba(37, 99, 235, 0.25); } .game-scale-battle .btn-restart:hover { background: #1d4ed8; }
+          .game-scale-battle .btn-home { background: #475569; color: #ffffff; } .game-scale-battle .btn-home:hover { background: #334155; }
+          .game-scale-battle .side-panel { display: flex; flex-direction: column; gap: 16px; }
+          .game-scale-battle .side-box { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 20px; padding: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
+          .game-scale-battle .side-title { font-size: 16px; font-weight: 900; color: #1e293b; margin: 0 0 12px; }
+          .game-scale-battle .rule-list { margin: 0; padding-left: 18px; font-size: 14px; color: #475569; line-height: 1.6; }
+          .game-scale-battle .rank-list { display: flex; flex-direction: column; gap: 8px; } .game-scale-battle .rank-item { display: flex; justify-content: space-between; align-items: center; background: #f8fafc; border: 1px solid #f1f5f9; padding: 10px 14px; border-radius: 12px; font-size: 14px; font-weight: 700; }
+          .game-scale-battle .rank-num { color: #2563eb; font-weight: 900; margin-right: 8px; } .game-scale-battle .rank-score { color: #1e40af; font-weight: 900; }
+        </style>
+
+        <div class="game-scale-battle">
+          <div class="battle-header">
+            <div class="title-row">
+              <span style="font-size:32px;">⚖️</span>
+              <h1 class="title-text">크기 비교 저울 배틀</h1>
+              <span class="title-badge">분수 • 소수 • 백분율 크기 대결</span>
+            </div>
+            <p class="desc-text">저울 위에 올라온 두 수의 크기를 빠르게 비교하세요!<br><strong>분수, 소수, 백분율</strong>을 서로 변환하여 어떤 수가 더 큰지 찾아내야 합니다.</p>
+            <div class="stats-bar">
+              <div class="stat-item">🏆 점수: <span id="cs-score">0</span>점</div>
+              <div class="stat-item">🔥 콤보: <span id="cs-combo">0</span>연속</div>
+              <div class="stat-item">❤️ 남은 생명: <span id="cs-lives">❤️❤️❤️</span></div>
+              <div class="stat-item">⏱️ 남은 시간: <span id="cs-timer">60</span>초</div>
+            </div>
+          </div>
+
+          <div class="main-grid">
+            <div class="play-area">
+              <div class="status-banner" id="cs-status">좌우 저울에 놓인 두 수의 크기를 비교해 아래 버튼을 누르세요!</div>
+              <div class="scale-box">
+                <div class="scale-base"></div><div class="scale-pillar"></div><div class="scale-fulcrum"></div>
+                <div class="scale-beam" id="cs-beam">
+                  <div class="pan-left"><div class="num-card" id="cs-card-left">--</div><div class="pan-string"></div><div class="pan-plate"></div></div>
+                  <div class="pan-right"><div class="num-card" id="cs-card-right">--</div><div class="pan-string"></div><div class="pan-plate"></div></div>
+                </div>
+              </div>
+              <div class="choice-row">
+                <button class="btn-choice btn-left" id="cs-btn-left"><span style="font-size:20px;">⬅️ 왼쪽이 큼</span><span style="font-size:12px; font-weight:700;">(← 또는 A)</span></button>
+                <button class="btn-choice btn-equal" id="cs-btn-equal"><span style="font-size:20px;">🟰 두 값이 같음</span><span style="font-size:12px; font-weight:700;">(↓ 또는 S)</span></button>
+                <button class="btn-choice btn-right" id="cs-btn-right"><span style="font-size:20px;">➡️ 오른쪽이 큼</span><span style="font-size:12px; font-weight:700;">(→ 또는 D)</span></button>
+              </div>
+              <div class="action-row">
+                <button class="btn-action btn-hint" id="cs-btn-hint">💡 동치 표현 힌트 보기 (-5점)</button>
+                <button class="btn-action btn-restart" id="cs-btn-restart">🔄 새 게임 시작</button>
+                <!-- 🚨 [패치 완료] 홈으로 버튼 추가! -->
+                <button class="btn-action btn-home" id="cs-btn-home">🏠 홈으로</button>
+              </div>
+            </div>
+            <div class="side-panel">
+              <div class="side-box">
+                <h3 class="side-title">👑 명예의 전당 Top 5</h3>
+                <!-- 🚨 [패치 완료] 시스템 공식 랭킹 함수가 정확히 찾을 수 있도록 ID를 board-comparison-scale-battle로 일치! -->
+                <div class="rank-list" id="board-comparison-scale-battle"><div style="text-align:center; color:#94a3b8; padding: 12px 0;">랭킹 로딩 중...</div></div>
+              </div>
+              <div class="side-box" style="text-align:center; background:#f8fafc; border:2px solid #cbd5e1; padding:18px 14px;">
+                <div style="font-size:32px; margin-bottom:6px;">📖📐</div>
+                <h3 style="margin:0 0 8px; font-size:1.15rem; color:#1e293b; font-weight:900;">사용설명서 & 교과 개념</h3>
+                <p style="font-size:0.88rem; color:#64748b; margin:0 0 14px; line-height:1.4;">게임 조작 키 및 규칙과 분수·소수·백분율 간의 동치 변환 교과 개념을 팝업 모달로 열람하세요.</p>
+                <button type="button" id="cs-btn-manual" style="width:100%; padding:13px; background:#2563eb; color:#ffffff; font-weight:800; border:none; border-radius:12px; font-size:14.5px; cursor:pointer; box-shadow:0 4px 10px rgba(37,99,235,0.3);">📖 사용설명서 및 개념 열기</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    },
+
+    bindEvents() {
+      if (!this.containerEl) return;
+      this.containerEl.querySelector('#cs-btn-left')?.addEventListener('click', () => this.checkAnswer('left'));
+      this.containerEl.querySelector('#cs-btn-equal')?.addEventListener('click', () => this.checkAnswer('equal'));
+      this.containerEl.querySelector('#cs-btn-right')?.addEventListener('click', () => this.checkAnswer('right'));
+      this.containerEl.querySelector('#cs-btn-hint')?.addEventListener('click', () => this.useHint());
+      this.containerEl.querySelector('#cs-btn-restart')?.addEventListener('click', () => this.resetGame());
+      this.containerEl.querySelector('#cs-btn-manual')?.addEventListener('click', () => this.showManualModal());
+
+      // 🚨 [패치 완료] 홈으로 버튼: 상단/하단의 이미 잘 작동하는 공식 홈 버튼을 그대로 클릭하도록 100% 안전하게 연결!
+      const homeBtn = this.containerEl.querySelector('#cs-btn-home');
+      if (homeBtn) {
+        homeBtn.onclick = null;
+        homeBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          this.destroy();
+          if (window.LegacyBridge && typeof window.LegacyBridge.backHome === 'function') {
+            try { window.LegacyBridge.backHome(); return; } catch(err) {}
+          }
+          const topBottomHome = document.getElementById('mathlab-floating-home') || document.querySelector('#legacy-back-home-btn') || document.querySelector('.floating-home');
+          if (topBottomHome) {
+            topBottomHome.click();
+          } else if (typeof window.MathLabRenderHome === 'function') {
+            window.MathLabRenderHome();
+          } else if (typeof window.goHome === 'function') {
+            window.goHome();
+          } else {
+            location.reload();
+          }
+        });
+      }
+
+      this.keyHandler = (e) => {
+        if (this.gameOver) return;
+        if (['ArrowLeft', 'KeyA'].includes(e.code)) { e.preventDefault(); this.checkAnswer('left'); }
+        else if (['ArrowDown', 'KeyS', 'Space'].includes(e.code)) { e.preventDefault(); this.checkAnswer('equal'); }
+        else if (['ArrowRight', 'KeyD'].includes(e.code)) { e.preventDefault(); this.checkAnswer('right'); }
+      };
+      window.addEventListener('keydown', this.keyHandler);
+    },
+    showManualModal() {
+      document.getElementById('mathlab-manual-modal')?.remove();
+      const modalHtml = `
+        <div id="mathlab-manual-modal" style="position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(15,23,42,0.85); backdrop-filter:blur(6px); display:flex; align-items:center; justify-content:center; z-index:999999; padding:20px; box-sizing:border-box; font-family:'Pretendard',sans-serif;">
+          <div style="background:#ffffff; border-radius:24px; padding:30px 26px; max-width:600px; width:100%; max-height:88vh; overflow-y:auto; box-shadow:0 25px 50px rgba(0,0,0,0.5); border:3px solid #2563eb; text-align:left;">
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #e2e8f0; padding-bottom:14px; margin-bottom:18px;">
+              <h2 style="margin:0; font-size:22px; font-weight:900; color:#1e293b;">📖 사용설명서 & 동치 변환 교과 개념</h2>
+              <button id="manual-close-btn" style="background:#f1f5f9; border:none; color:#64748b; font-size:20px; font-weight:bold; width:36px; height:36px; border-radius:18px; cursor:pointer;">✕</button>
+            </div>
+            <div style="color:#334155; font-size:15px; line-height:1.6;">
+              <h3 style="color:#2563eb; font-size:17px; margin:0 0 8px; font-weight:800;">🕹️ 앱 사용설명서 (게임 규칙 & 조작법)</h3>
+              <p style="margin:0 0 8px;">좌우 저울에 나타나는 서로 다른 형태의 수(분수, 소수, 백분율, 정수)를 통일된 기준으로 빠르게 변환하고 비교하여 60초 내에 가장 정확한 판정을 내리는 게임입니다.</p>
+              <ul style="padding-left:20px; margin:0 0 16px; line-height:1.5;">
+                <li><strong>키보드 조작 지원:</strong><br>• ⬅️ 왼쪽이 큼: <span style="background:#e2e8f0; padding:2px 6px; border-radius:6px; font-weight:bold;">←</span> 또는 <span style="background:#e2e8f0; padding:2px 6px; border-radius:6px; font-weight:bold;">A</span><br>• 🟰 두 값이 같음: <span style="background:#e2e8f0; padding:2px 6px; border-radius:6px; font-weight:bold;">↓</span> 또는 <span style="background:#e2e8f0; padding:2px 6px; border-radius:6px; font-weight:bold;">S</span> 또는 <span style="background:#e2e8f0; padding:2px 6px; border-radius:6px; font-weight:bold;">Space</span><br>• ➡️ 오른쪽이 큼: <span style="background:#e2e8f0; padding:2px 6px; border-radius:6px; font-weight:bold;">→</span> 또는 <span style="background:#e2e8f0; padding:2px 6px; border-radius:6px; font-weight:bold;">D</span></li>
+                <li><strong>점수 & 힌트 규칙:</strong> 정답 시 +10점 및 연속 정답 콤보 보너스(+3점씩 누적)! 💡 동치 힌트를 열람하면 1회당 -5점 페널티가 부여됩니다.</li>
+              </ul>
+              
+              <h3 style="color:#2563eb; font-size:17px; margin:0 0 8px; font-weight:800;">📐 교과 개념적 지식: 동치 표현(Equivalent Representations)</h3>
+              <p style="margin:0 0 10px;">분수, 소수, 백분율은 겉보기에 기호와 서식이 다르지만, 실제로는 완전히 동일한 실수의 크기(값)를 나타낼 수 있는 <strong>'동치 관계'</strong>입니다.</p>
+              <div style="background:#f8fafc; padding:14px 16px; border-radius:14px; border:1px solid #cbd5e1; margin-bottom:16px; font-size:14.5px; line-height:1.65;">
+                <strong>1. 분수 → 소수 변환:</strong><br>
+                분모를 10, 100, 1000 등의 10의 거듭제곱으로 확장하거나, [분자 ÷ 분모]를 직접 계산합니다.<br>
+                <code style="background:#e2e8f0; color:#1e293b; padding:2px 6px; border-radius:6px; font-weight:bold;">예: 3/4 = 75/100 = 0.75</code>
+                <br><br>
+                <strong>2. 소수 → 백분율(%) 변환:</strong><br>
+                기준량이 100인 비율(백분율)로 바꾸기 위해, 소수에 100을 곱하고 % 기호를 붙입니다.<br>
+                <code style="background:#e2e8f0; color:#1e293b; padding:2px 6px; border-radius:6px; font-weight:bold;">예: 0.45 × 100 = 45% / 1.25 = 125%</code>
+                <br><br>
+                <strong>💡 교과 대결 핵심 전략:</strong><br>
+                서로 다른 형태의 수를 만났을 때는 머릿속에서 즉시 <strong>'한 가지 기준(모두 소수나 모두 백분율)'으로 통일</strong>하여 비교하는 것이 수학 교과서가 알려주는 정통 비결입니다!
+              </div>
+            </div>
+            <button id="manual-confirm-btn" style="width:100%; margin-top:10px; padding:14px; background:#2563eb; color:#fff; font-size:16px; font-weight:800; border:none; border-radius:14px; cursor:pointer;">✨ 사용법 및 교과 개념 숙지 완료!</button>
+          </div>
+        </div>
+      `;
+      document.body.insertAdjacentHTML('beforeend', modalHtml);
+      const close = () => document.getElementById('mathlab-manual-modal')?.remove();
+      document.getElementById('manual-close-btn')?.addEventListener('click', close);
+      document.getElementById('manual-confirm-btn')?.addEventListener('click', close);
+    },
+
+    resetGame() {
+      this.stopTimer();
+      this.score = 0; this.combo = 0; this.maxCombo = 0; this.timer = 60; this.lives = 3; this.gameOver = false; this.hintUsed = false;
+      this.startTimer(); this.updateStatsUI(); this.nextProblem();
+    },
+
+    startTimer() {
+      this.stopTimer();
+      this.timerId = setInterval(() => {
+        if (this.gameOver) return;
+        this.timer--; this.updateStatsUI();
+        if (this.timer <= 0) this.endGame('⏱️ 시간 초과! 제한 시간 60초가 모두 종료되었습니다.');
+      }, 1000);
+    },
+
+    stopTimer() { if (this.timerId) { clearInterval(this.timerId); this.timerId = null; } },
+
+    nextProblem() {
+      if (this.gameOver) return;
+      this.hintUsed = false;
+      const pool = [
+        { type: 'frac', num: 1, den: 2, val: 0.5, str: '1/2', hint: '0.5 (50%)' },
+        { type: 'frac', num: 1, den: 4, val: 0.25, str: '1/4', hint: '0.25 (25%)' },
+        { type: 'frac', num: 3, den: 4, val: 0.75, str: '3/4', hint: '0.75 (75%)' },
+        { type: 'frac', num: 1, den: 5, val: 0.2, str: '1/5', hint: '0.2 (20%)' },
+        { type: 'frac', num: 2, den: 5, val: 0.4, str: '2/5', hint: '0.4 (40%)' },
+        { type: 'frac', num: 3, den: 5, val: 0.6, str: '3/5', hint: '0.6 (60%)' },
+        { type: 'frac', num: 4, den: 5, val: 0.8, str: '4/5', hint: '0.8 (80%)' },
+        { type: 'frac', num: 1, den: 10, val: 0.1, str: '1/10', hint: '0.1 (10%)' },
+        { type: 'frac', num: 3, den: 10, val: 0.3, str: '3/10', hint: '0.3 (30%)' },
+        { type: 'frac', num: 7, den: 10, val: 0.7, str: '7/10', hint: '0.7 (70%)' },
+        { type: 'frac', num: 9, den: 10, val: 0.9, str: '9/10', hint: '0.9 (90%)' },
+        { type: 'dec', val: 0.5, str: '0.5', hint: '1/2 (50%)' },
+        { type: 'dec', val: 0.25, str: '0.25', hint: '1/4 (25%)' },
+        { type: 'dec', val: 0.75, str: '0.75', hint: '3/4 (75%)' },
+        { type: 'dec', val: 0.2, str: '0.2', hint: '1/5 (20%)' },
+        { type: 'dec', val: 0.4, str: '0.4', hint: '2/5 (40%)' },
+        { type: 'dec', val: 0.6, str: '0.6', hint: '3/5 (60%)' },
+        { type: 'dec', val: 0.8, str: '0.8', hint: '4/5 (80%)' },
+        { type: 'pct', val: 0.5, str: '50%', hint: '1/2 (0.5)' },
+        { type: 'pct', val: 0.25, str: '25%', hint: '1/4 (0.25)' },
+        { type: 'pct', val: 0.75, str: '75%', hint: '3/4 (0.75)' },
+        { type: 'pct', val: 0.2, str: '20%', hint: '1/5 (0.2)' },
+        { type: 'pct', val: 0.4, str: '40%', hint: '2/5 (0.4)' },
+        { type: 'pct', val: 0.6, str: '60%', hint: '3/5 (0.6)' },
+        { type: 'pct', val: 0.8, str: '80%', hint: '4/5 (0.8)' }
+      ];
+
+      const isEqualProblem = Math.random() < 0.25;
+      if (isEqualProblem) {
+        const target = pool[Math.floor(Math.random() * pool.length)];
+        const equivalents = pool.filter(p => Math.abs(p.val - target.val) < 0.0001 && p.str !== target.str);
+        if (equivalents.length > 0) {
+          this.currentLeft = target; this.currentRight = equivalents[Math.floor(Math.random() * equivalents.length)];
+          this.correctAnswer = 'equal';
+        } else { this.pickDifferentPair(pool); }
+      } else { this.pickDifferentPair(pool); }
+
+      this.renderCards(); this.setScaleTilt('equal');
+      this.showStatus('⚖️ 두 수의 크기를 비교해보세요! 어떤 수가 더 클까요?', '');
+    },
+
+    pickDifferentPair(pool) {
+      const left = pool[Math.floor(Math.random() * pool.length)];
+      let right = pool[Math.floor(Math.random() * pool.length)];
+      while (Math.abs(left.val - right.val) < 0.0001 || left.type === right.type) { right = pool[Math.floor(Math.random() * pool.length)]; }
+      this.currentLeft = left; this.currentRight = right;
+      if (left.val > right.val) this.correctAnswer = 'left';
+      else if (left.val < right.val) this.correctAnswer = 'right';
+      else this.correctAnswer = 'equal';
+    },
+
+    renderCards() {
+      if (!this.containerEl) return;
+      const setCardHTML = (el, item) => {
+        if (!el || !item) return;
+        el.className = 'num-card ' + item.type;
+        if (item.type === 'frac') el.innerHTML = `<div class="frac-layout"><span class="frac-num">${item.num}</span><span class="frac-den">${item.den}</span></div>`;
+        else el.innerText = item.str;
+      };
+      setCardHTML(this.containerEl.querySelector('#cs-card-left'), this.currentLeft);
+      setCardHTML(this.containerEl.querySelector('#cs-card-right'), this.currentRight);
+    },
+
+    setScaleTilt(dir) {
+      const beamEl = this.containerEl?.querySelector('#cs-beam');
+      if (beamEl) beamEl.className = 'scale-beam tilt-' + dir;
+    },
+
+    checkAnswer(choice) {
+      if (this.gameOver || !this.currentLeft || !this.currentRight) return;
+      this.setScaleTilt(this.correctAnswer);
+      const explainStr = `[${this.currentLeft.str} = ${this.currentLeft.hint}] 와(과) [${this.currentRight.str} = ${this.currentRight.hint}]`;
+
+      if (choice === this.correctAnswer) {
+        this.combo++; if (this.combo > this.maxCombo) this.maxCombo = this.combo;
+        let earned = 10 + (this.combo - 1) * 3; this.score += earned; this.updateStatsUI();
+        this.showStatus(`🎉 정답입니다! (+${earned}점 • ${this.combo}연속 콤보)<br><small style="color:#15803d; font-weight:700;">💡 해설: ${explainStr}</small>`, 'success');
+        setTimeout(() => this.nextProblem(), 1600);
+      } else {
+        this.combo = 0; this.lives--; this.updateStatsUI();
+        if (this.lives <= 0) this.endGame(`💔 하트 3개를 모두 소진했습니다! (정답: ${this.getAnswerText(this.correctAnswer)})`);
+        else {
+          this.showStatus(`❌ 틀렸습니다. (정답: <strong>${this.getAnswerText(this.correctAnswer)}</strong> • 남은 생명: ${this.lives}개)<br><small style="color:#b91c1c; font-weight:700;">💡 풀이: ${explainStr}</small>`, 'error');
+          setTimeout(() => this.nextProblem(), 2200);
+        }
+      }
+    },
+
+    getAnswerText(ans) { return ans === 'left' ? '⬅️ 왼쪽이 큼' : (ans === 'right' ? '➡️ 오른쪽이 큼' : '🟰 두 값이 같음'); },
+
+    useHint() {
+      if (this.gameOver || this.hintUsed || !this.currentLeft || !this.currentRight) return;
+      this.hintUsed = true; this.score = Math.max(0, this.score - 5); this.updateStatsUI();
+      this.showStatus(`💡 힌트 변환: 왼쪽은 <strong>[ ${this.currentLeft.hint} ]</strong>, 오른쪽은 <strong>[ ${this.currentRight.hint} ]</strong> 입니다! (-5점)`, '');
+    },
+
+    updateStatsUI() {
+      if (!this.containerEl) return;
+      if (this.containerEl.querySelector('#cs-score')) this.containerEl.querySelector('#cs-score').innerText = this.score;
+      if (this.containerEl.querySelector('#cs-combo')) this.containerEl.querySelector('#cs-combo').innerText = this.combo;
+      if (this.containerEl.querySelector('#cs-lives')) {
+        let hearts = ''; for (let i = 0; i < this.lives; i++) hearts += '❤️';
+        this.containerEl.querySelector('#cs-lives').innerText = this.lives === 0 ? '🖤 (소진)' : hearts;
+      }
+      if (this.containerEl.querySelector('#cs-timer')) this.containerEl.querySelector('#cs-timer').innerText = this.timer;
+    },
+
+    showStatus(msg, type) {
+      const statusEl = this.containerEl?.querySelector('#cs-status');
+      if (statusEl) { statusEl.className = 'status-banner ' + (type || ''); statusEl.innerHTML = msg; }
+    },
+
+    endGame(reasonMsg) {
+      this.gameOver = true; this.stopTimer(); this.showStatus(reasonMsg, 'error');
+      setTimeout(() => {
+        // 🚨 [패치 완료] nickname을 metadata에 하드코딩하지 않고 분리!
+        const metadata = { gameTitle: '크기 비교 저울 배틀', score: this.score, maxCombo: this.maxCombo, remLives: this.lives };
+        this.showInlineRankingModal('board-comparison-scale-battle', this.score, metadata);
+      }, 600);
+    },
+
+    showInlineRankingModal(boardId, score, metadata) {
+      document.getElementById('mathlab-inline-ranking-modal')?.remove();
+      document.getElementById('mathlab-manual-modal')?.remove();
+      const gameName = '크기 비교 저울 배틀';
+      const modalHtml = `
+        <div id="mathlab-inline-ranking-modal" style="position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(15,23,42,0.75); backdrop-filter:blur(6px); display:flex; align-items:center; justify-content:center; z-index:999999; padding:20px; box-sizing:border-box; font-family:'Pretendard',sans-serif;">
+          <div style="background:#ffffff; border-radius:24px; padding:28px 24px; max-width:400px; width:100%; box-shadow:0 20px 40px rgba(0,0,0,0.3); text-align:center; border:3px solid #60a5fa;">
+            <div style="font-size:42px; margin-bottom:10px;">⚖️👑</div>
+            <h2 style="margin:0 0 8px; font-size:24px; font-weight:900; color:#1e293b;">명예의 전당 등록</h2>
+            <p style="margin:0 0 20px; font-size:14px; color:#64748b;">크기 비교 저울 배틀을 멋지게 마쳤습니다!<br>이름을 남겨 Top 5 랭킹에 도전하세요!</p>
+            <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:16px; padding:14px; margin-bottom:20px;">
+              <div style="font-size:13px; color:#1e40af; font-weight:800; margin-bottom:4px;">🏆 최종 점수</div>
+              <div style="font-size:32px; font-weight:900; color:#2563eb;">${score} <span style="font-size:18px;">점</span></div>
+            </div>
+            <input type="text" id="inline-rank-nickname" placeholder="우승자 닉네임 입력 (예: 저울왕)" maxlength="10" style="width:100%; padding:14px 16px; font-size:16px; font-weight:700; border:2px solid #cbd5e1; border-radius:14px; outline:none; text-align:center; margin-bottom:20px; box-sizing:border-box;">
+            <div style="display:flex; gap:10px;">
+              <button id="inline-rank-cancel" style="flex:1; padding:14px; border-radius:14px; font-size:15px; font-weight:800; background:#e2e8f0; color:#475569; border:none; cursor:pointer;">건너뛰기</button>
+              <button id="inline-rank-submit" style="flex:2; padding:14px; border-radius:14px; font-size:15px; font-weight:800; background:#2563eb; color:#ffffff; border:none; cursor:pointer;">🚀 등록하기</button>
+            </div>
+          </div>
+        </div>
+      `;
+      document.body.insertAdjacentHTML('beforeend', modalHtml);
+      const inputEl = document.getElementById('inline-rank-nickname'); if (inputEl) inputEl.focus();
+      const closeAndClean = () => document.getElementById('mathlab-inline-ranking-modal')?.remove();
+      document.getElementById('mathlab-manual-modal')?.remove();
+      document.getElementById('inline-rank-cancel')?.addEventListener('click', closeAndClean);
+      const doSubmit = () => {
+        let nickname = (inputEl?.value.trim() || '저울왕');
+        
+        // 🚨 [패치 완료] 1. 구글 시트 및 수학실험실 공식 저장 함수(submitRanking) 호출!
+        if (typeof window.submitRanking === 'function') {
+          try { const nickArg = { value: nickname, trim: function () { return nickname.trim(); }, toString: function() { return nickname; } }; window.submitRanking(gameName, score, true, nickArg, boardId); } catch(e){}
+        } else if (typeof google !== 'undefined' && google.script && google.script.run && typeof google.script.run.saveGameScore === 'function') {
+          try {
+            const sheetId = (typeof getLeaderboardSheetId === 'function') ? getLeaderboardSheetId() : '';
+            const meta = (typeof getLeaderboardMeta === 'function') ? getLeaderboardMeta() : {};
+            google.script.run.withSuccessHandler(() => { this.loadLeaderboard(); }).saveGameScore(sheetId, gameName, nickname, score, true, meta);
+          } catch(e){}
+        }
+
+        // 🚨 [패치 완료] 2. 닉네임 덮어쓰기 원천 봉쇄 (...metadata를 먼저 풀고 nickname을 뒤에 배치)
+        let ranks = JSON.parse(localStorage.getItem(`rank_${boardId}`) || '[]');
+        ranks.push({ ...(metadata || {}), nickname: nickname, score: score, date: new Date().toISOString() });
+        ranks.sort((a, b) => (b.score || 0) - (a.score || 0));
+        localStorage.setItem(`rank_${boardId}`, JSON.stringify(ranks.slice(0, 50)));
+        closeAndClean(); this.loadLeaderboard();
+      };
+      document.getElementById('inline-rank-submit')?.addEventListener('click', doSubmit);
+      inputEl?.addEventListener('keydown', (e) => { if (e.key === 'Enter') doSubmit(); });
+    },
+
+    loadLeaderboard() {
+      if (!this.containerEl) return;
+      // 🚨 [패치 완료] 우리 시스템 공식 구글 시트 랭킹 불러오기 호출!
+      if (typeof window.loadGameLeaderboard === 'function') {
+        window.loadGameLeaderboard('크기 비교 저울 배틀', true, 'board-comparison-scale-battle');
+      } else {
+        const localRanks = JSON.parse(localStorage.getItem('rank_board-comparison-scale-battle') || '[]');
+        this.renderRankList(localRanks.slice(0, 5));
+      }
+    },
+
+    renderRankList(ranks) {
+      const el = this.containerEl?.querySelector('#board-comparison-scale-battle') || this.containerEl?.querySelector('#cs-rank-list'); if (!el) return;
+      if (!ranks || ranks.length === 0) { el.innerHTML = '<div style="text-align:center; color:#94a3b8; padding: 12px 0;">아직 등록된 랭킹이 없습니다!</div>'; return; }
+      el.innerHTML = ranks.map((r, i) => `<div class="rank-item"><div><span class="rank-num">${i + 1}위</span> ${escapeHTML(r.nickname || '익명')}</div><div class="rank-score">${r.score || 0}점</div></div>`).join('');
+    },
+
+    destroy() {
+      this.stopTimer(); this.gameOver = true;
+      if (this.keyHandler) { window.removeEventListener('keydown', this.keyHandler); this.keyHandler = null; }
+      document.getElementById('mathlab-inline-ranking-modal')?.remove();
+      document.getElementById('mathlab-manual-modal')?.remove();
+      const host = document.getElementById('scale-battle-force-host'); if (host) host.remove();
+      if (this.containerEl) { this.containerEl.innerHTML = ''; }
+    }
+  };
+
+  window.ScaleBattleGame = ScaleBattleGame;
+
+  function registerScaleBattle() {
+    if (typeof window.MathLabGames !== 'undefined' && typeof window.MathLabGames.register === 'function') {
+      window.MathLabGames.register({
+        id: 'comparison-scale-battle', title: '크기 비교 저울 배틀', icon: '⚖️', sourceType: 'new',
+        mount(container, context) { ScaleBattleGame.mount(container, context); },
+        reset() { ScaleBattleGame.resetGame(); },
+        destroy() { ScaleBattleGame.destroy(); }
+      });
+    }
+  }
+
+  registerScaleBattle();
+  document.addEventListener('DOMContentLoaded', registerScaleBattle);
+  setTimeout(registerScaleBattle, 300);
+
+  window.launchComparisonScaleBattleGame = function() {
+    if (typeof window.MathLabGames !== 'undefined' && typeof window.MathLabGames.mount === 'function') {
+      try {
+        window.MathLabGames.mount('comparison-scale-battle');
+        return;
+      } catch(e) {
+        console.warn('MathLabGames mount 실패, 직접 마운트 시도:', e);
+      }
+    }
+    const target = document.getElementById('mathlab-view') || document.getElementById('new-root') || document.body;
+    ScaleBattleGame.mount(target);
+  };
+})();
+</script>

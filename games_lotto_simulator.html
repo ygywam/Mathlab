@@ -1,0 +1,431 @@
+<!--
+  수학 실험실 Gen-3 실생활 응용 앱: 인생 역전 로또 시뮬레이터 (games_lotto_simulator.html)
+  - id: lotto-simulator / 아이콘: 🎰
+  - 유형: 실생활 응용 (data-category="life") — 명예의 전당 없음, 점수 없음
+  - 조합·확률·기댓값·큰 수의 법칙 자유 탐구 도구
+  - 라이트(화이트) 테마 · Gen-3 표준
+  - index.html에는 <?!= include('games_lotto_simulator'); ?> 1줄만 추가
+-->
+<style>
+  .app-lotto-simulator { max-width: 1120px; margin: 0 auto; padding: 18px 14px 36px; color: #0f172a; font-family: 'Pretendard', 'Noto Sans KR', sans-serif; background: #f8fafc; border-radius: 18px; }
+  .app-lotto-simulator * { box-sizing: border-box; }
+  .app-lotto-simulator .als-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; }
+  .app-lotto-simulator .als-title { font-size: 1.45rem; font-weight: 900; color: #0f172a; margin: 0; }
+  .app-lotto-simulator .als-subtitle { font-size: 0.9rem; color: #64748b; margin: 2px 0 0; font-weight: 600; }
+  .app-lotto-simulator .als-btn { border: 1px solid #cbd5e1; background: #fff; color: #1e293b; font-weight: 700; padding: 8px 14px; border-radius: 10px; cursor: pointer; font-size: 0.92rem; transition: background 0.15s, transform 0.1s; }
+  .app-lotto-simulator .als-btn:hover { background: #f1f5f9; }
+  .app-lotto-simulator .als-btn:active { transform: scale(0.97); }
+  .app-lotto-simulator .als-btn.als-start { background: #0284c7; border-color: #0284c7; color: #fff; min-width: 100px; }
+  .app-lotto-simulator .als-btn.als-start:hover { background: #0369a1; }
+  .app-lotto-simulator .als-btn.als-pause { background: #d97706; border-color: #d97706; color: #fff; }
+  .app-lotto-simulator .als-btn.als-pause:hover { background: #b45309; }
+  .app-lotto-simulator .als-concept-bar { background: #fef3c7; border: 1px solid #fde68a; border-radius: 14px; padding: 12px 16px; margin-bottom: 14px; display: flex; gap: 12px; align-items: flex-start; flex-wrap: wrap; }
+  .app-lotto-simulator .als-concept-bar .als-ci { font-size: 1.4rem; flex-shrink: 0; }
+  .app-lotto-simulator .als-concept-bar .als-ct { font-size: 0.92rem; color: #0f172a; line-height: 1.55; }
+  .app-lotto-simulator .als-concept-bar .als-ct strong { color: #b45309; }
+  .app-lotto-simulator .als-concept-bar .als-ct code { background: #fef9c3; border: 1px solid #fde68a; border-radius: 5px; padding: 1px 6px; font-size: 0.88em; color: #92400e; }
+  .app-lotto-simulator .als-settings { background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 14px 16px; margin-bottom: 14px; }
+  .app-lotto-simulator .als-settings h4 { margin: 0 0 12px; font-size: 0.95rem; color: #334155; font-weight: 800; }
+  .app-lotto-simulator .als-settings-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; }
+  .app-lotto-simulator .als-field label { display: block; font-size: 0.82rem; color: #64748b; font-weight: 700; margin-bottom: 5px; }
+  .app-lotto-simulator .als-field input[type='range'] { width: 100%; accent-color: #0284c7; display: block; touch-action: none; user-select: none; }
+  .app-lotto-simulator .als-field .als-fval { font-size: 0.95rem; font-weight: 900; color: #0284c7; margin-top: 3px; }
+  .app-lotto-simulator .als-ctrl { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; align-items: center; }
+  .app-lotto-simulator .als-ctrl .als-btn { padding: 10px 20px; font-size: 0.97rem; }
+  .app-lotto-simulator .als-tick-info { font-size: 0.85rem; color: #64748b; margin-left: 6px; }
+  .app-lotto-simulator .als-main { display: grid; grid-template-columns: 1.3fr 1fr; gap: 14px; margin-bottom: 14px; }
+  @media (max-width: 860px) { .app-lotto-simulator .als-main { grid-template-columns: 1fr; } }
+  .app-lotto-simulator .als-canvas-wrap { background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 10px; }
+  .app-lotto-simulator .als-canvas-wrap canvas { display: block; width: 100%; height: auto; border-radius: 10px; }
+  .app-lotto-simulator .als-legend { font-size: 0.79rem; color: #64748b; margin: 6px 2px 0; line-height: 1.55; }
+  .app-lotto-simulator .als-panel { display: flex; flex-direction: column; gap: 12px; }
+  .app-lotto-simulator .als-box { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px 16px; }
+  .app-lotto-simulator .als-box h4 { margin: 0 0 10px; font-size: 0.95rem; color: #334155; font-weight: 800; }
+  .app-lotto-simulator .als-stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .app-lotto-simulator .als-stat-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px 12px; }
+  .app-lotto-simulator .als-stat-card .als-sc-label { font-size: 0.77rem; color: #64748b; font-weight: 700; margin-bottom: 3px; }
+  .app-lotto-simulator .als-stat-card .als-sc-val { font-size: 1.05rem; font-weight: 900; color: #0f172a; }
+  .app-lotto-simulator .als-stat-card.als-loss .als-sc-val { color: #dc2626; }
+  .app-lotto-simulator .als-stat-card.als-gain .als-sc-val { color: #059669; }
+  .app-lotto-simulator .als-prize-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  .app-lotto-simulator .als-prize-table th { background: #f1f5f9; padding: 6px 8px; color: #475569; font-weight: 800; text-align: center; border-bottom: 2px solid #e2e8f0; }
+  .app-lotto-simulator .als-prize-table td { padding: 6px 8px; border-bottom: 1px solid #f1f5f9; text-align: center; color: #0f172a; }
+  .app-lotto-simulator .als-prize-table tr.als-highlight td { background: #fef9c3; font-weight: 800; }
+  .app-lotto-simulator .als-ev-table { width: 100%; border-collapse: collapse; font-size: 0.84rem; margin-bottom: 10px; }
+  .app-lotto-simulator .als-ev-table th { background: #f1f5f9; padding: 6px 8px; color: #475569; font-weight: 800; text-align: center; }
+  .app-lotto-simulator .als-ev-table td { padding: 6px 8px; border-bottom: 1px solid #f1f5f9; text-align: center; color: #0f172a; }
+  .app-lotto-simulator .als-ev-total { background: #fef2f2; border: 1px solid #fecaca; border-radius: 10px; padding: 10px 14px; font-size: 0.92rem; color: #0f172a; }
+  .app-lotto-simulator .als-ev-total strong { color: #dc2626; }
+  .app-lotto-simulator .als-life-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; }
+  .app-lotto-simulator .als-life-card { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 10px 12px; text-align: center; }
+  .app-lotto-simulator .als-life-card .als-lc-icon { font-size: 1.3rem; }
+  .app-lotto-simulator .als-life-card .als-lc-name { font-size: 0.8rem; color: #166534; font-weight: 700; margin: 3px 0 1px; }
+  .app-lotto-simulator .als-life-card .als-lc-val { font-size: 0.88rem; font-weight: 900; color: #059669; }
+  .app-lotto-simulator .als-modal-overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.45); display: flex; align-items: center; justify-content: center; z-index: 9000; padding: 16px; }
+  .app-lotto-simulator .als-modal { background: #fff; border-radius: 16px; max-width: 540px; width: 100%; max-height: 84vh; overflow-y: auto; padding: 22px 24px; box-shadow: 0 18px 50px rgba(15,23,42,0.25); color: #1e293b; line-height: 1.65; }
+  .app-lotto-simulator .als-modal code { background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 6px; padding: 1px 6px; font-size: 0.88em; color: #0369a1; }
+  .app-lotto-simulator .als-toast { position: fixed; top: 24px; left: 50%; transform: translateX(-50%) translateY(-16px); background: #0f172a; color: #f8fafc; padding: 11px 20px; border-radius: 12px; font-weight: 700; font-size: 0.95rem; z-index: 9500; opacity: 0; pointer-events: none; transition: opacity 0.25s, transform 0.25s; max-width: 90vw; text-align: center; }
+  .app-lotto-simulator .als-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .app-lotto-simulator .als-toast.success { background: #059669; }
+</style>
+<script>
+(function () {
+  'use strict';
+
+  var APP_ID = 'lotto-simulator';
+  var APP_TITLE = '인생 역전 로또 시뮬레이터';
+  var CV_W = 700; var CV_H = 380;
+
+  // 로또 6/45 확률 (정확한 조합 계산값)
+  // C(45,6) = 8,145,060
+  var TOTAL_CASES = 8145060;
+  var TICKET_PRICE = 1000;
+
+  var PRIZES = [
+    { rank: 1, name: '1등', desc: '6개 일치', count: 1,      denom: TOTAL_CASES, prize: 2000000000, color: '#dc2626' },
+    { rank: 2, name: '2등', desc: '5+보너스', count: 6,      denom: TOTAL_CASES, prize: 60000000,  color: '#d97706' },
+    { rank: 3, name: '3등', desc: '5개 일치', count: 228,    denom: TOTAL_CASES, prize: 1500000,   color: '#ca8a04' },
+    { rank: 4, name: '4등', desc: '4개 일치', count: 11115,  denom: TOTAL_CASES, prize: 50000,     color: '#16a34a' },
+    { rank: 5, name: '5등', desc: '3개 일치', count: 182780, denom: TOTAL_CASES, prize: 5000,      color: '#0284c7' }
+  ];
+
+  function calcEV() {
+    var ev = 0;
+    PRIZES.forEach(function(p) { ev += (p.count / p.denom) * p.prize; });
+    return ev - TICKET_PRICE;
+  }
+  var EV_PER_TICKET = Math.round(calcEV()); // 약 -489원
+
+  var state = {
+    mounted: false, host: null, running: false, rafId: null,
+    initAsset: 1000000, perSec: 100, speed: 1,
+    asset: 1000000, totalBought: 0, totalSpent: 0, totalWon: 0,
+    wonByRank: [0,0,0,0,0], history: [], lastTick: 0, pendingTimeouts: []
+  };
+
+  function theoryAsset(n) { return state.initAsset + n * EV_PER_TICKET; }
+
+  function poissonSample(lambda) {
+    if (lambda <= 0) return 0;
+    if (lambda > 30) return Math.round(lambda + Math.sqrt(lambda) * randn());
+    var L = Math.exp(-lambda); var k = 0; var p = 1;
+    do { k++; p *= Math.random(); } while (p > L);
+    return k - 1;
+  }
+  function binomSample(n, p) {
+    if (p <= 0 || n <= 0) return 0;
+    if (n * p < 30) return poissonSample(n * p);
+    var mu = n * p; var sigma = Math.sqrt(n * p * (1 - p));
+    return Math.max(0, Math.min(n, Math.round(mu + sigma * randn())));
+  }
+  function randn() {
+    var u = 0, v = 0;
+    while (u === 0) u = Math.random();
+    while (v === 0) v = Math.random();
+    return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+  }
+
+  function simulateTick(n) {
+    var won = 0;
+    PRIZES.forEach(function(p, i) {
+      var hits = binomSample(n, p.count / p.denom);
+      state.wonByRank[i] += hits;
+      won += hits * p.prize;
+    });
+    state.totalBought += n; state.totalSpent += n * TICKET_PRICE; state.totalWon += won;
+    state.asset = state.initAsset - state.totalSpent + state.totalWon;
+    state.history.push({ bought: state.totalBought, asset: state.asset, theory: theoryAsset(state.totalBought) });
+    if (state.history.length > 600) state.history = state.history.slice(-500);
+  }
+
+  function fmtMoney(v) {
+    var abs = Math.abs(Math.round(v)); var sign = v < 0 ? '-' : '';
+    if (abs >= 100000000) return sign + (abs / 100000000).toFixed(1) + '억원';
+    if (abs >= 10000) return sign + Math.round(abs / 10000) + '만원';
+    return sign + abs.toLocaleString() + '원';
+  }
+  function fmtNum(v) { return Math.round(v).toLocaleString(); }
+  function fmtPct(v) {
+    var p = v * 100;
+    if (Math.abs(p) >= 1) return (p >= 0 ? '+' : '') + p.toFixed(1) + '%';
+    return (p >= 0 ? '+' : '') + p.toFixed(3) + '%';
+  }
+
+  var PAD_L = 58, PAD_R = 20, PAD_T = 20, PAD_B = 36;
+  function render() {
+    var cv = byId('als-canvas'); if (!cv) return;
+    var ctx = cv.getContext('2d'); if (!ctx) return;
+    ctx.clearRect(0, 0, CV_W, CV_H);
+    var hist = state.history;
+    if (hist.length < 2) {
+      ctx.fillStyle = '#94a3b8'; ctx.font = '14px sans-serif'; ctx.textAlign = 'center';
+      ctx.fillText('시뮬레이션을 시작하면 자산 곡선이 그려집니다.', CV_W / 2, CV_H / 2);
+      return;
+    }
+    var xMax = hist[hist.length - 1].bought;
+    var allY = hist.map(function(h){return h.asset;}).concat(hist.map(function(h){return h.theory;}));
+    allY.push(state.initAsset);
+    var yMin = Math.min.apply(null,allY), yMax = Math.max.apply(null,allY);
+    var yPad = (yMax-yMin)*0.12 || state.initAsset*0.1;
+    yMin -= yPad; yMax += yPad;
+    function px(x){return PAD_L + x/(xMax||1)*(CV_W-PAD_L-PAD_R);}
+    function py(y){return CV_H-PAD_B-(y-yMin)/(yMax-yMin||1)*(CV_H-PAD_T-PAD_B);}
+    ctx.strokeStyle='#eef2f7'; ctx.lineWidth=1;
+    for(var yi=0;yi<=5;yi++){
+      var yv=yMin+yi*(yMax-yMin)/5, yvPx=py(yv);
+      ctx.beginPath(); ctx.moveTo(PAD_L,yvPx); ctx.lineTo(CV_W-PAD_R,yvPx); ctx.stroke();
+      ctx.fillStyle='#94a3b8'; ctx.font='11px sans-serif'; ctx.textAlign='right';
+      ctx.fillText(fmtMoney(yv),PAD_L-4,yvPx+4);
+    }
+    ctx.strokeStyle='#cbd5e1'; ctx.lineWidth=1; ctx.setLineDash([4,4]);
+    ctx.beginPath(); ctx.moveTo(PAD_L,py(state.initAsset)); ctx.lineTo(CV_W-PAD_R,py(state.initAsset)); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle='#94a3b8'; ctx.font='10px sans-serif'; ctx.textAlign='left';
+    ctx.fillText('시작 자산',PAD_L+4,py(state.initAsset)-4);
+    ctx.strokeStyle='#f97316'; ctx.lineWidth=2; ctx.setLineDash([6,4]);
+    ctx.beginPath();
+    hist.forEach(function(h,i){if(i===0)ctx.moveTo(px(h.bought),py(h.theory));else ctx.lineTo(px(h.bought),py(h.theory));});
+    ctx.stroke(); ctx.setLineDash([]);
+    ctx.strokeStyle='#0284c7'; ctx.lineWidth=2;
+    ctx.beginPath();
+    hist.forEach(function(h,i){if(i===0)ctx.moveTo(px(h.bought),py(h.asset));else ctx.lineTo(px(h.bought),py(h.asset));});
+    ctx.stroke();
+    ctx.fillStyle='#64748b'; ctx.font='11px sans-serif'; ctx.textAlign='center';
+    ctx.fillText('구매 매수: '+fmtNum(xMax)+'장',PAD_L+(CV_W-PAD_L-PAD_R)/2,CV_H-PAD_B+18);
+  }
+
+  function updateStats() {
+    setText('als-asset', fmtMoney(state.asset));
+    var assetEl = byId('als-asset');
+    if (assetEl) assetEl.style.color = state.asset >= state.initAsset ? '#059669' : '#dc2626';
+    setText('als-total-bought', fmtNum(state.totalBought)+'장');
+    setText('als-total-spent', fmtMoney(state.totalSpent));
+    setText('als-total-won', fmtMoney(state.totalWon));
+    var roi = state.totalSpent > 0 ? (state.totalWon-state.totalSpent)/state.totalSpent : 0;
+    var roiEl = byId('als-roi');
+    if (roiEl) { roiEl.textContent=fmtPct(roi); roiEl.style.color=roi>=0?'#059669':'#dc2626'; }
+    setText('als-theory-asset', fmtMoney(theoryAsset(state.totalBought)));
+    PRIZES.forEach(function(p,i){
+      var el=byId('als-rank-'+(i+1)); if(el) el.textContent=fmtNum(state.wonByRank[i])+'회';
+    });
+    var spent=state.totalSpent;
+    [{icon:'☕',price:5000},{icon:'🍕',price:20000},{icon:'📚',price:15000},
+     {icon:'🎬',price:13000},{icon:'🚌',price:1400},{icon:'🍔',price:8000}].forEach(function(item){
+      var el=byId('als-life-'+item.icon.codePointAt(0)); if(el) el.textContent=fmtNum(Math.floor(spent/item.price))+'개';
+    });
+  }
+
+  function loop(now) {
+    if (!state.running||!state.mounted) return;
+    var elapsed=state.lastTick?(now-state.lastTick)/1000:0.016;
+    state.lastTick=now;
+    var n=Math.round(state.perSec*state.speed*Math.min(elapsed,0.1));
+    if(n>0){simulateTick(n);updateStats();render();}
+    state.rafId=requestAnimationFrame(loop);
+  }
+
+  function startSim(){if(state.running)return;state.running=true;state.lastTick=0;state.rafId=requestAnimationFrame(loop);updateBtn();}
+  function pauseSim(){state.running=false;if(state.rafId){cancelAnimationFrame(state.rafId);state.rafId=null;}updateBtn();}
+  function resetSim(){
+    pauseSim();
+    state.asset=state.initAsset;state.totalBought=0;state.totalSpent=0;state.totalWon=0;
+    state.wonByRank=[0,0,0,0,0];state.history=[];
+    updateStats();render();updateBtn();
+  }
+  function updateBtn(){
+    var btn=byId('als-start-btn');if(!btn)return;
+    if(state.running){btn.textContent='⏸ 일시정지';btn.className='als-btn als-pause';}
+    else{btn.textContent='▶ 시뮬레이션 시작';btn.className='als-btn als-start';}
+  }
+
+  function fmtProb(count,denom){
+    var p=count/denom;
+    if(p<0.0001)return '1/'+Math.round(denom/count).toLocaleString();
+    return (p*100).toFixed(4)+'%';
+  }
+
+  var LIFE_ITEMS=[
+    {icon:'☕',name:'커피(5천원)',price:5000},{icon:'🍕',name:'피자(2만원)',price:20000},
+    {icon:'📚',name:'책(1만5천원)',price:15000},{icon:'🎬',name:'영화(1만3천원)',price:13000},
+    {icon:'🚌',name:'버스요금(1400원)',price:1400},{icon:'🍔',name:'햄버거세트(8천원)',price:8000}
+  ];
+
+  function buildHTML(){
+    var prizeRows=PRIZES.map(function(p,i){
+      return '<tr><td style="color:'+p.color+';font-weight:800;">'+p.name+'</td><td>'+p.desc+'</td><td>'+fmtProb(p.count,p.denom)+'</td><td>'+fmtMoney(p.prize)+'</td><td id="als-rank-'+(i+1)+'">0회</td></tr>';
+    }).join('');
+    var evRows=PRIZES.map(function(p){
+      var ev=Math.round(p.count/p.denom*p.prize);
+      return '<tr><td style="color:'+p.color+';font-weight:800;">'+p.name+'</td><td>'+fmtProb(p.count,p.denom)+'</td><td>'+fmtMoney(p.prize)+'</td><td style="font-weight:800;color:#0369a1;">+'+fmtNum(ev)+'원</td></tr>';
+    }).join('');
+    var lifeCards=LIFE_ITEMS.map(function(item){
+      return '<div class="als-life-card"><div class="als-lc-icon">'+item.icon+'</div><div class="als-lc-name">'+item.name+'</div><div class="als-lc-val" id="als-life-'+item.icon.codePointAt(0)+'">0개</div></div>';
+    }).join('');
+    return '<div class="app-lotto-simulator" id="als-root">'+
+      '<div class="als-header"><div><h2 class="als-title">🎰 인생 역전 로또 시뮬레이터</h2>'+
+      '<p class="als-subtitle">조합·확률·기댓값·큰 수의 법칙 탐구 도구 · 실생활 응용</p></div>'+
+      '<div style="display:flex;gap:8px;"><button type="button" class="als-btn" id="als-guide-btn">📖 사용법</button>'+
+      '<button type="button" class="als-btn" id="als-home-btn">🏠 홈으로</button></div></div>'+
+      '<div class="als-concept-bar"><div class="als-ci">📊</div><div class="als-ct">'+
+      '<strong>핵심 개념</strong>: 로또 1장(1,000원)의 <strong>기댓값 = '+fmtMoney(EV_PER_TICKET+TICKET_PRICE)+' - 1,000원 = <span style="color:#dc2626;">'+fmtMoney(EV_PER_TICKET)+'</span></strong> — 구매할수록 평균적으로 손실이 쌓입니다. <code>기댓값 = Σ(확률 × 상금) - 구매가격</code><br>주황 점선: 기댓값 기반 이론 자산선 / 파랑 실선: 실제 자산 (큰 수의 법칙으로 점점 가까워집니다)</div></div>'+
+      '<div class="als-settings"><h4>⚙️ 시뮬레이션 설정</h4><div class="als-settings-grid">'+
+      '<div class="als-field"><label>시작 자산</label><input type="range" id="als-init-slider" min="1" max="10" step="1" value="1"><div class="als-fval" id="als-init-val">100만원</div></div>'+
+      '<div class="als-field"><label>매초 구매 매수</label><input type="range" id="als-per-sec-slider" min="1" max="5" step="1" value="3"><div class="als-fval" id="als-per-sec-val">100매/초</div></div>'+
+      '<div class="als-field"><label>시뮬레이션 배속</label><input type="range" id="als-speed-slider" min="1" max="5" step="1" value="1"><div class="als-fval" id="als-speed-val">1×</div></div>'+
+      '</div></div>'+
+      '<div class="als-ctrl"><button type="button" class="als-btn als-start" id="als-start-btn">▶ 시뮬레이션 시작</button>'+
+      '<button type="button" class="als-btn" id="als-reset-btn">🔄 초기화</button>'+
+      '<span class="als-tick-info" id="als-tick-info"></span></div>'+
+      '<div class="als-main"><div><div class="als-canvas-wrap">'+
+      '<canvas id="als-canvas" width="700" height="380"></canvas>'+
+      '<p class="als-legend">🔵 파랑 실선: 실제 자산 / 🟠 주황 점선: 기댓값 이론선 / 회색 점선: 시작 자산 기준</p></div></div>'+
+      '<div class="als-panel"><div class="als-box"><h4>💰 현재 시뮬레이션 결과</h4><div class="als-stat-grid">'+
+      '<div class="als-stat-card"><div class="als-sc-label">현재 자산</div><div class="als-sc-val" id="als-asset">'+fmtMoney(state.initAsset)+'</div></div>'+
+      '<div class="als-stat-card"><div class="als-sc-label">총 구매 매수</div><div class="als-sc-val" id="als-total-bought">0장</div></div>'+
+      '<div class="als-stat-card"><div class="als-sc-label">총 지출</div><div class="als-sc-val" id="als-total-spent">0원</div></div>'+
+      '<div class="als-stat-card"><div class="als-sc-label">총 당첨금</div><div class="als-sc-val" id="als-total-won">0원</div></div>'+
+      '<div class="als-stat-card als-loss"><div class="als-sc-label">실제 수익률</div><div class="als-sc-val" id="als-roi">0.000%</div></div>'+
+      '<div class="als-stat-card"><div class="als-sc-label">이론 자산(기댓값)</div><div class="als-sc-val" id="als-theory-asset">'+fmtMoney(state.initAsset)+'</div></div>'+
+      '</div></div><div class="als-box"><h4>🎯 등수별 당첨 현황</h4>'+
+      '<table class="als-prize-table"><thead><tr><th>등수</th><th>조건</th><th>확률</th><th>상금(교육용)</th><th>실측 당첨</th></tr></thead><tbody>'+
+      prizeRows+'</tbody></table></div></div></div>'+
+      '<div class="als-box" style="margin-bottom:14px;"><h4>📐 기댓값 계산 분해 (1장 1,000원 기준)</h4>'+
+      '<table class="als-ev-table"><thead><tr><th>등수</th><th>당첨 확률</th><th>상금</th><th>기댓값 기여</th></tr></thead><tbody>'+
+      evRows+'</tbody></table>'+
+      '<div class="als-ev-total">합계 기댓값 = '+fmtMoney(EV_PER_TICKET+TICKET_PRICE)+' &nbsp;—&nbsp; 구매가격 1,000원 = <strong>기대 손실 '+fmtMoney(Math.abs(EV_PER_TICKET))+'/장</strong><br>'+
+      '1,000장(100만원) 구매 시 기대 손실: <strong>'+fmtMoney(Math.abs(EV_PER_TICKET)*1000)+'</strong></div></div>'+
+      '<div class="als-box"><h4>🌱 같은 돈으로 살 수 있는 것 (총 지출 기준)</h4>'+
+      '<div class="als-life-grid">'+lifeCards+'</div></div>'+
+      '<div class="als-toast" id="als-toast"></div></div>';
+  }
+
+  var INIT_ASSET_MAP=[100000,500000,1000000,5000000,10000000,30000000,50000000,100000000,500000000,1000000000];
+  var INIT_ASSET_LABELS=['10만원','50만원','100만원','500만원','1천만원','3천만원','5천만원','1억원','5억원','10억원'];
+  var PER_SEC_MAP=[10,50,100,500,1000];
+  var PER_SEC_LABELS=['10매/초','50매/초','100매/초','500매/초','1,000매/초'];
+  var SPEED_MAP=[1,2,5,10,50];
+  var SPEED_LABELS=['1×','2×','5×','10×','50×'];
+
+  function bindEvents(){
+    var guideBtn=byId('als-guide-btn'); if(guideBtn) guideBtn.addEventListener('click',showGuide);
+    var homeBtn=byId('als-home-btn'); if(homeBtn) homeBtn.addEventListener('click',goHomeSafe);
+    var startBtn=byId('als-start-btn'); if(startBtn) startBtn.addEventListener('click',function(){if(state.running)pauseSim();else startSim();});
+    var resetBtn=byId('als-reset-btn'); if(resetBtn) resetBtn.addEventListener('click',function(){resetSim();showToast('초기화되었습니다.','');});
+    var initSlider=byId('als-init-slider');
+    if(initSlider) initSlider.addEventListener('input',function(){var idx=parseInt(this.value,10)-1;state.initAsset=INIT_ASSET_MAP[idx];setText('als-init-val',INIT_ASSET_LABELS[idx]);resetSim();});
+    var perSecSlider=byId('als-per-sec-slider');
+    if(perSecSlider) perSecSlider.addEventListener('input',function(){var idx=parseInt(this.value,10)-1;state.perSec=PER_SEC_MAP[idx];setText('als-per-sec-val',PER_SEC_LABELS[idx]);});
+    var speedSlider=byId('als-speed-slider');
+    if(speedSlider) speedSlider.addEventListener('input',function(){var idx=parseInt(this.value,10)-1;state.speed=SPEED_MAP[idx];setText('als-speed-val',SPEED_LABELS[idx]);});
+  }
+
+  function showGuide(){
+    openModal('<h3 style="margin:0 0 12px;">📖 사용법 - 인생 역전 로또 시뮬레이터</h3>'+
+      '<p><strong>로또를 대량 자동 구매하며 조합·확률·기댓값·큰 수의 법칙을 직접 관찰하는 탐구 도구입니다.</strong></p>'+
+      '<ul><li><strong>시작 자산</strong>: 가상 출발 자산 설정 (10만원~10억원)</li>'+
+      '<li><strong>매초 구매 매수</strong>: 1초에 몇 장씩 구매할지 설정</li>'+
+      '<li><strong>시뮬레이션 배속</strong>: 빠르게 돌릴수록 큰 수의 법칙을 빨리 확인</li>'+
+      '<li><strong>파랑 실선</strong>: 실제 시뮬레이션 자산</li>'+
+      '<li><strong>주황 점선</strong>: 기댓값 이론선 (구매가 쌓일수록 실제 자산이 수렴)</li></ul>'+
+      '<p style="background:#fef3c7;border:1px solid #fde68a;border-radius:10px;padding:10px 12px;">'+
+      '📌 <strong>핵심 관찰</strong>: 구매 매수가 충분히 많아지면(큰 수의 법칙) 실제 자산선이 주황 이론선에 가까워집니다. 이론선은 계속 우하향합니다.</p>'+
+      '<p>⚠️ 1등 상금(20억원)은 교육용 고정값입니다. 실제 로또 1등 상금은 판매량·당첨자 수에 따라 달라집니다.</p>'+
+      '<button type="button" class="als-btn als-start" id="als-guide-close" style="width:100%;margin-top:8px;">이해했어요!</button>');
+    var btn=byId('als-guide-close'); if(btn) btn.addEventListener('click',closeModal);
+  }
+
+  function closeModal(){var o=byId('als-modal-overlay');if(o&&o.parentNode)o.parentNode.removeChild(o);}
+  function openModal(html){
+    closeModal(); if(!state.host) return;
+    var root=state.host.querySelector('.app-lotto-simulator'); if(!root) return;
+    var o=document.createElement('div');
+    o.className='als-modal-overlay'; o.id='als-modal-overlay';
+    o.innerHTML='<div class="als-modal">'+html+'</div>';
+    o.addEventListener('click',function(ev){if(ev.target===o)closeModal();});
+    root.appendChild(o);
+  }
+  var _toastTid=null;
+  function showToast(msg,type){
+    var el=byId('als-toast'); if(!el) return;
+    el.textContent=msg; el.className='als-toast show'+(type?' '+type:'');
+    if(_toastTid) clearTimeout(_toastTid);
+    _toastTid=setTimeout(function(){el.className='als-toast';},2400);
+  }
+
+  function byId(id){return document.getElementById(id);}
+  function setText(id,v){var el=byId(id);if(el)el.textContent=String(v);}
+  function clearPending(){state.pendingTimeouts.forEach(function(t){clearTimeout(t);});state.pendingTimeouts=[];}
+
+  function mount(container,context){
+    var host=null;
+    if(typeof container==='string'){try{host=document.querySelector(container);}catch(e){host=null;}}
+    else if(container instanceof HTMLElement) host=container;
+    if(!host&&window.MathLabUtils&&typeof window.MathLabUtils.getMountContainer==='function'){
+      try{host=window.MathLabUtils.getMountContainer(container);}catch(e){host=null;}
+    }
+    if(!host||!(host instanceof HTMLElement)) host=document.getElementById('mathlab-view')||document.getElementById('new-root')||document.getElementById('game-container');
+    if(!host||!(host instanceof HTMLElement)||host===document.body){
+      var ch=document.getElementById('lotto-simulator-force-host');
+      if(!ch){ch=document.createElement('div');ch.id='lotto-simulator-force-host';document.body.appendChild(ch);}
+      host=ch;
+    }
+    host.style.display=''; host.style.visibility='visible'; host.style.opacity='1';
+    state.host=host; state.mounted=true;
+    host.innerHTML=buildHTML();
+    bindEvents(); resetSim(); render();
+  }
+
+  function destroy(){
+    pauseSim(); clearPending(); closeModal(); state.mounted=false;
+    if(state.host){try{state.host.innerHTML='';}catch(e){}} state.host=null;
+  }
+
+  function goHomeSafe(){
+    pauseSim(); clearPending(); closeModal(); destroy();
+    try{}catch(e){}
+    var forced=document.getElementById('lotto-simulator-force-host');
+    if(forced){forced.style.display='none';forced.innerHTML='';}
+    if(typeof window.goHome==='function'){try{window.goHome();}catch(e){}} 
+  }
+
+  var LottoSimulator={mount:mount,resetGame:resetSim,destroy:destroy,goHome:goHomeSafe};
+
+  function registerApp(){
+    if(typeof window.MathLabGames!=='undefined'&&typeof window.MathLabGames.register==='function'){
+      var exists=false;
+      try{exists=typeof window.MathLabGames.get==='function'&&!!window.MathLabGames.get(APP_ID);}catch(e){exists=false;}
+      if(!exists){
+        try{
+          window.MathLabGames.register({
+            id:APP_ID, title:APP_TITLE, icon:'🎰',
+            sourceType:'new', players:'1인', isMultiplayer:false,
+            mount:function(c,ctx){LottoSimulator.mount(c,ctx);},
+            reset:function(){LottoSimulator.resetGame();},
+            destroy:function(){LottoSimulator.destroy();},
+            goHome:function(){LottoSimulator.goHome();}
+          });
+        }catch(e){console.warn('lotto-simulator 등록 방어:',e);}
+      }
+    }
+  }
+
+  registerApp();
+  window.addEventListener('DOMContentLoaded',registerApp);
+  setTimeout(registerApp,100); setTimeout(registerApp,500);
+
+  window.LottoSimulator=LottoSimulator;
+  window.initLottoSimulatorApp=function(){
+    registerApp();
+    if(window.LegacyBridge&&typeof window.LegacyBridge.hideAllLegacySections==='function'){
+      window.LegacyBridge.hideAllLegacySections();
+      if(typeof window.LegacyBridge.showNewRoot==='function') window.LegacyBridge.showNewRoot();
+    }
+    if(typeof window.MathLabGames!=='undefined'&&typeof window.MathLabGames.mount==='function'){
+      try{window.MathLabGames.mount(APP_ID);return;}catch(e){}
+    }
+    var t=document.getElementById('mathlab-view')||document.getElementById('new-root');
+    LottoSimulator.mount(t);
+  };
+  window.launchLottoSimulatorApp=function(){window.initLottoSimulatorApp();};
+})();
+</script>

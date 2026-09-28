@@ -1,0 +1,1175 @@
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800;900&display=swap');
+  
+  .game-ab-master {
+    font-family: 'Pretendard', sans-serif;
+    background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+    color: #0f172a;
+    min-height: 100vh;
+    padding: 24px;
+    box-sizing: border-box;
+    border-radius: 20px;
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+  }
+  .game-ab-master * { box-sizing: border-box; }
+  
+  /* Header */
+  .ab-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; background: #ffffff; padding: 18px 24px; border-radius: 18px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+  .ab-title { display: flex; align-items: center; gap: 12px; }
+  .ab-title h2 { margin: 0; font-size: 1.85rem; font-weight: 900; background: linear-gradient(135deg, #0ea5e9, #eab308); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .ab-badge { background: #0284c7; color: #f0f9ff; padding: 5px 12px; border-radius: 12px; font-weight: 800; font-size: 0.9rem; letter-spacing: 0.5px; }
+  
+  .ab-header-btns { display: flex; gap: 10px; }
+  .ab-btn-head { background: #f1f5f9; color: #0f172a; border: 1px solid #cbd5e1; padding: 10px 18px; border-radius: 12px; font-weight: 800; cursor: pointer; transition: 0.2s; }
+  .ab-btn-head:hover { background: #e2e8f0; }
+  .ab-btn-home { background: #ef4444; color: #fff; border: none; padding: 10px 18px; border-radius: 12px; font-weight: 800; cursor: pointer; transition: 0.2s; box-shadow: 0 3px 0 #b91c1c; }
+  .ab-btn-home:active { transform: translateY(3px); box-shadow: 0 0 0 #b91c1c; }
+
+  /* Mode Bar */
+  .ab-mode-bar { display: flex; gap: 10px; margin-bottom: 16px; background: #ffffff; border-radius: 16px; padding: 8px; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+  .ab-mode-btn { flex: 1; padding: 14px; border: none; border-radius: 12px; font-size: 1.05rem; font-weight: 800; cursor: pointer; background: transparent; color: #64748b; transition: all 0.2s; }
+  .ab-mode-btn.active { background: #0ea5e9; color: #ffffff; box-shadow: 0 4px 12px rgba(14,165,233,0.3); }
+  
+  /* Stage Level Chips (20 Level Selector) */
+  .ab-level-selector { display: flex; gap: 6px; overflow-x: auto; padding: 6px 4px 12px 4px; margin-bottom: 12px; scrollbar-width: thin; }
+  .ab-lvl-chip { min-width: 40px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 10px; background: #ffffff; border: 1px solid #cbd5e1; color: #475569; font-weight: 800; font-size: 0.85rem; cursor: pointer; transition: all 0.15s ease; user-select: none; }
+  .ab-lvl-chip:hover { border-color: #0ea5e9; color: #0ea5e9; }
+  .ab-lvl-chip.active { background: #0ea5e9; color: #ffffff; border-color: #0ea5e9; box-shadow: 0 2px 6px rgba(14,165,233,0.3); }
+
+  /* Display Box */
+  .ab-display-box {
+    background: #ffffff;
+    border: 3px solid #1e293b;
+    border-radius: 18px;
+    padding: 16px;
+    text-align: center;
+    font-size: 3.5rem;
+    font-weight: 900;
+    color: #2563eb;
+    margin-bottom: 20px;
+    min-height: 85px;
+    box-shadow: inset 0 4px 8px rgba(0,0,0,0.05);
+    transition: 0.3s;
+    letter-spacing: 2px;
+  }
+  .ab-display-box.highlight {
+    background: #ecfdf5;
+    border-color: #10b981;
+    color: #059669;
+  }
+  
+  /* Abacus Frame */
+  .ab-frame-wrapper {
+    background: #b45309;
+    padding: 24px 24px 14px 24px;
+    border-radius: 20px;
+    box-shadow: inset 0 6px 16px rgba(0,0,0,0.7), 0 12px 35px rgba(0,0,0,0.3);
+    border: 5px solid #78350f;
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  .ab-frame-wrapper::before {
+    content: ''; position: absolute; top:0; left:0; right:0; bottom:0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 4px, rgba(0,0,0,0.1) 4px, rgba(0,0,0,0.1) 8px);
+    pointer-events: none;
+  }
+  
+  .ab-frame {
+    background: #fef3c7; 
+    border: 6px solid #92400e;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    padding: 0;
+    position: relative;
+    box-shadow: inset 0 0 25px rgba(0,0,0,0.25);
+  }
+  
+  /* The Beam */
+  .ab-beam {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    background: #78350f;
+    z-index: 5;
+    box-shadow: 0 5px 8px rgba(0,0,0,0.5), inset 0 2px 3px rgba(255,255,255,0.15);
+    border-top: 1px solid #92400e;
+    border-bottom: 1px solid #451a03;
+  }
+  
+  .ab-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 16%;
+    max-width: 80px;
+    position: relative;
+    height: 100%;
+  }
+  
+  /* The Rod */
+  .ab-rod-line {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 6px;
+    height: 100%;
+    background: linear-gradient(90deg, #94a3b8, #e2e8f0, #64748b);
+    z-index: 1;
+    box-shadow: 3px 0 5px rgba(0,0,0,0.3);
+  }
+  
+  .ab-deck {
+    position: absolute;
+    left: 0; width: 100%;
+    display: flex; justify-content: center;
+    z-index: 10;
+  }
+  
+  /* Soroban Bead */
+  .ab-bead {
+    position: absolute;
+    width: 90%;
+    cursor: pointer;
+    transition: transform 0.15s cubic-bezier(0.2, 0.8, 0.4, 1);
+    z-index: 15;
+    filter: drop-shadow(0px 3px 3px rgba(0,0,0,0.4));
+  }
+  .ab-bead::before {
+    content: '';
+    position: absolute; top:0; left:0; right:0; bottom:0;
+    background: linear-gradient(to bottom, #ca8a04 0%, #fef08a 25%, #a16207 50%, #713f12 85%, #422006 100%);
+    clip-path: polygon(20% 0%, 80% 0%, 100% 50%, 80% 100%, 20% 100%, 0% 50%);
+  }
+  .ab-bead:hover { filter: brightness(1.15) drop-shadow(0px 5px 4px rgba(0,0,0,0.5)); }
+
+  .ab-unit-dot {
+    position: absolute;
+    top: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #000;
+    z-index: 20;
+    box-shadow: inset -1px -1px 2px rgba(255,255,255,0.4);
+  }
+  
+  /* Labels Row */
+  .ab-labels-row {
+    display: flex;
+    justify-content: center;
+    margin-top: 12px;
+    position: relative;
+    z-index: 10;
+  }
+  .ab-label-col {
+    width: 16%;
+    max-width: 80px;
+    text-align: center;
+    font-weight: 900;
+    font-size: 1.15rem;
+    color: #fff;
+    text-shadow: 1px 2px 4px rgba(0,0,0,0.8);
+  }
+  
+  /* Controls */
+  .ab-controls { display: flex; justify-content: center; gap: 12px; margin-bottom: 24px; }
+  .ab-btn-reset {
+    background: #ef4444; color: #fff; padding: 14px 28px; border-radius: 14px;
+    font-size: 1.1rem; font-weight: 900; border: none; cursor: pointer;
+    box-shadow: 0 4px 0 #b91c1c; transition: 0.1s; letter-spacing: 0.5px;
+  }
+  .ab-btn-reset:active { transform: translateY(4px); box-shadow: 0 0 0 #b91c1c; }
+  
+  /* Tutorial Overlay */
+  .ab-tutor-overlay {
+    background: #ffffff;
+    border: 2px solid #0ea5e9;
+    border-radius: 18px;
+    padding: 20px 24px;
+    margin-bottom: 20px;
+    display: none;
+    align-items: center;
+    gap: 16px;
+    box-shadow: 0 8px 20px rgba(14,165,233,0.1);
+  }
+  .ab-tutor-avatar { font-size: 3.2rem; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1)); }
+  .ab-tutor-bubble {
+    background: #f8fafc; padding: 16px 20px; border-radius: 16px; font-weight: 700; color: #0f172a;
+    flex: 1; position: relative; font-size: 1.08rem; line-height: 1.6;
+    border: 1px solid #e2e8f0;
+  }
+
+  .ab-finger-hint {
+    display: inline-flex; align-items: center; gap: 6px; background: #e0f2fe; color: #0369a1; padding: 3px 10px; border-radius: 8px; font-size: 0.85rem; font-weight: 800; margin-top: 6px;
+  }
+  
+  /* Quiz Section */
+  .ab-quiz-section { display: none; margin-bottom: 24px; }
+  .ab-quiz-card { background: #ffffff; border-radius: 18px; padding: 24px; box-shadow: 0 8px 20px rgba(0,0,0,0.06); text-align: center; border: 1px solid #e2e8f0; }
+  .ab-quiz-target { font-size: 3.2rem; font-weight: 900; color: #2563eb; margin: 12px 0; letter-spacing: 2px; }
+  .ab-quiz-score { font-size: 1.15rem; font-weight: 800; color: #64748b; background: #f1f5f9; display: inline-block; padding: 6px 16px; border-radius: 20px; }
+  .ab-quiz-select-lvl { display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .ab-quiz-select-lvl select { padding: 8px 14px; border-radius: 10px; border: 1px solid #cbd5e1; font-size: 0.95rem; font-weight: 800; color: #0f172a; outline: none; background: #ffffff; }
+
+  .ab-btn-submit { background: #10b981; color: #fff; border: none; padding: 14px 32px; border-radius: 14px; font-size: 1.15rem; font-weight: 800; cursor: pointer; margin-top: 12px; box-shadow: 0 4px 0 #059669; transition: 0.1s; }
+  .ab-btn-submit:active { transform: translateY(4px); box-shadow: 0 0 0 #059669; }
+  
+  /* Leaderboard */
+  .bottom-ranking-card { background: #ffffff; border-radius: 18px; padding: 24px; margin-top: 24px; border: 1px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
+  .ranking-title { font-size: 1.3rem; font-weight: 900; color: #d97706; margin-bottom: 15px; border-bottom: 2px solid #f1f5f9; padding-bottom: 12px; }
+  
+  /* Toast */
+  .ab-toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #0ea5e9; color: #ffffff; padding: 16px 32px; border-radius: 14px; font-weight: 900; font-size: 1.15rem; z-index: 999999; opacity: 0; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); pointer-events: none; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
+  .ab-toast.show { opacity: 1; bottom: 60px; }
+  .ab-toast.error { background: #ef4444; color: #fff; }
+  .ab-toast.success { background: #10b981; color: #fff; }
+  
+  /* Modal Overlay & Box */
+  .ab-modal-overlay { position: fixed; top:0; left:0; right:0; bottom:0; background: rgba(15, 23, 42, 0.7); z-index: 99999; display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: 0.3s; backdrop-filter: blur(5px); }
+  .ab-modal-overlay.show { opacity: 1; pointer-events: auto; }
+  .ab-modal-box { position: relative; background: #ffffff; padding: 28px; border-radius: 24px; border: 1px solid #e2e8f0; max-width: 600px; width: 92%; text-align: center; transform: translateY(20px) scale(0.95); transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); color: #0f172a; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); max-height: 90vh; overflow-y: auto; }
+  .ab-modal-overlay.show .ab-modal-box { transform: translateY(0) scale(1); }
+  
+  .ab-modal-close-x {
+    position: absolute; top: 20px; right: 20px; width: 36px; height: 36px;
+    background: #f1f5f9; border: none; border-radius: 50%; color: #64748b;
+    font-size: 1.2rem; font-weight: 900; cursor: pointer; display: flex;
+    align-items: center; justify-content: center; transition: all 0.2s;
+  }
+  .ab-modal-close-x:hover { background: #e2e8f0; color: #0f172a; transform: rotate(90deg); }
+
+  /* Slide Modal Styles */
+  .ab-slide-header { display: flex; justify-content: flex-start; align-items: center; gap: 12px; margin-bottom: 18px; border-bottom: 2px solid #f1f5f9; padding-bottom: 12px; padding-right: 40px; }
+  .ab-slide-stage-badge { background: #e0f2fe; color: #0369a1; padding: 5px 12px; border-radius: 10px; font-weight: 800; font-size: 0.9rem; }
+  .ab-slide-progress-text { font-size: 0.95rem; font-weight: 800; color: #64748b; }
+  .ab-slide-content { min-height: 240px; display: flex; flex-direction: column; justify-content: center; background: #f8fafc; border-radius: 16px; padding: 20px; border: 1px solid #e2e8f0; margin-bottom: 20px; }
+  .ab-slide-title { font-size: 1.35rem; font-weight: 900; color: #0f172a; margin-top: 0; margin-bottom: 12px; text-align: left; }
+  .ab-slide-body { text-align: left; font-size: 1.02rem; line-height: 1.6; color: #334155; }
+  .ab-slide-box { background: #ffffff; border: 1px solid #cbd5e1; border-radius: 12px; padding: 14px 18px; margin-top: 12px; }
+  .ab-slide-nav { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  .ab-slide-btn { background: #f1f5f9; color: #0f172a; border: 1px solid #cbd5e1; padding: 12px 20px; border-radius: 12px; font-weight: 800; cursor: pointer; transition: 0.2s; }
+  .ab-slide-btn:hover { background: #e2e8f0; }
+  .ab-slide-btn-primary { background: #0ea5e9; color: #ffffff; border: none; padding: 12px 24px; border-radius: 12px; font-weight: 900; cursor: pointer; box-shadow: 0 4px 0 #0284c7; transition: 0.1s; }
+  .ab-slide-btn-primary:active { transform: translateY(4px); box-shadow: 0 0 0 #0284c7; }
+  .ab-slide-dots { display: flex; gap: 8px; justify-content: center; }
+  .ab-slide-dot { width: 10px; height: 10px; border-radius: 50%; background: #cbd5e1; transition: 0.3s; cursor: pointer; }
+  .ab-slide-dot.active { background: #0ea5e9; width: 22px; border-radius: 10px; }
+</style>
+
+<script>
+(function(){
+  'use strict';
+  var APP_ID = 'game-abacus';
+  var APP_TITLE = '주산 마스터';
+  
+  var escapeHTML = function(str) {
+    if(!str) return '';
+    return str.replace(/[&<>'"]/g, function(tag) {
+      var charsToReplace = { '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' };
+      return charsToReplace[tag] || tag;
+    });
+  };
+
+  var AbacusApp = {
+    host: null,
+    mode: 'free',
+    cols: 5,
+    values: [0,0,0,0,0], // Index 0: 만(10000), 1: 천(1000), 2: 백(100), 3: 십(10), 4: 일(1)
+    labels: ['만', '천', '백', '십', '일'],
+    
+    tutorStep: 1,
+    quizLevel: 1,
+    quizTarget: 0,
+    quizTargetText: '',
+    quizScore: 0,
+    quizTotal: 10, // 레벨당 10문항 복습
+    quizCurrent: 0,
+    guideSlideIndex: 0,
+    
+    // 기획서 20단계 상세 인터랙티브 학습 슬라이드 데이터
+    guideSlides: [
+      {
+        stage: "Stage 1: 주판 기초",
+        title: "🧮 Lv.01~02: 주판 구조 & 기본 알 놓기",
+        content: `
+          <div class="ab-slide-body">
+            <b>1. 주판 기본 구조</b>
+            <ul style="margin:6px 0 12px 20px; padding:0;">
+              <li><b>윗알 (가름대 위)</b>: 1개당 숫자 <b>5</b>를 의미합니다 (검지로 조작).</li>
+              <li><b>아래알 (가름대 아래)</b>: 1개당 숫자 <b>1</b>을 의미합니다 (엄지로 올림/검지로 내림).</li>
+            </ul>
+            <b>2. 손가락 조작법 (운주법)</b>
+            <div class="ab-slide-box" style="background:#f0f9ff; border-color:#bae6fd;">
+              👍 <b>엄지손가락</b>: 아래알을 <b>위로 올릴 때</b> (덧셈)<br>
+              👇 <b>검지손가락</b>: 아래알을 <b>내릴 때</b> & 윗알을 <b>조작할 때</b>
+            </div>
+          </div>
+        `
+      },
+      {
+        stage: "Stage 1: 5의 보수",
+        title: "✋ Lv.03~04: 5의 보수 (덧셈과 뺄셈)",
+        content: `
+          <div class="ab-slide-body">
+            <b>5의 보수란?</b> 더해서 5가 되는 두 수의 짝 (1↔4, 2↔3)<br><br>
+            <div class="ab-slide-box" style="background:#fffbeb; border-color:#fde68a;">
+              <b>➕ 5의 보수 덧셈 (예: 4 + 1)</b><br>
+              👉 <b>"5를 내리고, 짝(4)을 뺀다"</b> (윗알 내려 5 만들고 아래알 4개 내림)<br><br>
+              <b>➖ 5의 보수 뺄셈 (예: 5 - 1)</b><br>
+              👉 <b>"짝(4)을 더하고, 5를 올려 뺀다"</b>
+            </div>
+          </div>
+        `
+      },
+      {
+        stage: "Stage 1: 10의 보수",
+        title: "🔟 Lv.05~06: 10의 보수 (덧셈과 뺄셈)",
+        content: `
+          <div class="ab-slide-body">
+            <b>10의 보수란?</b> 더해서 10이 되는 짝꿍 수 (1↔9, 2↔8, 3↔7, 4↔6, 5↔5)<br><br>
+            <div class="ab-slide-box" style="background:#f0fdf4; border-color:#86efac;">
+              <b>➕ 10의 보수 덧셈 (예: 9 + 1)</b><br>
+              👉 <b>"앞자리 1을 올리고, 짝(1)을 뺀다"</b><br><br>
+              <b>➖ 10의 보수 뺄셈 (예: 10 - 3)</b><br>
+              👉 <b>"앞자리 1을 내리고, 짝(7)을 더한다"</b>
+            </div>
+          </div>
+        `
+      },
+      {
+        stage: "Stage 2: 덧·뺄셈 확장",
+        title: "🔀 Lv.07~10: 혼합 보수 & 자릿수 확장",
+        content: `
+          <div class="ab-slide-body">
+            <b>1. 혼합 보수 (예: 6 + 7)</b><br>
+            7을 더할 때 아래알이 모자라면 <b>"5를 올려 빼고, 2를 넣은 후, 십의 자리 1을 올림"</b> 연산을 수행합니다.
+            <div class="ab-slide-box" style="background:#fefce8; border-color:#fde047; margin-top:10px;">
+              <b>2. 주산 계산 방향 원칙</b><br>
+              주산은 일반 필산과 달리 <b>높은 자릿수(왼쪽)부터 오른쪽으로</b> 순서대로 연산합니다! (십의 자리 → 일의 자리)
+            </div>
+          </div>
+        `
+      },
+      {
+        stage: "Stage 3: 곱셈 (Multiplication)",
+        title: "✖️ Lv.11~15: 주산 곱셈의 기본 원리",
+        content: `
+          <div class="ab-slide-body">
+            <b>곱셈의 자릿수 결정 공식:</b><br>
+            시작 자릿수 = (피승수 자릿수 + 승수 자릿수)<br>
+            예: 2자리 × 1자리 ➔ 3번째 자릿수(백의 자리)부터 누적 가산합니다.
+            <div class="ab-slide-box" style="margin-top:10px;">
+              <b>[예시: 43 × 6]</b><br>
+              1. 백의 자리에 40 × 6 = 240 놓기<br>
+              2. 십의 자리에 3 × 6 = 18 누적 가산하기 (총 258 완성!)
+            </div>
+          </div>
+        `
+      },
+      {
+        stage: "Stage 4: 나눗셈 (Division)",
+        title: "➗ Lv.16~20: 주산 나눗셈 (상제법)",
+        content: `
+          <div class="ab-slide-body">
+            <b>나눗셈 몫 자릿수 공식:</b><br>
+            몫의 자릿수 = (피제수 자릿수 - 제수 자릿수)<br>
+            왼쪽에 임시 몫을 세우고, (몫 × 나누는 수)를 피제수에서 차감합니다.
+            <div class="ab-slide-box" style="background:#fef2f2; border-color:#fca5a5; margin-top:10px;">
+              <b>[예시: 84 ÷ 4]</b><br>
+              십의 자리에 몫 2를 세워 80 차감 ➔ 일의 자리에 몫 1을 세워 4 차감 (최종 몫 21)
+            </div>
+          </div>
+        `
+      }
+    ],
+    
+    mount: function(container, context) {
+      let host = null;
+      if (typeof container === 'string') host = document.querySelector(container);
+      else if (container instanceof HTMLElement) host = container;
+      if (!host) host = window.MathLabUtils?.getMountContainer ? window.MathLabUtils.getMountContainer(container) : document.getElementById('mathlab-view');
+      if (!host || !(host instanceof HTMLElement)) host = document.getElementById('new-root') || document.getElementById('game-container') || document.getElementById('mathlab-view');
+
+      if (!host || !(host instanceof HTMLElement) || host === document.body) {
+        let createdHost = document.getElementById(APP_ID+'-force-host');
+        if (!createdHost) {
+          createdHost = document.createElement('div');
+          createdHost.id = APP_ID+'-force-host';
+          document.body.appendChild(createdHost);
+        }
+        host = createdHost;
+      }
+
+      host.style.display = '';
+      host.style.visibility = 'visible';
+      host.style.opacity = '1';
+
+      let parent = host.parentElement;
+      while (parent && parent !== document.body && parent !== document.documentElement) {
+        if (parent.style && parent.style.display === 'none') parent.style.display = 'block';
+        if (parent.style && parent.style.visibility === 'hidden') parent.style.visibility = 'visible';
+        parent = parent.parentElement;
+      }
+
+      document.querySelectorAll('header, .navbar, #app-header, .top-bar, #floating-home-btn, .floating-home').forEach(el => {
+        if (el && el.style && el.style.display === 'none') el.style.display = '';
+      });
+
+      this.host = host;
+      this.host.innerHTML = '';
+      this.renderUI();
+      this.attachEvents();
+      
+      var _this = this;
+      setTimeout(function(){ _this.resize(); }, 50);
+      window.addEventListener('resize', this._resizeHandler = function(){ _this.resize(); });
+      this.setMode('free');
+      this.renderBottomLeaderboard();
+    },
+    
+    renderUI: function() {
+      var h = '';
+      h += '<div class="game-ab-master">';
+      h += '  <div class="ab-header">';
+      h += '    <div class="ab-title"><h2>🧮 주산 마스터</h2><span class="ab-badge">20 Level 동적 퀴즈</span></div>';
+      h += '    <div class="ab-header-btns">';
+      h += '      <button class="ab-btn-head" id="ab-btn-guide">📖 이론 슬라이드</button>';
+      h += '      <button class="ab-btn-home" id="ab-btn-home">🏠 홈으로</button>';
+      h += '    </div>';
+      h += '  </div>';
+      
+      h += '  <div class="ab-mode-bar">';
+      h += '    <button class="ab-mode-btn active" data-mode="free">자유 연습</button>';
+      h += '    <button class="ab-mode-btn" data-mode="tutor">도구 학습 (Lv.01~20)</button>';
+      h += '    <button class="ab-mode-btn" data-mode="quiz">주산 퀴즈 (10문항)</button>';
+      h += '  </div>';
+
+      h += '  <div class="ab-level-selector" id="ab-lvl-selector" style="display:none;">';
+      for(var l=1; l<=20; l++) {
+        h += '  <div class="ab-lvl-chip ' + (l===1?'active':'') + '" data-lvl="' + l + '">Lv.' + (l<10?'0'+l:l) + '</div>';
+      }
+      h += '  </div>';
+      
+      h += '  <div class="ab-tutor-overlay" id="ab-tutor-box">';
+      h += '    <div class="ab-tutor-avatar">🦉</div>';
+      h += '    <div class="ab-tutor-bubble" id="ab-tutor-txt">튜토리얼을 시작합니다.</div>';
+      h += '  </div>';
+      
+      h += '  <div class="ab-quiz-section" id="ab-quiz-box">';
+      h += '    <div class="ab-quiz-card">';
+      h += '      <div class="ab-quiz-select-lvl">';
+      h += '        <label style="font-weight:800; color:#475569;">🎯 테스트 레벨 선택:</label>';
+      h += '        <select id="ab-quiz-lvl-select">';
+      for(var ql=1; ql<=20; ql++) {
+        h += '          <option value="' + ql + '">Lv.' + (ql<10?'0'+ql:ql) + ' 복습 퀴즈</option>';
+      }
+      h += '        </select>';
+      h += '      </div>';
+      h += '      <div class="ab-quiz-score" id="ab-quiz-progress">문제 1 / 10</div>';
+      h += '      <div style="font-size:1.1rem; color:#64748b; margin-top:10px; font-weight:600;">계산 결과를 주판에 만드세요:</div>';
+      h += '      <div class="ab-quiz-target" id="ab-quiz-target">0</div>';
+      h += '      <button class="ab-btn-submit" id="ab-btn-submit">정답 확인</button>';
+      h += '    </div>';
+      h += '  </div>';
+      
+      h += '  <div class="ab-display-box" id="ab-display">0</div>';
+      
+      h += '  <div class="ab-frame-wrapper">';
+      h += '    <div class="ab-frame" id="ab-frame">';
+      h += '      <div class="ab-beam" id="ab-beam"></div>';
+      for(var i=0; i<this.cols; i++) {
+        h += '    <div class="ab-col" data-col="'+i+'">';
+        h += '      <div class="ab-rod-line"></div>';
+        if(i === 4) h += '      <div class="ab-unit-dot"></div>'; // 일의 자리 점
+        h += '      <div class="ab-deck ab-upper-deck">';
+        h += '        <div class="ab-bead bead-5" data-val="5" onclick="window.AbacusApp.toggle5('+i+')"></div>';
+        h += '      </div>';
+        h += '      <div class="ab-deck ab-lower-deck">';
+        h += '        <div class="ab-bead bead-1" data-idx="3" data-val="1" onclick="window.AbacusApp.click1('+i+',3)"></div>';
+        h += '        <div class="ab-bead bead-1" data-idx="2" data-val="1" onclick="window.AbacusApp.click1('+i+',2)"></div>';
+        h += '        <div class="ab-bead bead-1" data-idx="1" data-val="1" onclick="window.AbacusApp.click1('+i+',1)"></div>';
+        h += '        <div class="ab-bead bead-1" data-idx="0" data-val="1" onclick="window.AbacusApp.click1('+i+',0)"></div>';
+        h += '      </div>';
+        h += '    </div>';
+      }
+      h += '    </div>';
+      
+      h += '    <div class="ab-labels-row">';
+      for(var i=0; i<this.cols; i++) {
+        h += '      <div class="ab-label-col">'+this.labels[i]+'</div>';
+      }
+      h += '    </div>';
+      
+      h += '  </div>';
+      
+      h += '  <div class="ab-controls">';
+      h += '    <button class="ab-btn-reset" id="ab-btn-reset">🔄 주판 털기 (초기화)</button>';
+      h += '  </div>';
+      
+      h += '  <div class="bottom-ranking-card" id="abacus-bottom-ranking-sec">';
+      h += '    <div class="ranking-header">';
+      h += '      <div class="ranking-title">🏆 명예의 전당 (실시간 랭킹 보드)</div>';
+      h += '    </div>';
+      h += '    <div id="board-game-abacus-bottom">';
+      h += '      <p style="text-align:center; color:#64748b; padding:12px 0;">랭킹 데이터를 불러오는 중...</p>';
+      h += '    </div>';
+      h += '  </div>';
+      
+      h += '</div>';
+      
+      h += '<div class="ab-toast" id="ab-toast"></div>';
+      h += '<div class="ab-modal-overlay" id="ab-modal">';
+      h += '  <div class="ab-modal-box" id="ab-modal-content"></div>';
+      h += '</div>';
+      
+      this.host.innerHTML = h;
+    },
+    
+    attachEvents: function() {
+      var _this = this;
+      var modes = this.host.querySelectorAll('.ab-mode-btn');
+      modes.forEach(function(btn) {
+        btn.onclick = function() {
+          _this.setMode(this.getAttribute('data-mode'));
+        };
+      });
+
+      var chips = this.host.querySelectorAll('.ab-lvl-chip');
+      chips.forEach(function(chip) {
+        chip.onclick = function() {
+          var lvl = parseInt(this.getAttribute('data-lvl'));
+          _this.tutorStep = lvl;
+          _this.updateLevelChipUI();
+          _this.runTutor();
+        };
+      });
+
+      var lvlSelect = this.host.querySelector('#ab-quiz-lvl-select');
+      if (lvlSelect) {
+        lvlSelect.onchange = function() {
+          _this.quizLevel = parseInt(this.value);
+          _this.startQuiz(_this.quizLevel);
+        };
+      }
+      
+      this.host.querySelector('#ab-btn-reset').onclick = function() { _this.resetBeads(); };
+      this.host.querySelector('#ab-btn-submit').onclick = function() { _this.checkQuiz(); };
+      
+      this.host.querySelector('#ab-btn-guide').onclick = function() { 
+        _this.guideSlideIndex = 0;
+        _this.showGuideModal(); 
+      };
+      this.host.querySelector('#ab-btn-home').onclick = function() { _this.goHome(); };
+    },
+
+    updateLevelChipUI: function() {
+      var chips = this.host.querySelectorAll('.ab-lvl-chip');
+      var _this = this;
+      chips.forEach(function(chip) {
+        var lvl = parseInt(chip.getAttribute('data-lvl'));
+        if(lvl === _this.tutorStep) chip.classList.add('active');
+        else chip.classList.remove('active');
+      });
+    },
+    
+    goHome: function() {
+      if (typeof window.LegacyBridge !== 'undefined' && typeof window.LegacyBridge.backHome === 'function') {
+        window.LegacyBridge.backHome();
+      } else if (typeof window.MathLabGames !== 'undefined' && window.MathLabGames.goHome) {
+        window.MathLabGames.goHome();
+      } else {
+        window.location.reload();
+      }
+    },
+    
+    showGuideModal: function() {
+      var _this = this;
+      var slide = this.guideSlides[this.guideSlideIndex];
+      var totalSlides = this.guideSlides.length;
+      
+      var h = '';
+      h += '<button class="ab-modal-close-x" id="guide-close-x" aria-label="닫기">✕</button>';
+      
+      h += '<div class="ab-slide-header">';
+      h += '  <span class="ab-slide-stage-badge">' + slide.stage + '</span>';
+      h += '  <span class="ab-slide-progress-text">' + (this.guideSlideIndex + 1) + ' / ' + totalSlides + '</span>';
+      h += '</div>';
+      
+      h += '<div class="ab-slide-content">';
+      h += '  <div class="ab-slide-title">' + slide.title + '</div>';
+      h +=    slide.content;
+      h += '</div>';
+      
+      h += '<div class="ab-slide-dots" style="margin-bottom:18px;">';
+      for(var i=0; i<totalSlides; i++) {
+        h += '<div class="ab-slide-dot ' + (i === this.guideSlideIndex ? 'active' : '') + '" data-idx="' + i + '"></div>';
+      }
+      h += '</div>';
+      
+      h += '<div class="ab-slide-nav">';
+      if(this.guideSlideIndex > 0) {
+        h += '  <button class="ab-slide-btn" id="guide-prev">◀ 이전</button>';
+      } else {
+        h += '  <div></div>';
+      }
+      
+      if(this.guideSlideIndex < totalSlides - 1) {
+        h += '  <button class="ab-slide-btn-primary" id="guide-next">다음 ▶</button>';
+      } else {
+        h += '  <button class="ab-slide-btn-primary" id="guide-close" style="background:#10b981; box-shadow:0 4px 0 #059669;">실습 시작하기 🚀</button>';
+      }
+      h += '</div>';
+      
+      this.showModal(h, function(box, overlay) {
+        var prevBtn = box.querySelector('#guide-prev');
+        var nextBtn = box.querySelector('#guide-next');
+        var closeBtn = box.querySelector('#guide-close');
+        var closeX = box.querySelector('#guide-close-x');
+        var dots = box.querySelectorAll('.ab-slide-dot');
+        
+        var closeModal = function() {
+          overlay.classList.remove('show');
+          if(_this.mode !== 'tutor') {
+             _this.setMode('tutor');
+          }
+        };
+
+        if(prevBtn) prevBtn.onclick = function() {
+          _this.guideSlideIndex--;
+          _this.showGuideModal();
+        };
+        if(nextBtn) nextBtn.onclick = function() {
+          _this.guideSlideIndex++;
+          _this.showGuideModal();
+        };
+        if(closeBtn) closeBtn.onclick = closeModal;
+        if(closeX) closeX.onclick = closeModal;
+        
+        dots.forEach(function(dot) {
+          dot.onclick = function() {
+            _this.guideSlideIndex = parseInt(this.getAttribute('data-idx'));
+            _this.showGuideModal();
+          };
+        });
+      });
+    },
+    
+    resize: function() {
+      var frame = this.host.querySelector('#ab-frame');
+      var cols = this.host.querySelectorAll('.ab-col');
+      if(!frame || !cols.length) return;
+      
+      var col = cols[0];
+      var colW = col.offsetWidth;
+      var beadW = colW * 0.90; 
+      var beadH = beadW * 0.45; 
+      
+      var upperH = beadH * 2.2;
+      var lowerH = beadH * 5.2;
+      var beamH = 10;
+      
+      var beam = this.host.querySelector('#ab-beam');
+      if(beam) {
+        beam.style.top = upperH + 'px';
+        beam.style.height = beamH + 'px';
+      }
+      
+      var uDecks = this.host.querySelectorAll('.ab-upper-deck');
+      uDecks.forEach(function(d){ d.style.height = upperH + 'px'; d.style.top = '0px'; });
+      
+      var lDecks = this.host.querySelectorAll('.ab-lower-deck');
+      lDecks.forEach(function(d){ d.style.height = lowerH + 'px'; d.style.top = (upperH + beamH) + 'px'; });
+      
+      frame.style.height = (upperH + lowerH + beamH + 12) + 'px';
+      
+      var beads = this.host.querySelectorAll('.ab-bead');
+      beads.forEach(function(b) { b.style.height = beadH + 'px'; });
+      
+      var uDrop = upperH - beadH - 2; 
+      var lDrop = lowerH - (beadH * 4) - 2; 
+      
+      frame.style.setProperty('--u-drop', uDrop + 'px');
+      frame.style.setProperty('--l-drop', lDrop + 'px');
+      frame.style.setProperty('--bead-h', beadH + 'px');
+      
+      this.updateBeadsView();
+    },
+    
+    setMode: function(mode) {
+      this.mode = mode;
+      var modes = this.host.querySelectorAll('.ab-mode-btn');
+      modes.forEach(function(btn) {
+        if(btn.getAttribute('data-mode') === mode) btn.classList.add('active');
+        else btn.classList.remove('active');
+      });
+      
+      this.host.querySelector('#ab-lvl-selector').style.display = (mode==='tutor') ? 'flex' : 'none';
+      this.host.querySelector('#ab-tutor-box').style.display = (mode==='tutor') ? 'flex' : 'none';
+      this.host.querySelector('#ab-quiz-box').style.display = (mode==='quiz') ? 'block' : 'none';
+      
+      this.resetBeads();
+      var _this = this;
+      setTimeout(function(){ _this.resize(); }, 50);
+      
+      if(mode === 'tutor') {
+        this.tutorStep = 1;
+        this.updateLevelChipUI();
+        this.runTutor();
+      } else if(mode === 'quiz') {
+        this.startQuiz(this.quizLevel);
+      }
+    },
+    
+    runTutor: function() {
+      var txt = this.host.querySelector('#ab-tutor-txt');
+      var disp = this.host.querySelector('#ab-display');
+      disp.classList.remove('highlight');
+      
+      var steps = [
+        "<b>[Lv.01 주판 구조 & 1~4 놓기]</b><br>검지/엄지 구분 사용. 아래알 1개당 숫자 1을 의미합니다.<br>👉 주판의 일의 자리에 아래알 <b>4개</b>를 올리세요.<br><span class='ab-finger-hint'>👍 엄지손가락으로 아래알 4개 올리기</span>",
+        "<b>[Lv.02 윗알(5) 사용 및 5~9 만들기]</b><br>윗알 1개는 숫자 5를 의미합니다.<br>👉 윗알(5)과 아래알(4)을 모두 사용해 <b>9</b>를 만들어보세요.<br><span class='ab-finger-hint'>👇 검지로 윗알 내리고 👍 엄지로 아래알 올리기</span>",
+        "<b>[Lv.03 5의 보수 (덧셈)]</b><br>아래알이 모자랄 땐 5를 활용합니다. (5를 내리고 1의 짝 4를 뺀다)<br>👉 주판에 <b>4 + 1</b>을 계산해 결과값 <b>5</b>를 만드세요.<br><span class='ab-finger-hint'>👇 검지로 윗알(5) 내리고 아래알 4개 내리기</span>",
+        "<b>[Lv.04 5의 보수 (뺄셈)]</b><br>뺄 아래알이 부족할 땐 짝을 더하고 5를 올립니다.<br>👉 주판에 <b>5 - 1</b>을 계산해 결과값 <b>4</b>를 만드세요.<br><span class='ab-finger-hint'>👍 엄지로 아래알 4개 올리고 👇 검지로 윗알 올려 5 빼기</span>",
+        "<b>[Lv.05 10의 보수 (덧셈)]</b><br>더해서 10이 되는 짝을 이용해 앞자리로 올립니다.<br>👉 주판에 <b>8 + 5</b>를 계산해 <b>13</b>을 만드세요.<br><span class='ab-finger-hint'>십의 자리 +1, 일의 자리 -5</span>",
+        "<b>[Lv.06 10의 보수 (뺄셈)]</b><br>앞자리 1을 내리고 짝을 더합니다.<br>👉 주판에 <b>10 - 3</b>을 계산해 <b>7</b>을 만드세요.<br><span class='ab-finger-hint'>십의 자리 -1, 일의 자리 +7 (5+2)</span>",
+        "<b>[Lv.07 5와 10의 혼합 보수 (덧셈)]</b><br>5와 10의 보수를 동시에 연산합니다.<br>👉 주판에 <b>6 + 7</b>을 계산해 <b>13</b>을 만드세요.<br><span class='ab-finger-hint'>일의 자리 -5 +2 후 십의 자리 +1</span>",
+        "<b>[Lv.08 5와 10의 혼합 보수 (뺄셈)]</b><br>10을 내리고 5를 활용해 짝을 조정합니다.<br>👉 주판에 <b>13 - 7</b>을 계산해 <b>6</b>을 만드세요.<br><span class='ab-finger-hint'>십의 자리 -1, 일의 자리 +3(-5+2)</span>",
+        "<b>[Lv.09 2자리수 덧셈/뺄셈]</b><br>주산은 높은 자릿수(왼쪽)부터 차례대로 계산합니다.<br>👉 주판에 <b>24 + 35</b>를 계산해 <b>59</b>를 만드세요.",
+        "<b>[Lv.10 연속 계산 및 자릿수 확장]</b><br>3자리수 이상 연속 연산을 처리합니다.<br>👉 <b>123 + 456 - 289</b>를 계산해 <b>290</b>을 만드세요.",
+        "<b>[Lv.11 곱셈: 자리 정하기]</b><br>시작 자릿수 = (피승수 2자리 + 승수 1자리) = 3번째(백의 자리)<br>👉 2자리 × 1자리 곱셈 시작 위치 백의 자리에 <b>1</b>을 놓으세요.",
+        "<b>[Lv.12 (1자리) × (1자리) 구구단]</b><br>구구단 3 × 4 = 12 를 정확한 자릿수에 놓으세요.<br>👉 <b>3 × 4</b>를 계산해 <b>12</b>를 놓으세요.",
+        "<b>[Lv.13 (2자리) × (1자리)]</b><br>높은 자릿수부터 곱하여 주판에 누적 가산합니다.<br>👉 <b>43 × 6</b>을 계산해 <b>258</b>을 만드세요.",
+        "<b>[Lv.14 (3자리) × (1자리)]</b><br>자릿수 이동 흐름을 숙달합니다.<br>👉 <b>248 × 7</b>을 계산해 <b>1736</b>을 만드세요.",
+        "<b>[Lv.15 (2자리) × (2자리)]</b><br>피승수의 각 자리에 승수를 순차 곱하여 누적합니다.<br>👉 <b>35 × 24</b>를 계산해 <b>840</b>을 만드세요.",
+        "<b>[Lv.16 나눗셈: 몫 자리 정하기]</b><br>몫 자릿수 = (피제수 자릿수 - 제수 자릿수)<br>👉 몫을 놓을 십의 자리에 <b>2</b>를 놓으세요.",
+        "<b>[Lv.17 (2자리) ÷ (1자리)]</b><br>몫을 좌측에 놓고 곱하여 뺍니다 (상제법).<br>👉 <b>84 ÷ 4</b>를 계산해 몫 <b>21</b>을 만드세요.",
+        "<b>[Lv.18 (2자리) ÷ (1자리) 보수 연산]</b><br>뺄셈 과정에서 보수가 들어가는 나눗셈 연산입니다.<br>👉 <b>95 ÷ 5</b>를 계산해 몫 <b>19</b>를 만드세요.",
+        "<b>[Lv.19 (3자리) ÷ (1자리)]</b><br>연속으로 몫을 정하고 빼는 고급 작업입니다.<br>👉 <b>738 ÷ 6</b>을 계산해 몫 <b>123</b>을 만드세요.",
+        "<b>[Lv.20 (3자리) ÷ (2자리)]</b><br>가몫을 세우고 정밀 수정하는 주산 마스터 최상위 단계입니다.<br>👉 <b>864 ÷ 36</b>을 계산해 최종 몫 <b>24</b>를 완성하세요! 🎉"
+      ];
+
+      if (this.tutorStep <= 20) {
+        var badgeHTML = "<div style='margin-bottom:8px;'><span style='background:#0ea5e9; color:#fff; padding:4px 10px; border-radius:12px; font-size:0.85rem; font-weight:800; box-shadow:0 2px 4px rgba(14,165,233,0.3);'>Lv." + (this.tutorStep<10?'0'+this.tutorStep:this.tutorStep) + " / 20</span></div>";
+        txt.innerHTML = badgeHTML + steps[this.tutorStep - 1];
+      } else {
+        disp.classList.add('highlight');
+        txt.innerHTML = "🎉 <b>주산 마스터 20단계 완수!</b><br>주산의 기본 원리부터 보수, 곱셈, 나눗셈까지 완벽히 마스터하셨습니다!<br>자유 연습이나 퀴즈 모드에서 실력을 마음껏 발휘해보세요.";
+      }
+    },
+    
+    checkTutorProgress: function() {
+      if(this.mode !== 'tutor') return;
+      var val = this.getValue();
+      
+      var targets = [
+        4, 9, 5, 4, 13, 7, 13, 6, 59, 290,
+        100, 12, 258, 1736, 840, 20, 21, 19, 123, 24
+      ];
+
+      if(this.tutorStep <= 20 && val === targets[this.tutorStep - 1]) {
+        this.showToast('🎉 정답입니다! 다음 단계로 이동합니다.', 'success');
+        this.tutorStep++;
+        this.updateLevelChipUI();
+        var _this = this;
+        setTimeout(function() { 
+          _this.resetBeads();
+          _this.runTutor(); 
+        }, 600);
+      }
+    },
+
+    /* ==========================================================================
+       DYNAMIC RANDOM QUIZ ENGINE (Lv.01 ~ Lv.20 Level-based Generator)
+       ========================================================================== */
+    generateQuizProblem: function(level) {
+      var rand = function(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; };
+      var targetVal = 0;
+      var textDisplay = '';
+
+      switch(level) {
+        case 1: // 1~4 놓기
+          targetVal = rand(1, 4);
+          textDisplay = targetVal.toString();
+          break;
+        case 2: // 5~9 만들기
+          targetVal = rand(5, 9);
+          textDisplay = targetVal.toString();
+          break;
+        case 3: // 5의 보수 (덧셈): 4+1, 3+2, 2+4 등
+          var a3 = rand(2, 4);
+          var b3 = rand(5 - a3, 4);
+          targetVal = a3 + b3;
+          textDisplay = a3 + ' + ' + b3;
+          break;
+        case 4: // 5의 보수 (뺄셈): 5-1, 6-2, 7-3 등
+          var targetAns4 = rand(1, 4);
+          var minus4 = rand(1, 5 - targetAns4);
+          var start4 = targetAns4 + minus4;
+          targetVal = targetAns4;
+          textDisplay = start4 + ' - ' + minus4;
+          break;
+        case 5: // 10의 보수 (덧셈): 9+1, 8+5, 7+4 등
+          var a5 = rand(5, 9);
+          var b5 = rand(10 - a5, 9);
+          targetVal = a5 + b5;
+          textDisplay = a5 + ' + ' + b5;
+          break;
+        case 6: // 10의 보수 (뺄셈): 10-3, 12-4 등
+          var a6 = rand(10, 15);
+          var b6 = rand(a6 - 9, 9);
+          targetVal = a6 - b6;
+          textDisplay = a6 + ' - ' + b6;
+          break;
+        case 7: // 5와 10의 혼합 보수 (덧셈)
+          var pairs7 = [[6,7],[6,8],[7,6],[7,7],[8,6],[8,7]];
+          var p7 = pairs7[rand(0, pairs7.length - 1)];
+          targetVal = p7[0] + p7[1];
+          textDisplay = p7[0] + ' + ' + p7[1];
+          break;
+        case 8: // 5와 10의 혼합 보수 (뺄셈)
+          var pairs8 = [[13,7],[14,8],[12,6],[13,8],[14,7]];
+          var p8 = pairs8[rand(0, pairs8.length - 1)];
+          targetVal = p8[0] - p8[1];
+          textDisplay = p8[0] + ' - ' + p8[1];
+          break;
+        case 9: // 2자리수 덧셈/뺄셈
+          var isAdd9 = Math.random() > 0.5;
+          if (isAdd9) {
+            var a9 = rand(11, 45);
+            var b9 = rand(11, 50);
+            targetVal = a9 + b9;
+            textDisplay = a9 + ' + ' + b9;
+          } else {
+            var a9_2 = rand(50, 99);
+            var b9_2 = rand(11, 40);
+            targetVal = a9_2 - b9_2;
+            textDisplay = a9_2 + ' - ' + b9_2;
+          }
+          break;
+        case 10: // 연속 계산 (A + B - C)
+          var a10 = rand(100, 300);
+          var b10 = rand(100, 400);
+          var c10 = rand(50, 200);
+          targetVal = a10 + b10 - c10;
+          textDisplay = a10 + ' + ' + b10 + ' - ' + c10;
+          break;
+        case 11: // 곱셈 자리 정하기
+          targetVal = rand(1, 9) * 100;
+          textDisplay = '백의 자리에 ' + (targetVal / 100) + ' 놓기';
+          break;
+        case 12: // (1자리) × (1자리) 구구단
+          var a12 = rand(2, 9);
+          var b12 = rand(2, 9);
+          targetVal = a12 * b12;
+          textDisplay = a12 + ' × ' + b12;
+          break;
+        case 13: // (2자리) × (1자리)
+          var a13 = rand(12, 60);
+          var b13 = rand(3, 9);
+          targetVal = a13 * b13;
+          textDisplay = a13 + ' × ' + b13;
+          break;
+        case 14: // (3자리) × (1자리)
+          var a14 = rand(100, 300);
+          var b14 = rand(3, 8);
+          targetVal = a14 * b14;
+          textDisplay = a14 + ' × ' + b14;
+          break;
+        case 15: // (2자리) × (2자리)
+          var a15 = rand(12, 35);
+          var b15 = rand(12, 25);
+          targetVal = a15 * b15;
+          textDisplay = a15 + ' × ' + b15;
+          break;
+        case 16: // 나눗셈 몫 자릿수
+          targetVal = rand(1, 9) * 10;
+          textDisplay = '십의 자리에 몫 ' + (targetVal / 10) + ' 놓기';
+          break;
+        case 17: // (2자리) ÷ (1자리) 나누어떨어짐
+          var ans17 = rand(11, 35);
+          var div17 = rand(2, 5);
+          targetVal = ans17;
+          textDisplay = (ans17 * div17) + ' ÷ ' + div17;
+          break;
+        case 18: // (2자리) ÷ (1자리) 보수 연산
+          var ans18 = rand(14, 29);
+          var div18 = rand(4, 9);
+          targetVal = ans18;
+          textDisplay = (ans18 * div18) + ' ÷ ' + div18;
+          break;
+        case 19: // (3자리) ÷ (1자리)
+          var ans19 = rand(100, 250);
+          var div19 = rand(3, 6);
+          targetVal = ans19;
+          textDisplay = (ans19 * div19) + ' ÷ ' + div19;
+          break;
+        case 20: // (3자리) ÷ (2자리)
+          var ans20 = rand(12, 35);
+          var div20 = rand(12, 28);
+          targetVal = ans20;
+          textDisplay = (ans20 * div20) + ' ÷ ' + div20;
+          break;
+        default:
+          targetVal = rand(1, 99);
+          textDisplay = targetVal.toString();
+      }
+
+      return { targetVal: targetVal, textDisplay: textDisplay };
+    },
+    
+    startQuiz: function(level) {
+      this.quizLevel = level || 1;
+      this.quizScore = 0;
+      this.quizCurrent = 1;
+
+      var selectEl = this.host.querySelector('#ab-quiz-lvl-select');
+      if(selectEl) selectEl.value = this.quizLevel;
+
+      this.nextQuiz();
+    },
+
+    nextQuiz: function() {
+      if(this.quizCurrent > this.quizTotal) {
+        this.endQuiz();
+        return;
+      }
+      this.resetBeads();
+      this.host.querySelector('#ab-quiz-progress').textContent = 'Lv.' + (this.quizLevel<10?'0'+this.quizLevel:this.quizLevel) + ' 복습 - 문제 ' + this.quizCurrent + ' / ' + this.quizTotal;
+      
+      // Generate Level-specific random problem
+      var prob = this.generateQuizProblem(this.quizLevel);
+      this.quizTarget = prob.targetVal;
+      this.quizTargetText = prob.textDisplay;
+      
+      this.host.querySelector('#ab-quiz-target').textContent = this.quizTargetText;
+    },
+
+    checkQuiz: function() {
+      var val = this.getValue();
+      if(val === this.quizTarget) {
+        this.showToast('🎉 정답입니다! +10점', 'success');
+        this.quizScore += 10;
+        this.quizCurrent++;
+        setTimeout(() => this.nextQuiz(), 700);
+      } else {
+        this.showToast('❌ 틀렸습니다! 다시 계산해보세요.', 'error');
+      }
+    },
+
+    endQuiz: function() {
+      var h = '';
+      h += '<button class="ab-modal-close-x" id="quiz-close-x" aria-label="닫기">✕</button>';
+      h += '<h2 style="color:#d97706; font-weight:900; margin-top:0;">🎉 Lv.' + this.quizLevel + ' 퀴즈 종료!</h2>';
+      h += '<p style="font-size:1.5rem; color:#2563eb; font-weight:900; margin-bottom: 24px;">최종 점수: ' + this.quizScore + '점 / 100점</p>';
+      h += '<input type="text" id="quiz-nick" placeholder="닉네임 입력" style="width:100%; padding:14px; margin-bottom:16px; border-radius:12px; border:2px solid #cbd5e1; font-size:1.15rem; text-align:center; background:#f8fafc; color:#0f172a; outline:none;">';
+      h += '<button id="quiz-submit" style="background:#10b981; color:#fff; border:none; padding:16px 20px; border-radius:14px; font-weight:900; font-size:1.2rem; cursor:pointer; width:100%; margin-bottom:12px; box-shadow: 0 4px 0 #059669; transition:0.1s;">명예의 전당 등록</button>';
+      h += '<button id="quiz-close" style="background:#64748b; color:#fff; border:none; padding:14px 20px; border-radius:14px; font-weight:800; font-size:1.1rem; cursor:pointer; width:100%; transition:0.2s;">닫기</button>';
+      
+      var _this = this;
+      this.showModal(h, function(box, overlay) {
+        box.querySelector('#quiz-submit').onclick = function() {
+          var nick = box.querySelector('#quiz-nick').value.trim() || '주산마스터';
+          _this.submitRanking(nick, _this.quizScore);
+          overlay.classList.remove('show');
+          _this.setMode('free');
+        };
+        box.querySelector('#quiz-close').onclick = function() {
+          overlay.classList.remove('show');
+          _this.setMode('free');
+        };
+        box.querySelector('#quiz-close-x').onclick = function() {
+          overlay.classList.remove('show');
+          _this.setMode('free');
+        };
+      });
+    },
+    
+    submitRanking: function(nick, score) {
+      if(typeof window.submitRanking === 'function') {
+        var arg = { value: nick, trim: function(){ return nick; } };
+        window.submitRanking(APP_TITLE, score, true, arg, 'board-game-abacus-bottom');
+      }
+      this.showToast('🏆 명예의 전당에 등록되었습니다!', 'success');
+      this.renderBottomLeaderboard();
+    },
+    
+    renderBottomLeaderboard: function() {
+      if (typeof loadGameLeaderboard === 'function') {
+        loadGameLeaderboard(APP_TITLE, true, 'board-game-abacus-bottom');
+      } else {
+        try {
+          var list = JSON.parse(localStorage.getItem('mathlab_lb_game-abacus') || '[]');
+          var bottomEl = this.host.querySelector('#board-game-abacus-bottom');
+          if (bottomEl) {
+            if (list.length === 0) {
+              bottomEl.innerHTML = '<p style="text-align:center; color:#64748b; padding:12px 0;">아직 등록된 기록이 없습니다. 첫 번째 도전을 완료해보세요!</p>';
+            } else {
+              bottomEl.innerHTML = list.slice(0, 5).map(function(item, idx) {
+                return '<div style="display:flex; justify-content:space-between; align-items:center; background:#f8fafc; padding:12px 16px; border-radius:12px; border:1px solid #e2e8f0; margin-bottom:8px;">' +
+                  '<span style="font-weight:800; color:' + (idx === 0 ? '#d97706' : '#334155') + ';">' + (idx === 0 ? '👑 1위' : (idx + 1) + '위') + ' - ' + escapeHTML(item.nickname) + '</span>' +
+                  '<span style="color:#2563eb; font-weight:900; font-size:1.1rem;">' + item.score + '점</span>' +
+                '</div>';
+              }).join('');
+            }
+          }
+        } catch(e) {}
+      }
+    },
+    
+    resetBeads: function() {
+      this.values = [0,0,0,0,0];
+      this.updateBeadsView();
+      this.updateDisplay();
+    },
+    
+    toggle5: function(colIdx) {
+      if (navigator.vibrate) { try { navigator.vibrate(15); } catch(e) {} }
+      if(this.values[colIdx] >= 5) this.values[colIdx] -= 5;
+      else this.values[colIdx] += 5;
+      this.updateBeadsView();
+      this.updateDisplay();
+      this.checkTutorProgress();
+    },
+    
+    click1: function(colIdx, beadIdx) {
+      if (navigator.vibrate) { try { navigator.vibrate(15); } catch(e) {} }
+      var currentOnes = this.values[colIdx] % 5;
+      var clickedPos = 4 - beadIdx; 
+      
+      if (clickedPos <= currentOnes) {
+        this.values[colIdx] -= (currentOnes - clickedPos + 1);
+      } else {
+        this.values[colIdx] += (clickedPos - currentOnes);
+      }
+      this.updateBeadsView();
+      this.updateDisplay();
+      this.checkTutorProgress();
+    },
+    
+    updateBeadsView: function() {
+      var _this = this;
+      var cols = this.host.querySelectorAll('.ab-col');
+      cols.forEach(function(col, idx) {
+        var val = _this.values[idx];
+        var has5 = val >= 5;
+        var ones = val % 5;
+        
+        var b5 = col.querySelector('.bead-5');
+        if(b5) {
+          b5.style.transform = has5 ? 'translateY(var(--u-drop))' : 'translateY(0)';
+        }
+        
+        var b1s = col.querySelectorAll('.bead-1');
+        b1s.forEach(function(b1) {
+          var bIdx = parseInt(b1.getAttribute('data-idx')); 
+          var pos = 4 - bIdx; 
+          
+          if (pos <= ones) {
+            var yOffset = (pos - 1);
+            b1.style.transform = 'translateY(calc(var(--bead-h) * ' + yOffset + '))';
+          } else {
+            var yOffset = (pos - 1);
+            b1.style.transform = 'translateY(calc(var(--l-drop) + var(--bead-h) * ' + yOffset + '))';
+          }
+        });
+      });
+    },
+    
+    getValue: function() {
+      var total = 0;
+      var multiplier = 10000;
+      for(var i=0; i<this.cols; i++) {
+        total += this.values[i] * multiplier;
+        multiplier /= 10;
+      }
+      return total;
+    },
+    
+    updateDisplay: function() {
+      var disp = this.host.querySelector('#ab-display');
+      if(disp) {
+        disp.textContent = this.getValue().toLocaleString();
+      }
+    },
+    
+    showToast: function(msg, type) {
+      var t = this.host.querySelector('#ab-toast');
+      if(!t) return;
+      t.textContent = msg;
+      t.className = 'ab-toast ' + (type||'info') + ' show';
+      clearTimeout(this.toastTimer);
+      this.toastTimer = setTimeout(function(){ t.className = 'ab-toast'; }, 2200);
+    },
+    
+    showModal: function(html, cb) {
+      var overlay = this.host.querySelector('#ab-modal');
+      var box = this.host.querySelector('#ab-modal-content');
+      box.innerHTML = html;
+      overlay.classList.add('show');
+      if(typeof cb === 'function') cb(box, overlay);
+    },
+    
+    destroy: function() {
+      if(this._resizeHandler) window.removeEventListener('resize', this._resizeHandler);
+      if(this.host) this.host.innerHTML = '';
+      this.host = null;
+    }
+  };
+
+  function registerMyApp() {
+    if (typeof window.MathLabGames !== 'undefined' && typeof window.MathLabGames.register === 'function') {
+      if (!window.MathLabGames.get(APP_ID)) {
+        try {
+          const gameObj = {
+            id: APP_ID,
+            title: APP_TITLE,
+            icon: '🧮',
+            sourceType: 'new',
+            players: '1인',
+            isMultiplayer: false,
+            mount: function(container, context) { AbacusApp.mount(container, context); },
+            reset: function() { AbacusApp.setMode('free'); },
+            destroy: function() { AbacusApp.destroy(); },
+            goHome: function() { AbacusApp.goHome(); }
+          };
+          window.MathLabGames.register(gameObj);
+        } catch (e) {
+          console.warn('my-app 안전 등록 방어:', e);
+        }
+      }
+    }
+  }
+
+  registerMyApp();
+  window.addEventListener('DOMContentLoaded', registerMyApp);
+  setTimeout(registerMyApp, 100);
+  setTimeout(registerMyApp, 500);
+
+  window.AbacusApp = AbacusApp;
+
+  window.initAbacusGame = function() {
+    registerMyApp();
+    if (window.LegacyBridge && typeof window.LegacyBridge.hideAllLegacySections === 'function') {
+      window.LegacyBridge.hideAllLegacySections();
+      window.LegacyBridge.showNewRoot();
+    }
+    if (typeof window.MathLabGames !== 'undefined' && typeof window.MathLabGames.mount === 'function') {
+      try { window.MathLabGames.mount(APP_ID); return; } catch(e) {}
+    }
+    const targetEl = document.getElementById('mathlab-view') || document.getElementById('new-root') || document.getElementById('game-container');
+    AbacusApp.mount(targetEl);
+  };
+
+  window.launchAbacusGame = function() {
+    window.initAbacusGame();
+  };
+})();
+</script>

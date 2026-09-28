@@ -1,0 +1,995 @@
+<style>
+  .game-equation-seesaw {
+    position: relative;
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto;
+    font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+    background: #f8fafc;
+    color: #1e293b;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    min-height: 750px;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+  .game-equation-seesaw * { box-sizing: border-box; }
+
+  /* Header */
+  .game-equation-seesaw .app-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background: #ffffff;
+    border-bottom: 2px solid #e2e8f0;
+  }
+  .game-equation-seesaw .app-title {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #0ea5e9;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .game-equation-seesaw .header-btns {
+    display: flex;
+    gap: 10px;
+  }
+  .game-equation-seesaw .btn {
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+    background: #e2e8f0;
+    color: #1e293b;
+    white-space: nowrap;
+  }
+  .game-equation-seesaw .btn:hover { background: #cbd5e1; transform: translateY(-2px); }
+  .game-equation-seesaw .btn-primary { background: #0ea5e9; color: #ffffff; }
+  .game-equation-seesaw .btn-primary:hover { background: #0284c7; }
+  .game-equation-seesaw .btn-home { background: #ef4444; color: #ffffff; }
+  .game-equation-seesaw .btn-home:hover { background: #dc2626; }
+
+  /* Main Area */
+  .game-equation-seesaw .main-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    gap: 15px;
+    overflow-y: auto;
+  }
+
+  /* Status Bar */
+  .game-equation-seesaw .status-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #ffffff;
+    padding: 15px 20px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .game-equation-seesaw .stat-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 80px;
+  }
+  .game-equation-seesaw .stat-label {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #64748b;
+  }
+  .game-equation-seesaw .stat-value {
+    font-size: 1.4rem;
+    font-weight: 900;
+    color: #0f172a;
+  }
+  .game-equation-seesaw .stat-value.score { color: #3b82f6; font-size: 1.6rem; }
+  .game-equation-seesaw .diff-indicator {
+    padding: 8px 16px;
+    border-radius: 8px;
+    background: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    color: #64748b;
+    font-weight: 700;
+    font-size: 0.9rem;
+  }
+  .game-equation-seesaw .diff-indicator.active {
+    background: #0ea5e9;
+    border-color: #0284c7;
+    color: #ffffff;
+  }
+
+  /* Equation Display */
+  .game-equation-seesaw .equation-display {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 12px;
+    border: 2px solid #e2e8f0;
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 900;
+    color: #1e293b;
+    letter-spacing: 2px;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+  }
+  .game-equation-seesaw .eq-highlight { color: #0ea5e9; }
+  .game-equation-seesaw .eq-warning { color: #ef4444; }
+
+  /* Seesaw Visualization */
+  .game-equation-seesaw .seesaw-container {
+    flex: 1;
+    background: #f1f5f9;
+    border-radius: 12px;
+    border: 1px solid #cbd5e1;
+    position: relative;
+    min-height: 300px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    padding-bottom: 20px;
+    overflow: hidden;
+  }
+  
+  .game-equation-seesaw .seesaw-base {
+    width: 0; 
+    height: 0; 
+    border-left: 30px solid transparent;
+    border-right: 30px solid transparent;
+    border-bottom: 50px solid #94a3b8;
+    position: absolute;
+    bottom: 20px;
+    z-index: 10;
+  }
+  
+  .game-equation-seesaw .seesaw-board {
+    width: 80%;
+    height: 12px;
+    background: #64748b;
+    border-radius: 6px;
+    position: absolute;
+    bottom: 70px;
+    transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transform-origin: center center;
+    z-index: 5;
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .game-equation-seesaw .pan {
+    width: 40%;
+    height: 100%;
+    position: relative;
+    display: flex;
+    justify-content: center;
+  }
+  
+  .game-equation-seesaw .pan-content {
+    position: absolute;
+    bottom: 12px;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-end;
+    justify-content: center;
+    gap: 4px;
+    width: 100%;
+    min-height: 150px;
+  }
+  
+  /* Items */
+  .game-equation-seesaw .item-x {
+    width: 40px;
+    height: 40px;
+    background: #10b981;
+    color: white;
+    font-weight: 900;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    border: 2px solid #059669;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  .game-equation-seesaw .item-x.negative {
+    background: #ef4444;
+    border-color: #dc2626;
+    border-radius: 50%;
+    transform: translateY(-20px);
+    box-shadow: 0 -4px 8px rgba(239, 68, 68, 0.4);
+  }
+  .game-equation-seesaw .item-x.negative::after {
+    content: ''; position: absolute; bottom: -10px; width: 2px; height: 10px; background: #64748b;
+  }
+  
+  .game-equation-seesaw .item-const {
+    width: 30px;
+    height: 30px;
+    background: #3b82f6;
+    color: white;
+    font-weight: 800;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 2px solid #2563eb;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  .game-equation-seesaw .item-const.negative {
+    background: #f59e0b;
+    border-color: #d97706;
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    transform: translateY(-15px);
+    box-shadow: 0 -3px 6px rgba(245, 158, 11, 0.4);
+  }
+  .game-equation-seesaw .item-const.negative::after {
+    content: ''; position: absolute; bottom: -8px; width: 2px; height: 8px; background: #64748b;
+  }
+  
+  .game-equation-seesaw .operator-badge {
+    position: absolute;
+    top: -50px;
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: #ef4444;
+    opacity: 0;
+    transition: opacity 0.5s, top 0.5s;
+    pointer-events: none;
+  }
+  .game-equation-seesaw .operator-badge.anim {
+    opacity: 1;
+    top: -20px;
+  }
+
+  /* Control Panel */
+  .game-equation-seesaw .control-panel {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .game-equation-seesaw .control-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #f8fafc;
+    padding: 10px 15px;
+    border-radius: 10px;
+    border: 1px solid #cbd5e1;
+  }
+  
+  .game-equation-seesaw select, .game-equation-seesaw input {
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid #94a3b8;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #1e293b;
+    background: #ffffff;
+    outline: none;
+  }
+  .game-equation-seesaw select:focus, .game-equation-seesaw input:focus {
+    border-color: #0ea5e9;
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.2);
+  }
+  
+  .game-equation-seesaw .btn-apply {
+    padding: 12px 24px;
+    background: #0ea5e9;
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 900;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(14, 165, 233, 0.3);
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .game-equation-seesaw .btn-apply:hover:not(:disabled) {
+    background: #0284c7;
+    transform: translateY(-2px);
+  }
+  .game-equation-seesaw .btn-apply:disabled {
+    background: #94a3b8;
+    box-shadow: none;
+    cursor: not-allowed;
+  }
+  
+  /* End Round Banner */
+  .game-equation-seesaw .end-round-banner {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #ecfdf5;
+    border: 2px solid #10b981;
+    border-radius: 12px;
+    padding: 15px;
+    margin-top: 10px;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(16, 185, 129, 0.2);
+  }
+  .game-equation-seesaw .end-round-banner.show {
+    display: flex;
+  }
+  .game-equation-seesaw .end-round-title {
+    font-size: 1.2rem;
+    font-weight: 900;
+    color: #059669;
+    margin-bottom: 8px;
+  }
+
+  /* Bottom Ranking */
+  .game-equation-seesaw .bottom-ranking-card {
+    background: #ffffff;
+    border-top: 2px solid #e2e8f0;
+    padding: 15px 20px;
+  }
+  .game-equation-seesaw .ranking-title {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #f59e0b;
+    margin-bottom: 10px;
+  }
+  
+  /* Toasts & Modals */
+  .es-toast {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #ffffff;
+    color: #1e293b;
+    padding: 12px 24px;
+    border-radius: 30px;
+    font-weight: 700;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    z-index: 9999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s, top 0.3s;
+    border: 1px solid #e2e8f0;
+  }
+  .es-toast.show { opacity: 1; top: 40px; }
+  .es-toast.error { border-color: #fca5a5; color: #ef4444; background: #fef2f2; }
+  .es-toast.success { border-color: #6ee7b7; color: #10b981; background: #ecfdf5; }
+
+  .es-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.5);
+    backdrop-filter: blur(4px);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+  }
+  .es-modal {
+    background: #ffffff;
+    width: 90%;
+    max-width: 500px;
+    border-radius: 16px;
+    padding: 30px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+    text-align: center;
+    color: #1e293b;
+  }
+  .es-modal h3 { font-size: 1.5rem; margin-bottom: 15px; color: #0ea5e9; }
+  .es-modal p { font-size: 1.05rem; line-height: 1.6; color: #475569; margin-bottom: 20px; text-align: left; }
+  .es-modal .close-btn {
+    padding: 10px 20px;
+    background: #0ea5e9;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+</style>
+
+<script>
+const EquationSeesaw = (function() {
+  let host = null;
+  let score = 50; 
+  let difficulty = 'easy';
+  let isRoundOver = false;
+  let isFullGameOver = false;
+  
+  let leftX = 0;
+  let leftConst = 0;
+  let rightX = 0;
+  let rightConst = 0;
+  let moves = 0;
+  
+  let trueX = 0;
+
+  function showToast(msg, type) {
+    if (!type) type = 'normal';
+    let toast = document.getElementById('es-toast');
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.id = 'es-toast';
+      toast.className = 'es-toast';
+      document.body.appendChild(toast);
+    }
+    toast.className = 'es-toast ' + type + ' show';
+    toast.textContent = msg;
+    setTimeout(function() { toast.classList.remove('show'); }, 3000);
+  }
+
+  function escapeHTML(str) {
+    if (!str) return '';
+    return str.replace(/[&<>'"]/g, function(tag) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag;
+    });
+  }
+
+  function checkLevelUp() {
+    if (score >= 200) difficulty = 'hard';
+    else if (score >= 100) difficulty = 'normal';
+    else difficulty = 'easy';
+  }
+
+  function generateEquation() {
+    checkLevelUp();
+    isRoundOver = false;
+    moves = 0;
+    
+    trueX = Math.floor(Math.random() * 5) + 1; 
+    if (difficulty === 'hard' && Math.random() < 0.5) trueX = -trueX;
+    
+    if (difficulty === 'easy') {
+      leftX = 1;
+      leftConst = Math.floor(Math.random() * 5) + 1;
+      rightX = 0;
+      rightConst = leftX * trueX + leftConst;
+    } else if (difficulty === 'normal') {
+      leftX = Math.floor(Math.random() * 3) + 2;
+      rightX = Math.floor(Math.random() * leftX); // keep leftX > rightX to avoid negative x at the end easily
+      leftConst = Math.floor(Math.random() * 5) + 1;
+      rightConst = leftX * trueX + leftConst - (rightX * trueX);
+    } else {
+      leftX = Math.floor(Math.random() * 4) + 1;
+      rightX = Math.floor(Math.random() * 4) + 1;
+      if (leftX === rightX) leftX++;
+      leftConst = Math.floor(Math.random() * 10) - 5;
+      rightConst = leftX * trueX + leftConst - (rightX * trueX);
+    }
+    
+    renderUI();
+  }
+
+  function formatSide(xCount, constCount) {
+    let parts = [];
+    if (xCount !== 0) {
+      if (xCount === 1) parts.push('x');
+      else if (xCount === -1) parts.push('-x');
+      else parts.push(xCount + 'x');
+    }
+    if (constCount !== 0) {
+      if (constCount > 0 && parts.length > 0) parts.push('+ ' + constCount);
+      else if (constCount < 0 && parts.length > 0) parts.push('- ' + Math.abs(constCount));
+      else parts.push(constCount);
+    }
+    if (parts.length === 0) return '0';
+    return parts.join(' ');
+  }
+
+  function renderEquation() {
+    const eqEl = host.querySelector('#equation-display');
+    if (!eqEl) return;
+    
+    let lStr = formatSide(leftX, leftConst);
+    let rStr = formatSide(rightX, rightConst);
+    eqEl.innerHTML = '<span class="eq-highlight">' + lStr + '</span> = <span class="eq-highlight">' + rStr + '</span>';
+  }
+
+  function renderSeesaw() {
+    const leftPan = host.querySelector('#left-pan');
+    const rightPan = host.querySelector('#right-pan');
+    const board = host.querySelector('#seesaw-board');
+    if (!leftPan || !rightPan || !board) return;
+    
+    // Board animation based on true evaluation. Since operations are identical on both sides,
+    // true math remains balanced. We just add a slight wobble on update.
+    board.style.transform = 'rotate(2deg)';
+    setTimeout(function() {
+      board.style.transform = 'rotate(-2deg)';
+      setTimeout(function() {
+        board.style.transform = 'rotate(0deg)';
+      }, 200);
+    }, 200);
+
+    function buildItems(xCount, constCount) {
+      let html = '';
+      let absX = Math.abs(xCount);
+      for(let i=0; i<absX && i<20; i++) {
+        html += '<div class="item-x ' + (xCount < 0 ? 'negative' : '') + '">' + (xCount < 0 ? '-x' : 'x') + '</div>';
+      }
+      if (absX > 20) html += '<div style="font-weight:bold">...</div>';
+      
+      let absC = Math.abs(constCount);
+      // Group constants visually to save space
+      if (absC <= 15) {
+        for(let i=0; i<absC; i++) {
+          html += '<div class="item-const ' + (constCount < 0 ? 'negative' : '') + '">' + (constCount < 0 ? '-1' : '1') + '</div>';
+        }
+      } else {
+        html += '<div class="item-const ' + (constCount < 0 ? 'negative' : '') + '" style="width:50px">' + (constCount < 0 ? '-' : '') + absC + '</div>';
+      }
+      return html;
+    }
+    
+    leftPan.innerHTML = buildItems(leftX, leftConst);
+    rightPan.innerHTML = buildItems(rightX, rightConst);
+  }
+
+  function renderUI() {
+    if (!host) return;
+    host.querySelector('#es-score').textContent = score;
+    host.querySelector('#es-moves').textContent = moves;
+    
+    host.querySelectorAll('.diff-indicator').forEach(function(el) {
+      el.classList.toggle('active', el.dataset.diff === difficulty);
+    });
+    
+    renderEquation();
+    renderSeesaw();
+    
+    const banner = host.querySelector('#end-round-banner');
+    if (isRoundOver && !isFullGameOver) {
+      banner.classList.add('show');
+    } else {
+      banner.classList.remove('show');
+    }
+    
+    host.querySelector('#btn-apply').disabled = isRoundOver || isFullGameOver;
+  }
+
+  function applyOperation() {
+    if (isRoundOver || isFullGameOver) return;
+    
+    const op = host.querySelector('#op-select').value;
+    const valStr = host.querySelector('#op-value').value;
+    const type = host.querySelector('#op-type').value;
+    
+    let val = parseInt(valStr);
+    if (isNaN(val) || val <= 0) {
+      showToast('올바른 값을 입력하세요.', 'error');
+      return;
+    }
+    
+    if (op === 'div') {
+      // Divide both sides
+      // Validation: Can we divide evenly? 
+      // For middle school, we only allow division if everything is cleanly divisible.
+      if (leftX % val !== 0 || rightX % val !== 0 || leftConst % val !== 0 || rightConst % val !== 0) {
+        showToast('모든 항이 ' + val + '로 나누어 떨어지지 않습니다.', 'error');
+        return;
+      }
+      leftX /= val; rightX /= val;
+      leftConst /= val; rightConst /= val;
+    } else {
+      let amount = (op === 'add' ? val : -val);
+      if (type === 'x') {
+        leftX += amount; rightX += amount;
+      } else {
+        leftConst += amount; rightConst += amount;
+      }
+    }
+    
+    moves++;
+    renderUI();
+    checkWinCondition();
+  }
+
+  function checkWinCondition() {
+    // x = C or C = x
+    if ((leftX === 1 && leftConst === 0 && rightX === 0) || 
+        (rightX === 1 && rightConst === 0 && leftX === 0)) {
+      
+      isRoundOver = true;
+      let moveBonus = Math.max(0, 10 - moves);
+      let roundScore = 15 + moveBonus;
+      score += roundScore;
+      
+      const titleEl = host.querySelector('#banner-title');
+      const textEl = host.querySelector('#banner-text');
+      titleEl.textContent = '🎉 x 값 찾기 성공!';
+      textEl.textContent = 'x = ' + (leftX === 1 ? rightConst : leftConst) + ' (조작 ' + moves + '회) ➔ +' + roundScore + '점';
+      
+      renderUI();
+    }
+  }
+
+  function useHint() {
+    if (isRoundOver || isFullGameOver) return;
+    score -= 3;
+    showToast('힌트 사용! 점수가 3점 차감되었습니다.', 'error');
+    
+    let hintStr = '';
+    // Basic solver logic for hint
+    if (leftX !== rightX) {
+      if (leftX > rightX && rightX !== 0) {
+        hintStr = '양변에서 ' + rightX + 'x 를 빼보세요.';
+      } else if (rightX > leftX && leftX !== 0) {
+        hintStr = '양변에서 ' + leftX + 'x 를 빼보세요.';
+      } else {
+        // x is on one side.
+        let xSide = leftX !== 0 ? 'left' : 'right';
+        let constCount = xSide === 'left' ? leftConst : rightConst;
+        
+        if (constCount > 0) {
+          hintStr = '양변에서 ' + constCount + ' 상수를 빼보세요.';
+        } else if (constCount < 0) {
+          hintStr = '양변에 ' + Math.abs(constCount) + ' 상수를 더해보세요.';
+        } else {
+          let coeff = xSide === 'left' ? leftX : rightX;
+          if (coeff > 1) {
+            hintStr = '양변을 ' + coeff + ' 로 나누어보세요.';
+          } else if (coeff < 0) {
+            hintStr = '양변을 ' + coeff + ' 로 나누어보세요. (음수로 나누기)';
+          }
+        }
+      }
+    } else {
+      hintStr = 'x가 사라졌습니다! 식이 성립하는지 확인하세요.';
+    }
+    
+    alert('💡 추천 연산: ' + hintStr);
+    renderUI();
+  }
+
+  function handleOpSelectChange() {
+    const op = host.querySelector('#op-select').value;
+    const typeSelect = host.querySelector('#op-type');
+    if (op === 'div') {
+      typeSelect.style.display = 'none';
+      typeSelect.value = 'const'; // internally force const
+    } else {
+      typeSelect.style.display = 'inline-block';
+    }
+  }
+
+  function nextRound() {
+    if (isFullGameOver) return;
+    generateEquation();
+  }
+
+  function endAndRegister() {
+    if (isFullGameOver) return;
+    isFullGameOver = true;
+    showRankingModal();
+  }
+
+  function fullResetGame() {
+    score = 50;
+    isFullGameOver = false;
+    nextRound();
+  }
+
+  function showGuideModal() {
+    let modal = document.getElementById('es-guide-modal');
+    if (!modal) {
+      modal = document.createElement('div');
+      modal.id = 'es-guide-modal';
+      modal.className = 'es-modal-overlay';
+      modal.innerHTML = 
+        '<div class="es-modal">' +
+          '<h3>📖 게임 방법</h3>' +
+          '<p>' +
+            '- 등식 저울의 양쪽은 항상 같은 상태를 유지해야 합니다.<br>' +
+            '- <b>양변 동일 연산</b> 기능을 이용해 양변에 같은 상수를 더하거나 빼고, x 상자를 옮기세요.<br>' +
+            '- 마지막에 양변을 계수로 나누어 <b>한쪽에 x 상자 1개만 남기면</b> 탈출 성공입니다!<br>' +
+            '- 적은 횟수로 조작할수록 높은 <b>보너스 점수</b>를 얻습니다.<br>' +
+            '- 점수가 100점, 200점을 넘을 때마다 문제의 난이도가 상승합니다.' +
+          '</p>' +
+          '<button class="close-btn" onclick="document.getElementById(&quot;es-guide-modal&quot;).style.display=&quot;none&quot;">확인</button>' +
+        '</div>';
+      document.body.appendChild(modal);
+    }
+    modal.style.display = 'flex';
+  }
+
+  function showRankingModal() {
+    let modal = document.getElementById('es-ranking-modal');
+    if (!modal) {
+      modal = document.createElement('div');
+      modal.id = 'es-ranking-modal';
+      modal.className = 'es-modal-overlay';
+      modal.innerHTML = 
+        '<div class="es-modal">' +
+          '<h3>🏆 랭킹 등록</h3>' +
+          '<p>최종 점수: <strong id="es-rank-score" style="color:#f59e0b; font-size:1.5rem;"></strong> 점</p>' +
+          '<input type="text" id="es-rank-name" placeholder="닉네임 (10자 이내)" maxlength="10" style="width:100%; padding:10px; margin-bottom:15px; border-radius:8px; background:#f8fafc; border:1px solid #cbd5e1; color:#1e293b; text-align:center;">' +
+          '<button class="close-btn" id="es-rank-submit">등록 후 재시작</button>' +
+          '<button class="close-btn" style="background:#64748b; margin-left:10px;" onclick="document.getElementById(&quot;es-ranking-modal&quot;).style.display=&quot;none&quot;">닫기</button>' +
+        '</div>';
+      document.body.appendChild(modal);
+      
+      document.getElementById('es-rank-submit').addEventListener('click', function() {
+        const nameInput = document.getElementById('es-rank-name');
+        let name = nameInput.value.trim();
+        if (!name) { showToast('닉네임을 입력하세요.', 'error'); return; }
+        name = escapeHTML(name);
+        
+        if (typeof window.submitRankingScore === 'function') {
+          window.submitRankingScore('equation-seesaw', name, score);
+        } else {
+          let list = JSON.parse(localStorage.getItem('mathlab_lb_equation-seesaw') || '[]');
+          list.push({ nickname: name, score: score });
+          list.sort(function(a,b) { return b.score - a.score; });
+          localStorage.setItem('mathlab_lb_equation-seesaw', JSON.stringify(list));
+        }
+        
+        showToast('명예의 전당에 등록되었습니다!', 'success');
+        document.getElementById('es-ranking-modal').style.display = 'none';
+        renderBottomLeaderboard();
+        fullResetGame();
+      });
+    }
+    document.getElementById('es-rank-score').textContent = score;
+    document.getElementById('es-rank-name').value = '';
+    modal.style.display = 'flex';
+  }
+
+  function renderBottomLeaderboard() {
+    if (typeof window.loadGameLeaderboard === 'function') {
+      window.loadGameLeaderboard('equation-seesaw', true, 'board-equation-seesaw');
+    } else {
+      try {
+        let list = JSON.parse(localStorage.getItem('mathlab_lb_equation-seesaw') || '[]');
+        const bottomEl = document.getElementById('board-equation-seesaw');
+        if (bottomEl) {
+          if (list.length === 0) {
+            bottomEl.innerHTML = '<p style="text-align:center; color:#64748b; padding:12px 0;">아직 등록된 기록이 없습니다.</p>';
+          } else {
+            bottomEl.innerHTML = list.slice(0, 5).map(function(item, idx) {
+              return '<div style="display:flex; justify-content:space-between; align-items:center; background:#f8fafc; padding:10px 14px; border-radius:10px; border:1px solid #e2e8f0; margin-bottom:6px;">' +
+                '<span style="font-weight:800; color:' + (idx === 0 ? '#f59e0b' : '#334155') + ';">' + (idx === 0 ? '👑 1위' : (idx + 1) + '위') + ' - ' + escapeHTML(item.nickname) + '</span>' +
+                '<span style="color:#10b981; font-weight:900;">' + item.score + ' 점</span>' +
+              '</div>';
+            }).join('');
+          }
+        }
+      } catch(e) {}
+    }
+  }
+
+  function goHome() {
+    if (host) {
+      host.style.display = 'none';
+      host.innerHTML = '';
+    }
+    const legacyHost = document.getElementById('mathlab-view');
+    if (legacyHost) {
+      legacyHost.style.display = 'none';
+      legacyHost.innerHTML = '';
+    }
+    const forceHost = document.getElementById('equation-seesaw-force-host');
+    if (forceHost) {
+      forceHost.style.display = 'none';
+      forceHost.innerHTML = '';
+    }
+
+    document.querySelectorAll('.app-grid, #dashboard-screen, #hero-section').forEach(function(el) {
+      if (el && el.style) {
+        el.style.display = '';
+        el.style.visibility = '';
+      }
+    });
+
+    if (window.LegacyBridge && typeof window.LegacyBridge.backHome === 'function') {
+      window.LegacyBridge.backHome();
+    } else if (typeof window.goHome === 'function') {
+      window.goHome();
+    }
+  }
+
+  function mount(container, context) {
+    let target = null;
+    if (typeof container === 'string') target = document.querySelector(container);
+    else if (container instanceof HTMLElement) target = container;
+    
+    if (!target) target = window.MathLabUtils && window.MathLabUtils.getMountContainer ? window.MathLabUtils.getMountContainer(container) : document.getElementById('mathlab-view');
+    if (!target || !(target instanceof HTMLElement)) target = document.getElementById('new-root') || document.getElementById('game-container') || document.getElementById('mathlab-view');
+
+    if (!target || !(target instanceof HTMLElement) || target === document.body) {
+      let createdHost = document.getElementById('equation-seesaw-force-host');
+      if (!createdHost) {
+        createdHost = document.createElement('div');
+        createdHost.id = 'equation-seesaw-force-host';
+        document.body.appendChild(createdHost);
+      }
+      target = createdHost;
+    }
+
+    const footerEl = document.querySelector('footer, #footer, .app-footer') || 
+                     Array.from(document.querySelectorAll('div, p, span')).find(function(el) { return el.textContent && el.textContent.indexOf('2026 기록조율사') !== -1; });
+    if (footerEl && target && typeof target.compareDocumentPosition === 'function' && (target.compareDocumentPosition(footerEl) & Node.DOCUMENT_POSITION_PRECEDING)) {
+      footerEl.parentNode.insertBefore(target, footerEl);
+    }
+
+    target.style.display = '';
+    target.style.visibility = 'visible';
+    target.style.opacity = '1';
+
+    let parent = target.parentElement;
+    while (parent && parent !== document.body && parent !== document.documentElement) {
+      if (parent.style && parent.style.display === 'none') parent.style.display = 'block';
+      if (parent.style && parent.style.visibility === 'hidden') parent.style.visibility = 'visible';
+      parent = parent.parentElement;
+    }
+
+    document.querySelectorAll('header, .navbar, #app-header, .top-bar, #floating-home-btn, .floating-home').forEach(function(el) {
+      if (el && el.style && el.style.display === 'none') el.style.display = '';
+    });
+    
+    host = target;
+
+    host.innerHTML = 
+      '<div class="game-equation-seesaw">' +
+        '<div class="app-header">' +
+          '<div class="app-title">⚖️ 방정식 시소 밸런스</div>' +
+          '<div class="header-btns">' +
+            '<button class="btn btn-primary" id="btn-guide">📖 방법</button>' +
+            '<button class="btn btn-home" id="btn-home">🏠 홈</button>' +
+          '</div>' +
+        '</div>' +
+        '<div class="main-area">' +
+          '<div class="status-bar">' +
+            '<div class="stat-box">' +
+              '<span class="stat-label">내 점수</span>' +
+              '<span class="stat-value score" id="es-score">50</span>' +
+            '</div>' +
+            '<div class="stat-box">' +
+              '<span class="stat-label">조작 횟수</span>' +
+              '<span class="stat-value" id="es-moves">0</span>' +
+            '</div>' +
+            '<button class="btn" style="background:#fef2f2; border:1px solid #fca5a5; color:#ef4444;" id="btn-end">🛑 기록 등록 후 종료</button>' +
+          '</div>' +
+          
+          '<div style="display:flex; justify-content:center; gap:10px; flex-wrap:wrap;">' +
+            '<span class="diff-indicator" data-diff="easy">쉬움 (~99점)</span>' +
+            '<span class="diff-indicator" data-diff="normal">보통 (~199점)</span>' +
+            '<span class="diff-indicator" data-diff="hard">도전 (200점~)</span>' +
+          '</div>' +
+          
+          '<div class="equation-display" id="equation-display"></div>' +
+          
+          '<div class="seesaw-container">' +
+            '<div class="seesaw-board" id="seesaw-board">' +
+              '<div class="pan"><div class="pan-content" id="left-pan"></div></div>' +
+              '<div class="pan"><div class="pan-content" id="right-pan"></div></div>' +
+            '</div>' +
+            '<div class="seesaw-base"></div>' +
+          '</div>' +
+          
+          '<div class="control-panel">' +
+            '<div style="width:100%; text-align:center; font-weight:800; color:#475569;">양변 동일 연산</div>' +
+            '<div class="control-group">' +
+              '<select id="op-select">' +
+                '<option value="add">더하기 (+)</option>' +
+                '<option value="sub">빼기 (-)</option>' +
+                '<option value="div">나누기 (/)</option>' +
+              '</select>' +
+              '<input type="number" id="op-value" value="1" min="1" max="100" style="width:70px;">' +
+              '<select id="op-type">' +
+                '<option value="const">상수 추</option>' +
+                '<option value="x">x 상자</option>' +
+              '</select>' +
+            '</div>' +
+            '<button class="btn-apply" id="btn-apply">적용하기 🚀</button>' +
+            '<button class="btn" style="margin-left:auto; background:#fef3c7; color:#d97706;" id="btn-hint">💡 힌트 (-3점)</button>' +
+          '</div>' +
+          
+          '<div class="end-round-banner" id="end-round-banner">' +
+            '<div class="end-round-title" id="banner-title">결과</div>' +
+            '<div class="end-round-text" id="banner-text" style="color:#065f46; font-size:1.1rem; margin-bottom:10px; font-weight:700;">내용</div>' +
+            '<button class="btn btn-primary" style="font-size:1.1rem; padding:10px 20px;" id="btn-next-round">다음 문제로 ➡️</button>' +
+          '</div>' +
+        '</div>' +
+        
+        '<div class="bottom-ranking-card" id="board-equation-seesaw-wrapper">' +
+          '<div class="ranking-title">🏆 명예의 전당 (최고 점수)</div>' +
+          '<div id="board-equation-seesaw">' +
+            '<p style="text-align:center; color:#94a3b8; padding:12px 0;">로딩 중...</p>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+
+    // Events
+    host.querySelector('#btn-home').addEventListener('click', goHome);
+    host.querySelector('#btn-guide').addEventListener('click', showGuideModal);
+    host.querySelector('#btn-end').addEventListener('click', endAndRegister);
+    host.querySelector('#btn-next-round').addEventListener('click', nextRound);
+    host.querySelector('#btn-apply').addEventListener('click', applyOperation);
+    host.querySelector('#btn-hint').addEventListener('click', useHint);
+    
+    host.querySelector('#op-select').addEventListener('change', handleOpSelectChange);
+
+    setTimeout(function() {
+      fullResetGame();
+      renderBottomLeaderboard();
+    }, 100);
+  }
+
+  function destroy() {
+    if (host) host.innerHTML = '';
+  }
+
+  return { mount: mount, resetGame: fullResetGame, destroy: destroy, goHome: goHome };
+})();
+
+function registerEquationSeesaw() {
+  if (typeof window.MathLabGames !== 'undefined' && typeof window.MathLabGames.register === 'function') {
+    if (!window.MathLabGames.get('equation-seesaw')) {
+      try {
+        window.MathLabGames.register({
+          id: 'equation-seesaw',
+          title: '방정식 시소 밸런스',
+          icon: '⚖️',
+          sourceType: 'new',
+          players: '1인',
+          isMultiplayer: false,
+          mount: function(container, context) { EquationSeesaw.mount(container, context); },
+          reset: function() { EquationSeesaw.resetGame(); },
+          destroy: function() { EquationSeesaw.destroy(); },
+          goHome: function() { EquationSeesaw.goHome(); }
+        });
+      } catch (e) {
+        console.warn('equation-seesaw 안전 등록 방어:', e);
+      }
+    }
+  }
+}
+
+registerEquationSeesaw();
+window.addEventListener('DOMContentLoaded', registerEquationSeesaw);
+setTimeout(registerEquationSeesaw, 100);
+setTimeout(registerEquationSeesaw, 500);
+
+window.EquationSeesawModule = EquationSeesaw;
+
+window.initEquationSeesawGame = function() {
+  registerEquationSeesaw();
+  if (window.LegacyBridge && typeof window.LegacyBridge.hideAllLegacySections === 'function') {
+    window.LegacyBridge.hideAllLegacySections();
+    window.LegacyBridge.showNewRoot();
+  }
+  if (typeof window.MathLabGames !== 'undefined' && typeof window.MathLabGames.mount === 'function') {
+    try { window.MathLabGames.mount('equation-seesaw'); return; } catch(e) {}
+  }
+  const targetEl = document.getElementById('mathlab-view') || document.getElementById('new-root');
+  EquationSeesaw.mount(targetEl);
+};
+
+window.launchMathLabGame = window.launchMathLabGame || function(id) {
+  if (id === 'equation-seesaw') {
+    window.initEquationSeesawGame();
+  }
+};
+</script>

@@ -1,0 +1,1102 @@
+<!-- 마방진 챌린지 (Magic Square Challenge) Gen-3 표준 완결판 -->
+<style>
+  .game-magic-square {
+    width: 100%;
+    min-height: 100%;
+    padding: 24px;
+    box-sizing: border-box;
+    color: #ffffff;
+    background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #2e1065 100%);
+    border-radius: 24px;
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+    user-select: none;
+    -webkit-user-select: none;
+    border: 2px solid #8b5cf6;
+    box-shadow: inset 0 0 50px rgba(0,0,0,0.8);
+  }
+
+  .game-magic-square * { box-sizing: border-box; }
+  
+  /* 가독성을 높인 고대비 상단 헤더 */
+  .game-magic-square .ms-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
+  .game-magic-square .title-area h2 { margin: 0 0 6px; font-size: clamp(1.6rem, 3vw, 2.3rem); color: #38bdf8; font-weight: 900; display: flex; align-items: center; gap: 10px; text-shadow: 0 0 15px rgba(56, 189, 248, 0.5); }
+  .game-magic-square .title-area p { margin: 0; color: #f8fafc; font-size: 1.05rem; font-weight: 700; opacity: 0.95; }
+  .game-magic-square .stats-bar { display: flex; gap: 12px; font-weight: 800; font-size: 1.05rem; flex-wrap: wrap; align-items: center; }
+  
+  .game-magic-square .stat-badge { background: #1e293b; padding: 8px 16px; border-radius: 14px; box-shadow: 0 4px 10px rgba(0,0,0,0.4); border: 2px solid #6366f1; color: #f8fafc; display: flex; align-items: center; gap: 6px; font-weight: 800; }
+  .game-magic-square .stat-badge.score { color: #fbbf24; border-color: #f59e0b; background: #271c14; }
+  .game-magic-square .stat-badge.target { color: #38bdf8; border-color: #0ea5e9; background: #0f172a; }
+  .game-magic-square .stat-badge.timer { color: #fca5a5; border-color: #ef4444; background: #451a1a; animation: pulseTimer 1s infinite; display: none; }
+  @keyframes pulseTimer { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+  
+  @keyframes howtoPulse {
+    0% { transform: scale(1); box-shadow: 0 4px 10px rgba(139, 92, 246, 0.3); }
+    50% { transform: scale(1.05); box-shadow: 0 6px 18px rgba(139, 92, 246, 0.7); }
+    100% { transform: scale(1); box-shadow: 0 4px 10px rgba(139, 92, 246, 0.3); }
+  }
+  .game-magic-square .btn-howto {
+    background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+    color: #ffffff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 14px;
+    font-size: 1.05rem;
+    font-weight: 900;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(139, 92, 246, 0.3);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+    animation: howtoPulse 2.5s infinite;
+  }
+  .game-magic-square .btn-howto:hover {
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 8px 20px rgba(139, 92, 246, 0.6);
+    background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%);
+    animation: none;
+  }
+
+  .game-magic-square .main-layout { display: flex; gap: 24px; flex-wrap: wrap; }
+  
+  .game-magic-square .game-area { flex: 1; min-width: 320px; display: flex; flex-direction: column; gap: 20px; }
+  .game-magic-square .card { background: #1e293b; border-radius: 20px; padding: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); border: 2px solid #6366f1; }
+  
+  /* 마방진 보드 컨테이너 */
+  .game-magic-square .board-card {
+    background: radial-gradient(circle at center, #1e1b4b 0%, #0f172a 100%);
+    border: 4px solid #8b5cf6;
+    border-radius: 28px;
+    padding: 24px 18px;
+    text-align: center;
+    position: relative;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.6), inset 0 0 30px rgba(139, 92, 246, 0.2);
+  }
+
+  .game-magic-square .mission-tag { font-size: 0.95rem; font-weight: 800; background: #4f46e5; color: #ffffff; padding: 8px 20px; border-radius: 20px; display: inline-block; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 1px; border: 1px solid #c4b5fd; box-shadow: 0 4px 8px rgba(0,0,0,0.3); }
+
+  /* 대각선 합 상태 표시바 */
+  .game-magic-square .diag-sum-bar {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background: #090d16;
+    border: 2px solid #475569;
+    border-radius: 16px;
+    padding: 10px 16px;
+    margin-bottom: 16px;
+    font-size: 1.05rem;
+    font-weight: 800;
+  }
+  .game-magic-square .diag-badge { display: flex; align-items: center; gap: 8px; color: #e2e8f0; }
+  .game-magic-square .diag-badge.matched { color: #4ade80; font-weight: 900; text-shadow: 0 0 10px rgba(74, 222, 128, 0.4); }
+
+  /* 마방진 격자 영역 */
+  .game-magic-square .grid-wrapper {
+    display: inline-block;
+    margin: 0 auto 20px;
+    background: #090d16;
+    padding: 16px;
+    border-radius: 20px;
+    border: 2px solid #334155;
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+  }
+
+  .game-magic-square .grid-table {
+    display: grid;
+    gap: 10px;
+    align-items: center;
+    justify-content: center;
+  }
+  .game-magic-square .grid-table.size-3 { grid-template-columns: repeat(3, 76px) 85px; }
+  .game-magic-square .grid-table.size-4 { grid-template-columns: repeat(4, 64px) 80px; }
+  @media (max-width: 480px) {
+    .game-magic-square .grid-table.size-3 { grid-template-columns: repeat(3, 62px) 70px; gap: 8px; }
+    .game-magic-square .grid-table.size-4 { grid-template-columns: repeat(4, 50px) 62px; gap: 6px; }
+  }
+
+  /* 격자 셀 스타일 */
+  .game-magic-square .cell {
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    font-weight: 900;
+    transition: all 0.2s;
+    position: relative;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+    font-family: monospace;
+  }
+  .game-magic-square .grid-table.size-4 .cell { font-size: 1.4rem; border-radius: 12px; }
+
+  /* 고정 숫자 (잠금 셀) */
+  .game-magic-square .cell.fixed {
+    background: #1e293b;
+    border: 2px solid #475569;
+    color: #38bdf8;
+    cursor: default;
+  }
+  
+  /* 빈칸 셀 (입력 대기) */
+  .game-magic-square .cell.empty {
+    background: #020617;
+    border: 3px dashed #6366f1;
+    color: #64748b;
+    cursor: pointer;
+  }
+  .game-magic-square .cell.empty:hover { background: #1e1b4b; border-color: #a5b4fc; transform: scale(1.04); }
+  .game-magic-square .cell.empty.drag-over { background: #312e81; border-color: #4ade80; border-style: solid; transform: scale(1.08); }
+  
+  /* 사용자가 채운 셀 */
+  .game-magic-square .cell.filled {
+    background: #312e81;
+    border: 3px solid #8b5cf6;
+    color: #fef08a;
+    cursor: pointer;
+    box-shadow: 0 0 15px rgba(139, 92, 246, 0.4);
+  }
+  .game-magic-square .cell.filled:hover { background: #4c1d95; transform: scale(1.04); }
+
+  /* 행 및 열 합계 표시 셀 */
+  .game-magic-square .sum-cell {
+    background: #0f172a;
+    border: 2px solid #334155;
+    color: #e2e8f0;
+    font-size: 1.2rem;
+    font-weight: 900;
+    padding: 10px 6px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    font-family: monospace;
+  }
+  .game-magic-square .sum-cell.matched { background: #064e3b; border-color: #10b981; color: #4ade80; text-shadow: 0 0 10px rgba(74, 222, 128, 0.5); }
+  .game-magic-square .sum-cell.error { color: #f87171; border-color: #7f1d1d; }
+
+  /* 하단 숫자 타일 풀 */
+  .game-magic-square .pool-section {
+    background: #1e293b;
+    border: 2px solid #6366f1;
+    border-radius: 20px;
+    padding: 20px;
+  }
+  .game-magic-square .pool-title { font-size: 1.1rem; font-weight: 900; color: #38bdf8; margin: 0 0 14px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+  
+  .game-magic-square .tile-pool {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+    min-height: 70px;
+    align-items: center;
+  }
+  
+  .game-magic-square .tile {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%);
+    border: 3px solid #818cf8;
+    color: #ffffff;
+    font-size: 1.6rem;
+    font-weight: 900;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: grab;
+    box-shadow: 0 6px 12px rgba(0,0,0,0.5);
+    transition: all 0.15s;
+    font-family: monospace;
+  }
+  .game-magic-square .grid-table.size-4 ~ .pool-section .tile { width: 52px; height: 52px; font-size: 1.3rem; }
+  .game-magic-square .tile:hover { transform: translateY(-4px) scale(1.05); box-shadow: 0 10px 20px rgba(99, 102, 241, 0.5); border-color: #c4b5fd; }
+  .game-magic-square .tile:active { cursor: grabbing; transform: scale(0.95); }
+  .game-magic-square .tile.selected { background: linear-gradient(135deg, #d97706 0%, #b45309 100%); border-color: #fbbf24; color: #ffffff; box-shadow: 0 0 20px rgba(251, 191, 36, 0.6); animation: bounceTile 0.6s infinite alternate; }
+  @keyframes bounceTile { from { transform: translateY(0); } to { transform: translateY(-6px); } }
+  .game-magic-square .tile.used { opacity: 0.25; cursor: default; transform: none; box-shadow: none; border-color: #334155; }
+
+  .game-magic-square .btn-secondary { background: #1e293b; color: #f8fafc; border: 2px solid #6366f1; padding: 14px 22px; font-size: 1.05rem; border-radius: 14px; cursor: pointer; font-weight: 800; transition: all 0.15s; }
+  .game-magic-square .btn-secondary:hover:not(:disabled) { background: #4f46e5; border-color: #a5b4fc; }
+
+  .game-magic-square .result-area { text-align: center; margin-top: 16px; padding: 20px; border-radius: 18px; display: none; font-weight: 800; font-size: 1.2rem; line-height: 1.6; }
+  .game-magic-square .result-area.show { display: block; animation: fadeIn 0.4s; }
+  .game-magic-square .result-area.success { background: #064e3b; border: 2px solid #34d399; color: #ffffff; }
+  .game-magic-square .result-area.error { background: #7f1d1d; border: 2px solid #f87171; color: #ffffff; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+
+  .game-magic-square .sidebar { width: 320px; display: flex; flex-direction: column; gap: 16px; flex-shrink: 0; }
+  @media (max-width: 768px) { .game-magic-square .sidebar { width: 100%; } }
+
+  .game-magic-square .diff-selector { display: flex; gap: 6px; background: #090d16; p: 6px; border-radius: 14px; padding: 6px; border: 1px solid #475569; }
+  .game-magic-square .diff-btn { flex: 1; padding: 10px 8px; border: none; border-radius: 10px; font-weight: 800; font-size: 0.95rem; cursor: pointer; color: #94a3b8; background: transparent; transition: all 0.2s; }
+  .game-magic-square .diff-btn.active { background: #6366f1; color: #ffffff; box-shadow: 0 2px 6px rgba(0,0,0,0.4); }
+
+  .game-magic-square .rank-item {
+    display: flex; justify-content: space-between; align-items: center;
+    background: #0f172a; border: 1px solid #4f46e5;
+    padding: 10px 14px; border-radius: 12px; margin-bottom: 8px;
+    font-size: 0.95rem; color: #f8fafc; font-weight: 700;
+  }
+  .game-magic-square .rank-num { color: #fbbf24; font-weight: 900; margin-right: 8px; }
+  .game-magic-square .rank-score { color: #38bdf8; font-weight: 900; }
+</style>
+<script>
+(function() {
+  const BASE_3X3 = [
+    [8, 1, 6],
+    [3, 5, 7],
+    [4, 9, 2]
+  ];
+
+  const BASE_4X4 = [
+    [16, 3, 2, 13],
+    [5, 10, 11, 8],
+    [9, 6, 7, 12],
+    [4, 15, 14, 1]
+  ];
+
+  function rotateMatrix(mat) {
+    const n = mat.length;
+    const res = Array.from({ length: n }, () => Array(n).fill(0));
+    for (let r = 0; r < n; r++) {
+      for (let c = 0; c < n; c++) {
+        res[c][n - 1 - r] = mat[r][c];
+      }
+    }
+    return res;
+  }
+
+  function reflectMatrix(mat) {
+    return mat.map(row => [...row].reverse());
+  }
+
+  const MagicSquare = {
+    id: 'magic-square',
+    container: null,
+    state: {
+      difficulty: 'easy', // 'easy', 'normal', 'hard'
+      roundIdx: 0,
+      maxRounds: 5,
+      score: 0,
+      gridSize: 3,
+      targetSum: 15,
+      board: [], // 2D array of { val: number|null, fixed: boolean, sol: number }
+      pool: [], // array of available numbers
+      selectedTile: null, // For tap-tap placement
+      timer: 90,
+      isAnswered: false,
+      isGameOver: false,
+      hintUsed: false,
+      startTime: 0
+    },
+    timers: [],
+    timerId: null,
+
+    mount(container, context) {
+      let target = null;
+      if (typeof container === 'string') target = document.querySelector(container);
+      else if (container instanceof HTMLElement) target = container;
+      if (!target) target = document.getElementById('mathlab-view') || document.getElementById('new-root') || document.getElementById('game-container');
+
+      // 💡 [자가 복구 엔진] 컨테이너가 없거나 가려져 있다면, 100% 보이는 전용 도화지 생성!
+      if (!target || target === document.body) {
+        let host = document.getElementById('magic-square-force-host');
+        if (!host) {
+          host = document.createElement('div'); host.id = 'magic-square-force-host';
+          host.style.cssText = 'width:100%; max-width:960px; margin:0 auto; padding:20px 10px; box-sizing:border-box; z-index:999; position:relative; background:#0f172a; min-height:650px; display:block; border-radius:24px;';
+          const header = document.querySelector('header, .navbar, #app-header, .top-bar');
+          if (header && header.parentNode) header.parentNode.insertBefore(host, header.nextSibling);
+          else document.body.appendChild(host);
+        }
+        target = host;
+      }
+
+      this.container = target;
+      this.container.style.display = 'block'; this.container.style.visibility = 'visible'; this.container.style.opacity = '1'; this.container.style.minHeight = '650px';
+
+      let parent = this.container.parentElement;
+      while (parent && parent !== document.body && parent !== document.documentElement) {
+        if (parent.style && parent.style.display === 'none') parent.style.display = 'block';
+        if (parent.style && parent.style.visibility === 'hidden') parent.style.visibility = 'visible';
+        parent = parent.parentElement;
+      }
+
+      this.restoreGlobalNavigation();
+      this.resetGame();
+    },
+
+    restoreGlobalNavigation() {
+      const navElements = document.querySelectorAll('header, .navbar, #app-header, .top-bar, #floating-home-btn, .floating-home, [id*="home"], [class*="floating"]');
+      navElements.forEach(el => { if (el && el.style && el.style.display === 'none') el.style.display = ''; });
+    },
+
+    setDifficulty(diff) {
+      if (this.state.difficulty === diff && !this.state.isGameOver && this.state.roundIdx === 0) return;
+      this.state.difficulty = diff;
+      this.resetGame();
+    },
+
+    resetGame() {
+      if (window.MathLabCleanup && typeof window.MathLabCleanup.clearTimers === 'function') {
+        window.MathLabCleanup.clearTimers(this.timers);
+      }
+      this.timers.forEach(clearTimeout);
+      this.timers = [];
+      if (this.timerId) { clearInterval(this.timerId); this.timerId = null; }
+      
+      this.state.roundIdx = 0;
+      this.state.score = 0;
+      this.state.isGameOver = false;
+      
+      this.setupRound();
+    },
+    
+    setupRound() {
+      if (this.state.roundIdx >= this.state.maxRounds) {
+        this.gameOver(true);
+        return;
+      }
+
+      if (this.timerId) { clearInterval(this.timerId); this.timerId = null; }
+
+      this.state.hintUsed = false;
+      this.state.isAnswered = false;
+      this.state.selectedTile = null;
+      this.state.startTime = Date.now();
+
+      // 난이도별 마방진 생성
+      let size = 3;
+      let base = BASE_3X3.map(row => [...row]);
+      let mult = 1;
+      let add = 0;
+      let emptyCount = 4; // 쉬움: 3x3, 빈칸 4개
+
+      if (this.state.difficulty === 'normal') {
+        size = 3;
+        // 선형 변형: 2배수(짝수 2~18), 3배수, 또는 3더하기 등
+        const variants = [
+          { m: 2, a: 0 }, // 2,4,6...18 (합 30)
+          { m: 1, a: 4 }, // 5,6...13 (합 27)
+          { m: 3, a: 0 }, // 3,6...27 (합 45)
+          { m: 1, a: 10 } // 11...19 (합 45)
+        ];
+        const chosen = variants[Math.floor(Math.random() * variants.length)];
+        mult = chosen.m;
+        add = chosen.a;
+        emptyCount = 5; // 보통: 빈칸 5개
+      } else if (this.state.difficulty === 'hard') {
+        size = 4;
+        base = BASE_4X4.map(row => [...row]);
+        emptyCount = 8; // 도전: 4x4, 빈칸 8개
+        
+        this.state.timer = 90;
+        this.timerId = setInterval(() => {
+          if (this.state.isAnswered || this.state.isGameOver) return;
+          this.state.timer--;
+          this.updateTimerUI();
+          if (this.state.timer <= 0) {
+            clearInterval(this.timerId); this.timerId = null;
+            this.handleTimeout();
+          }
+        }, 1000);
+      }
+
+      // 회전 및 반사 변형 적용
+      let rot = Math.floor(Math.random() * 4);
+      for (let r = 0; r < rot; r++) base = rotateMatrix(base);
+      if (Math.random() > 0.5) base = reflectMatrix(base);
+
+      this.state.gridSize = size;
+      this.state.targetSum = (size === 3 ? 15 : 34) * mult + size * add;
+
+      // 보드 초기화
+      this.state.board = [];
+      const allNumbers = [];
+      for (let r = 0; r < size; r++) {
+        const row = [];
+        for (let c = 0; c < size; c++) {
+          const val = base[r][c] * mult + add;
+          allNumbers.push(val);
+          row.push({ val: val, fixed: true, sol: val });
+        }
+        this.state.board.push(row);
+      }
+
+      // 무작위로 emptyCount만큼 빈칸 뚫기
+      const positions = [];
+      for (let r = 0; r < size; r++) {
+        for (let c = 0; c < size; c++) positions.push([r, c]);
+      }
+      positions.sort(() => Math.random() - 0.5);
+
+      this.state.pool = [];
+      for (let i = 0; i < emptyCount; i++) {
+        const [r, c] = positions[i];
+        this.state.pool.push(this.state.board[r][c].val);
+        this.state.board[r][c].val = null;
+        this.state.board[r][c].fixed = false;
+      }
+      this.state.pool.sort(() => Math.random() - 0.5);
+
+      this.render();
+    },
+
+    updateTimerUI() {
+      const el = this.container?.querySelector('.stat-badge.timer');
+      const valEl = el?.querySelector('.timer-val');
+      if (valEl) valEl.textContent = `${this.state.timer}초`;
+    },
+
+    handleTimeout() {
+      this.state.isAnswered = true;
+      const resArea = this.container?.querySelector('.result-area');
+      if (resArea) {
+        resArea.className = 'result-area show error';
+        resArea.innerHTML = `⏰ <strong>시간 초과! 마방진 에너지가 방전되었습니다!</strong><br>제한 시간 내에 모든 가로·세로·대각선의 합을 맞춰야 합니다.`;
+      }
+      const t = setTimeout(() => { this.gameOver(false); }, 2000);
+      this.timers.push(t);
+    },
+
+    selectTileFromPool(num) {
+      if (this.state.isAnswered || this.state.isGameOver) return;
+      if (this.state.selectedTile === num) this.state.selectedTile = null;
+      else this.state.selectedTile = num;
+      this.updatePoolUI();
+    },
+
+    placeTileOnGrid(r, c) {
+      if (this.state.isAnswered || this.state.isGameOver) return;
+      const cell = this.state.board[r][c];
+      if (cell.fixed) return;
+
+      // 이미 숫자가 있다면 풀로 돌려보냄
+      if (cell.val !== null) {
+        const oldVal = cell.val;
+        cell.val = null;
+        this.state.pool.push(oldVal);
+        this.state.pool.sort((a, b) => a - b);
+      }
+
+      // 선택된 타일이 있다면 해당 칸에 배치
+      if (this.state.selectedTile !== null) {
+        const idx = this.state.pool.indexOf(this.state.selectedTile);
+        if (idx !== -1) {
+          cell.val = this.state.selectedTile;
+          this.state.pool.splice(idx, 1);
+          this.state.selectedTile = null;
+        }
+      }
+
+      this.updateBoardUI();
+      this.updatePoolUI();
+      this.checkVictoryCondition();
+    },
+
+    returnTileToPool(r, c) {
+      if (this.state.isAnswered || this.state.isGameOver) return;
+      const cell = this.state.board[r][c];
+      if (cell.fixed || cell.val === null) return;
+
+      this.state.pool.push(cell.val);
+      this.state.pool.sort((a, b) => a - b);
+      cell.val = null;
+
+      this.updateBoardUI();
+      this.updatePoolUI();
+    },
+
+    updatePoolUI() {
+      const root = this.container?.querySelector('.game-magic-square');
+      if (!root) return;
+      
+      const poolEl = root.querySelector('.tile-pool');
+      if (!poolEl) return;
+
+      if (this.state.pool.length === 0) {
+        poolEl.innerHTML = '<div style="color:#94a3b8; font-weight:800; font-size:1.1rem;">🎉 모든 숫자를 격자에 배치했습니다!</div>';
+        return;
+      }
+
+      poolEl.innerHTML = this.state.pool.map(num => `
+        <div class="tile ${this.state.selectedTile === num ? 'selected' : ''}" draggable="true" data-num="${num}">
+          ${num}
+        </div>
+      `).join('');
+
+      this.bindDragEvents();
+    },
+
+    updateBoardUI() {
+      const root = this.container?.querySelector('.game-magic-square');
+      if (!root) return;
+
+      const size = this.state.gridSize;
+      for (let r = 0; r < size; r++) {
+        for (let c = 0; c < size; c++) {
+          const cellEl = root.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`);
+          if (!cellEl) continue;
+          
+          const cellData = this.state.board[r][c];
+          cellEl.className = 'cell';
+          if (cellData.fixed) {
+            cellEl.classList.add('fixed');
+            cellEl.textContent = cellData.val;
+          } else if (cellData.val !== null) {
+            cellEl.classList.add('filled');
+            cellEl.textContent = cellData.val;
+          } else {
+            cellEl.classList.add('empty');
+            cellEl.textContent = '';
+          }
+        }
+      }
+
+      // 행 및 열 합계 업데이트
+      for (let r = 0; r < size; r++) {
+        let sum = 0; let count = 0;
+        for (let c = 0; c < size; c++) {
+          if (this.state.board[r][c].val !== null) { sum += this.state.board[r][c].val; count++; }
+        }
+        const sumEl = root.querySelector(`.sum-cell[data-row-sum="${r}"]`);
+        if (sumEl) {
+          sumEl.textContent = `${sum}`;
+          sumEl.className = 'sum-cell';
+          if (count === size && sum === this.state.targetSum) sumEl.classList.add('matched');
+        }
+      }
+
+      for (let c = 0; c < size; c++) {
+        let sum = 0; let count = 0;
+        for (let r = 0; r < size; r++) {
+          if (this.state.board[r][c].val !== null) { sum += this.state.board[r][c].val; count++; }
+        }
+        const sumEl = root.querySelector(`.sum-cell[data-col-sum="${c}"]`);
+        if (sumEl) {
+          sumEl.textContent = `${sum}`;
+          sumEl.className = 'sum-cell';
+          if (count === size && sum === this.state.targetSum) sumEl.classList.add('matched');
+        }
+      }
+
+      // 대각선 합계 업데이트
+      let diag1 = 0; let c1 = 0;
+      let diag2 = 0; let c2 = 0;
+      for (let i = 0; i < size; i++) {
+        if (this.state.board[i][i].val !== null) { diag1 += this.state.board[i][i].val; c1++; }
+        if (this.state.board[i][size - 1 - i].val !== null) { diag2 += this.state.board[i][size - 1 - i].val; c2++; }
+      }
+
+      const d1El = root.querySelector('#diag-1-val');
+      if (d1El) {
+        d1El.textContent = diag1;
+        d1El.parentElement.className = `diag-badge ${c1 === size && diag1 === this.state.targetSum ? 'matched' : ''}`;
+      }
+      const d2El = root.querySelector('#diag-2-val');
+      if (d2El) {
+        d2El.textContent = diag2;
+        d2El.parentElement.className = `diag-badge ${c2 === size && diag2 === this.state.targetSum ? 'matched' : ''}`;
+      }
+    },
+
+    checkVictoryCondition() {
+      // 모든 셀이 채워졌는지 확인
+      const size = this.state.gridSize;
+      for (let r = 0; r < size; r++) {
+        for (let c = 0; c < size; c++) {
+          if (this.state.board[r][c].val === null) return;
+        }
+      }
+
+      // 합 조건 충족 여부 검사 (고정 정답 비교 금지! 다중 해 허용!)
+      for (let r = 0; r < size; r++) {
+        let sum = 0;
+        for (let c = 0; c < size; c++) sum += this.state.board[r][c].val;
+        if (sum !== this.state.targetSum) return;
+      }
+      for (let c = 0; c < size; c++) {
+        let sum = 0;
+        for (let r = 0; r < size; r++) sum += this.state.board[r][c].val;
+        if (sum !== this.state.targetSum) return;
+      }
+      let diag1 = 0; let diag2 = 0;
+      for (let i = 0; i < size; i++) {
+        diag1 += this.state.board[i][i].val;
+        diag2 += this.state.board[i][size - 1 - i].val;
+      }
+      if (diag1 !== this.state.targetSum || diag2 !== this.state.targetSum) return;
+
+      // 마방진 완성 성공!
+      this.state.isAnswered = true;
+      if (this.timerId) { clearInterval(this.timerId); this.timerId = null; }
+
+      let pts = 20;
+      if (this.state.difficulty === 'hard') {
+        pts += Math.floor(this.state.timer * 0.5); // 남은 시간 보너스
+      }
+      if (this.state.hintUsed) pts = Math.max(5, pts - 5);
+      this.state.score += pts;
+
+      const resArea = this.container.querySelector('.result-area');
+      if (resArea) {
+        resArea.className = 'result-area show success';
+        resArea.innerHTML = `
+          🎉 🔢 <strong>마방진 완성 성공! (+${pts}점)</strong><br>
+          가로, 세로, 대각선의 모든 합이 목표값(<strong>${this.state.targetSum}</strong>)으로 완벽하게 일치합니다!
+        `;
+      }
+
+      const t = setTimeout(() => {
+        this.state.roundIdx++;
+        this.setupRound();
+      }, 2000);
+      this.timers.push(t);
+      this.updateStatsUI();
+    },
+
+    gameOver(cleared) {
+      if (cleared && !this.state.isGameOver) {
+        this.state.score += 50; // 최종 클리어 보너스
+      }
+      this.state.isGameOver = true;
+      if (this.timerId) { clearInterval(this.timerId); this.timerId = null; }
+      this.render();
+      
+      if (this.state.score > 0) {
+        const t = setTimeout(() => {
+          this.showInlineRankingModal('board-magic-square', this.state.score, { cleared: cleared, difficulty: this.state.difficulty });
+        }, 600);
+        this.timers.push(t);
+      }
+    },
+
+    showHowToPlayModal() {
+      document.getElementById('mathlab-ms-howto-modal')?.remove();
+      const modalHtml = `
+        <div id="mathlab-ms-howto-modal" style="position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(15,23,42,0.85); backdrop-filter:blur(8px); display:flex; align-items:center; justify-content:center; z-index:999999; padding:20px; box-sizing:border-box; font-family:'Pretendard',sans-serif; animation: fadeIn 0.3s;">
+          <div style="background:#0f172a; border-radius:28px; padding:32px 28px; max-width:620px; width:100%; max-height:85vh; overflow-y:auto; box-shadow:0 25px 50px -12px rgba(0,0,0,0.7); border:4px solid #8b5cf6; position:relative; color:#ffffff;">
+            
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #334155; padding-bottom:16px; margin-bottom:20px;">
+              <div style="display:flex; align-items:center; gap:10px;">
+                <span style="font-size:36px;">🔢</span>
+                <div>
+                  <h2 style="margin:0; font-size:24px; font-weight:900; color:#38bdf8;">마방진 챌린지 게임 방법</h2>
+                  <p style="margin:4px 0 0; font-size:13px; color:#f8fafc; font-weight:700;">모든 줄의 합이 같아지는 신비로운 숫자 배열 퍼즐!</p>
+                </div>
+              </div>
+              <button id="ms-howto-close-top" style="background:#1e293b; border:none; width:40px; height:40px; border-radius:50%; font-size:20px; cursor:pointer; color:#f8fafc; font-weight:bold; display:flex; align-items:center; justify-content:center; transition:background 0.2s;">✕</button>
+            </div>
+
+            <div style="display:flex; flex-direction:column; gap:16px; text-align:left; color:#ffffff;">
+              <div style="background:#312e81; border-left:5px solid #8b5cf6; padding:16px; border-radius:12px;">
+                <h3 style="margin:0 0 6px; font-size:16px; color:#a5b4fc; font-weight:900;">🎯 1. 게임의 목표</h3>
+                <p style="margin:0; font-size:14px; line-height:1.5; font-weight:700; color:#ffffff;">격자판의 빈칸에 숫자를 배치하여 <strong>가로, 세로, 두 대각선에 있는 숫자들의 합이 모두 '목표 합'으로 같아지도록</strong> 만드는 논리 퍼즐입니다.</p>
+              </div>
+
+              <div style="background:#1e293b; border:2px solid #4f46e5; padding:18px; border-radius:16px;">
+                <h3 style="margin:0 0 10px; font-size:16px; color:#fef08a; font-weight:900;">✨ 2. 마방진 합의 불변량 규칙</h3>
+                <ul style="margin:0; padding-left:20px; font-size:13.5px; line-height:1.6; font-weight:700; color:#f8fafc;">
+                  <li>3×3 기본 마방진(1~9 사용): 모든 줄의 목표 합은 항상 <strong style="color:#4ade80;">15</strong>입니다!</li>
+                  <li>각 행과 열 끝에 표시된 숫자는 <strong>현재 그 줄에 놓인 숫자들의 합계</strong>를 나타냅니다.</li>
+                  <li>합계가 목표값과 일치하면 초록색(<strong style="color:#4ade80;">✅</strong>)으로 빛나게 됩니다.</li>
+                </ul>
+              </div>
+
+              <div style="background:#4c1d95; border-left:5px solid #fef08a; padding:16px; border-radius:12px;">
+                <h3 style="margin:0 0 6px; font-size:16px; color:#fef08a; font-weight:900;">🕹️ 3. 조작 방법 (드래그 & 탭 병행 지원)</h3>
+                <ul style="margin:0; padding-left:20px; font-size:13.5px; line-height:1.6; font-weight:700; color:#ffffff;">
+                  <li><strong>PC 드래그 앤 드롭:</strong> 하단의 숫자 타일을 마우스로 끌어서 격자의 빈칸에 놓으세요.</li>
+                  <li><strong>모바일/탭-탭 조작:</strong> 하단 숫자 타일을 클릭(선택)한 뒤, 넣고 싶은 빈칸을 클릭하면 배치됩니다!</li>
+                  <li><strong>타일 회수:</strong> 이미 빈칸에 채워넣은 타일을 다시 클릭하면 하단 풀로 되돌아옵니다.</li>
+                  <li>⚡ 복수 해 허용: 마방진은 회전이나 대칭 변형이 가능하므로, <strong>합 조건만 만족하면 어떤 배열이든 정답</strong>으로 인정됩니다!</li>
+                </ul>
+              </div>
+            </div>
+
+            <button id="ms-howto-close-btn" style="width:100%; margin-top:24px; padding:16px; border-radius:16px; font-size:16px; font-weight:900; background:linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%); color:#ffffff; border:none; cursor:pointer; box-shadow:0 8px 16px rgba(139,92,246,0.4); transition:transform 0.15s;">
+              🚀 이해했습니다! 마방진 도전 시작
+            </button>
+
+          </div>
+        </div>
+      `;
+      document.body.insertAdjacentHTML('beforeend', modalHtml);
+      
+      const closeModal = () => document.getElementById('mathlab-ms-howto-modal')?.remove();
+      document.getElementById('ms-howto-close-top')?.addEventListener('click', closeModal);
+      document.getElementById('ms-howto-close-btn')?.addEventListener('click', closeModal);
+      document.getElementById('mathlab-ms-howto-modal')?.addEventListener('click', (e) => {
+        if (e.target.id === 'mathlab-ms-howto-modal') closeModal();
+      });
+    },
+
+    showInlineRankingModal(boardId, score, metadata) {
+      document.getElementById('mathlab-inline-ranking-modal')?.remove();
+      const gameName = '마방진 챌린지';
+      const modalHtml = `
+        <div id="mathlab-inline-ranking-modal" style="position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(15,23,42,0.85); backdrop-filter:blur(6px); display:flex; align-items:center; justify-content:center; z-index:999999; padding:20px; box-sizing:border-box; font-family:'Pretendard',sans-serif;">
+          <div style="background:#0f172a; border-radius:24px; padding:28px 24px; max-width:400px; width:100%; box-shadow:0 20px 40px rgba(0,0,0,0.7); text-align:center; border:3px solid #8b5cf6; color:#ffffff;">
+            <div style="font-size:42px; margin-bottom:10px;">🔢🏆</div>
+            <h2 style="margin:0 0 8px; font-size:24px; font-weight:900; color:#38bdf8;">명예의 전당 등록</h2>
+            <p style="margin:0 0 20px; font-size:14px; color:#f8fafc; font-weight:700;">5개 마방진 스테이지 도전을 마쳤습니다!<br>이름을 남겨 Top 5 랭킹에 도전하세요!</p>
+            <div style="background:#312e81; border:1px solid #8b5cf6; border-radius:16px; padding:14px; margin-bottom:20px;">
+              <div style="font-size:13px; color:#e0e7ff; font-weight:800; margin-bottom:4px;">🏆 최종 달성 점수</div>
+              <div style="font-size:32px; font-weight:900; color:#fef08a;">${score} <span style="font-size:18px;">점</span></div>
+            </div>
+            <input type="text" id="inline-rank-nickname" placeholder="탐구자 닉네임 입력 (예: 마방진마스터)" maxlength="10" style="width:100%; padding:14px 16px; font-size:16px; font-weight:700; border:2px solid #6366f1; background:#1e293b; color:#ffffff; border-radius:14px; outline:none; text-align:center; margin-bottom:20px; box-sizing:border-box;">
+            <div style="display:flex; gap:10px;">
+              <button id="inline-rank-cancel" style="flex:1; padding:14px; border-radius:14px; font-size:15px; font-weight:800; background:#1e293b; color:#f8fafc; border:1px solid #6366f1; cursor:pointer;">건너뛰기</button>
+              <button id="inline-rank-submit" style="flex:2; padding:14px; border-radius:14px; font-size:15px; font-weight:800; background:linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%); color:#ffffff; border:none; cursor:pointer; box-shadow:0 4px 8px rgba(139,92,246,0.4);">🚀 등록하기</button>
+            </div>
+          </div>
+        </div>
+      `;
+      document.body.insertAdjacentHTML('beforeend', modalHtml);
+      const inputEl = document.getElementById('inline-rank-nickname'); if (inputEl) inputEl.focus();
+      const closeAndClean = () => document.getElementById('mathlab-inline-ranking-modal')?.remove();
+      document.getElementById('inline-rank-cancel')?.addEventListener('click', closeAndClean);
+      const doSubmit = () => {
+        let nickname = (inputEl?.value.trim() || '마방진마스터');
+        
+        if (typeof window.submitRanking === 'function') {
+          try { window.submitRanking(gameName, score, true, nickname, boardId); } catch(e){}
+        } else if (typeof google !== 'undefined' && google.script && google.script.run && typeof google.script.run.saveGameScore === 'function') {
+          try {
+            const sheetId = (typeof getLeaderboardSheetId === 'function') ? getLeaderboardSheetId() : '';
+            const meta = (typeof getLeaderboardMeta === 'function') ? getLeaderboardMeta() : {};
+            google.script.run.withSuccessHandler(() => { this.loadLeaderboard(); }).saveGameScore(sheetId, gameName, nickname, score, true, meta);
+          } catch(e){}
+        }
+
+        let ranks = JSON.parse(localStorage.getItem(`rank_${boardId}`) || '[]');
+        ranks.push({ ...(metadata || {}), nickname: nickname, score: score, date: new Date().toISOString() });
+        ranks.sort((a, b) => (b.score || 0) - (a.score || 0));
+        localStorage.setItem(`rank_${boardId}`, JSON.stringify(ranks.slice(0, 50)));
+        closeAndClean(); this.loadLeaderboard();
+      };
+      document.getElementById('inline-rank-submit')?.addEventListener('click', doSubmit);
+      inputEl?.addEventListener('keydown', (e) => { if (e.key === 'Enter') doSubmit(); });
+    },
+
+    updateStatsUI() {
+      const root = this.container?.querySelector('.game-magic-square');
+      if (!root) return;
+      
+      const scoreEl = root.querySelector('.score-val'); if (scoreEl) scoreEl.textContent = `${this.state.score}점`;
+      const targetEl = root.querySelector('.target-val'); if (targetEl) targetEl.textContent = `${this.state.targetSum}`;
+    },
+
+    render() {
+      const isCleared = this.state.roundIdx >= this.state.maxRounds;
+      const size = this.state.gridSize;
+
+      const html = `
+        <div class="game-magic-square">
+          <div class="ms-header">
+            <div class="title-area">
+              <h2>🔢 마방진 챌린지</h2>
+              <p>가로, 세로, 대각선의 합이 모두 같아지도록 빈칸에 숫자를 배치하세요!</p>
+            </div>
+            <div class="stats-bar">
+              <button class="btn-howto" id="ms-btn-howto-top">❓ 게임 방법 가이드</button>
+              <div class="stat-badge">🚩 스테이지: ${Math.min(this.state.roundIdx + 1, this.state.maxRounds)}/${this.state.maxRounds}</div>
+              <div class="stat-badge target">🎯 목표 합: <span class="target-val">${this.state.targetSum}</span></div>
+              <div class="stat-badge score"><span class="score-val">${this.state.score}점</span></div>
+              <div class="stat-badge timer" style="display: ${this.state.difficulty === 'hard' ? 'flex' : 'none'};">⏱️ <span class="timer-val">${this.state.timer}초</span></div>
+            </div>
+          </div>
+          
+          <div class="main-layout">
+            <div class="game-area">
+              ${this.state.isGameOver ? `
+                <div class="card" style="text-align:center; padding: 40px;">
+                  <h3 style="font-size: 2.2rem; color: #38bdf8; margin-top: 0;">${isCleared ? '🏆 마방진 퍼즐 엘리트 마스터 완료!' : '💥 시간 초과! 퍼즐 도전을 다시 시작하세요!'}</h3>
+                  <p style="font-size: 1.3rem; color: #f8fafc; font-weight: 700;">최종 달성 점수: <strong style="color:#fef08a;">${this.state.score}점</strong></p>
+                  <button class="btn-howto" id="ms-btn-restart-big" style="margin: 24px auto 0; max-width: 280px; padding: 18px; font-size: 1.3rem; justify-content:center;">🔄 새 퍼즐 도전하기</button>
+                </div>
+              ` : `
+                <div class="board-card">
+                  <div class="mission-tag">✨ ${size}×${size} 마방진 완성하기 (모든 줄의 목표 합: ${this.state.targetSum})</div>
+                  
+                  <div class="diag-sum-bar">
+                    <div class="diag-badge">↘ 대각선 합: <strong id="diag-1-val" style="color:#fef08a; font-size:1.2rem;">0</strong></div>
+                    <div style="color:#475569;">|</div>
+                    <div class="diag-badge">↗ 대각선 합: <strong id="diag-2-val" style="color:#fef08a; font-size:1.2rem;">0</strong></div>
+                  </div>
+
+                  <div class="grid-wrapper">
+                    <div class="grid-table size-${size}">
+                      ${this.state.board.map((row, r) => `
+                        ${row.map((cell, c) => `
+                          <div class="cell ${cell.fixed ? 'fixed' : cell.val !== null ? 'filled' : 'empty'}" data-r="${r}" data-c="${c}">
+                            ${cell.val !== null ? cell.val : ''}
+                          </div>
+                        `).join('')}
+                        <div class="sum-cell" data-row-sum="${r}" title="가로 ${r+1}행 합계">0</div>
+                      `).join('')}
+                      
+                      ${Array.from({ length: size }, (_, c) => `
+                        <div class="sum-cell" data-col-sum="${c}" title="세로 ${c+1}열 합계">0</div>
+                      `).join('')}
+                      <div style="font-size:1.5rem; color:#64748b; font-weight:900; display:flex; align-items:center; justify-content:center;">🎯</div>
+                    </div>
+                  </div>
+                  
+                  <div style="color: #f8fafc; font-size: 0.95rem; font-weight: 700;">
+                    💡 하단의 숫자 타일을 드래그하여 놓거나, 타일을 클릭한 뒤 넣고 싶은 빈칸을 클릭하세요!
+                  </div>
+                </div>
+
+                <div class="pool-section">
+                  <div class="pool-title">🔢 배치할 숫자 타일 (클릭 후 빈칸 탭 또는 드래그)</div>
+                  <div class="tile-pool"></div>
+                </div>
+                
+                <div class="result-area"></div>
+                
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
+                  <button class="btn-secondary" id="ms-btn-hint" ${this.state.isAnswered ? 'disabled' : ''}>💡 확실한 숫자 1개 배치 (-5점)</button>
+                  <button class="btn-secondary" id="ms-btn-reset-round" ${this.state.isAnswered ? 'disabled' : ''}>🔄 판 다시 섞기</button>
+                </div>
+              `}
+            </div>
+            
+            <div class="sidebar">
+              <div class="card" style="padding:16px;">
+                <h3 style="margin-top:0; font-size:1.1rem; color:#38bdf8; margin-bottom:10px;">⚙️ 난이도 선택</h3>
+                <div class="diff-selector">
+                  <button class="diff-btn ${this.state.difficulty === 'easy' ? 'active' : ''}" data-diff="easy">쉬움 (3×3)</button>
+                  <button class="diff-btn ${this.state.difficulty === 'normal' ? 'active' : ''}" data-diff="normal">보통 (변형)</button>
+                  <button class="diff-btn ${this.state.difficulty === 'hard' ? 'active' : ''}" data-diff="hard">도전 (4×4)</button>
+                </div>
+              </div>
+
+              <div class="card" style="padding:16px;">
+                <h3 style="margin-top:0; font-size:1.1rem; border-bottom:1px solid #4f46e5; padding-bottom:12px; color:#38bdf8; text-align:center;">🏆 명예의 전당 (Top 5)</h3>
+                <div id="board-magic-square">
+                  <p style="color:#94a3b8; font-size:0.95rem; text-align:center; margin:16px 0;">로딩 중...</p>
+                </div>
+              </div>
+              
+              <div class="card" style="padding:16px;">
+                <button class="btn-secondary" style="width:100%; margin-bottom:12px; padding:12px;" id="ms-btn-restart-side">🔄 처음부터 다시 도전</button>
+                <button class="btn-secondary" style="width:100%; padding:12px; background:#4f46e5; color:#ffffff; border:none;" id="ms-btn-home">🏠 홈으로</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      this.container.innerHTML = html;
+      this.bindEvents();
+      this.updateBoardUI();
+      this.updatePoolUI();
+      this.loadLeaderboard();
+    },
+
+    bindEvents() {
+      const root = this.container?.querySelector('.game-magic-square');
+      if (!root) return;
+      
+      const btnHowToTop = root.querySelector('#ms-btn-howto-top');
+      if (btnHowToTop) btnHowToTop.addEventListener('click', () => this.showHowToPlayModal());
+
+      root.querySelectorAll('.diff-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const diff = btn.getAttribute('data-diff');
+          this.setDifficulty(diff);
+        });
+      });
+
+      // 격자 셀 이벤트 (탭-탭 및 타일 회수)
+      root.querySelectorAll('.cell').forEach(el => {
+        el.addEventListener('click', () => {
+          const r = parseInt(el.getAttribute('data-r'), 10);
+          const c = parseInt(el.getAttribute('data-c'), 10);
+          const cell = this.state.board[r][c];
+          
+          if (cell.fixed) return;
+          if (cell.val !== null && this.state.selectedTile === null) {
+            this.returnTileToPool(r, c);
+          } else {
+            this.placeTileOnGrid(r, c);
+          }
+        });
+
+        // 드래그 앤 드롭 타겟
+        el.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          if (!this.state.board[parseInt(el.getAttribute('data-r'), 10)][parseInt(el.getAttribute('data-c'), 10)].fixed) {
+            el.classList.add('drag-over');
+          }
+        });
+        el.addEventListener('dragleave', () => el.classList.remove('drag-over'));
+        el.addEventListener('drop', (e) => {
+          e.preventDefault();
+          el.classList.remove('drag-over');
+          const numStr = e.dataTransfer.getData('text/plain');
+          if (numStr) {
+            const num = parseInt(numStr, 10);
+            this.state.selectedTile = num;
+            const r = parseInt(el.getAttribute('data-r'), 10);
+            const c = parseInt(el.getAttribute('data-c'), 10);
+            this.placeTileOnGrid(r, c);
+          }
+        });
+      });
+
+      const btnHint = root.querySelector('#ms-btn-hint');
+      if (btnHint) btnHint.addEventListener('click', () => {
+        this.state.hintUsed = true;
+        
+        // 빈칸 중 하나를 찾아 정답 번호(sol) 배치
+        for (let r = 0; r < this.state.gridSize; r++) {
+          for (let c = 0; c < this.state.gridSize; c++) {
+            if (this.state.board[r][c].val === null) {
+              const solVal = this.state.board[r][c].sol;
+              const poolIdx = this.state.pool.indexOf(solVal);
+              if (poolIdx !== -1) {
+                this.state.board[r][c].val = solVal;
+                this.state.board[r][c].fixed = true; // 힌트로 채운 칸은 고정
+                this.state.pool.splice(poolIdx, 1);
+                this.updateBoardUI();
+                this.updatePoolUI();
+                this.checkVictoryCondition();
+                btnHint.disabled = true;
+                return;
+              }
+            }
+          }
+        }
+      });
+      
+      const btnResetRound = root.querySelector('#ms-btn-reset-round');
+      if (btnResetRound) btnResetRound.addEventListener('click', () => this.setupRound());
+
+      const btnRestartBig = root.querySelector('#ms-btn-restart-big');
+      if (btnRestartBig) btnRestartBig.addEventListener('click', () => this.resetGame());
+      
+      const btnRestartSide = root.querySelector('#ms-btn-restart-side');
+      if (btnRestartSide) btnRestartSide.addEventListener('click', () => this.resetGame());
+
+      const btnHome = root.querySelector('#ms-btn-home');
+      if (btnHome) {
+        btnHome.addEventListener('click', (e) => {
+          e.preventDefault();
+          const topBottomHome = document.getElementById('mathlab-floating-home') || document.querySelector('#legacy-back-home-btn') || document.querySelector('.floating-home');
+          if (topBottomHome) topBottomHome.click();
+          else if (typeof window.MathLabRenderHome === 'function') window.MathLabRenderHome();
+          else if (typeof window.goHome === 'function') window.goHome();
+          else location.reload();
+        });
+      }
+    },
+    
+    bindDragEvents() {
+      const root = this.container?.querySelector('.game-magic-square');
+      if (!root) return;
+      
+      root.querySelectorAll('.tile').forEach(el => {
+        el.addEventListener('click', () => {
+          const num = parseInt(el.getAttribute('data-num'), 10);
+          this.selectTileFromPool(num);
+        });
+
+        el.addEventListener('dragstart', (e) => {
+          const num = el.getAttribute('data-num');
+          e.dataTransfer.setData('text/plain', num);
+          this.state.selectedTile = parseInt(num, 10);
+        });
+      });
+    },
+
+    loadLeaderboard() {
+      try {
+        if (typeof window.loadGameLeaderboard === 'function') {
+          window.loadGameLeaderboard('마방진 챌린지', true, 'board-magic-square');
+        } else {
+          const localRanks = JSON.parse(localStorage.getItem('rank_board-magic-square') || '[]');
+          this.renderRankList(localRanks.slice(0, 5));
+        }
+      } catch (e) {
+        console.error('[MagicSquare] 명예의 전당 로드 오류:', e);
+        const localRanks = JSON.parse(localStorage.getItem('rank_board-magic-square') || '[]');
+        this.renderRankList(localRanks.slice(0, 5));
+      }
+    },
+
+    renderRankList(ranks) {
+      const el = this.container?.querySelector('#board-magic-square');
+      if (!el) return;
+
+      if (!ranks || ranks.length === 0) {
+        el.innerHTML = '<div style="text-align:center; color:#94a3b8; padding: 12px 0;">아직 등록된 랭킹이 없습니다. 첫 주인공이 되어보세요!</div>';
+        return;
+      }
+
+      const escapeHTML = (str) => {
+        if (!str) return '';
+        return String(str).replace(/[&<>"']/g, function(match) {
+          const escape = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+          return escape[match];
+        });
+      };
+      el.innerHTML = ranks.map((r, i) => `
+        <div class="rank-item">
+          <div><span class="rank-num">${i + 1}위</span> ${escapeHTML(r.nickname || '익명')}</div>
+          <div class="rank-score">${r.score || 0}점</div>
+        </div>
+      `).join('');
+    },
+
+    destroy() {
+      if (window.MathLabCleanup && typeof window.MathLabCleanup.clearTimers === 'function') {
+        window.MathLabCleanup.clearTimers(this.timers);
+      }
+      this.timers.forEach(clearTimeout);
+      this.timers = [];
+      if (this.timerId) { clearInterval(this.timerId); this.timerId = null; }
+      document.getElementById('mathlab-inline-ranking-modal')?.remove();
+      document.getElementById('mathlab-ms-howto-modal')?.remove();
+      const host = document.getElementById('magic-square-force-host'); if (host) host.remove();
+      if (this.container) this.container.innerHTML = '';
+      this.container = null;
+    }
+  };
+
+  if (!window.MathLabGames) {
+    window.MathLabGames = {
+      registry: {},
+      register(app) { this.registry[app.id] = app; },
+      get(id) { return this.registry[id]; },
+      mount(id, container, context) {
+        if (this.registry[id]) this.registry[id].mount(container, context);
+      }
+    };
+  }
+  
+  if (typeof window.MathLabGames.register === 'function') {
+    if (!window.MathLabGames.get?.('magic-square')) {
+      window.MathLabGames.register(MagicSquare);
+    }
+  }
+
+  window.launchMagicSquareGame = function() {
+    if (typeof window.MathLabGames !== 'undefined' && typeof window.MathLabGames.mount === 'function') {
+      try {
+        window.MathLabGames.mount('magic-square');
+        return;
+      } catch(e) {
+        console.warn('MathLabGames mount 실패, 직접 마운트 시도:', e);
+      }
+    }
+    const target = document.getElementById('mathlab-view') || document.getElementById('new-root') || document.body;
+    MagicSquare.mount(target);
+  };
+})();
+</script>

@@ -1,0 +1,457 @@
+<style>
+/* Gen-3 수학 실험실 표준 테마 (Premium Light) 및 금융 수학 타임머신 스타일 */
+#finance-container {
+  background: #ffffff;
+  color: #1e293b;
+  padding: 24px;
+  border-radius: 16px;
+  max-width: 900px;
+  margin: 0 auto;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  border: 1px solid #e2e8f0;
+}
+#finance-container .app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 15px;
+}
+#finance-container .app-header h1 { margin: 0; font-size: 2rem; color: #0f172a; }
+#finance-container .header-btns { display: flex; gap: 10px; }
+
+.finance-btn {
+  background: #f1f5f9;
+  color: #334155;
+  border: 1px solid #cbd5e1;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.2s;
+}
+.finance-btn:hover { background: #e2e8f0; }
+
+.highlight-msg {
+  background: #f0fdfa;
+  color: #0f766e;
+  border: 1px solid #99f6e4;
+  padding: 15px;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Toggle Switch */
+.toggle-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+.toggle-group {
+  display: flex;
+  background: #f8fafc;
+  border: 2px solid #cbd5e1;
+  border-radius: 8px;
+  overflow: hidden;
+  width: 100%;
+}
+.toggle-group input[type="radio"] { display: none; }
+.toggle-label {
+  flex: 1;
+  text-align: center;
+  padding: 12px 15px;
+  cursor: pointer;
+  color: #475569;
+  font-weight: bold;
+  transition: 0.3s;
+}
+.toggle-group input[type="radio"]:checked + .toggle-label {
+  background: #3b82f6;
+  color: #ffffff;
+}
+.toggle-label:not(:last-child) { border-right: 1px solid #cbd5e1; }
+
+/* Chart Container */
+.chart-wrapper {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 15px;
+  height: 350px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+}
+
+/* Sliders */
+.sliders-wrapper {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  margin-bottom: 20px;
+  background: #f8fafc;
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+}
+.sliders-wrapper.full-width { grid-template-columns: 1fr; }
+.slider-group label {
+  display: block;
+  font-weight: bold;
+  color: #475569;
+  margin-bottom: 8px;
+}
+.slider-group span {
+  color: #0f172a;
+  font-size: 1.1rem;
+}
+.slider-group input[type="range"] {
+  width: 100%;
+  accent-color: #3b82f6;
+}
+
+/* Result Board */
+.calc-board {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+}
+.formula-title {
+  color: #3b82f6;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+.formula-math {
+  color: #1e293b;
+  font-size: 1.2rem;
+  padding-bottom: 15px;
+  border-bottom: 1px dashed #cbd5e1;
+  text-align: center;
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.calc-results {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 15px;
+  font-size: 1rem;
+  color: #475569;
+}
+.calc-results span strong { color: #0f172a; font-size: 1.1rem; }
+.calc-results span .interest-val { color: #10b981; }
+.survey-result {
+  margin-top: 15px;
+  background: #f8fafc;
+  padding: 15px;
+  border-radius: 8px;
+  text-align: center;
+  border: 1px solid #e2e8f0;
+}
+.survey-result strong { color: #eab308; font-size: 1.3rem; }
+</style>
+
+<script>
+const ConceptFinanceApp = (function() {
+  let financeChart;
+  let lastFinanceForm = "";
+  let financeUpdateRaf = null;
+
+  function scheduleFinanceUpdate() {
+    if (financeUpdateRaf) return;
+    financeUpdateRaf = requestAnimationFrame(function () {
+      financeUpdateRaf = null;
+      updateFinance();
+    });
+  }
+
+  function mount(container, context = {}) {
+    let host = null;
+    if (typeof container === 'string') host = document.querySelector(container);
+    else if (container instanceof HTMLElement) host = container;
+    if (!host) host = window.MathLabUtils?.getMountContainer ? window.MathLabUtils.getMountContainer(container) : document.getElementById('mathlab-view');
+    if (!host || !(host instanceof HTMLElement)) host = document.getElementById('new-root') || document.getElementById('game-container') || document.getElementById('mathlab-view');
+
+    if (!host || !(host instanceof HTMLElement) || host === document.body) {
+      let createdHost = document.getElementById('finance-force-host');
+      if (!createdHost) {
+        createdHost = document.createElement('div');
+        createdHost.id = 'finance-force-host';
+        document.body.appendChild(createdHost);
+      }
+      host = createdHost;
+    }
+
+    const footerEl = document.querySelector('footer, #footer, .app-footer') || 
+                     Array.from(document.querySelectorAll('div, p, span')).find(el => el.textContent && el.textContent.includes('2026 기록조율사'));
+    if (footerEl && host && typeof host.compareDocumentPosition === 'function' && (host.compareDocumentPosition(footerEl) & Node.DOCUMENT_POSITION_PRECEDING)) {
+      footerEl.parentNode.insertBefore(host, footerEl);
+    }
+
+    host.style.display = '';
+    host.style.visibility = 'visible';
+    host.style.opacity = '1';
+
+    let parent = host.parentElement;
+    while (parent && parent !== document.body && parent !== document.documentElement) {
+      if (parent.style && parent.style.display === 'none') parent.style.display = 'block';
+      if (parent.style && parent.style.visibility === 'hidden') parent.style.visibility = 'visible';
+      parent = parent.parentElement;
+    }
+
+    document.querySelectorAll('header, .navbar, #app-header, .top-bar, #floating-home-btn, .floating-home').forEach(el => {
+      if (el && el.style && el.style.display === 'none') el.style.display = '';
+    });
+
+    host.innerHTML = `
+      <div id="finance-container">
+        <div class="app-header">
+          <h1>금융 수학 타임머신 💰</h1>
+          <div class="header-btns">
+            <button class="finance-btn" onclick="ConceptFinanceApp.goHome()">🏠 홈으로</button>
+          </div>
+        </div>
+        
+        <p class="highlight-msg">매월 납입하는 원금이 이자를 만나 어떻게 변하는지 확인하세요!</p>
+        
+        <div class="toggle-wrapper" style="flex-direction: column;">
+          <div class="toggle-group" style="margin-bottom: 15px;">
+            <input type="radio" id="mode-fv" name="calcMode" value="fv" checked onchange="ConceptFinanceApp.scheduleFinanceUpdate()">
+            <label for="mode-fv" class="toggle-label left">📈 적금 (미래가치)</label>
+            <input type="radio" id="mode-pv" name="calcMode" value="pv" onchange="ConceptFinanceApp.scheduleFinanceUpdate()">
+            <label for="mode-pv" class="toggle-label right">📉 연금·할부 (현재가치)</label>
+          </div>
+          <div style="display: flex; gap: 15px; width: 100%;">
+            <div class="toggle-group">
+              <input type="radio" id="type-simple" name="interestType" value="simple" onchange="ConceptFinanceApp.scheduleFinanceUpdate()">
+              <label for="type-simple" class="toggle-label left">단리</label>
+              <input type="radio" id="type-compound" name="interestType" value="compound" checked onchange="ConceptFinanceApp.scheduleFinanceUpdate()">
+              <label for="type-compound" class="toggle-label right">복리</label>
+            </div>
+            <div class="toggle-group">
+              <input type="radio" id="time-begin" name="timeType" value="begin" checked onchange="ConceptFinanceApp.scheduleFinanceUpdate()">
+              <label for="time-begin" class="toggle-label left">월초 (기수불)</label>
+              <input type="radio" id="time-end" name="timeType" value="end" onchange="ConceptFinanceApp.scheduleFinanceUpdate()">
+              <label for="time-end" class="toggle-label right">월말 (기말불)</label>
+            </div>
+          </div>
+        </div>
+        
+        <div class="chart-wrapper"><canvas id="financeChart"></canvas></div>
+        
+        <div class="sliders-wrapper">
+          <div class="slider-group">
+            <label for="slider-fin-p" id="label-fin-p">매월 <strong>납입액</strong> (a): <span id="val-fin-p">10</span> 만원</label>
+            <input type="range" id="slider-fin-p" min="1" max="100" step="1" value="10" oninput="ConceptFinanceApp.scheduleFinanceUpdate()">
+          </div>
+          <div class="slider-group">
+            <label>연 이자율: <span id="val-fin-r">5.0</span>%</label>
+            <input type="range" id="slider-fin-r" min="1.0" max="20.0" step="0.5" value="5.0" oninput="ConceptFinanceApp.scheduleFinanceUpdate()">
+          </div>
+        </div>
+        <div class="sliders-wrapper full-width" style="margin-top:-5px;">
+          <div class="slider-group">
+            <label>납입 기간 (개월): <span id="val-fin-n">24</span> 개월</label>
+            <input type="range" id="slider-fin-n" min="6" max="120" step="6" value="24" oninput="ConceptFinanceApp.scheduleFinanceUpdate()">
+          </div>
+        </div>
+        
+        <div class="calc-board">
+          <div class="formula-title">원리합계 공식 적용</div>
+          <div class="formula-math" id="formula-fin">수식</div>
+          <div class="calc-results">
+            <span id="box-principal">원금 합계: <strong>0</strong>원</span>
+            <span id="box-interest">이자 총액: <strong class="interest-val">0</strong>원</span>
+          </div>
+          <div class="survey-result" id="box-total">
+            최종 결과액: <strong>0 원</strong>
+          </div>
+        </div>
+      </div>
+    `;
+
+    initFinanceApp();
+  }
+
+  function initFinanceApp() {
+    if (financeChart) financeChart.destroy();
+
+    financeChart = new Chart(document.getElementById('financeChart').getContext('2d'), {
+      type: 'bar',
+      data: {
+        labels: [],
+        datasets: [
+          { label: '원금', data: [], backgroundColor: '#6366f1', stack: 'Stack 0' },
+          { label: '이자', data: [], backgroundColor: '#10b981', stack: 'Stack 0' }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: { duration: 400 },
+        plugins: {
+          legend: { labels: { color: '#475569' } }
+        },
+        scales: {
+          x: { stacked: true, ticks: { color: '#64748b' }, grid: { color: '#e2e8f0' } },
+          y: { stacked: true, ticks: { color: '#64748b' }, grid: { color: '#e2e8f0' } }
+        }
+      }
+    });
+
+    updateFinance();
+  }
+
+  function updateFinance() {
+    const calcMode = document.querySelector('input[name="calcMode"]:checked')?.value || 'fv';
+    const compoundEl = document.getElementById('type-compound');
+    const simpleEl = document.getElementById('type-simple');
+    const beginEl = document.getElementById('time-begin');
+    const endEl = document.getElementById('time-end');
+
+    const isComp = compoundEl ? compoundEl.checked : simpleEl ? !simpleEl.checked : true;
+    const isBegin = beginEl ? beginEl.checked : endEl ? !endEl.checked : true;
+
+    const pEl = document.getElementById('slider-fin-p');
+    const rEl = document.getElementById('slider-fin-r');
+    const nEl = document.getElementById('slider-fin-n');
+
+    if (!pEl || !rEl || !nEl || !financeChart) return;
+
+    const P = parseFloat(pEl.value);
+    const aRate = parseFloat(rEl.value);
+    const n = parseInt(nEl.value, 10);
+    const r = (aRate / 100) / 12;
+
+    const pLabel = document.getElementById('label-fin-p');
+    if (pLabel) {
+      pLabel.innerHTML = calcMode === 'fv'
+        ? `매월 <strong>납입액</strong> (a): <span id="val-fin-p">${P}</span> 만원`
+        : `매월 <strong>수령액</strong> (a): <span id="val-fin-p">${P}</span> 만원`;
+    }
+
+    document.getElementById('val-fin-r').innerText = aRate.toFixed(1);
+    document.getElementById('val-fin-n').innerText = n;
+
+    let labels = [];
+    let baseData = [];
+    let stackData = [];
+    let sumBase = 0;
+    let sumTotal = 0;
+
+    for (let k = 1; k <= n; k++) {
+      labels.push(`${k}회차`);
+
+      if (calcMode === 'fv') {
+        const d = isBegin ? (n - k + 1) : (n - k);
+        const fv = isComp ? P * Math.pow(1 + r, d) : P * (1 + r * d);
+        baseData.push(P);
+        stackData.push(fv - P);
+        sumBase += P;
+        sumTotal += fv;
+      } else {
+        const d = isBegin ? (k - 1) : k;
+        const pv = isComp ? P / Math.pow(1 + r, d) : P / (1 + r * d);
+        baseData.push(pv);
+        stackData.push(P - pv);
+        sumBase += P;
+        sumTotal += pv;
+      }
+    }
+
+    financeChart.data.labels = labels;
+    financeChart.data.datasets[0].data = baseData;
+    financeChart.data.datasets[1].data = stackData;
+    financeChart.update();
+
+    let form = '';
+    if (calcMode === 'fv') {
+      if (isComp) {
+        form = isBegin ? `S = a(1+r)\\frac{(1+r)^n - 1}{r}` : `S = a\\frac{(1+r)^n - 1}{r}`;
+      } else {
+        form = isBegin ? `S = n\\cdot a + \\frac{n(n+1)a\\cdot r}{2}` : `S = n\\cdot a + \\frac{n(n-1)a\\cdot r}{2}`;
+      }
+    } else {
+      if (isComp) {
+        form = isBegin ? `V = a(1+r)\\frac{1-(1+r)^{-n}}{r}` : `V = a\\frac{1-(1+r)^{-n}}{r}`;
+      } else {
+        form = isBegin ? `V = \\sum_{k=0}^{n-1}\\frac{a}{1+rk}` : `V = \\sum_{k=1}^{n}\\frac{a}{1+rk}`;
+      }
+    }
+
+    if (form !== lastFinanceForm) {
+      const formulaEl = document.getElementById('formula-fin');
+      if (formulaEl && typeof katex !== 'undefined') {
+        katex.render(form, formulaEl, { throwOnError: false });
+      }
+      lastFinanceForm = form;
+    }
+
+    const principalEl = document.getElementById('box-principal');
+    const interestEl = document.getElementById('box-interest');
+    const totalEl = document.getElementById('box-total');
+
+    if (principalEl) principalEl.innerHTML = `원금 합계: <strong>${Math.round(sumBase * 10000).toLocaleString()}</strong>원`;
+    if (interestEl) interestEl.innerHTML = `이자 총액: <strong class="interest-val">${Math.round(Math.abs(sumTotal - sumBase) * 10000).toLocaleString()}</strong>원`;
+    if (totalEl) totalEl.innerHTML = `최종 결과액: <strong>${Math.round(sumTotal * 10000).toLocaleString()} 원</strong>`;
+  }
+
+  function goHome() {
+    if (window.LegacyBridge && typeof window.LegacyBridge.backHome === 'function') {
+      window.LegacyBridge.backHome();
+    }
+  }
+
+  return { mount, initFinanceApp, updateFinance, scheduleFinanceUpdate, goHome };
+})();
+
+/* 하단 안전 등록 및 레거시/Gen-3 상호 실행 브리지 */
+function registerConceptFinanceApp() {
+  if (typeof window.MathLabGames !== 'undefined' && typeof window.MathLabGames.register === 'function') {
+    if (!window.MathLabGames.get('finance-app')) {
+      try {
+        window.MathLabGames.register({
+          id: 'finance-app',
+          title: '금융 수학 타임머신',
+          icon: '💰',
+          sourceType: 'new',
+          players: '1인',
+          isMultiplayer: false,
+          mount(container, context) { ConceptFinanceApp.mount(container, context); },
+          reset() { ConceptFinanceApp.initFinanceApp(); },
+          destroy() { },
+          goHome() { ConceptFinanceApp.goHome(); }
+        });
+      } catch (e) { console.warn('finance-app 등록 방어:', e); }
+    }
+  }
+}
+
+registerConceptFinanceApp();
+window.addEventListener('DOMContentLoaded', registerConceptFinanceApp);
+setTimeout(registerConceptFinanceApp, 100);
+setTimeout(registerConceptFinanceApp, 500);
+
+window.ConceptFinanceApp = ConceptFinanceApp;
+
+// 레거시 호환성 브리지
+window.updateFinance = function() { ConceptFinanceApp.scheduleFinanceUpdate(); };
+window.initFinanceApp = function() {
+  registerConceptFinanceApp();
+  if (window.LegacyBridge && typeof window.LegacyBridge.hideAllLegacySections === 'function') {
+    window.LegacyBridge.hideAllLegacySections();
+    window.LegacyBridge.showNewRoot();
+  }
+  if (typeof window.MathLabGames !== 'undefined' && typeof window.MathLabGames.mount === 'function') {
+    try { window.MathLabGames.mount('finance-app'); return; } catch(e) {}
+  }
+  const targetEl = document.getElementById('mathlab-view') || document.getElementById('new-root');
+  ConceptFinanceApp.mount(targetEl);
+};
+</script>

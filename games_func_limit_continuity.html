@@ -1,0 +1,1904 @@
+<style>
+  /* ==========================================================================
+     Gen-3 수학실험실 [교과개념] 함수의 극한·연속·미분 시각화 도구
+     스타일 시스템 (라이트 모드 고대비 & 반응형)
+     ========================================================================== */
+  .game-func-limit-continuity {
+    --flc-bg: #f8fafc;
+    --flc-surface: #ffffff;
+    --flc-subtle: #f1f5f9;
+    --flc-text: #0f172a;
+    --flc-muted: #475569;
+    --flc-border: #cbd5e1;
+    --flc-primary: #2563eb;
+    --flc-primary-hover: #1d4ed8;
+    --flc-primary-light: #eff6ff;
+    --flc-left: #0284c7;    /* 좌극한/좌접선 */
+    --flc-right: #e11d48;   /* 우극한/우접선 */
+    --flc-func: #4f46e5;    /* 함수 그래프 곡선 */
+    --flc-point: #16a34a;   /* 함숫값 점 */
+    --flc-pass-bg: #dcfce7;
+    --flc-pass-text: #15803d;
+    --flc-fail-bg: #fee2e2;
+    --flc-fail-text: #b91c1c;
+    
+    font-family: -apple-system, BlinkMacSystemFont, 'Pretendard', 'Noto Sans KR', 'Segoe UI', sans-serif;
+    background-color: var(--flc-bg);
+    color: var(--flc-text);
+    width: 100%;
+    min-height: 840px;
+    padding: 16px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .game-func-limit-continuity * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* 헤더 바 */
+  .flc-header {
+    background: var(--flc-surface);
+    border: 1.5px solid var(--flc-border);
+    border-radius: 12px;
+    padding: 12px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+  }
+
+  .flc-title-box h2 {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: var(--flc-primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .flc-title-box p {
+    font-size: 0.85rem;
+    color: var(--flc-muted);
+    font-weight: 500;
+    margin-top: 2px;
+  }
+
+  .flc-header-btns {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .flc-btn-header {
+    background: var(--flc-primary-light);
+    border: 1.5px solid #bfdbfe;
+    color: var(--flc-primary);
+    padding: 7px 14px;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.15s;
+  }
+
+  .flc-btn-header:hover {
+    background: #dbeafe;
+    border-color: var(--flc-primary);
+  }
+
+  .flc-btn-home {
+    background: #ffffff;
+    border: 1.5px solid var(--flc-border);
+    color: var(--flc-muted);
+  }
+
+  .flc-btn-home:hover {
+    background: #f1f5f9;
+    color: var(--flc-text);
+  }
+
+  /* 메인 3단 레이아웃 */
+  .flc-main-layout {
+    display: grid;
+    grid-template-columns: 360px 1fr 390px;
+    gap: 14px;
+    flex: 1;
+    width: 100%;
+  }
+
+  @media (max-width: 1320px) {
+    .flc-main-layout {
+      grid-template-columns: 340px 1fr;
+    }
+    .flc-panel-dashboard {
+      grid-column: span 2;
+    }
+  }
+
+  @media (max-width: 900px) {
+    .flc-main-layout {
+      grid-template-columns: 1fr;
+    }
+    .flc-panel-dashboard {
+      grid-column: span 1;
+    }
+  }
+
+  /* 카드 컨테이너 */
+  .flc-card {
+    background: var(--flc-surface);
+    border-radius: 12px;
+    border: 1.5px solid var(--flc-border);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .flc-card-header {
+    padding: 10px 14px;
+    background: var(--flc-subtle);
+    border-bottom: 1.5px solid var(--flc-border);
+    font-weight: 700;
+    font-size: 0.95rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--flc-text);
+  }
+
+  .flc-card-body {
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    overflow-y: auto;
+  }
+
+  /* 입력 영역 & 템플릿 */
+  .flc-input-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+  }
+
+  .flc-input-label {
+    font-size: 1.05rem;
+    font-weight: bold;
+    color: var(--flc-primary);
+  }
+
+  .flc-btn-kb-toggle {
+    background: var(--flc-subtle);
+    border: 1.5px solid var(--flc-border);
+    border-radius: 6px;
+    padding: 4px 8px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    color: var(--flc-muted);
+  }
+
+  .flc-btn-kb-toggle:hover {
+    background: var(--flc-primary-light);
+    color: var(--flc-primary);
+  }
+
+  .flc-input-box {
+    display: flex;
+    align-items: center;
+    background: #f8fafc;
+    border: 2px solid var(--flc-border);
+    border-radius: 8px;
+    padding: 8px 12px;
+    transition: all 0.2s;
+  }
+
+  .flc-input-box:focus-within {
+    border-color: var(--flc-primary);
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+  }
+
+  .flc-input-box input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-size: 1.15rem;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-weight: 700;
+    color: var(--flc-text);
+    outline: none;
+    width: 100%;
+  }
+
+  .flc-quick-bar {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .flc-btn-tpl {
+    background: #eff6ff;
+    border: 1.5px solid #bfdbfe;
+    color: var(--flc-primary);
+    padding: 6px 9px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .flc-btn-tpl:hover {
+    background: #dbeafe;
+    border-color: var(--flc-primary);
+  }
+
+  /* 가상 키보드 */
+  .flc-virtual-kb {
+    background: #f1f5f9;
+    border: 1.5px solid var(--flc-border);
+    border-radius: 8px;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .flc-kb-row {
+    display: flex;
+    gap: 4px;
+  }
+
+  .flc-kb-btn {
+    flex: 1;
+    height: 36px;
+    min-width: 28px;
+    background: var(--flc-surface);
+    border: 1.5px solid #cbd5e1;
+    border-radius: 6px;
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: var(--flc-text);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+    transition: all 0.1s;
+  }
+
+  .flc-kb-btn:active {
+    transform: translateY(1px);
+    background: #e2e8f0;
+  }
+
+  .flc-kb-btn.op {
+    background: #f8fafc;
+    color: var(--flc-primary);
+    font-weight: 800;
+  }
+
+  .flc-kb-btn.act {
+    background: #fee2e2;
+    color: #b91c1c;
+    border-color: #fca5a5;
+  }
+
+  .flc-kb-btn.apply {
+    background: var(--flc-primary);
+    color: #ffffff;
+    border-color: #1d4ed8;
+    flex: 1.4;
+  }
+
+  /* 프리셋 목록 */
+  .flc-tabs {
+    display: flex;
+    gap: 4px;
+    border-bottom: 1.5px solid var(--flc-border);
+    padding-bottom: 6px;
+    margin-bottom: 6px;
+    overflow-x: auto;
+  }
+
+  .flc-tab-btn {
+    background: none;
+    border: none;
+    padding: 4px 8px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--flc-muted);
+    cursor: pointer;
+    border-radius: 6px;
+    white-space: nowrap;
+  }
+
+  .flc-tab-btn.active {
+    background: var(--flc-primary-light);
+    color: var(--flc-primary);
+  }
+
+  .flc-preset-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 6px;
+    max-height: 270px;
+    overflow-y: auto;
+    padding-right: 4px;
+  }
+
+  .flc-preset-item {
+    background: var(--flc-surface);
+    border: 1.5px solid var(--flc-border);
+    border-radius: 8px;
+    padding: 8px 10px;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .flc-preset-item:hover {
+    border-color: var(--flc-primary);
+    background: var(--flc-primary-light);
+  }
+
+  .flc-preset-item.active {
+    border-color: var(--flc-primary);
+    background: #eff6ff;
+    box-shadow: inset 0 0 0 1px var(--flc-primary);
+  }
+
+  .flc-preset-head {
+    font-weight: 700;
+    color: var(--flc-text);
+    font-size: 0.82rem;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .flc-preset-katex {
+    font-size: 0.95rem;
+    color: var(--flc-primary);
+  }
+
+  /* 캔버스 영역 */
+  .flc-canvas-wrap {
+    position: relative;
+    flex: 1;
+    min-height: 480px;
+    background: #ffffff;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .flc-canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+    cursor: crosshair;
+  }
+
+  .flc-canvas-toolbar {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    pointer-events: none;
+  }
+
+  .flc-btn-group {
+    display: flex;
+    gap: 5px;
+    pointer-events: auto;
+    background: rgba(255, 255, 255, 0.94);
+    padding: 4px 6px;
+    border-radius: 8px;
+    border: 1px solid var(--flc-border);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.06);
+    backdrop-filter: blur(4px);
+  }
+
+  .flc-tool-btn {
+    background: #ffffff;
+    border: 1px solid var(--flc-border);
+    border-radius: 6px;
+    padding: 5px 9px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    color: var(--flc-text);
+  }
+
+  .flc-tool-btn:hover {
+    background: var(--flc-primary-light);
+    color: var(--flc-primary);
+  }
+
+  .flc-tool-btn.active {
+    background: var(--flc-primary);
+    color: #fff;
+    border-color: var(--flc-primary);
+  }
+
+  /* 조사점 슬라이더 */
+  .flc-investigate-bar {
+    background: var(--flc-surface);
+    border-top: 1.5px solid var(--flc-border);
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  .flc-slider-box {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 240px;
+  }
+
+  .flc-val-badge {
+    display: inline-block;
+    min-width: 52px;
+    text-align: center;
+    background: var(--flc-primary-light);
+    color: var(--flc-primary);
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-weight: 800;
+    font-size: 1rem;
+    border: 1px solid #bfdbfe;
+  }
+
+  .flc-slider-box input[type="range"] {
+    flex: 1;
+    height: 10px;
+    border-radius: 5px;
+    background: #e2e8f0;
+    outline: none;
+    cursor: pointer;
+    accent-color: var(--flc-primary);
+  }
+
+  .flc-btn-step {
+    width: 32px;
+    height: 32px;
+    border: 1.5px solid var(--flc-border);
+    background: #ffffff;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: bold;
+    cursor: pointer;
+  }
+
+  .flc-btn-step:hover {
+    background: var(--flc-primary-light);
+    color: var(--flc-primary);
+  }
+
+  /* 대시보드 */
+  .flc-judge-box {
+    border: 1.5px solid var(--flc-border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    background: #ffffff;
+  }
+
+  .flc-judge-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+
+  .flc-judge-title {
+    font-weight: 800;
+    font-size: 0.95rem;
+  }
+
+  .flc-badge-status {
+    font-size: 0.78rem;
+    font-weight: 800;
+    padding: 4px 10px;
+    border-radius: 6px;
+  }
+
+  .flc-status-pass {
+    background: var(--flc-pass-bg);
+    color: var(--flc-pass-text);
+    border: 1px solid #86efac;
+  }
+
+  .flc-status-fail {
+    background: var(--flc-fail-bg);
+    color: var(--flc-fail-text);
+    border: 1px solid #fca5a5;
+  }
+
+  .flc-calc-row {
+    min-height: 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 4px 0;
+    padding: 2px 4px;
+  }
+
+  .flc-calc-row .lbl {
+    font-size: 1.12rem;
+  }
+
+  .flc-calc-row .val {
+    font-size: 1.12rem;
+    font-weight: bold;
+  }
+
+  .flc-calc-explain {
+    font-size: 0.85rem;
+    color: var(--flc-muted);
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px dashed var(--flc-border);
+    line-height: 1.5;
+  }
+
+  .flc-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+
+  .flc-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .flc-legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+
+  /* 플로어 가이드 팝업 모달 */
+  .flc-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(4px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 99999;
+    padding: 16px;
+  }
+
+  .flc-modal-overlay.open {
+    display: flex;
+  }
+
+  .flc-modal-card {
+    background: #ffffff;
+    width: 100%;
+    max-width: 640px;
+    border-radius: 16px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+    border: 1.5px solid var(--flc-border);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .flc-modal-head {
+    padding: 14px 20px;
+    background: var(--flc-subtle);
+    border-bottom: 1.5px solid var(--flc-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .flc-modal-head h3 {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--flc-primary);
+  }
+
+  .flc-modal-close {
+    background: none;
+    border: none;
+    font-size: 1.4rem;
+    cursor: pointer;
+    color: var(--flc-muted);
+  }
+
+  .flc-modal-body {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-height: 280px;
+  }
+
+  .flc-guide-slide {
+    display: none;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .flc-guide-slide.active {
+    display: flex;
+  }
+
+  .flc-slide-badge {
+    display: inline-block;
+    background: #eff6ff;
+    color: var(--flc-primary);
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 800;
+    align-self: flex-start;
+    border: 1px solid #bfdbfe;
+  }
+
+  .flc-slide-title {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: var(--flc-text);
+  }
+
+  .flc-slide-desc {
+    font-size: 0.95rem;
+    color: var(--flc-muted);
+    line-height: 1.5;
+  }
+
+  .flc-slide-example {
+    background: #f8fafc;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .flc-example-code {
+    font-family: 'Consolas', monospace;
+    font-size: 1.05rem;
+    font-weight: bold;
+    color: #1e293b;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    padding: 6px 10px;
+    border-radius: 6px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .flc-btn-paste {
+    background: var(--flc-primary-light);
+    color: var(--flc-primary);
+    border: 1px solid #bfdbfe;
+    border-radius: 6px;
+    padding: 4px 8px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .flc-modal-foot {
+    padding: 12px 20px;
+    background: var(--flc-subtle);
+    border-top: 1.5px solid var(--flc-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .flc-dots {
+    display: flex;
+    gap: 6px;
+  }
+
+  .flc-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #cbd5e1;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .flc-dot.active {
+    background: var(--flc-primary);
+    width: 22px;
+    border-radius: 5px;
+  }
+
+  .flc-btn-nav {
+    background: #ffffff;
+    border: 1.5px solid var(--flc-border);
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+  }
+
+  /* 토스트 알림 */
+  .flc-toast {
+    position: fixed;
+    top: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-20px);
+    background: #1e293b;
+    color: #ffffff;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+    z-index: 100000;
+    opacity: 0;
+    transition: all 0.25s ease;
+    pointer-events: none;
+  }
+
+  .flc-toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+</style>
+
+<script>
+(function() {
+  'use strict';
+
+  /* --------------------------------------------------------------------------
+     1. KaTeX 수식 렌더링 헬퍼 & 안전 파서
+     -------------------------------------------------------------------------- */
+  function flcKatex(elOrId, latex, isDisplay) {
+    var el = typeof elOrId === 'string' ? document.getElementById(elOrId) : elOrId;
+    if (!el) return;
+    if (window.katex && typeof window.katex.render === 'function') {
+      try {
+        window.katex.render(latex, el, { displayMode: !!isDisplay, throwOnError: false });
+        return;
+      } catch(e) {}
+    }
+    el.textContent = latex;
+  }
+
+  class SafeMathParser {
+    static sanitize(expr) {
+      if (!expr) return () => 0;
+      var s = expr.trim();
+      if (s.includes('?') && s.includes(':')) {
+        return this.compileTernary(s);
+      }
+      return this.compileSingle(s);
+    }
+
+    static compileTernary(str) {
+      var qIdx = str.indexOf('?');
+      var condStr = str.substring(0, qIdx).trim();
+      var rest = str.substring(qIdx + 1);
+      var colonIdx = -1;
+      var depth = 0;
+      for (var i = 0; i < rest.length; i++) {
+        if (rest[i] === '(' || rest[i] === '{' || rest[i] === '[') depth++;
+        else if (rest[i] === ')' || rest[i] === '}' || rest[i] === ']') depth--;
+        else if (rest[i] === '?' && depth === 0) depth++;
+        else if (rest[i] === ':' && depth === 0) { colonIdx = i; break; }
+        else if (rest[i] === ':' && depth > 0) depth--;
+      }
+      if (colonIdx === -1) colonIdx = rest.lastIndexOf(':');
+      var trueStr = rest.substring(0, colonIdx).trim();
+      var falseStr = rest.substring(colonIdx + 1).trim();
+
+      var condFn = this.compileCondition(condStr);
+      var trueFn = this.sanitize(trueStr);
+      var falseFn = this.sanitize(falseStr);
+      return function(x) { return condFn(x) ? trueFn(x) : falseFn(x); };
+    }
+
+    static compileCondition(condStr) {
+      var match = condStr.match(/x\s*(<=|>=|!=|==|<|>)\s*(-?\d+(\.\d+)?)/);
+      if (!match) return function() { return true; };
+      var op = match[1];
+      var val = parseFloat(match[2]);
+      return function(x) {
+        switch (op) {
+          case '<=': return x <= val + 1e-9;
+          case '>=': return x >= val - 1e-9;
+          case '<': return x < val - 1e-9;
+          case '>': return x > val + 1e-9;
+          case '!=': return Math.abs(x - val) > 1e-6;
+          case '==': return Math.abs(x - val) <= 1e-6;
+          default: return true;
+        }
+      };
+    }
+
+    static compileSingle(expr) {
+      var code = expr.replace(/\s+/g, '');
+      code = code.replace(/\|([^|]+)\|/g, 'abs($1)');
+      code = code.replace(/(\d)([a-zA-Z(])/g, '$1*$2');
+      code = code.replace(/([xX\)])(\()/g, '$1*$2');
+      code = code.replace(/(\))([0-9a-zA-Z])/g, '$1*$2');
+      code = code.replace(/([xX])([a-zA-Z])/g, '$1*$2');
+      code = this.convertPowers(code);
+      code = code.replace(/\babs\(/g, 'Math.abs(')
+                 .replace(/\bsqrt\(/g, 'Math.sqrt(')
+                 .replace(/\bsin\(/g, 'Math.sin(')
+                 .replace(/\bcos\(/g, 'Math.cos(')
+                 .replace(/\btan\(/g, 'Math.tan(')
+                 .replace(/\bln\(/g, 'Math.log(')
+                 .replace(/\bexp\(/g, 'Math.exp(')
+                 .replace(/\bpi\b/gi, 'Math.PI')
+                 .replace(/\be\b/g, 'Math.E');
+
+      try {
+        var fn = new Function('x', 'try { var y = ' + code + '; if (typeof y !== "number" || isNaN(y)) return NaN; if (!isFinite(y)) return y > 0 ? Infinity : -Infinity; return y; } catch(e) { return NaN; }');
+        fn(1);
+        return fn;
+      } catch (err) {
+        return function() { return NaN; };
+      }
+    }
+
+    static convertPowers(expr) {
+      var res = expr;
+      while (res.includes('^')) {
+        var idx = res.lastIndexOf('^');
+        var baseStart = idx - 1;
+        if (res[baseStart] === ')') {
+          var depth = 1;
+          baseStart--;
+          while (baseStart >= 0 && depth > 0) {
+            if (res[baseStart] === ')') depth++;
+            else if (res[baseStart] === '(') depth--;
+            baseStart--;
+          }
+          baseStart++;
+        } else {
+          while (baseStart >= 0 && /[0-9a-zA-Z_\.]/.test(res[baseStart])) {
+            baseStart--;
+          }
+          baseStart++;
+        }
+
+        var expEnd = idx + 1;
+        if (res[expEnd] === '(') {
+          var d = 1;
+          expEnd++;
+          while (expEnd < res.length && d > 0) {
+            if (res[expEnd] === '(') d++;
+            else if (res[expEnd] === ')') d--;
+            expEnd++;
+          }
+        } else {
+          if (res[expEnd] === '-') expEnd++;
+          while (expEnd < res.length && /[0-9a-zA-Z_\.]/.test(res[expEnd])) {
+            expEnd++;
+          }
+        }
+
+        var base = res.slice(baseStart, idx);
+        var exponent = res.slice(idx + 1, expEnd);
+        var replacement = 'Math.pow(' + base + ', ' + exponent + ')';
+        res = res.slice(0, baseStart) + replacement + res.slice(expEnd);
+      }
+      return res;
+    }
+  }
+
+  /* --------------------------------------------------------------------------
+     2. 모듈 상태 및 계산 엔진
+     -------------------------------------------------------------------------- */
+  var state = {
+    rawExpr: 'x^3 - 3*x',
+    evalFn: SafeMathParser.sanitize('x^3 - 3*x'),
+    a: 1.0,
+    animProgress: 0,
+    showTangent: true,
+    showAnim: true,
+    view: { originX: 0, originY: 0, scale: 48 },
+    animReqId: null,
+    currentSlide: 0
+  };
+
+  function evalLimitsAndDiff(f, a) {
+    var h_vals = [0.1, 0.01, 0.001, 0.0001, 0.00001];
+    var fa = f(a);
+    var isFaDefined = !isNaN(fa) && isFinite(fa);
+
+    var leftVals = h_vals.map(function(h) { return f(a - h); }).filter(function(y) { return !isNaN(y) && isFinite(y); });
+    var leftLimit = NaN;
+    if (leftVals.length >= 2) {
+      leftLimit = leftVals[leftVals.length - 1];
+      if (Math.abs(leftLimit) > 1e4) leftLimit = leftLimit > 0 ? Infinity : -Infinity;
+    }
+
+    var rightVals = h_vals.map(function(h) { return f(a + h); }).filter(function(y) { return !isNaN(y) && isFinite(y); });
+    var rightLimit = NaN;
+    if (rightVals.length >= 2) {
+      rightLimit = rightVals[rightVals.length - 1];
+      if (Math.abs(rightLimit) > 1e4) rightLimit = rightLimit > 0 ? Infinity : -Infinity;
+    }
+
+    var isLimitExist = false;
+    var limitVal = NaN;
+    if (isFinite(leftLimit) && isFinite(rightLimit)) {
+      if (Math.abs(leftLimit - rightLimit) < 1e-3) {
+        isLimitExist = true;
+        limitVal = (leftLimit + rightLimit) / 2;
+      }
+    }
+
+    var isContinuous = false;
+    if (isFaDefined && isLimitExist) {
+      if (Math.abs(fa - limitVal) < 1e-3) isContinuous = true;
+    }
+
+    var leftDiff = NaN, rightDiff = NaN;
+    if (isContinuous) {
+      var dh = 0.0001;
+      var y_left = f(a - dh);
+      var y_right = f(a + dh);
+      if (isFinite(y_left)) leftDiff = (fa - y_left) / dh;
+      if (isFinite(y_right)) rightDiff = (y_right - fa) / dh;
+    }
+
+    var isDiff = false;
+    var diffVal = NaN;
+    if (isContinuous && isFinite(leftDiff) && isFinite(rightDiff)) {
+      if (Math.abs(leftDiff - rightDiff) < 1e-2) {
+        isDiff = true;
+        diffVal = (leftDiff + rightDiff) / 2;
+      }
+    }
+
+    return {
+      fa: fa, isFaDefined: isFaDefined,
+      leftLimit: leftLimit, rightLimit: rightLimit, isLimitExist: isLimitExist, limitVal: limitVal,
+      isContinuous: isContinuous,
+      leftDiff: leftDiff, rightDiff: rightDiff, isDiff: isDiff, diffVal: diffVal
+    };
+  }
+
+  function showToast(msg) {
+    var toast = document.getElementById('flc-toast-box');
+    if (!toast) return;
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(function() { toast.classList.remove('show'); }, 2200);
+  }
+
+  /* --------------------------------------------------------------------------
+     3. 캔버스 렌더러
+     -------------------------------------------------------------------------- */
+  function toScrX(x) { return state.view.originX + x * state.view.scale; }
+  function toScrY(y) { return state.view.originY - y * state.view.scale; }
+  function toWldX(sx) { return (sx - state.view.originX) / state.view.scale; }
+  function toWldY(sy) { return (state.view.originY - sy) / state.view.scale; }
+
+  function drawCanvas() {
+    var canvas = document.getElementById('flcGraphCanvas');
+    if (!canvas || !canvas.parentElement) return;
+    var ctx = canvas.getContext('2d');
+    var w = canvas.parentElement.clientWidth;
+    var h = canvas.parentElement.clientHeight;
+    if (w === 0 || h === 0) return;
+
+    ctx.clearRect(0, 0, w, h);
+    var xMin = toWldX(0), xMax = toWldX(w);
+    var yMin = toWldY(h), yMax = toWldY(0);
+
+    // 1. 격자 및 축
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = '#e2e8f0';
+    ctx.fillStyle = '#64748b';
+    ctx.font = '11px -apple-system, sans-serif';
+
+    var xStep = state.view.scale < 30 ? 2 : 1;
+    for (var x = Math.floor(xMin / xStep) * xStep; x <= xMax; x += xStep) {
+      var sx = toScrX(x);
+      ctx.beginPath(); ctx.moveTo(sx, 0); ctx.lineTo(sx, h); ctx.stroke();
+      if (x !== 0) ctx.fillText(x.toFixed(0), sx - 4, toScrY(0) + 14);
+    }
+    var yStep = state.view.scale < 30 ? 2 : 1;
+    for (var y = Math.floor(yMin / yStep) * yStep; y <= yMax; y += yStep) {
+      var sy = toScrY(y);
+      ctx.beginPath(); ctx.moveTo(0, sy); ctx.lineTo(w, sy); ctx.stroke();
+      if (y !== 0) ctx.fillText(y.toFixed(0), toScrX(0) + 6, sy + 4);
+    }
+
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = '#94a3b8';
+    var y0 = toScrY(0);
+    ctx.beginPath(); ctx.moveTo(0, y0); ctx.lineTo(w, y0); ctx.stroke();
+    var x0 = toScrX(0);
+    ctx.beginPath(); ctx.moveTo(x0, 0); ctx.lineTo(x0, h); ctx.stroke();
+    ctx.fillText("O", x0 - 12, y0 + 14);
+
+    // 2. 함수 곡선
+    var f = state.evalFn;
+    ctx.lineWidth = 3.5;
+    ctx.strokeStyle = '#4f46e5';
+    ctx.beginPath();
+    var isDrawing = false;
+    for (var px = 0; px <= w; px += 1.5) {
+      var wx = toWldX(px);
+      var wy = f(wx);
+      if (isNaN(wy) || !isFinite(wy) || Math.abs(wy) > 100) {
+        isDrawing = false;
+        continue;
+      }
+      var py = toScrY(wy);
+      if (!isDrawing) { ctx.moveTo(px, py); isDrawing = true; }
+      else {
+        var prevX = toWldX(px - 1.5);
+        var prevY = f(prevX);
+        if (Math.abs(wy - prevY) > (toWldY(0) - toWldY(canvas.height)) * 1.5) {
+          ctx.moveTo(px, py);
+        } else {
+          ctx.lineTo(px, py);
+        }
+      }
+    }
+    ctx.stroke();
+
+    // 3. 조사점 a 시각화
+    var a = state.a;
+    var res = evalLimitsAndDiff(f, a);
+    var sa = toScrX(a);
+
+    ctx.setLineDash([4, 4]);
+    ctx.lineWidth = 1.5;
+    ctx.strokeStyle = '#64748b';
+    ctx.beginPath(); ctx.moveTo(sa, 0); ctx.lineTo(sa, h); ctx.stroke();
+    ctx.setLineDash([]);
+
+    if (state.showTangent && res.isContinuous) {
+      var tLen = 3.5;
+      if (isFinite(res.leftDiff)) {
+        var x1 = a - tLen, y1 = res.fa - res.leftDiff * tLen;
+        ctx.lineWidth = 2.5; ctx.strokeStyle = 'rgba(2, 132, 199, 0.85)';
+        ctx.beginPath(); ctx.moveTo(toScrX(x1), toScrY(y1)); ctx.lineTo(sa, toScrY(res.fa)); ctx.stroke();
+      }
+      if (isFinite(res.rightDiff)) {
+        var x2 = a + tLen, y2 = res.fa + res.rightDiff * tLen;
+        ctx.lineWidth = 2.5; ctx.strokeStyle = 'rgba(225, 29, 72, 0.85)';
+        ctx.beginPath(); ctx.moveTo(sa, toScrY(res.fa)); ctx.lineTo(toScrX(x2), toScrY(y2)); ctx.stroke();
+      }
+    }
+
+    if (state.showAnim) {
+      var delta = (1 - state.animProgress) * 1.5 + 0.05;
+      var xL = a - delta, yL = f(xL);
+      if (isFinite(yL)) {
+        var sxL = toScrX(xL), syL = toScrY(yL);
+        ctx.fillStyle = '#0284c7'; ctx.beginPath(); ctx.arc(sxL, syL, 6, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = '#0284c7'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(sxL, syL); ctx.lineTo(sxL + 12, syL); ctx.stroke();
+      }
+      var xR = a + delta, yR = f(xR);
+      if (isFinite(yR)) {
+        var sxR = toScrX(xR), syR = toScrY(yR);
+        ctx.fillStyle = '#e11d48'; ctx.beginPath(); ctx.arc(sxR, syR, 6, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = '#e11d48'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(sxR, syR); ctx.lineTo(sxR - 12, syR); ctx.stroke();
+      }
+    }
+
+    if (res.isFaDefined) {
+      var sfa = toScrY(res.fa);
+      ctx.fillStyle = '#16a34a'; ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2.5;
+      ctx.beginPath(); ctx.arc(sa, sfa, 7, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    } else if (res.isLimitExist) {
+      var sLim = toScrY(res.limitVal);
+      ctx.fillStyle = '#ffffff'; ctx.strokeStyle = '#e11d48'; ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.arc(sa, sLim, 7, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    }
+
+    ctx.fillStyle = '#1e293b';
+    ctx.font = 'bold 13px -apple-system, sans-serif';
+    ctx.fillText('x = ' + a.toFixed(2), sa + 8, y0 - 10);
+  }
+
+  function resizeCanvas() {
+    var canvas = document.getElementById('flcGraphCanvas');
+    if (!canvas || !canvas.parentElement) return;
+    var rect = canvas.parentElement.getBoundingClientRect();
+    var dpr = window.devicePixelRatio || 1;
+    canvas.width = rect.width * dpr;
+    canvas.height = rect.height * dpr;
+    var ctx = canvas.getContext('2d');
+    ctx.resetTransform();
+    ctx.scale(dpr, dpr);
+    state.view.originX = rect.width / 2;
+    state.view.originY = rect.height / 2;
+    drawCanvas();
+  }
+
+  /* --------------------------------------------------------------------------
+     4. 대시보드 갱신 (\displaystyle lim 정가운데 배치)
+     -------------------------------------------------------------------------- */
+  function updateDashboard() {
+    var a = state.a;
+    var aStr = a.toFixed(2);
+    var f = state.evalFn;
+    var res = evalLimitsAndDiff(f, a);
+
+    var badge = document.getElementById('flcBadgeA');
+    if (badge) badge.textContent = aStr;
+    flcKatex('flcLblA', '\\text{조사할 점 } x = a \\;(' + aStr + ')');
+
+    var fmtLatex = function(v) { return isFinite(v) ? v.toFixed(4) : (v > 0 ? '+\\infty' : (v < 0 ? '-\\infty' : '\\text{없음}')); };
+
+    // 1단계: 극한
+    flcKatex('flcTitleLimit', '\\text{1단계 : } \\displaystyle\\lim_{x \\to ' + aStr + '} f(x) \\;\\text{존재 여부}');
+    flcKatex('flcLblLeftLimit', '\\displaystyle\\lim_{x \\to ' + aStr + '^-} f(x) =');
+    flcKatex('flcValLeftLimit', fmtLatex(res.leftLimit));
+    flcKatex('flcLblRightLimit', '\\displaystyle\\lim_{x \\to ' + aStr + '^+} f(x) =');
+    flcKatex('flcValRightLimit', fmtLatex(res.rightLimit));
+    flcKatex('flcLblLimit', '\\displaystyle\\lim_{x \\to ' + aStr + '} f(x) =');
+    flcKatex('flcValLimit', res.isLimitExist ? res.limitVal.toFixed(4) : '\\text{존재하지 않음}');
+
+    var statusLimit = document.getElementById('flcStatusLimit');
+    var explainLimit = document.getElementById('flcExplainLimit');
+    if (statusLimit && explainLimit) {
+      if (res.isLimitExist) {
+        statusLimit.className = 'flc-badge-status flc-status-pass';
+        statusLimit.textContent = '극한값 존재';
+        explainLimit.innerHTML = '좌극한(' + fmtLatex(res.leftLimit) + ')과 우극한(' + fmtLatex(res.rightLimit) + ')이 서로 같으므로 <strong>극한값 = ' + res.limitVal.toFixed(4) + '</strong>으로 수렴합니다.';
+      } else {
+        statusLimit.className = 'flc-badge-status flc-status-fail';
+        statusLimit.textContent = '극한값 없음';
+        explainLimit.innerHTML = '좌극한(' + fmtLatex(res.leftLimit) + ')과 우극한(' + fmtLatex(res.rightLimit) + ')이 서로 다르거나 발산하여 극한값이 존재하지 않습니다.';
+      }
+    }
+
+    // 2단계: 연속
+    flcKatex('flcTitleCont', '\\text{2단계 : } x = ' + aStr + ' \\;\\text{에서 연속 여부}');
+    flcKatex('flcLblFa', 'f(' + aStr + ') =');
+    flcKatex('flcValFa', res.isFaDefined ? res.fa.toFixed(4) : '\\text{정의 안 됨}');
+    flcKatex('flcLblLimFa', '\\displaystyle\\lim_{x \\to ' + aStr + '} f(x) =');
+    flcKatex('flcValLimFa', res.isLimitExist ? res.limitVal.toFixed(4) : '\\text{존재 안 함}');
+
+    var statusCont = document.getElementById('flcStatusCont');
+    var explainCont = document.getElementById('flcExplainCont');
+    if (statusCont && explainCont) {
+      if (res.isContinuous) {
+        statusCont.className = 'flc-badge-status flc-status-pass';
+        statusCont.textContent = '연속 (Continuous)';
+        explainCont.innerHTML = '함숫값 f(' + aStr + ') = ' + res.fa.toFixed(4) + '과 극한값이 일치하므로 <strong>연속</strong>입니다.';
+      } else {
+        statusCont.className = 'flc-badge-status flc-status-fail';
+        statusCont.textContent = '불연속 (Discontinuous)';
+        if (!res.isFaDefined) explainCont.innerHTML = 'x = ' + aStr + '에서 함숫값이 정의되지 않아 <strong>불연속</strong>입니다.';
+        else if (!res.isLimitExist) explainCont.innerHTML = 'x = ' + aStr + '에서 극한값이 존재하지 않아 <strong>불연속</strong>입니다.';
+        else explainCont.innerHTML = '함숫값(' + res.fa.toFixed(4) + ')과 극한값(' + res.limitVal.toFixed(4) + ')이 달라 <strong>불연속</strong>입니다.';
+      }
+    }
+
+    // 3단계: 미분가능성
+    flcKatex('flcTitleDiff', '\\text{3단계 : } x = ' + aStr + ' \\;\\text{에서 미분가능 여부}');
+    flcKatex('flcLblLeftDiff', 'f\'_-(' + aStr + ') =');
+    flcKatex('flcValLeftDiff', isFinite(res.leftDiff) ? res.leftDiff.toFixed(4) : '\\text{불가}');
+    flcKatex('flcLblRightDiff', 'f\'_+(' + aStr + ') =');
+    flcKatex('flcValRightDiff', isFinite(res.rightDiff) ? res.rightDiff.toFixed(4) : '\\text{불가}');
+    flcKatex('flcLblDiff', 'f\'(' + aStr + ') =');
+    flcKatex('flcValDiff', res.isDiff ? res.diffVal.toFixed(4) : '\\text{미분계수 없음}');
+
+    var statusDiff = document.getElementById('flcStatusDiff');
+    var explainDiff = document.getElementById('flcExplainDiff');
+    if (statusDiff && explainDiff) {
+      if (res.isDiff) {
+        statusDiff.className = 'flc-badge-status flc-status-pass';
+        statusDiff.textContent = '미분가능 (Differentiable)';
+        explainDiff.innerHTML = '함수가 연속이고 좌미분계수 = 우미분계수 = ' + res.diffVal.toFixed(4) + '이므로 매끄럽게 연결되어 <strong>미분가능</strong>합니다.';
+      } else {
+        statusDiff.className = 'flc-badge-status flc-status-fail';
+        statusDiff.textContent = '미분불가능';
+        if (!res.isContinuous) explainDiff.innerHTML = 'x = ' + aStr + '에서 <strong>불연속이므로 미분 불가능</strong>합니다.';
+        else explainDiff.innerHTML = '연속이지만 좌미분계수(' + res.leftDiff.toFixed(4) + ')와 우미분계수(' + res.rightDiff.toFixed(4) + ')가 달라 <strong>첨점(뾰족점)</strong>을 이루어 미분 불가능합니다.';
+      }
+    }
+  }
+
+  function initPresetsAndGuideKaTeX() {
+    document.querySelectorAll('.flc-preset-item').forEach(function(btn) {
+      var latex = btn.getAttribute('data-latex');
+      var holder = btn.querySelector('.flc-preset-katex');
+      if (holder && latex) flcKatex(holder, latex);
+    });
+    document.querySelectorAll('.flc-guide-math').forEach(function(el) {
+      var latex = el.getAttribute('data-latex');
+      if (latex) flcKatex(el, latex);
+    });
+  }
+
+  function applyExpr(expr) {
+    state.rawExpr = expr;
+    state.evalFn = SafeMathParser.sanitize(expr);
+    var input = document.getElementById('flcFuncInput');
+    if (input) input.value = expr;
+    drawCanvas();
+    updateDashboard();
+  }
+
+  function showSlide(idx) {
+    state.currentSlide = Math.max(0, Math.min(4, idx));
+    document.querySelectorAll('.flc-guide-slide').forEach(function(slide, i) {
+      slide.classList.toggle('active', i === state.currentSlide);
+    });
+    document.querySelectorAll('.flc-dot').forEach(function(dot, i) {
+      dot.classList.toggle('active', i === state.currentSlide);
+    });
+    var btnPrev = document.getElementById('flcBtnPrevSlide');
+    var btnNext = document.getElementById('flcBtnNextSlide');
+    if (btnPrev) btnPrev.disabled = (state.currentSlide === 0);
+    if (btnNext) btnNext.textContent = (state.currentSlide === 4) ? '완료 ✕' : '다음 ▶';
+    initPresetsAndGuideKaTeX();
+  }
+
+  /* --------------------------------------------------------------------------
+     5. Gen-3 표준 모듈 객체 정의
+     -------------------------------------------------------------------------- */
+  var FuncLimitContinuityModule = {
+    mount: function(container, context) {
+      var host = null;
+      if (typeof container === 'string') host = document.querySelector(container);
+      else if (container instanceof HTMLElement) host = container;
+      if (!host) host = window.MathLabUtils && window.MathLabUtils.getMountContainer ? window.MathLabUtils.getMountContainer(container) : document.getElementById('mathlab-global-modal-content') || document.getElementById('mathlab-view');
+      if (!host || !(host instanceof HTMLElement)) host = document.getElementById('mathlab-global-modal-content') || document.getElementById('new-root') || document.getElementById('game-container') || document.getElementById('mathlab-view');
+
+      // 푸터 위 force-host 자동 삽입 방어
+      if (!host || !(host instanceof HTMLElement) || host === document.body) {
+        var createdHost = document.getElementById('func-limit-continuity-force-host');
+        if (!createdHost) {
+          createdHost = document.createElement('div');
+          createdHost.id = 'func-limit-continuity-force-host';
+          document.body.appendChild(createdHost);
+        }
+        host = createdHost;
+      }
+
+      var footerEl = document.querySelector('footer, #footer, .app-footer');
+      if (footerEl && host && typeof host.compareDocumentPosition === 'function' && (host.compareDocumentPosition(footerEl) & Node.DOCUMENT_POSITION_PRECEDING)) {
+        footerEl.parentNode.insertBefore(host, footerEl);
+      }
+
+      // 부모 컨테이너 가시화 방어막
+      host.style.display = '';
+      host.style.visibility = 'visible';
+      host.style.opacity = '1';
+      var parent = host.parentElement;
+      while (parent && parent !== document.body && parent !== document.documentElement) {
+        if (parent.style && parent.style.display === 'none') parent.style.display = 'block';
+        if (parent.style && parent.style.visibility === 'hidden') parent.style.visibility = 'visible';
+        parent = parent.parentElement;
+      }
+
+      // 모달 오버레이 노출
+      var modalOverlay = document.getElementById('mathlab-global-modal-overlay');
+      if (modalOverlay) {
+        modalOverlay.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+      }
+
+      // 순수 스니펫 DOM 주입
+      host.innerHTML = `
+        <div class="game-func-limit-continuity" id="flc-container">
+          <!-- 1. 헤더 -->
+          <div class="flc-header">
+            <div class="flc-title-box">
+              <h2>📈 함수의 극한 · 연속 · 미분가능성 시각화</h2>
+              <p>2022 개정 교육과정 [미적분Ⅰ] 교과개념 탐구 실험실</p>
+            </div>
+            <div class="flc-header-btns">
+              <button class="flc-btn-header" id="flcBtnOpenGuide">📖 수식 작성 안내</button>
+              <button class="flc-btn-header flc-btn-home" id="flcBtnHome">🏠 홈으로</button>
+            </div>
+          </div>
+
+          <!-- 2. 메인 3단 레이아웃 -->
+          <div class="flc-main-layout">
+            
+            <!-- 좌측: 수식 입력, 템플릿, 키보드, 프리셋 -->
+            <div class="flc-card">
+              <div class="flc-card-header">
+                <span>✏️ 함수 입력 & 프리셋</span>
+              </div>
+              <div class="flc-card-body">
+                <div class="flc-input-row">
+                  <span class="flc-input-label">f(x) =</span>
+                  <button class="flc-btn-kb-toggle" id="flcBtnToggleKb">⌨️ <span id="flcKbText">키보드 열기</span></button>
+                </div>
+                <div class="flc-input-box">
+                  <input type="text" id="flcFuncInput" value="x^3 - 3*x" placeholder="수식 입력 (예: |x-1|, (x^2-1)/(x-1))" autocomplete="off">
+                </div>
+                <div class="flc-quick-bar">
+                  <button class="flc-btn-tpl" id="flcTplFraction">➗ 분수식</button>
+                  <button class="flc-btn-tpl" id="flcTplPiecewise2">🧩 2구간 조각함수</button>
+                  <button class="flc-btn-tpl" id="flcTplHole">⭕ 점 분리 함수</button>
+                </div>
+
+                <!-- 가상 키보드 -->
+                <div class="flc-virtual-kb" id="flcVirtualKb" style="display:none;">
+                  <div class="flc-kb-row">
+                    <button class="flc-kb-btn op" data-insert="x">x</button>
+                    <button class="flc-kb-btn op" data-insert="^2">x²</button>
+                    <button class="flc-kb-btn op" data-insert="^3">x³</button>
+                    <button class="flc-kb-btn op" data-insert="^">xⁿ</button>
+                    <button class="flc-kb-btn op" data-insert="abs(">|x|</button>
+                    <button class="flc-kb-btn act" id="flcKbBsp">⌫</button>
+                  </div>
+                  <div class="flc-kb-row">
+                    <button class="flc-kb-btn" data-insert="7">7</button>
+                    <button class="flc-kb-btn" data-insert="8">8</button>
+                    <button class="flc-kb-btn" data-insert="9">9</button>
+                    <button class="flc-kb-btn op" data-insert="+">+</button>
+                    <button class="flc-kb-btn op" data-insert="-">-</button>
+                    <button class="flc-kb-btn op" data-insert="sqrt(">√</button>
+                  </div>
+                  <div class="flc-kb-row">
+                    <button class="flc-kb-btn" data-insert="4">4</button>
+                    <button class="flc-kb-btn" data-insert="5">5</button>
+                    <button class="flc-kb-btn" data-insert="6">6</button>
+                    <button class="flc-kb-btn op" data-insert="*">×</button>
+                    <button class="flc-kb-btn op" data-insert="/">÷</button>
+                    <button class="flc-kb-btn op" data-insert="sin(">sin</button>
+                  </div>
+                  <div class="flc-kb-row">
+                    <button class="flc-kb-btn" data-insert="1">1</button>
+                    <button class="flc-kb-btn" data-insert="2">2</button>
+                    <button class="flc-kb-btn" data-insert="3">3</button>
+                    <button class="flc-kb-btn op" data-insert="(">(</button>
+                    <button class="flc-kb-btn op" data-insert=")">)</button>
+                    <button class="flc-kb-btn op" data-insert="cos(">cos</button>
+                  </div>
+                  <div class="flc-kb-row">
+                    <button class="flc-kb-btn" data-insert="0">0</button>
+                    <button class="flc-kb-btn" data-insert=".">.</button>
+                    <button class="flc-kb-btn op" data-insert=" ? ">?</button>
+                    <button class="flc-kb-btn op" data-insert=" : ">:</button>
+                    <button class="flc-kb-btn act" id="flcKbClr">AC</button>
+                    <button class="flc-kb-btn apply" id="flcKbApply">적용 ↵</button>
+                  </div>
+                </div>
+
+                <!-- 프리셋 탭 -->
+                <div class="flc-tabs">
+                  <button class="flc-tab-btn active" data-cat="all">전체</button>
+                  <button class="flc-tab-btn" data-cat="poly">다항/첨점</button>
+                  <button class="flc-tab-btn" data-cat="rational">분수/유리</button>
+                  <button class="flc-tab-btn" data-cat="piecewise">조각/구간</button>
+                </div>
+                <div class="flc-preset-list" id="flcPresetList">
+                  <button class="flc-preset-item active" data-cat="poly" data-expr="x^3 - 3*x" data-a="1" data-latex="f(x) = x^3 - 3x">
+                    <div class="flc-preset-head"><span>다항함수 (모든 점 미분가능)</span> <span style="font-size:0.75rem; color:#64748b;">x=1</span></div>
+                    <div class="flc-preset-katex"></div>
+                  </button>
+                  <button class="flc-preset-item" data-cat="poly" data-expr="abs(x - 1) + 1" data-a="1" data-latex="f(x) = |x - 1| + 1">
+                    <div class="flc-preset-head"><span>첨점 함수 (연속이나 미분불가)</span> <span style="font-size:0.75rem; color:#64748b;">x=1</span></div>
+                    <div class="flc-preset-katex"></div>
+                  </button>
+                  <button class="flc-preset-item" data-cat="poly" data-expr="abs(x^2 - 4)" data-a="2" data-latex="f(x) = |x^2 - 4|">
+                    <div class="flc-preset-head"><span>2차 꺾임 함수 (첨점 x=±2)</span> <span style="font-size:0.75rem; color:#64748b;">x=2</span></div>
+                    <div class="flc-preset-katex"></div>
+                  </button>
+                  <button class="flc-preset-item" data-cat="rational" data-expr="(x^2 - 1)/(x - 1)" data-a="1" data-latex="f(x) = \\frac{x^2 - 1}{x - 1}">
+                    <div class="flc-preset-head"><span>약분형 분수함수 (극한값 2, 불연속)</span> <span style="font-size:0.75rem; color:#64748b;">x=1</span></div>
+                    <div class="flc-preset-katex"></div>
+                  </button>
+                  <button class="flc-preset-item" data-cat="rational" data-expr="1/(x - 1)" data-a="1" data-latex="f(x) = \\frac{1}{x - 1}">
+                    <div class="flc-preset-head"><span>점근선 분수함수 (좌우 발산)</span> <span style="font-size:0.75rem; color:#64748b;">x=1</span></div>
+                    <div class="flc-preset-katex"></div>
+                  </button>
+                  <button class="flc-preset-item" data-cat="piecewise" data-expr="x >= 3 ? 2*x - 3 : -2*x" data-a="3" data-latex="f(x) = \\begin{cases} 2x-3 & (x \\ge 3) \\\\ -2x & (x < 3) \\end{cases}">
+                    <div class="flc-preset-head"><span>조각함수 (x=3 불일치 불연속)</span> <span style="font-size:0.75rem; color:#64748b;">x=3</span></div>
+                    <div class="flc-preset-katex"></div>
+                  </button>
+                  <button class="flc-preset-item" data-cat="piecewise" data-expr="x >= 1 ? 2*x - 1 : x^2" data-a="1" data-latex="f(x) = \\begin{cases} 2x-1 & (x \\ge 1) \\\\ x^2 & (x < 1) \\end{cases}">
+                    <div class="flc-preset-head"><span>조각함수 (연속 & 매끄럽게 연결)</span> <span style="font-size:0.75rem; color:#64748b;">x=1</span></div>
+                    <div class="flc-preset-katex"></div>
+                  </button>
+                  <button class="flc-preset-item" data-cat="piecewise" data-expr="x != 1 ? x + 1 : 4" data-a="1" data-latex="f(x) = \\begin{cases} x+1 & (x \\ne 1) \\\\ 4 & (x = 1) \\end{cases}">
+                    <div class="flc-preset-head"><span>점 분리 함수 (극한 2, 함숫값 4)</span> <span style="font-size:0.75rem; color:#64748b;">x=1</span></div>
+                    <div class="flc-preset-katex"></div>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- 중앙: 캔버스 좌표평면 & 슬라이더 -->
+            <div class="flc-card">
+              <div class="flc-card-header">
+                <span>📊 인터랙티브 그래프 좌표평면</span>
+                <div class="flc-legend">
+                  <div class="flc-legend-item"><span class="flc-legend-dot" style="background:var(--flc-func);"></span> f(x)</div>
+                  <div class="flc-legend-item"><span class="flc-legend-dot" style="background:var(--flc-left);"></span> 좌극한/좌접선</div>
+                  <div class="flc-legend-item"><span class="flc-legend-dot" style="background:var(--flc-right);"></span> 우극한/우접선</div>
+                </div>
+              </div>
+              <div class="flc-canvas-wrap">
+                <canvas class="flc-canvas" id="flcGraphCanvas"></canvas>
+                <div class="flc-canvas-toolbar">
+                  <div class="flc-btn-group">
+                    <button class="flc-tool-btn" id="flcBtnZoomIn">➕ 확대</button>
+                    <button class="flc-tool-btn" id="flcBtnZoomOut">➖ 축소</button>
+                    <button class="flc-tool-btn" id="flcBtnResetView">🎯 원점</button>
+                  </div>
+                  <div class="flc-btn-group">
+                    <button class="flc-tool-btn active" id="flcBtnToggleTangent">📐 접선 표시</button>
+                    <button class="flc-tool-btn active" id="flcBtnToggleAnim">✨ 접근 애니메이션</button>
+                  </div>
+                </div>
+              </div>
+              <div class="flc-investigate-bar">
+                <div class="flc-slider-box">
+                  <label for="flcSliderA"><span id="flcLblA"></span></label>
+                  <span class="flc-val-badge" id="flcBadgeA">1.00</span>
+                  <input type="range" id="flcSliderA" min="-4" max="4" step="0.05" value="1">
+                  <button class="flc-btn-step" id="flcBtnStepPrev">◀</button>
+                  <button class="flc-btn-step" id="flcBtnStepNext">▶</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- 우측: 3단계 종합 판정 대시보드 -->
+            <div class="flc-card flc-panel-dashboard">
+              <div class="flc-card-header">
+                <span>🔍 개념 단계별 종합 판정 대시보드</span>
+              </div>
+              <div class="flc-card-body">
+                <!-- 1단계: 극한 -->
+                <div class="flc-judge-box">
+                  <div class="flc-judge-header">
+                    <span class="flc-judge-title" id="flcTitleLimit"></span>
+                    <span class="flc-badge-status flc-status-pass" id="flcStatusLimit">존재함</span>
+                  </div>
+                  <div class="flc-calc-row">
+                    <span class="lbl" style="color:var(--flc-left);" id="flcLblLeftLimit"></span>
+                    <span class="val" id="flcValLeftLimit"></span>
+                  </div>
+                  <div class="flc-calc-row">
+                    <span class="lbl" style="color:var(--flc-right);" id="flcLblRightLimit"></span>
+                    <span class="val" id="flcValRightLimit"></span>
+                  </div>
+                  <div class="flc-calc-row" style="font-weight:bold; border-top:1px solid #e2e8f0; padding-top:4px;">
+                    <span class="lbl" id="flcLblLimit"></span>
+                    <span class="val" id="flcValLimit"></span>
+                  </div>
+                  <div class="flc-calc-explain" id="flcExplainLimit"></div>
+                </div>
+
+                <!-- 2단계: 연속 -->
+                <div class="flc-judge-box">
+                  <div class="flc-judge-header">
+                    <span class="flc-judge-title" id="flcTitleCont"></span>
+                    <span class="flc-badge-status flc-status-pass" id="flcStatusCont">연속</span>
+                  </div>
+                  <div class="flc-calc-row">
+                    <span class="lbl" id="flcLblFa"></span>
+                    <span class="val" id="flcValFa"></span>
+                  </div>
+                  <div class="flc-calc-row">
+                    <span class="lbl" id="flcLblLimFa"></span>
+                    <span class="val" id="flcValLimFa"></span>
+                  </div>
+                  <div class="flc-calc-explain" id="flcExplainCont"></div>
+                </div>
+
+                <!-- 3단계: 미분가능성 -->
+                <div class="flc-judge-box">
+                  <div class="flc-judge-header">
+                    <span class="flc-judge-title" id="flcTitleDiff"></span>
+                    <span class="flc-badge-status flc-status-pass" id="flcStatusDiff">미분가능</span>
+                  </div>
+                  <div class="flc-calc-row">
+                    <span class="lbl" style="color:var(--flc-left);" id="flcLblLeftDiff"></span>
+                    <span class="val" id="flcValLeftDiff"></span>
+                  </div>
+                  <div class="flc-calc-row">
+                    <span class="lbl" style="color:var(--flc-right);" id="flcLblRightDiff"></span>
+                    <span class="val" id="flcValRightDiff"></span>
+                  </div>
+                  <div class="flc-calc-row" style="font-weight:bold; border-top:1px solid #e2e8f0; padding-top:4px;">
+                    <span class="lbl" id="flcLblDiff"></span>
+                    <span class="val" id="flcValDiff"></span>
+                  </div>
+                  <div class="flc-calc-explain" id="flcExplainDiff"></div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- 3. 수식 작성 안내 모달 -->
+          <div class="flc-modal-overlay" id="flcGuideModal">
+            <div class="flc-modal-card">
+              <div class="flc-modal-head">
+                <h3>📖 함수 수식 작성 가이드</h3>
+                <button class="flc-modal-close" id="flcBtnCloseGuide">✕</button>
+              </div>
+              <div class="flc-modal-body">
+                <div class="flc-guide-slide active" data-slide="0">
+                  <span class="flc-slide-badge">1 / 5단계 · 다항식</span>
+                  <h4 class="flc-slide-title">거듭제곱과 사칙연산</h4>
+                  <p class="flc-slide-desc">곱셈 기호는 생략하거나 <code>*</code>를 사용하며, 거듭제곱은 <code>^</code> 기호를 사용합니다.</p>
+                  <div class="flc-slide-example">
+                    <div>수학식: <span class="flc-guide-math" data-latex="f(x) = x^3 - 3x + 2"></span></div>
+                    <div class="flc-example-code"><span>x^3 - 3*x + 2</span> <button class="flc-btn-paste" data-copy="x^3 - 3*x + 2">입력창에 넣기</button></div>
+                  </div>
+                </div>
+                <div class="flc-guide-slide" data-slide="1">
+                  <span class="flc-slide-badge">2 / 5단계 · 첨점 함수</span>
+                  <h4 class="flc-slide-title">절댓값 함수 (|x| 또는 abs)</h4>
+                  <p class="flc-slide-desc">절댓값 기호 <code>|수식|</code> 또는 <code>abs(수식)</code>을 사용하면 꺾이는 점(첨점)에서의 연속 및 미분불가를 관찰할 수 있습니다.</p>
+                  <div class="flc-slide-example">
+                    <div>수학식: <span class="flc-guide-math" data-latex="f(x) = |x - 1| + 1"></span></div>
+                    <div class="flc-example-code"><span>abs(x - 1) + 1</span> <button class="flc-btn-paste" data-copy="abs(x - 1) + 1">입력창에 넣기</button></div>
+                  </div>
+                </div>
+                <div class="flc-guide-slide" data-slide="2">
+                  <span class="flc-slide-badge">3 / 5단계 · 분수함수</span>
+                  <h4 class="flc-slide-title">분수식 작성법 (괄호 필수)</h4>
+                  <p class="flc-slide-desc">분자와 분모가 다항식일 때는 반드시 <strong>괄호 <code>( )</code></strong>로 묶어주어야 올바르게 계산됩니다.</p>
+                  <div class="flc-slide-example">
+                    <div>수학식: <span class="flc-guide-math" data-latex="f(x) = \\frac{x^2 - 1}{x - 1} \\quad (x=1 \\text{ 구멍})"></span></div>
+                    <div class="flc-example-code"><span>(x^2 - 1) / (x - 1)</span> <button class="flc-btn-paste" data-copy="(x^2 - 1)/(x - 1)">입력창에 넣기</button></div>
+                  </div>
+                </div>
+                <div class="flc-guide-slide" data-slide="3">
+                  <span class="flc-slide-badge">4 / 5단계 · 조각/구간함수</span>
+                  <h4 class="flc-slide-title">조건부 조각함수 작성법 ( ? : )</h4>
+                  <p class="flc-slide-desc"><code>조건 ? [참일때] : [거짓일때]</code> 형태로 작성합니다. (예: <code>x &gt;= 3 ? 2*x - 3 : -2*x</code>)</p>
+                  <div class="flc-slide-example">
+                    <div>수학식: <span class="flc-guide-math" data-latex="f(x) = \\begin{cases} 2x-3 & (x \\ge 3) \\\\ -2x & (x < 3) \\end{cases}"></span></div>
+                    <div class="flc-example-code"><span>x >= 3 ? 2*x - 3 : -2*x</span> <button class="flc-btn-paste" data-copy="x >= 3 ? 2*x - 3 : -2*x">입력창에 넣기</button></div>
+                  </div>
+                </div>
+                <div class="flc-guide-slide" data-slide="4">
+                  <span class="flc-slide-badge">5 / 5단계 · 점 분리 불연속</span>
+                  <h4 class="flc-slide-title">특정 점만 함숫값이 다른 함수 ( != )</h4>
+                  <p class="flc-slide-desc"><code>!=</code>(같지 않음) 기호를 사용하면 극한값과 다른 함숫값을 가진 함수를 손쉽게 만듭니다.</p>
+                  <div class="flc-slide-example">
+                    <div>수학식: <span class="flc-guide-math" data-latex="f(x) = \\begin{cases} x+1 & (x \\ne 1) \\\\ 4 & (x = 1) \\end{cases}"></span></div>
+                    <div class="flc-example-code"><span>x != 1 ? x + 1 : 4</span> <button class="flc-btn-paste" data-copy="x != 1 ? x + 1 : 4">입력창에 넣기</button></div>
+                  </div>
+                </div>
+              </div>
+              <div class="flc-modal-foot">
+                <div class="flc-dots">
+                  <span class="flc-dot active" data-idx="0"></span>
+                  <span class="flc-dot" data-idx="1"></span>
+                  <span class="flc-dot" data-idx="2"></span>
+                  <span class="flc-dot" data-idx="3"></span>
+                  <span class="flc-dot" data-idx="4"></span>
+                </div>
+                <div>
+                  <button class="flc-btn-nav" id="flcBtnPrevSlide">◀ 이전</button>
+                  <button class="flc-btn-nav" id="flcBtnNextSlide" style="background:var(--flc-primary); color:#fff; border-color:var(--flc-primary);">다음 ▶</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 4. 토스트 알림창 -->
+          <div class="flc-toast" id="flc-toast-box"></div>
+        </div>
+      `;
+
+      // 이벤트 리스너 바인딩
+      this.bindEvents();
+      resizeCanvas();
+      initPresetsAndGuideKaTeX();
+      updateDashboard();
+
+      // 애니메이션 루프 시작
+      if (state.animReqId) cancelAnimationFrame(state.animReqId);
+      function loop() {
+        if (state.showAnim) {
+          state.animProgress = (state.animProgress + 0.015) % 1;
+          drawCanvas();
+        }
+        state.animReqId = requestAnimationFrame(loop);
+      }
+      state.animReqId = requestAnimationFrame(loop);
+    },
+
+    bindEvents: function() {
+      var self = this;
+      var funcInput = document.getElementById('flcFuncInput');
+
+      document.getElementById('flcBtnHome').addEventListener('click', function() { self.goHome(); });
+
+      // 모달 가이드 열기/닫기
+      document.getElementById('flcBtnOpenGuide').addEventListener('click', function() {
+        document.getElementById('flcGuideModal').classList.add('open');
+        showSlide(0);
+      });
+      document.getElementById('flcBtnCloseGuide').addEventListener('click', function() {
+        document.getElementById('flcGuideModal').classList.remove('open');
+      });
+      document.getElementById('flcGuideModal').addEventListener('click', function(e) {
+        if (e.target.id === 'flcGuideModal') document.getElementById('flcGuideModal').classList.remove('open');
+      });
+      document.getElementById('flcBtnPrevSlide').addEventListener('click', function() { showSlide(state.currentSlide - 1); });
+      document.getElementById('flcBtnNextSlide').addEventListener('click', function() {
+        if (state.currentSlide === 4) document.getElementById('flcGuideModal').classList.remove('open');
+        else showSlide(state.currentSlide + 1);
+      });
+      document.querySelectorAll('.flc-dot').forEach(function(dot) {
+        dot.addEventListener('click', function() { showSlide(parseInt(dot.getAttribute('data-idx'))); });
+      });
+      document.querySelectorAll('.flc-btn-paste').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var code = btn.getAttribute('data-copy');
+          applyExpr(code);
+          document.getElementById('flcGuideModal').classList.remove('open');
+          showToast('수식이 입력창에 적용되었습니다.');
+        });
+      });
+
+      // 수식 입력창
+      funcInput.addEventListener('change', function(e) { applyExpr(e.target.value); });
+      funcInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') applyExpr(e.target.value); });
+
+      // 빠른 템플릿
+      document.getElementById('flcTplFraction').addEventListener('click', function() { applyExpr('(x^2 - 1) / (x - 1)'); });
+      document.getElementById('flcTplPiecewise2').addEventListener('click', function() { applyExpr('x >= 3 ? 2*x - 3 : -2*x'); });
+      document.getElementById('flcTplHole').addEventListener('click', function() { applyExpr('x != 1 ? x + 1 : 4'); });
+
+      // 프리셋 탭
+      document.querySelectorAll('.flc-tab-btn').forEach(function(tab) {
+        tab.addEventListener('click', function() {
+          document.querySelectorAll('.flc-tab-btn').forEach(function(t) { t.classList.remove('active'); });
+          tab.classList.add('active');
+          var cat = tab.getAttribute('data-cat');
+          document.querySelectorAll('.flc-preset-item').forEach(function(btn) {
+            btn.style.display = (cat === 'all' || btn.getAttribute('data-cat') === cat) ? 'flex' : 'none';
+          });
+        });
+      });
+
+      // 프리셋 아이템 클릭
+      document.querySelectorAll('.flc-preset-item').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          document.querySelectorAll('.flc-preset-item').forEach(function(b) { b.classList.remove('active'); });
+          btn.classList.add('active');
+          var expr = btn.getAttribute('data-expr');
+          var aVal = parseFloat(btn.getAttribute('data-a') || '1');
+          state.a = aVal;
+          var slider = document.getElementById('flcSliderA');
+          if (slider) slider.value = aVal;
+          applyExpr(expr);
+        });
+      });
+
+      // 조사점 슬라이더
+      var sliderA = document.getElementById('flcSliderA');
+      sliderA.addEventListener('input', function(e) {
+        state.a = parseFloat(e.target.value);
+        drawCanvas();
+        updateDashboard();
+      });
+      document.getElementById('flcBtnStepPrev').addEventListener('click', function() {
+        state.a = Math.max(-4, parseFloat((state.a - 0.1).toFixed(2)));
+        sliderA.value = state.a;
+        drawCanvas();
+        updateDashboard();
+      });
+      document.getElementById('flcBtnStepNext').addEventListener('click', function() {
+        state.a = Math.min(4, parseFloat((state.a + 0.1).toFixed(2)));
+        sliderA.value = state.a;
+        drawCanvas();
+        updateDashboard();
+      });
+
+      // 가상 키보드
+      var kbBox = document.getElementById('flcVirtualKb');
+      document.getElementById('flcBtnToggleKb').addEventListener('click', function() {
+        var isHidden = kbBox.style.display === 'none';
+        kbBox.style.display = isHidden ? 'flex' : 'none';
+        document.getElementById('flcKbText').textContent = isHidden ? '키보드 닫기' : '키보드 열기';
+      });
+      document.querySelectorAll('.flc-kb-btn[data-insert]').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var t = btn.getAttribute('data-insert');
+          var start = funcInput.selectionStart || funcInput.value.length;
+          var end = funcInput.selectionEnd || funcInput.value.length;
+          funcInput.value = funcInput.value.substring(0, start) + t + funcInput.value.substring(end);
+          funcInput.focus();
+          funcInput.setSelectionRange(start + t.length, start + t.length);
+        });
+      });
+      document.getElementById('flcKbBsp').addEventListener('click', function() {
+        var start = funcInput.selectionStart, end = funcInput.selectionEnd;
+        if (start === end && start > 0) {
+          funcInput.value = funcInput.value.substring(0, start - 1) + funcInput.value.substring(end);
+          funcInput.setSelectionRange(start - 1, start - 1);
+        } else if (start !== end) {
+          funcInput.value = funcInput.value.substring(0, start) + funcInput.value.substring(end);
+          funcInput.setSelectionRange(start, start);
+        }
+        funcInput.focus();
+      });
+      document.getElementById('flcKbClr').addEventListener('click', function() { funcInput.value = ''; funcInput.focus(); });
+      document.getElementById('flcKbApply').addEventListener('click', function() { applyExpr(funcInput.value); });
+
+      // 캔버스 툴바
+      document.getElementById('flcBtnZoomIn').addEventListener('click', function() { state.view.scale = Math.min(120, state.view.scale * 1.25); drawCanvas(); });
+      document.getElementById('flcBtnZoomOut').addEventListener('click', function() { state.view.scale = Math.max(15, state.view.scale / 1.25); drawCanvas(); });
+      document.getElementById('flcBtnResetView').addEventListener('click', function() {
+        state.view.scale = 48;
+        var canvas = document.getElementById('flcGraphCanvas');
+        state.view.originX = canvas.parentElement.clientWidth / 2;
+        state.view.originY = canvas.parentElement.clientHeight / 2;
+        drawCanvas();
+      });
+      var btnTang = document.getElementById('flcBtnToggleTangent');
+      btnTang.addEventListener('click', function() {
+        state.showTangent = !state.showTangent;
+        btnTang.classList.toggle('active', state.showTangent);
+        drawCanvas();
+      });
+      var btnAnim = document.getElementById('flcBtnToggleAnim');
+      btnAnim.addEventListener('click', function() {
+        state.showAnim = !state.showAnim;
+        btnAnim.classList.toggle('active', state.showAnim);
+        drawCanvas();
+      });
+
+      // 캔버스 마우스/터치 드래그 & 휠
+      var canvas = document.getElementById('flcGraphCanvas');
+      var isDragA = false, isPan = false, lastX = 0, lastY = 0;
+      canvas.addEventListener('pointerdown', function(e) {
+        var rect = canvas.getBoundingClientRect();
+        var mx = e.clientX - rect.left, my = e.clientY - rect.top;
+        var sa = toScrX(state.a);
+        if (Math.abs(mx - sa) < 18) {
+          isDragA = true;
+          canvas.setPointerCapture(e.pointerId);
+        } else {
+          isPan = true;
+          lastX = mx; lastY = my;
+          canvas.setPointerCapture(e.pointerId);
+        }
+      });
+      canvas.addEventListener('pointermove', function(e) {
+        var rect = canvas.getBoundingClientRect();
+        var mx = e.clientX - rect.left, my = e.clientY - rect.top;
+        if (isDragA) {
+          state.a = parseFloat(Math.max(-4, Math.min(4, toWldX(mx))).toFixed(2));
+          sliderA.value = state.a;
+          drawCanvas();
+          updateDashboard();
+        } else if (isPan) {
+          state.view.originX += (mx - lastX);
+          state.view.originY += (my - lastY);
+          lastX = mx; lastY = my;
+          drawCanvas();
+        }
+      });
+      canvas.addEventListener('pointerup', function() { isDragA = false; isPan = false; });
+      canvas.addEventListener('wheel', function(e) {
+        e.preventDefault();
+        var z = e.deltaY < 0 ? 1.1 : 0.9;
+        state.view.scale = Math.max(15, Math.min(150, state.view.scale * z));
+        drawCanvas();
+      }, { passive: false });
+
+      window.addEventListener('resize', resizeCanvas);
+    },
+
+    goHome: function() {
+      this.destroy();
+      if (window.LegacyBridge && typeof window.LegacyBridge.backHome === 'function') {
+        window.LegacyBridge.backHome();
+        return;
+      }
+      if (window.MathLabGames && typeof window.MathLabGames.goHome === 'function') {
+        window.MathLabGames.goHome();
+        return;
+      }
+      var modalOverlay = document.getElementById('mathlab-global-modal-overlay');
+      if (modalOverlay) {
+        modalOverlay.classList.add('hidden');
+        document.body.style.overflow = '';
+      }
+    },
+
+    destroy: function() {
+      if (state.animReqId) {
+        cancelAnimationFrame(state.animReqId);
+        state.animReqId = null;
+      }
+      window.removeEventListener('resize', resizeCanvas);
+    }
+  };
+
+  /* --------------------------------------------------------------------------
+     6. MathLabGames 3중 자율 등록 및 상호 실행 브리지
+     -------------------------------------------------------------------------- */
+  function registerFuncLimitContinuity() {
+    if (typeof window.MathLabGames !== 'undefined' && typeof window.MathLabGames.register === 'function') {
+      if (!window.MathLabGames.get('func-limit-continuity')) {
+        try {
+          var appObj = {
+            id: 'func-limit-continuity',
+            title: '함수의 극한·연속·미분 시각화',
+            icon: '📈',
+            sourceType: 'new',
+            category: 'concept',
+            curriculumSchool: '고등학교',
+            curriculumSubject: '미적분Ⅰ',
+            mount: function(container, context) { FuncLimitContinuityModule.mount(container, context); },
+            destroy: function() { FuncLimitContinuityModule.destroy(); },
+            goHome: function() { FuncLimitContinuityModule.goHome(); }
+          };
+          window.MathLabGames.register(appObj);
+        } catch(e) {
+          console.warn('func-limit-continuity 등록 방어:', e);
+        }
+      }
+    }
+  }
+
+  registerFuncLimitContinuity();
+  window.addEventListener('DOMContentLoaded', registerFuncLimitContinuity);
+  setTimeout(registerFuncLimitContinuity, 100);
+  setTimeout(registerFuncLimitContinuity, 500);
+
+  window.FuncLimitContinuityModule = FuncLimitContinuityModule;
+
+  window.initFuncLimitContinuityGame = function() {
+    registerFuncLimitContinuity();
+    if (window.LegacyBridge && typeof window.LegacyBridge.hideAllLegacySections === 'function') {
+      window.LegacyBridge.hideAllLegacySections();
+      window.LegacyBridge.showNewRoot();
+    }
+    if (typeof window.MathLabGames !== 'undefined' && typeof window.MathLabGames.mount === 'function') {
+      try { window.MathLabGames.mount('func-limit-continuity'); return; } catch(e) {}
+    }
+    var targetEl = document.getElementById('mathlab-global-modal-content') || document.getElementById('mathlab-view') || document.getElementById('new-root');
+    FuncLimitContinuityModule.mount(targetEl);
+  };
+
+  window.launchFuncLimitContinuityGame = function() {
+    window.initFuncLimitContinuityGame();
+  };
+
+})();
+</script>

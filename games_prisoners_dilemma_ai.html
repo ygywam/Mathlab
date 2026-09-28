@@ -1,0 +1,694 @@
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;700;800;900&display=swap');
+@import url('https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css');
+
+.pd-concept, .pd-concept * { box-sizing: border-box; }
+.pd-concept {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 20px 22px 28px;
+  font-family: 'Pretendard', system-ui, sans-serif;
+  background: #f8fafc;
+  color: #0f172a;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+}
+
+/* Header */
+.pd-concept .h {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  background: #ffffff;
+  padding: 16px 22px;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+  margin-bottom: 16px;
+}
+.pd-concept .t {
+  font-size: 1.35rem;
+  font-weight: 900;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #0284c7;
+}
+.pd-concept .sub-title {
+  font-size: 0.88rem;
+  color: #64748b;
+  font-weight: 700;
+}
+
+/* Nav Tabs */
+.pd-concept .nav-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  background: #ffffff;
+  padding: 6px;
+  border-radius: 14px;
+  border: 1px solid #e2e8f0;
+}
+.pd-concept .tab-btn {
+  flex: 1;
+  padding: 12px 14px;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.98rem;
+  font-weight: 800;
+  cursor: pointer;
+  background: transparent;
+  color: #64748b;
+  transition: all 0.2s;
+  text-align: center;
+}
+.pd-concept .tab-btn.active {
+  background: #0ea5e9;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(14,165,233,0.25);
+}
+
+/* Card & Box */
+.pd-concept .card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.01);
+}
+.pd-concept .card-title {
+  font-size: 1.15rem;
+  font-weight: 900;
+  color: #0f172a;
+  margin-top: 0;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 2px solid #f1f5f9;
+  padding-bottom: 10px;
+}
+
+/* Choice Buttons */
+.pd-concept .choice-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 14px 0;
+}
+.pd-concept .choice-card {
+  padding: 16px;
+  border-radius: 14px;
+  border: 2px solid #e2e8f0;
+  background: #ffffff;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+.pd-concept .choice-card.coop { border-color: #10b981; background: #f0fdf4; }
+.pd-concept .choice-card.coop:hover { background: #dcfce7; transform: translateY(-2px); }
+.pd-concept .choice-card.defect { border-color: #ef4444; background: #fef2f2; }
+.pd-concept .choice-card.defect:hover { background: #fee2e2; transform: translateY(-2px); }
+.pd-concept .choice-title { font-size: 1.15rem; font-weight: 900; margin-bottom: 4px; }
+.pd-concept .choice-desc { font-size: 0.85rem; font-weight: 700; color: #64748b; }
+
+/* AI Info Box */
+.pd-concept .ai-info-box {
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-top: 12px;
+  font-size: 0.92rem;
+  line-height: 1.6;
+  color: #0369a1;
+}
+
+/* Payoff Table */
+.pd-concept table.payoff-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  font-size: 0.92rem;
+}
+.pd-concept table.payoff-table th, .pd-concept table.payoff-table td {
+  border: 1px solid #cbd5e1;
+  padding: 12px;
+  text-align: center;
+  font-weight: 800;
+}
+.pd-concept table.payoff-table th { background: #f1f5f9; color: #334155; }
+
+/* Inputs & Buttons */
+.pd-concept .select-input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 2px solid #cbd5e1;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 800;
+  outline: none;
+  background: #ffffff;
+  color: #0f172a;
+}
+.pd-concept .inp {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  outline: none;
+}
+.pd-concept .btn {
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #1e293b;
+  border-radius: 10px;
+  padding: 10px 16px;
+  font-weight: 800;
+  cursor: pointer;
+  font-size: 0.92rem;
+  transition: all 0.15s;
+}
+.pd-concept .btn:hover { background: #f1f5f9; }
+.pd-concept .btn.p { background: #0284c7; border-color: #0284c7; color: #ffffff; box-shadow: 0 3px 0 #0369a1; }
+.pd-concept .btn.g { background: #059669; border-color: #059669; color: #ffffff; box-shadow: 0 3px 0 #047857; }
+
+/* History & Status */
+.pd-concept .hist-flex {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  max-height: 120px;
+  overflow-y: auto;
+  margin-top: 10px;
+  padding: 8px;
+  background: #f8fafc;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+}
+.pd-concept .hist-chip {
+  font-size: 0.82rem;
+  padding: 4px 10px;
+  border-radius: 8px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  font-weight: 800;
+}
+
+/* Modal */
+.pd-concept .modal { position: fixed; inset: 0; background: rgba(15,23,42,0.55); display: none; align-items: center; justify-content: center; z-index: 9400; padding: 14px; backdrop-filter: blur(4px); }
+.pd-concept .modal.on { display: flex; }
+.pd-concept .modal .mbox { background: #fff; border-radius: 18px; max-width: 580px; width: 100%; padding: 22px; max-height: 88vh; overflow: auto; box-shadow: 0 20px 50px rgba(15,23,42,0.3); }
+</style>
+
+<!-- KaTeX Script -->
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+
+<script>
+(function(){
+'use strict';
+var APP_ID = 'prisoners-dilemma-ai';
+var APP_TITLE = '죄수의 딜레마 (Prisoner\'s Dilemma)';
+var ICON = '🤝';
+var FORCE = 'prisoners-dilemma-ai-force-host';
+
+// Payoff Values
+var R = 3; // Reward for Mutual Cooperation
+var T = 5; // Temptation to Defect
+var S_val = 0; // Sucker's Payoff
+var P = 1; // Punishment for Mutual Defection
+
+var AIS = [
+  {
+    id: 'tft',
+    name: 'Tit-for-Tat (팃포탯: 눈에는 눈)',
+    desc: '<b>가장 대표적인 상호 협력 유도 전략!</b> 첫 턴엔 무조건 협력하고, 이후엔 상대방이 직전 턴에 선택한 행동을 그대로 따라합니다. 상대가 배반하면 즉시 배반으로 응징하지만, 상대가 다시 협력하면 용서하고 협력합니다.'
+  },
+  {
+    id: 'ac',
+    name: 'Always Cooperate (무조건 평화주의자)',
+    desc: '<b>무조건 협력형.</b> 상대방이 아무리 배반하더라도 이에 굴하지 않고 100% 항상 협력만 선택합니다.'
+  },
+  {
+    id: 'ad',
+    name: 'Always Defect (무조건 배반자)',
+    desc: '<b>무조건 배반형.</b> 상대방의 행동에 관계없이 항상 배반만 선택하여 상대의 협력을 일방적으로 이용하려 합니다.'
+  },
+  {
+    id: 'grim',
+    name: 'Grim Trigger (시한폭탄 트리거)',
+    desc: '<b>냉혹한 보복형.</b> 처음엔 협력하다가 상대가 단 한 번이라도 배반을 저지르면, 이후 영원히 협력하지 않고 배반만 선택합니다.'
+  },
+  {
+    id: 'rand',
+    name: 'Random 50% (무작위)',
+    desc: '<b>예측 불가능형.</b> 50%의 무작위 확률로 협력 또는 배반을 선택합니다.'
+  },
+  {
+    id: 'pav',
+    name: 'Pavlov (파블로프: 성과 유지)',
+    desc: '<b>실리주의형.</b> 직전 턴의 보수 결과가 3점 이상으로 만족스러우면 이전 행동을 유지하고, 0점/1점으로 손해를 보면 행동을 반대로 바꿉니다.'
+  }
+];
+
+var S = {
+  host: null,
+  activeTab: 'sim', // 'sim', 'concept', 'prob'
+  selectedAiIdx: 0,
+  hist: [],
+  quizDone: false
+};
+
+function $(id) { return document.getElementById(id); }
+
+function renderMath(latex, container) {
+  if (typeof katex !== 'undefined' && container) {
+    try {
+      katex.render(latex, container, { throwOnError: false });
+      return;
+    } catch(e){}
+  }
+  if (container) container.textContent = latex;
+}
+
+function updateMathElements() {
+  document.querySelectorAll('.math-tex').forEach(function(el) {
+    var tex = el.getAttribute('data-tex');
+    if (tex) renderMath(tex, el);
+  });
+}
+
+function pay(me, ai) {
+  if (me === 'C' && ai === 'C') return [R, R];
+  if (me === 'D' && ai === 'C') return [T, S_val];
+  if (me === 'C' && ai === 'D') return [S_val, T];
+  return [P, P];
+}
+
+function getAiMove() {
+  var h = S.hist;
+  var a = AIS[S.selectedAiIdx];
+  if (a.id === 'tft') return h.length ? h[h.length - 1].me : 'C';
+  if (a.id === 'ac') return 'C';
+  if (a.id === 'ad') return 'D';
+  if (a.id === 'grim') {
+    for (var i = 0; i < h.length; i++) if (h[i].me === 'D') return 'D';
+    return 'C';
+  }
+  if (a.id === 'rand') return Math.random() < 0.5 ? 'C' : 'D';
+  if (a.id === 'pav') {
+    if (!h.length) return 'C';
+    var last = h[h.length - 1];
+    return last.ms >= R ? last.ai : (last.ai === 'C' ? 'D' : 'C');
+  }
+  return 'C';
+}
+
+var PrisonersConceptApp = {
+  mount: function(container) {
+    var host = null;
+    if (typeof container === 'string') { try { host = document.querySelector(container); } catch(e){} }
+    else if (container instanceof HTMLElement) host = container;
+    if (!host && window.MathLabUtils && window.MathLabUtils.getMountContainer) {
+      try { host = window.MathLabUtils.getMountContainer(container); } catch(e){}
+    }
+    if (!host || !(host instanceof HTMLElement)) host = document.getElementById('mathlab-view') || document.getElementById('new-root');
+    
+    if (!host || !(host instanceof HTMLElement) || host === document.body) {
+      host = document.getElementById(FORCE);
+      if (!host) { host = document.createElement('div'); host.id = FORCE; document.body.appendChild(host); }
+    }
+    
+    var footerEl = document.querySelector('footer,#footer,.app-footer');
+    if (footerEl && host && typeof host.compareDocumentPosition === 'function' && (host.compareDocumentPosition(footerEl) & Node.DOCUMENT_POSITION_PRECEDING)) {
+      try { footerEl.parentNode.insertBefore(host, footerEl); } catch(e){}
+    }
+    
+    host.style.display = ''; host.style.visibility = 'visible'; host.style.opacity = '1';
+    S.host = host;
+    host.innerHTML = this.renderChrome();
+    this.bindEvents();
+    this.fillAiSelectOptions();
+    this.resetSim();
+    updateMathElements();
+  },
+
+  renderChrome: function() {
+    var h = '';
+    h += '<div class="pd-concept" id="pd-concept-root">';
+    
+    /* Header */
+    h += '  <div class="h">';
+    h += '    <div>';
+    h += '      <h2 class="t">' + ICON + ' ' + APP_TITLE + '</h2>';
+    h += '      <div class="sub-title">게임이론(Game Theory) & 반복 죄수의 딜레마 교과 개념 탐구 모듈</div>';
+    h += '    </div>';
+    h += '    <button type="button" class="btn" id="btn-open-guide">📖 개념 개요</button>';
+    h += '  </div>';
+
+    /* Navigation Tabs */
+    h += '  <div class="nav-tabs">';
+    h += '    <button type="button" class="tab-btn active" data-tab="sim">1. 🔬 AI 반응 시뮬레이터</button>';
+    h += '    <button type="button" class="tab-btn" data-tab="concept">2. 📐 내쉬 균형 & 수식 개념</button>';
+    h += '    <button type="button" class="tab-btn" data-tab="prob">3. 🧩 실생활 응용 사례 (4선)</button>';
+    h += '  </div>';
+
+    /* TAB 1: Simulator */
+    h += '  <div id="tab-sec-sim">';
+    h += '    <div class="card">';
+    h += '      <div class="card-title">🤖 상대 AI 전략 선택 및 수순 관찰</div>';
+    
+    h += '      <div style="font-weight:800; font-size:0.95rem; margin-bottom:6px; color:#475569;">대결 및 관찰할 상대 AI 선택:</div>';
+    /* Correct unique ID for select element to avoid duplication */
+    h += '      <select id="pd-ai-select" class="select-input"></select>';
+    h += '      <div class="ai-info-box" id="pd-ai-desc-box"></div>';
+
+    h += '      <div style="font-weight:900; margin-top:16px; font-size:1.05rem; color:#0f172a;">👇 나의 행동 선택 (원하는 행동을 선택하세요)</div>';
+    h += '      <div class="choice-grid">';
+    h += '        <div class="choice-card coop" id="btn-act-coop">';
+    h += '          <div class="choice-title" style="color:#059669;">🤝 협력 (Cooperate)</div>';
+    h += '          <div class="choice-desc">신의를 지킴 · 둘 다 협력 시 각자 +3점 (R)</div>';
+    h += '        </div>';
+    h += '        <div class="choice-card defect" id="btn-act-defect">';
+    h += '          <div class="choice-title" style="color:#ef4444;">🗡️ 배반 (Defect)</div>';
+    h += '          <div class="choice-desc">상대를 배신함 · 나만 배신 시 최고 +5점 (T)</div>';
+    h += '        </div>';
+    h += '      </div>';
+
+    h += '      <div style="background:#f8fafc; padding:12px 16px; border-radius:12px; border:1px solid #e2e8f0; margin-bottom:12px;">';
+    h += '        <div style="font-weight:800; color:#475569; margin-bottom:4px;">최근 선택 수순 결과:</div>';
+    h += '        <div id="lbl-last-result" style="font-size:1rem; font-weight:800; color:#0f172a;">행동 카드를 선택하여 시뮬레이션을 시작하세요.</div>';
+    h += '      </div>';
+
+    h += '      <div style="display:flex; justify-content:space-between; align-items:center;">';
+    h += '        <span style="font-weight:800; color:#64748b;">누적 탐구 횟수: <b id="lbl-step-count" style="color:#0284c7;">0</b>회</span>';
+    h += '        <button type="button" class="btn" id="btn-reset-sim">🔄 수순 기록 초기화</button>';
+    h += '      </div>';
+
+    h += '      <div class="hist-flex" id="hist-container"></div>';
+    h += '    </div>';
+    h += '  </div>';
+
+    /* TAB 2: Concept & Nash Equilibrium */
+    h += '  <div id="tab-sec-concept" style="display:none;">';
+    h += '    <div class="card">';
+    h += '      <div class="card-title">📐 게임이론의 보수 행렬과 내쉬 균형 (Nash Equilibrium)</div>';
+
+    h += '      <div style="margin-bottom:14px; line-height:1.65; color:#334155;">';
+    h += '        <b>죄수의 딜레마(Prisoner\'s Dilemma)</b>는 개인의 합리적 선택이 전체의 최적 선택과 불일치하는 모순을 나타내는 게임이론의 핵심 모델입니다.';
+    h += '      </div>';
+
+    h += '      <div style="font-weight:900; font-size:1rem; color:#0f172a; margin-bottom:6px;">📊 보수 행렬 (Payoff Matrix) [나, 상대]</div>';
+    h += '      <table class="payoff-table">';
+    h += '        <tr><th>구분</th><th>상대 협력 (C)</th><th>상대 배반 (D)</th></tr>';
+    h += '        <tr><th>나 협력 (C)</th><td style="color:#059669;">3점, 3점<br><span style="font-size:0.75rem; color:#64748b;">(상호 협력 보상 R)</span></td><td style="color:#ef4444;">0점, 5점<br><span style="font-size:0.75rem; color:#64748b;">(일방적 손해 S)</span></td></tr>';
+    h += '        <tr><th>나 배반 (D)</th><td style="color:#0284c7;">5점, 0점<br><span style="font-size:0.75rem; color:#64748b;">(배신 유혹 T)</span></td><td style="color:#64748b;">1점, 1점<br><span style="font-size:0.75rem; color:#64748b;">(상호 배반 벌칙 P)</span></td></tr>';
+    h += '      </table>';
+
+    h += '      <div style="background:#f0f9ff; border:1px solid #bae6fd; border-radius:14px; padding:16px; margin-top:16px; line-height:1.7;">';
+    h += '        <div style="font-weight:900; font-size:1.05rem; color:#0369a1;">1. 보수 조건식 (Payoff Conditions)</div>';
+    h += '        <p>게임이 죄수의 딜레마 성격을 띠기 위해서는 다음 두 수식이 반드시 성립해야 합니다:</p>';
+    h += '        <div style="background:#ffffff; padding:10px 14px; border-radius:10px; display:inline-block; border:1px solid #e0f2fe; margin:6px 0;"><span class="math-tex" data-tex="T > R > P > S \\quad (5 > 3 > 1 > 0)"></span></div>';
+    h += '        <div style="background:#ffffff; padding:10px 14px; border-radius:10px; display:inline-block; border:1px solid #e0f2fe; margin:6px 0;"><span class="math-tex" data-tex="2R > T + S \\quad (6 > 5)"></span></div>';
+    h += '      </div>';
+
+    h += '      <div style="background:#fefce8; border:1px solid #fde047; border-radius:14px; padding:16px; margin-top:14px; line-height:1.7;">';
+    h += '        <div style="font-weight:900; font-size:1.05rem; color:#854d0e;">2. 1회성 게임 vs 반복 게임 (Iterated Game)</div>';
+    h += '        <p>• <b>1회성 단발 게임:</b> 상대방의 행동에 관계없이 항상 배반(D)이 우위 전략이 되므로, 유일한 <b>내쉬 균형(Nash Equilibrium)</b>은 둘 다 배반하는 <span class="math-tex" data-tex="(D, D)"></span>가 됩니다.</p>';
+    h += '        <p>• <b>반복 게임 (Iterated Prisoner\'s Dilemma):</b> 대결이 여러 차례 반복될 경우, <b>팃포탯(Tit-for-Tat)</b>처럼 협력을 바탕으로 한 전략이 배반 전략을 압도하고 최종 승리를 거두게 됩니다.</p>';
+    h += '      </div>';
+
+    /* Quiz Box without layout bugs */
+    h += '      <div style="background:#ffffff; border:1px solid #cbd5e1; border-radius:14px; padding:16px; margin-top:16px;">';
+    h += '        <div style="font-weight:900; color:#0284c7; margin-bottom:8px;">🧠 개념 확인 퀴즈</div>';
+    h += '        <div style="font-size:0.95rem; font-weight:800; color:#0f172a; margin-bottom:10px;">Q. 1회만 단발성으로 진행하는 죄수의 딜레마 게임에서 유일한 내쉬 균형(Nash Equilibrium) 전략 쌍은 무엇일까요?</div>';
+    h += '        <div style="display:flex; gap:8px;">';
+    h += '          <input type="text" id="inp-quiz-ans" class="inp" placeholder="예: (D,D) 또는 배반,배반" style="flex:1;">';
+    h += '          <button type="button" class="btn p" id="btn-submit-quiz" style="min-width:90px;">제출</button>';
+    h += '        </div>';
+    h += '        <div id="lbl-quiz-msg" style="margin-top:10px; font-weight:800; font-size:0.92rem;"></div>';
+    h += '      </div>';
+
+    h += '    </div>';
+    h += '  </div>';
+
+    /* TAB 3: Real-world Applications */
+    h += '  <div id="tab-sec-prob" style="display:none;">';
+    h += '    <div class="card">';
+    h += '      <div class="card-title">🧩 실생활 및 사회과학 응용 사례 (4선)</div>';
+
+    var apps = [
+      {
+        title: "1. 기후 변화 협약 (국제 환경 협력)",
+        q: "세계 각국이 탄소 배출 감축(협력)을 약속하지만, 나만 감축하지 않고 산업을 발전(배반)시키면 경제적 이득을 보게 됩니다. 그러나 모든 국가가 배반하면 지구 온난화라는 최악의 파국에 도달합니다.",
+        sol: "<b>[수학적 분석]</b><br>• 협력(탄소 감축) vs 배반(무단 배출)<br>• 개별 국가 입장에서는 무임승차(배반)가 우위 전략처럼 보이지만, 글로벌 반복 협약 구조를 통해 <b>팃포탯 스타일의 탄소 국경세(응징 체계)</b>를 도입함으로써 상호 협력을 유도합니다."
+      },
+      {
+        title: "2. 과점 시장의 가격 경쟁 (경제학)",
+        q: "두 거대 이동통신사가 광고비를 줄이고 가격을 유지(협력)하면 둘 다 높은 이윤을 얻지만, 한 회사가 가격을 인하(배반)하면 고객을 독점하게 됩니다. 결국 두 회사 모두 가격 인하 경쟁을 벌여 이윤이 급감합니다.",
+        sol: "<b>[수학적 분석]</b><br>• 과점 기업 간 무한 가격 경쟁 ➔ (D,D) 파국 형성<br>• 담합(협력)은 법적으로 금지되어 있으므로, 기업들은 가격 인하 공격 시 즉시 보복하는 <b>암묵적 가격 추종 전략</b>을 사용하여 협력 가격대를 유지합니다."
+      },
+      {
+        title: "3. 군비 경쟁 (Arm Race)",
+        q: "두 대립 국가가 국방비를 줄이고 평화(협력)를 유지하면 예산을 복지에 쓸 수 있습니다. 그러나 상대가 군비를 증강할 때 나만 정체되면 국가 안보가 위협받으므로, 결국 두 나라 모두 과도한 군비 증강(배반)에 직면합니다.",
+        sol: "<b>[수학적 분석]</b><br>• 냉전 시절 미·소 군비 경쟁이 대표적 예시입니다.<br>• 상호 확증 파괴(MAD) 전략과 지속적인 상호 군축 검증 협정을 통해 (D,D)의 고비용 파국을 방지합니다."
+      },
+      {
+        title: "4. 스포츠 약물 복용 (도핑)",
+        q: "모든 선수가 약물을 안 쓰면(협력) 공정한 경기와 건강을 지킵니다. 하지만 나만 약물을 쓰면(배반) 우승 확률이 극대화됩니다. 결국 모두가 약물을 복용하게 되어 건강을 해치는 딜레마가 발생합니다.",
+        sol: "<b>[수학적 분석]</b><br>• 엄격한 불시 약물 검사 및 적발 시 영구 제명(Grim Trigger 스타일의 보복) 제도를 구축하여 배신 시 얻는 기대 이득(T)을 0 이하로 떨어뜨림으로써 상호 협력(클린 스포츠)을 유지시킵니다."
+      }
+    ];
+
+    apps.forEach(function(item, idx) {
+      h += '<div style="background:#ffffff; border:1px solid #e2e8f0; border-radius:14px; padding:16px; margin-bottom:14px;">';
+      h += '  <div style="font-weight:900; font-size:1.05rem; color:#0284c7; margin-bottom:6px;">' + item.title + '</div>';
+      h += '  <div style="line-height:1.6; color:#334155; margin-bottom:10px;">' + item.q + '</div>';
+      h += '  <button type="button" class="btn p btn-show-app-sol" data-idx="' + idx + '">💡 수학적 해설 보기</button>';
+      h += '  <div class="prob-solution" id="app-sol-' + idx + '" style="display:none; background:#f8fafc; border:1px solid #cbd5e1; border-radius:12px; padding:14px; margin-top:10px; font-size:0.92rem; line-height:1.65;">' + item.sol + '</div>';
+      h += '</div>';
+    });
+
+    h += '  </div>';
+    h += '  </div>';
+
+    /* Modal Guide */
+    h += '<div class="modal" id="pd-modal">';
+    h += '  <div class="mbox" style="position:relative;">';
+    h += '    <h3 style="color:#0284c7; font-weight:900;">🎓 죄수의 딜레마 교과 개념 학습 모듈</h3>';
+    h += '    <p>본 학습 모듈은 게임이론(Game Theory) 및 이산수학의 대표적 개념인 <b>죄수의 딜레마(Prisoner\'s Dilemma)</b>를 시뮬레이터와 보수 행렬 수식으로 학습하도록 설계되었습니다.</p>';
+    h += '    <ul style="line-height:1.7;">';
+    h += '      <li><b>🤝 협력 (Cooperate):</b> 의리를 지키며 상호 협력 보상 R=3점을 획득.</li>';
+    h += '      <li><b>🗡️ 배반 (Defect):</b> 상대를 배신하여 배신 유혹 T=5점을 노리거나 상대의 배신에 대비.</li>';
+    h += '      <li><b>내쉬 균형 (Nash Equilibrium):</b> 상대의 전략이 고정되었을 때 자신의 전략을 바꿀 유인이 없는 상태.</li>';
+    h += '    </ul>';
+    h += '    <button type="button" class="btn p" id="btn-modal-close" style="width:100%; margin-top:14px; padding:12px;">학습 시작하기</button>';
+    h += '  </div>';
+    h += '</div>';
+
+    h += '</div>';
+    return h;
+  },
+
+  bindEvents: function() {
+    var _this = this;
+    var root = S.host.querySelector('#pd-concept-root');
+
+    /* Tabs */
+    root.querySelectorAll('.tab-btn').forEach(function(btn) {
+      btn.onclick = function() {
+        root.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
+        this.classList.add('active');
+        S.activeTab = this.getAttribute('data-tab');
+
+        root.querySelector('#tab-sec-sim').style.display = (S.activeTab === 'sim') ? 'block' : 'none';
+        root.querySelector('#tab-sec-concept').style.display = (S.activeTab === 'concept') ? 'block' : 'none';
+        root.querySelector('#tab-sec-prob').style.display = (S.activeTab === 'prob') ? 'block' : 'none';
+
+        updateMathElements();
+      };
+    });
+
+    /* Correct Event Binding for AI Selection using pd-ai-select */
+    var aiSel = root.querySelector('#pd-ai-select');
+    if (aiSel) {
+      aiSel.onchange = function() {
+        S.selectedAiIdx = parseInt(this.value, 10);
+        _this.updateAiDesc();
+      };
+    }
+
+    /* Actions */
+    root.querySelector('#btn-act-coop').onclick = function() { _this.step('C'); };
+    root.querySelector('#btn-act-defect').onclick = function() { _this.step('D'); };
+    root.querySelector('#btn-reset-sim').onclick = function() { _this.resetSim(); };
+
+    /* Quiz */
+    root.querySelector('#btn-submit-quiz').onclick = function() {
+      var val = (root.querySelector('#inp-quiz-ans').value || '').trim().toUpperCase();
+      var msgEl = root.querySelector('#lbl-quiz-msg');
+      if (val === 'DD' || val === '(D,D)' || val === 'D,D' || val === '배반,배반' || val === '배반 배반') {
+        msgEl.innerHTML = '✅ <b>정답입니다!</b> 1회성 게임에서는 서로 배반하는 (D,D)가 유일한 내쉬 균형입니다.';
+        msgEl.style.color = '#059669';
+      } else {
+        msgEl.innerHTML = '❌ 오답입니다. (힌트: 1회성 대결에서는 나만 배신하거나 둘 다 배신하게 되어 결국 (D,D)에 도달합니다)';
+        msgEl.style.color = '#ef4444';
+      }
+    };
+
+    /* Solutions Toggle */
+    root.querySelectorAll('.btn-show-app-sol').forEach(function(btn) {
+      btn.onclick = function() {
+        var idx = this.getAttribute('data-idx');
+        var solEl = root.querySelector('#app-sol-' + idx);
+        if (solEl) {
+          var isShown = solEl.style.display === 'block';
+          solEl.style.display = isShown ? 'none' : 'block';
+          this.textContent = isShown ? '💡 수학적 해설 보기' : '🙈 해설 닫기';
+        }
+      };
+    });
+
+    /* Modal */
+    root.querySelector('#btn-open-guide').onclick = function() { root.querySelector('#pd-modal').classList.add('on'); };
+    root.querySelector('#btn-modal-close').onclick = function() { root.querySelector('#pd-modal').classList.remove('on'); };
+  },
+
+  fillAiSelectOptions: function() {
+    var root = S.host.querySelector('#pd-concept-root');
+    var sel = root.querySelector('#pd-ai-select');
+    if (!sel) return;
+    sel.innerHTML = AIS.map(function(a, i) {
+      return '<option value="' + i + '">' + a.name + '</option>';
+    }).join('');
+    sel.value = String(S.selectedAiIdx);
+    this.updateAiDesc();
+  },
+
+  updateAiDesc: function() {
+    var root = S.host.querySelector('#pd-concept-root');
+    var descBox = root.querySelector('#pd-ai-desc-box');
+    if (!descBox) return;
+    var a = AIS[S.selectedAiIdx];
+    descBox.innerHTML = '<b>🤖 선택한 상대 AI 전략: ' + a.name + '</b><br>' + a.desc;
+  },
+
+  step: function(myMove) {
+    var aiMove = getAiMove();
+    var sc = pay(myMove, aiMove);
+    S.hist.push({ me: myMove, ai: aiMove, ms: sc[0], as: sc[1] });
+
+    var root = S.host.querySelector('#pd-concept-root');
+    var resEl = root.querySelector('#lbl-last-result');
+    
+    var msg = '';
+    if (myMove === 'C' && aiMove === 'C') msg = '🤝 <b>상호 협력 (C, C):</b> 서로 신뢰하여 각자 +3점을 얻었습니다.';
+    else if (myMove === 'D' && aiMove === 'C') msg = '🗡️ <b>나의 배신 성공 (D, C):</b> 상대는 협력했으나 내가 배신하여 최고 +5점을 챙겼습니다! (상대 0점)';
+    else if (myMove === 'C' && aiMove === 'D') msg = '😭 <b>상대에게 당함 (C, D):</b> 나는 협력했으나 AI가 배신하여 0점을 받고 AI가 +5점을 가져갔습니다.';
+    else msg = '⚔️ <b>상호 배반 (D, D):</b> 둘 다 서로를 배신하여 최소 1점씩만 얻었습니다.';
+
+    resEl.innerHTML = msg;
+    this.renderHistView();
+  },
+
+  resetSim: function() {
+    S.hist = [];
+    var root = S.host.querySelector('#pd-concept-root');
+    if (root) {
+      var resEl = root.querySelector('#lbl-last-result');
+      if (resEl) resEl.innerHTML = '행동 카드를 선택하여 시뮬레이션을 시작하세요.';
+    }
+    this.renderHistView();
+  },
+
+  renderHistView: function() {
+    var root = S.host.querySelector('#pd-concept-root');
+    if (!root) return;
+    
+    root.querySelector('#lbl-step-count').textContent = S.hist.length;
+    var container = root.querySelector('#hist-container');
+    container.innerHTML = S.hist.map(function(i, h) {
+      // Corrected map parameters (item, index)
+      var item = i; // in JS map: (element, index)
+    }).join('');
+
+    container.innerHTML = S.hist.map(function(h, idx) {
+      var colorStyle = (h.me === 'C' && h.ai === 'C') ? 'color:#059669;' : ((h.me === 'D' && h.ai === 'D') ? 'color:#ef4444;' : 'color:#0284c7;');
+      return '<div class="hist-chip" style="' + colorStyle + '">#' + (idx + 1) + ' 나:' + h.me + ' AI:' + h.ai + ' (' + h.ms + ':' + h.as + ')</div>';
+    }).join('');
+  },
+
+  destroy: function() {
+    if (S.host) S.host.innerHTML = '';
+    S.host = null;
+  }
+};
+
+function goHome() {
+  if (S.host) S.host.innerHTML = '';
+  if (typeof window.LegacyBridge !== 'undefined' && typeof window.LegacyBridge.backHome === 'function') {
+    window.LegacyBridge.backHome();
+  } else if (typeof window.MathLabGames !== 'undefined' && window.MathLabGames.goHome) {
+    window.MathLabGames.goHome();
+  } else {
+    window.location.reload();
+  }
+}
+
+function reg() {
+  if (typeof window.MathLabGames === 'undefined' || typeof window.MathLabGames.register !== 'function') return;
+  try {
+    if (window.MathLabGames.get && window.MathLabGames.get(APP_ID)) return;
+    window.MathLabGames.register({
+      id: APP_ID,
+      title: APP_TITLE,
+      icon: ICON,
+      sourceType: 'new',
+      players: '1인',
+      isMultiplayer: false,
+      mount: function(c, x) { PrisonersConceptApp.mount(c, x); },
+      reset: function() { PrisonersConceptApp.resetSim(); },
+      destroy: function() { PrisonersConceptApp.destroy(); },
+      goHome: function() { goHome(); }
+    });
+  } catch (e) {
+    console.warn(APP_ID + ' reg', e);
+  }
+}
+
+reg();
+window.addEventListener('DOMContentLoaded', reg);
+setTimeout(reg, 100);
+setTimeout(reg, 500);
+
+window.PrisonersDilemmaAI = {
+  mount: function(c) { PrisonersConceptApp.mount(c); },
+  resetGame: function() { PrisonersConceptApp.resetSim(); },
+  destroy: function() { PrisonersConceptApp.destroy(); },
+  goHome: goHome
+};
+
+window.initPrisonersDilemmaAI = function() {
+  reg();
+  try {
+    if (window.LegacyBridge) {
+      window.LegacyBridge.hideAllLegacySections();
+      if (window.LegacyBridge.showNewRoot) window.LegacyBridge.showNewRoot();
+    }
+  } catch (e) {}
+  if (window.MathLabGames && window.MathLabGames.mount) {
+    try { window.MathLabGames.mount(APP_ID); return; } catch (e) {}
+  }
+  PrisonersConceptApp.mount(document.getElementById('mathlab-view'));
+};
+
+window.launchPrisonersDilemmaAI = window.initPrisonersDilemmaAI;
+})();
+</script>

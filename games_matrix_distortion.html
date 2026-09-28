@@ -1,0 +1,713 @@
+<!-- ===================================================================
+  games_matrix_distortion.html : 행렬 변환 디스토션 (🌀)
+  - Gen-3 수학실험실 표준 (mathlab_gen3_standard 스킬 준수)
+  - 순수 (style) + (script) 스니펫 (HTML 래퍼 없음)
+  - 라이트(화이트) 테마 / 자율 등록 / launchMathLabGame('matrix-distortion')
+  - 명예의 전당: submitRanking + 하단 상시 보드(board-matrix-distortion-bottom)
+==================================================================== -->
+<style>
+/* ===== 행렬 변환 디스토션 - Light Theme ===== */
+.game-matrix-distortion { max-width: 980px; margin: 0 auto; padding: 18px 14px 30px; background: #f8fafc; color: #0f172a; border-radius: 18px; box-sizing: border-box; }
+.game-matrix-distortion * { box-sizing: border-box; }
+.game-matrix-distortion .mxd-header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
+.game-matrix-distortion .mxd-title { font-size: 1.4rem; font-weight: 900; color: #0f172a; margin: 0; }
+.game-matrix-distortion .mxd-btn { border: 1px solid #cbd5e1; background: #ffffff; color: #0f172a; border-radius: 10px; padding: 8px 14px; font-weight: 800; font-size: 0.9rem; cursor: pointer; transition: all 0.15s; }
+.game-matrix-distortion .mxd-btn:hover, .mxd-modal .mxd-btn:hover { border-color: #0284c7; color: #0284c7; background: #f0f9ff; }
+.game-matrix-distortion .mxd-btn.mxd-primary, .mxd-modal .mxd-btn.mxd-primary { background: #0284c7; color: #ffffff; border-color: #0284c7; }
+.game-matrix-distortion .mxd-btn.mxd-primary:hover, .mxd-modal .mxd-btn.mxd-primary:hover { background: #0369a1; color: #ffffff; }
+.game-matrix-distortion .mxd-btn.mxd-warn { background: #fff7ed; color: #d97706; border-color: #fdba74; }
+.game-matrix-distortion .mxd-mode-bar { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+.game-matrix-distortion .mxd-mode-btn { border: 2px solid #e2e8f0; background: #ffffff; color: #64748b; border-radius: 12px; padding: 8px 16px; font-weight: 800; cursor: pointer; }
+.game-matrix-distortion .mxd-mode-btn.active { border-color: #0284c7; color: #0284c7; background: #e0f2fe; }
+.game-matrix-distortion .mxd-status { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+.game-matrix-distortion .mxd-chip { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 6px 12px; font-weight: 700; color: #475569; font-size: 0.9rem; }
+.game-matrix-distortion .mxd-chip b { color: #0284c7; }
+.game-matrix-distortion .mxd-main { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 14px; }
+.game-matrix-distortion .mxd-panel { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 14px; }
+.game-matrix-distortion .mxd-canvas-wrap { text-align: center; }
+.game-matrix-distortion #mxd-canvas { width: 100%; max-width: 440px; height: auto; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; touch-action: manipulation; }
+.game-matrix-distortion .mxd-legend { font-size: 0.82rem; color: #64748b; margin: 8px 0 0; }
+.game-matrix-distortion .mxd-target-mat { background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px; min-height: 58px; }
+.game-matrix-distortion .mxd-mat { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+.game-matrix-distortion .mxd-cell { background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 10px; padding: 8px; }
+.game-matrix-distortion .mxd-cell label { display: block; font-weight: 900; color: #0284c7; font-size: 0.85rem; margin-bottom: 4px; }
+.game-matrix-distortion .mxd-cell input[type=number] { width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 6px 8px; font-weight: 800; color: #0f172a; background: #ffffff; font-size: 0.95rem; }
+.game-matrix-distortion .mxd-cell input[type=range] { width: 100%; margin-top: 6px; accent-color: #0284c7; }
+.game-matrix-distortion .mxd-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+.game-matrix-distortion .bottom-ranking-card { margin-top: 16px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 14px; }
+.game-matrix-distortion .ranking-header { margin-bottom: 10px; }
+.game-matrix-distortion .ranking-title { font-weight: 900; color: #0f172a; }
+.mxd-modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.45); display: flex; align-items: center; justify-content: center; z-index: 99990; }
+.mxd-modal { background: #ffffff; color: #0f172a; border-radius: 16px; max-width: 540px; width: 92%; max-height: 82vh; overflow-y: auto; padding: 22px; border: 1px solid #e2e8f0; box-shadow: 0 18px 50px rgba(15, 23, 42, 0.25); }
+.mxd-modal h3 { color: #0f172a; }
+.mxd-modal p, .mxd-modal li { color: #475569; line-height: 1.6; }
+.mxd-modal code { background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 6px; padding: 1px 6px; color: #0369a1; font-weight: 700; }
+.mxd-modal input[type=text] { width: 100%; border: 1px solid #cbd5e1; border-radius: 10px; padding: 10px 12px; font-weight: 700; color: #0f172a; background: #ffffff; }
+.mxd-modal .mxd-btn { border: 1px solid #cbd5e1; background: #ffffff; color: #0f172a; border-radius: 10px; padding: 10px 14px; font-weight: 800; cursor: pointer; }
+.mxd-toast { position: fixed; top: 24px; left: 50%; transform: translateX(-50%) translateY(-10px); background: #0f172a; color: #f8fafc; padding: 11px 20px; border-radius: 12px; font-weight: 800; font-size: 0.92rem; z-index: 99999; opacity: 0; pointer-events: none; transition: opacity 0.25s, transform 0.25s; box-shadow: 0 10px 30px rgba(15, 23, 42, 0.3); max-width: 90vw; text-align: center; }
+.mxd-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.mxd-toast.success { background: #059669; }
+.mxd-toast.warn { background: #d97706; }
+.mxd-toast.error { background: #ef4444; }
+@media (max-width: 760px) {
+  .game-matrix-distortion .mxd-main { grid-template-columns: 1fr; }
+  .game-matrix-distortion .mxd-title { font-size: 1.15rem; }
+}
+</style>
+<script>
+/* ===== 행렬 변환 디스토션 (matrix-distortion) : Gen-3 표준 모듈 ===== */
+(function () {
+  'use strict';
+
+  var APP_ID = 'matrix-distortion';
+  var APP_TITLE = '행렬 변환 디스토션';
+  var BOTTOM_BOARD_ID = 'board-matrix-distortion-bottom';
+  var LS_KEY = 'mathlab_lb_matrix_distortion';
+  var EPS = 0.08;
+  var TOTAL_STAGES = 6;
+  var CANVAS_SIZE = 440;
+  var UNIT = 34;
+  var GRID_N = 6;
+  var SHAPE = [[0, 0], [2, 0], [2, 1], [1, 1], [1, 2], [0, 2]];
+
+  var state = {
+    mounted: false,
+    host: null,
+    difficulty: 'easy',
+    stage: 1,
+    score: 0,
+    attempts: 0,
+    hintUsed: 0,
+    wins: 0,
+    stageStart: 0,
+    timerInterval: null,
+    finished: false,
+    busy: false,
+    cleared: false,
+    M: [[1, 0], [0, 1]],
+    G: [[1, 0], [0, 1]],
+    stageType: 'scale',
+    stageLabel: ''
+  };
+
+  var DIFF_RULE = {
+    easy: { label: '쉬움', attemptLimit: 0, timeLimit: 0, showMatrix: true, types: ['scale', 'reflect', 'scale', 'reflect', 'shear', 'reflect'] },
+    normal: { label: '보통', attemptLimit: 5, timeLimit: 0, showMatrix: true, types: ['scale', 'reflect', 'shear', 'scale', 'shear', 'shear'] },
+    hard: { label: '도전', attemptLimit: 4, timeLimit: 60, showMatrix: false, types: ['reflect', 'shear', 'composite', 'shear', 'composite', 'composite'] }
+  };
+
+  var POOLS = {
+    scale: [
+      { m: [[2, 0], [0, 2]], label: '2배 확대' },
+      { m: [[3, 0], [0, 1]], label: 'x축 방향 3배 확대' },
+      { m: [[1, 0], [0, 2]], label: 'y축 방향 2배 확대' },
+      { m: [[0.5, 0], [0, 1]], label: 'x축 방향 절반 축소' }
+    ],
+    reflect: [
+      { m: [[1, 0], [0, -1]], label: 'x축 대칭' },
+      { m: [[-1, 0], [0, 1]], label: 'y축 대칭' },
+      { m: [[0, 1], [1, 0]], label: '직선 y=x 대칭' },
+      { m: [[-1, 0], [0, -1]], label: '원점 대칭' }
+    ],
+    shear: [
+      { m: [[1, 1], [0, 1]], label: 'x방향 전단' },
+      { m: [[1, -1], [0, 1]], label: 'x방향 역전단' },
+      { m: [[1, 0], [1, 1]], label: 'y방향 전단' },
+      { m: [[1, 2], [0, 1]], label: '강한 x방향 전단' }
+    ],
+    composite: [
+      { m: [[0, -2], [2, 0]], label: '90도 회전 + 2배 확대' },
+      { m: [[1, 1], [0, -1]], label: '전단 + x축 대칭' },
+      { m: [[2, 2], [0, 1]], label: '확대 + 전단 합성' },
+      { m: [[0, -1], [1, 1]], label: '회전 + 전단 합성' }
+    ]
+  };
+
+  /* ---------- 공통 유틸 ---------- */
+  function byId(id) { return document.getElementById(id); }
+  function setText(id, v) { var el = byId(id); if (el) el.textContent = String(v); }
+  function escapeHTML(str) {
+    return String(str == null ? '' : str)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
+  var toastTimer = null;
+  function showToast(msg, type) {
+    var t = byId('mxd-toast');
+    if (!t) {
+      t = document.createElement('div');
+      t.id = 'mxd-toast';
+      document.body.appendChild(t);
+    }
+    t.className = 'mxd-toast' + (type ? ' ' + type : '');
+    t.textContent = msg;
+    void t.offsetWidth;
+    t.classList.add('show');
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { t.classList.remove('show'); }, 2300);
+  }
+
+  function closeModal() {
+    var ov = byId('mxd-modal-overlay');
+    if (ov && ov.parentNode) ov.parentNode.removeChild(ov);
+  }
+  function openModal(innerHTML) {
+    closeModal();
+    var ov = document.createElement('div');
+    ov.id = 'mxd-modal-overlay';
+    ov.className = 'mxd-modal-overlay';
+    ov.innerHTML = '<div class="mxd-modal">' + innerHTML + '</div>';
+    document.body.appendChild(ov);
+    ov.addEventListener('click', function (ev) { if (ev.target === ov) closeModal(); });
+  }
+
+  /* ---------- 행렬 수학 ---------- */
+  function matMul(A, B) {
+    return [
+      [A[0][0] * B[0][0] + A[0][1] * B[1][0], A[0][0] * B[0][1] + A[0][1] * B[1][1]],
+      [A[1][0] * B[0][0] + A[1][1] * B[1][0], A[1][0] * B[0][1] + A[1][1] * B[1][1]]
+    ];
+  }
+  function matDet(M) { return M[0][0] * M[1][1] - M[0][1] * M[1][0]; }
+  function applyMat(M, p) { return [M[0][0] * p[0] + M[0][1] * p[1], M[1][0] * p[0] + M[1][1] * p[1]]; }
+
+  /* ---------- 캔버스 렌더링 ---------- */
+  function toScreen(p) { return [CANVAS_SIZE / 2 + p[0] * UNIT, CANVAS_SIZE / 2 - p[1] * UNIT]; }
+  function drawLine(ctx, p1, p2, T) {
+    var a = toScreen(T ? applyMat(T, p1) : p1);
+    var b = toScreen(T ? applyMat(T, p2) : p2);
+    ctx.beginPath();
+    ctx.moveTo(a[0], a[1]);
+    ctx.lineTo(b[0], b[1]);
+    ctx.stroke();
+  }
+  function drawShape(ctx, T, fill, stroke, dashed) {
+    ctx.save();
+    if (dashed) ctx.setLineDash([6, 5]);
+    ctx.beginPath();
+    SHAPE.forEach(function (p, idx) {
+      var q = toScreen(T ? applyMat(T, p) : p);
+      if (idx === 0) ctx.moveTo(q[0], q[1]); else ctx.lineTo(q[0], q[1]);
+    });
+    ctx.closePath();
+    ctx.fillStyle = fill;
+    ctx.fill();
+    ctx.strokeStyle = stroke;
+    ctx.lineWidth = 2.5;
+    ctx.stroke();
+    ctx.restore();
+  }
+  function draw() {
+    var canvas = byId('mxd-canvas');
+    if (!canvas) return;
+    var ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+    var T = matMul(state.G, state.M);
+    var i;
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = '#eef2f7';
+    for (i = -GRID_N; i <= GRID_N; i++) {
+      drawLine(ctx, [i, -GRID_N], [i, GRID_N], null);
+      drawLine(ctx, [-GRID_N, i], [GRID_N, i], null);
+    }
+    ctx.strokeStyle = '#bae6fd';
+    for (i = -GRID_N; i <= GRID_N; i++) {
+      drawLine(ctx, [i, -GRID_N], [i, GRID_N], T);
+      drawLine(ctx, [-GRID_N, i], [GRID_N, i], T);
+    }
+    ctx.strokeStyle = '#94a3b8';
+    ctx.lineWidth = 1.5;
+    drawLine(ctx, [-GRID_N, 0], [GRID_N, 0], null);
+    drawLine(ctx, [0, -GRID_N], [0, GRID_N], null);
+    drawShape(ctx, null, 'rgba(5, 150, 105, 0.07)', '#059669', true);
+    drawShape(ctx, T, 'rgba(2, 132, 199, 0.25)', '#0284c7', false);
+  }
+
+  /* ---------- UI 구성 ---------- */
+  function cellHTML(key) {
+    return '<div class="mxd-cell"><label for="mxd-in-' + key + '">' + key + '</label>' +
+      '<input type="number" id="mxd-in-' + key + '" step="0.01" min="-3" max="3" value="0">' +
+      '<input type="range" id="mxd-sl-' + key + '" step="0.05" min="-3" max="3" value="0"></div>';
+  }
+  function buildHTML() {
+    return '<div class="game-matrix-distortion" id="mxd-root">' +
+      '<div class="mxd-header">' +
+      '<h2 class="mxd-title">🌀 행렬 변환 디스토션</h2>' +
+      '<div style="display:flex; gap:8px; flex-wrap:wrap;">' +
+      '<button type="button" class="mxd-btn" id="mxd-guide-btn">📖 게임 방법</button>' +
+      '<button type="button" class="mxd-btn" id="mxd-rank-btn">🏆 명예의 전당</button>' +
+      '<button type="button" class="mxd-btn" id="mxd-home-btn">🏠 홈으로</button>' +
+      '</div></div>' +
+      '<div class="mxd-mode-bar" id="mxd-mode-bar">' +
+      '<button type="button" class="mxd-mode-btn" data-diff="easy">🌱 쉬움</button>' +
+      '<button type="button" class="mxd-mode-btn" data-diff="normal">🌿 보통</button>' +
+      '<button type="button" class="mxd-mode-btn" data-diff="hard">🔥 도전</button>' +
+      '</div>' +
+      '<div class="mxd-status">' +
+      '<span class="mxd-chip">스테이지 <b id="mxd-stage">1</b>/' + TOTAL_STAGES + '</span>' +
+      '<span class="mxd-chip">점수 <b id="mxd-score">0</b></span>' +
+      '<span class="mxd-chip">시도 <b id="mxd-attempts">0</b><span id="mxd-attempt-limit"></span></span>' +
+      '<span class="mxd-chip" id="mxd-time-chip">⏱ <b id="mxd-time">0</b>초</span>' +
+      '</div>' +
+      '<div class="mxd-main">' +
+      '<div class="mxd-panel mxd-canvas-wrap">' +
+      '<canvas id="mxd-canvas" width="' + CANVAS_SIZE + '" height="' + CANVAS_SIZE + '"></canvas>' +
+      '<p class="mxd-legend">🟢 초록 점선: 복구 목표(원본) / 🔵 파란 도형: 현재 상태 / 하늘색 격자: 변환된 격자</p>' +
+      '</div>' +
+      '<div class="mxd-panel">' +
+      '<p style="margin:0 0 6px; font-weight:800; color:#475569;">왜곡 정보 <span id="mxd-stage-label" style="color:#0284c7;"></span></p>' +
+      '<div id="mxd-target-matrix" class="mxd-target-mat"></div>' +
+      '<p style="margin:12px 0 6px; font-weight:800; color:#475569;">나의 복구 행렬 G = [[a, b], [c, d]]</p>' +
+      '<div class="mxd-mat">' + cellHTML('a') + cellHTML('b') + cellHTML('c') + cellHTML('d') + '</div>' +
+      '<div class="mxd-actions">' +
+      '<button type="button" class="mxd-btn mxd-primary" id="mxd-judge-btn">🚀 복구 판정</button>' +
+      '<button type="button" class="mxd-btn" id="mxd-reset-g-btn">↩️ 원소 초기화</button>' +
+      '<button type="button" class="mxd-btn mxd-warn" id="mxd-hint-btn">💡 행렬식 힌트 (-5점)</button>' +
+      '<button type="button" class="mxd-btn" id="mxd-restart-btn">🔄 처음부터</button>' +
+      '</div></div></div>' +
+      '<div class="bottom-ranking-card" id="mxd-bottom-ranking-sec">' +
+      '<div class="ranking-header"><div class="ranking-title">🏆 명예의 전당 (실시간 랭킹 보드)</div></div>' +
+      '<div id="' + BOTTOM_BOARD_ID + '"><p style="text-align:center; color:#64748b; padding:12px 0;">랭킹 데이터를 불러오는 중...</p></div>' +
+      '</div></div>';
+  }
+
+  /* ---------- 상태 표시 ---------- */
+  function updateStatus() {
+    setText('mxd-stage', state.stage);
+    setText('mxd-score', state.score);
+    setText('mxd-attempts', state.attempts);
+    var rule = DIFF_RULE[state.difficulty];
+    var lim = byId('mxd-attempt-limit');
+    if (lim) lim.textContent = rule.attemptLimit > 0 ? ' / ' + rule.attemptLimit : '';
+  }
+  function formatMatrix(M) {
+    return '<table style="font-family:monospace; font-weight:800; color:#0f172a; border-collapse:collapse; border-left:2px solid #94a3b8; border-right:2px solid #94a3b8; border-radius:4px;">' +
+      '<tr><td style="padding:3px 12px;">' + M[0][0] + '</td><td style="padding:3px 12px;">' + M[0][1] + '</td></tr>' +
+      '<tr><td style="padding:3px 12px;">' + M[1][0] + '</td><td style="padding:3px 12px;">' + M[1][1] + '</td></tr></table>';
+  }
+  function typeName(type) {
+    if (type === 'scale') return '확대·축소 복구';
+    if (type === 'reflect') return '대칭 복구';
+    if (type === 'shear') return '전단 복구';
+    return '복합 변환 복구';
+  }
+  function syncInputsFromG() {
+    var map = { a: state.G[0][0], b: state.G[0][1], c: state.G[1][0], d: state.G[1][1] };
+    ['a', 'b', 'c', 'd'].forEach(function (k) {
+      var n = byId('mxd-in-' + k);
+      var s = byId('mxd-sl-' + k);
+      if (n) n.value = String(map[k]);
+      if (s) s.value = String(map[k]);
+    });
+  }
+
+  /* ---------- 스테이지 진행 ---------- */
+  function buildStage() {
+    var rule = DIFF_RULE[state.difficulty];
+    var type = rule.types[state.stage - 1] || 'scale';
+    var pool = POOLS[type];
+    var picked = pool[Math.floor(Math.random() * pool.length)];
+    state.M = picked.m;
+    state.stageType = type;
+    state.stageLabel = picked.label;
+    state.G = [[1, 0], [0, 1]];
+    state.attempts = 0;
+    state.cleared = false;
+    state.busy = false;
+    state.stageStart = Date.now();
+    var labelEl = byId('mxd-stage-label');
+    if (labelEl) labelEl.textContent = '(' + typeName(type) + ')';
+    var matEl = byId('mxd-target-matrix');
+    if (matEl) {
+      if (rule.showMatrix) {
+        matEl.innerHTML = '<div style="display:flex; align-items:center; gap:10px;"><span style="font-weight:800; color:#475569;">왜곡 행렬 M =</span>' + formatMatrix(state.M) + '<span style="color:#64748b; font-size:0.85rem;">' + escapeHTML(state.stageLabel) + '</span></div>';
+      } else {
+        matEl.innerHTML = '<p style="margin:0; color:#d97706; font-weight:800;">❓ 도전 모드: 왜곡 행렬 비공개! 격자 변형과 행렬식 힌트로 추리하세요.</p>';
+      }
+    }
+    syncInputsFromG();
+    updateStatus();
+    draw();
+  }
+  function judge() {
+    if (state.finished || state.busy || !state.mounted) return;
+    state.attempts += 1;
+    updateStatus();
+    var D = matMul(state.G, state.M);
+    var diff = Math.max(Math.abs(D[0][0] - 1), Math.abs(D[0][1]), Math.abs(D[1][0]), Math.abs(D[1][1] - 1));
+    if (diff <= EPS) { stageClear(); return; }
+    var rule = DIFF_RULE[state.difficulty];
+    if (rule.attemptLimit > 0 && state.attempts >= rule.attemptLimit) {
+      stageFail('시도 횟수를 모두 사용했습니다. 다음 스테이지로 넘어갑니다.');
+      return;
+    }
+    if (diff <= 0.35) showToast('거의 다 왔어요! 원소를 조금만 더 미세 조정해보세요.', 'warn');
+    else showToast('아직 원본과 일치하지 않습니다. 하늘색 격자의 변형을 관찰해보세요.', 'warn');
+  }
+  function stageClear() {
+    state.cleared = true;
+    state.busy = true;
+    state.wins += 1;
+    var elapsed = Math.floor((Date.now() - state.stageStart) / 1000);
+    var gain = 20;
+    if (state.attempts === 1) gain += 10;
+    if (elapsed <= 15) gain += 10; else if (elapsed <= 30) gain += 5;
+    if (state.stageType === 'composite') gain += 15;
+    state.score += gain;
+    updateStatus();
+    showToast('✅ 원본 복구 성공! 역행렬 발견 +' + gain + '점', 'success');
+    setTimeout(nextStage, 1400);
+  }
+  function stageFail(msg) {
+    if (state.busy) return;
+    state.busy = true;
+    showToast(msg, 'error');
+    setTimeout(nextStage, 1400);
+  }
+  function nextStage() {
+    if (!state.mounted) return;
+    state.busy = false;
+    if (state.stage >= TOTAL_STAGES) { finishGame(); return; }
+    state.stage += 1;
+    buildStage();
+  }
+  function finishGame() {
+    state.finished = true;
+    stopTimer();
+    var timeChip = byId('mxd-time');
+    if (timeChip) timeChip.textContent = '-';
+    showToast('🏁 모든 스테이지 종료! 최종 점수 ' + state.score + '점', 'success');
+    setTimeout(function () { if (state.mounted) showRankingModal(true); }, 900);
+  }
+  function useHint() {
+    if (state.finished || state.busy || !state.mounted) return;
+    state.hintUsed += 1;
+    state.score = Math.max(0, state.score - 5);
+    updateStatus();
+    var d = matDet(state.M);
+    var dTxt = Math.abs(d - Math.round(d)) < 0.000001 ? String(Math.round(d)) : d.toFixed(2);
+    showToast('💡 왜곡 행렬의 행렬식 det(M) = ' + dTxt + ' (역행렬 원소는 1/det 스케일)', 'warn');
+  }
+
+  /* ---------- 타이머 ---------- */
+  function startTimer() {
+    stopTimer();
+    state.timerInterval = setInterval(function () {
+      if (!state.mounted || state.finished) return;
+      var el = byId('mxd-time');
+      if (!el) return;
+      var elapsed = Math.floor((Date.now() - state.stageStart) / 1000);
+      var rule = DIFF_RULE[state.difficulty];
+      if (rule.timeLimit > 0) {
+        var remain = rule.timeLimit - elapsed;
+        el.textContent = String(Math.max(0, remain));
+        if (remain <= 0 && !state.cleared && !state.busy) {
+          stageFail('⏰ 제한 시간 초과! 다음 스테이지로 넘어갑니다.');
+        }
+      } else {
+        el.textContent = String(elapsed);
+      }
+    }, 500);
+  }
+  function stopTimer() {
+    if (typeof state.timerInterval !== 'undefined' && state.timerInterval) {
+      clearInterval(state.timerInterval);
+      state.timerInterval = null;
+    }
+  }
+
+  /* ---------- 명예의 전당 ---------- */
+  function renderBottomLeaderboard() {
+    var bottomEl = byId(BOTTOM_BOARD_ID);
+    if (!bottomEl) return;
+    if (typeof window.loadGameLeaderboard === 'function') {
+      try { window.loadGameLeaderboard(APP_ID, true, BOTTOM_BOARD_ID); return; } catch (e) { console.warn('matrix-distortion 하단 보드 로드 방어:', e); }
+    }
+    var list = [];
+    try { list = JSON.parse(localStorage.getItem(LS_KEY) || '[]'); } catch (e) { list = []; }
+    if (!list.length) {
+      bottomEl.innerHTML = '<p style="text-align:center; color:#64748b; padding:12px 0;">아직 등록된 기록이 없습니다. 첫 번째 복구에 도전해보세요!</p>';
+      return;
+    }
+    bottomEl.innerHTML = list.slice(0, 5).map(function (item, idx) {
+      var rankColor = idx === 0 ? '#d97706' : '#475569';
+      var rankLabel = idx === 0 ? '👑 1위' : (idx + 1) + '위';
+      return '<div style="display:flex; justify-content:space-between; align-items:center; background:#f8fafc; padding:10px 14px; border-radius:10px; border:1px solid #e2e8f0; margin-bottom:6px;">' +
+        '<span style="font-weight:800; color:' + rankColor + ';">' + rankLabel + ' - ' + escapeHTML(item.nickname) + '</span>' +
+        '<span style="color:#0284c7; font-weight:900;">' + Number(item.score) + '점</span></div>';
+    }).join('');
+  }
+  function saveScore(nickname) {
+    var name = (nickname || '').trim().slice(0, 12) || '익명의 도전자';
+    var list = [];
+    try { list = JSON.parse(localStorage.getItem(LS_KEY) || '[]'); } catch (e) { list = []; }
+    list.push({ nickname: name, score: state.score, date: new Date().toISOString().slice(0, 10) });
+    list.sort(function (a, b) { return b.score - a.score; });
+    list = list.slice(0, 20);
+    try { localStorage.setItem(LS_KEY, JSON.stringify(list)); } catch (e) {}
+    var sent = false;
+    try {
+      if (typeof window.submitRanking === 'function') {
+        window.submitRanking(APP_ID, state.score, true, name, BOTTOM_BOARD_ID);
+        sent = true;
+      }
+    } catch (e) { console.warn('matrix-distortion 랭킹 서버 전송 방어:', e); }
+    if (!sent) renderBottomLeaderboard();
+    showToast(sent ? '🏆 명예의 전당에 기록을 전송했습니다!' : '💾 이 기기에 기록을 저장했습니다!', 'success');
+  }
+  function showRankingModal(withRegister) {
+    var list = [];
+    try { list = JSON.parse(localStorage.getItem(LS_KEY) || '[]'); } catch (e) { list = []; }
+    var rows = list.slice(0, 10).map(function (item, idx) {
+      return '<div style="display:flex; justify-content:space-between; padding:8px 12px; border-bottom:1px solid #e2e8f0;">' +
+        '<span style="font-weight:700; color:' + (idx === 0 ? '#d97706' : '#475569') + ';">' + (idx + 1) + '위 ' + escapeHTML(item.nickname) + '</span>' +
+        '<span style="color:#0284c7; font-weight:800;">' + Number(item.score) + '점</span></div>';
+    }).join('');
+    if (!rows) rows = '<p style="color:#64748b; text-align:center; padding:10px 0;">아직 이 기기에 저장된 기록이 없습니다.</p>';
+    var regHTML = '';
+    if (withRegister) {
+      regHTML = '<div style="background:#f0f9ff; border:1px solid #bae6fd; border-radius:12px; padding:14px; margin-bottom:14px;">' +
+        '<p style="margin:0 0 8px; font-weight:900; color:#0f172a;">🎉 최종 점수 <span style="color:#0284c7;">' + state.score + '점</span> (복구 성공 ' + state.wins + '/' + TOTAL_STAGES + ')</p>' +
+        '<input type="text" id="mxd-nickname" maxlength="12" placeholder="닉네임을 입력하세요 (최대 12자)">' +
+        '<button type="button" class="mxd-btn mxd-primary" id="mxd-save-btn" style="margin-top:8px; width:100%;">🏆 명예의 전당 등록</button></div>';
+    }
+    openModal('<h3 style="margin:0 0 12px;">🏆 명예의 전당</h3>' + regHTML +
+      '<div style="max-height:280px; overflow-y:auto;">' + rows + '</div>' +
+      '<button type="button" class="mxd-btn" id="mxd-close-modal" style="margin-top:14px; width:100%;">닫기</button>');
+    var closeBtn = byId('mxd-close-modal');
+    if (closeBtn) closeBtn.addEventListener('click', closeModal);
+    var saveBtn = byId('mxd-save-btn');
+    if (saveBtn) {
+      saveBtn.addEventListener('click', function () {
+        var input = byId('mxd-nickname');
+        saveScore(input ? input.value : '');
+        closeModal();
+        showToast('🔄 처음부터 버튼으로 새 도전을 시작할 수 있어요!', '');
+      });
+    }
+  }
+  function showGuideModal() {
+    openModal('<h3 style="margin:0 0 12px;">📖 게임 방법 - 행렬 변환 디스토션</h3>' +
+      '<p>왜곡 행렬 <code>M</code>이 원본 도형을 비틀어 놓았습니다. 복구 행렬 <code>G</code>의 네 원소 a, b, c, d를 조정해 도형을 원래대로 되돌려보세요!</p>' +
+      '<ul>' +
+      '<li>파란 도형은 현재 상태, 즉 <code>G x M</code> 변환을 적용한 결과입니다.</li>' +
+      '<li>초록 점선(원본)과 정확히 겹치면 복구 성공! 이때 <code>G</code>는 <code>M</code>의 <strong>역행렬</strong>이 됩니다 (<code>G x M = I</code>, 단위행렬).</li>' +
+      '<li>하늘색 격자는 현재 변환이 평면 전체를 어떻게 바꾸는지 보여줍니다.</li>' +
+      '<li>점수: 클리어 +20, 첫 시도 성공 +10, 빠른 복구 최대 +10, 복합 변환 +15, 힌트 -5</li>' +
+      '<li>난이도: 🌱 쉬움(단일 변환·무제한 시도) / 🌿 보통(전단 포함·시도 5회) / 🔥 도전(복합 변환·행렬 비공개·스테이지당 60초)</li>' +
+      '</ul>' +
+      '<p style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:10px; padding:10px 12px;">📚 <strong>수학 개념</strong>: 일차변환, 행렬 곱셈, 역행렬과 행렬식. 행렬식이 <code>det(M) = ad - bc = 0</code>이 아닐 때만 역행렬이 존재하며, 대칭 변환은 자기 자신이 역행렬인 특별한 변환입니다!</p>' +
+      '<button type="button" class="mxd-btn mxd-primary" id="mxd-guide-close" style="width:100%;">이해했어요!</button>');
+    var btn = byId('mxd-guide-close');
+    if (btn) btn.addEventListener('click', closeModal);
+  }
+
+  /* ---------- 이벤트 바인딩 ---------- */
+  function refreshModeBar() {
+    var bar = byId('mxd-mode-bar');
+    if (!bar) return;
+    Array.prototype.forEach.call(bar.querySelectorAll('.mxd-mode-btn'), function (btn) {
+      if (btn.getAttribute('data-diff') === state.difficulty) btn.classList.add('active');
+      else btn.classList.remove('active');
+    });
+  }
+  function bindEvents() {
+    var guideBtn = byId('mxd-guide-btn');
+    if (guideBtn) guideBtn.addEventListener('click', showGuideModal);
+    var rankBtn = byId('mxd-rank-btn');
+    if (rankBtn) rankBtn.addEventListener('click', function () { showRankingModal(state.finished && state.score > 0); });
+    var homeBtn = byId('mxd-home-btn');
+    if (homeBtn) homeBtn.addEventListener('click', goHomeSafe);
+    var judgeBtn = byId('mxd-judge-btn');
+    if (judgeBtn) judgeBtn.addEventListener('click', judge);
+    var resetGBtn = byId('mxd-reset-g-btn');
+    if (resetGBtn) resetGBtn.addEventListener('click', function () {
+      state.G = [[1, 0], [0, 1]];
+      syncInputsFromG();
+      draw();
+      showToast('복구 행렬을 단위행렬로 되돌렸습니다.', '');
+    });
+    var hintBtn = byId('mxd-hint-btn');
+    if (hintBtn) hintBtn.addEventListener('click', useHint);
+    var restartBtn = byId('mxd-restart-btn');
+    if (restartBtn) restartBtn.addEventListener('click', function () {
+      restartGame();
+      showToast('새 게임을 시작합니다! 왜곡을 복구해보세요.', '');
+    });
+    var bar = byId('mxd-mode-bar');
+    if (bar) {
+      bar.addEventListener('click', function (ev) {
+        var btn = ev.target && ev.target.closest ? ev.target.closest('.mxd-mode-btn') : null;
+        if (!btn) return;
+        var diff = btn.getAttribute('data-diff');
+        if (diff && diff !== state.difficulty && DIFF_RULE[diff]) {
+          state.difficulty = diff;
+          refreshModeBar();
+          restartGame();
+          showToast(DIFF_RULE[diff].label + ' 난이도로 새 게임을 시작합니다!', '');
+        }
+      });
+    }
+    ['a', 'b', 'c', 'd'].forEach(function (k) {
+      var n = byId('mxd-in-' + k);
+      var s = byId('mxd-sl-' + k);
+      function applyValue(valStr) {
+        var v = parseFloat(valStr);
+        if (isNaN(v)) return;
+        v = Math.max(-3, Math.min(3, v));
+        if (k === 'a') state.G[0][0] = v;
+        else if (k === 'b') state.G[0][1] = v;
+        else if (k === 'c') state.G[1][0] = v;
+        else state.G[1][1] = v;
+        if (n) n.value = String(v);
+        if (s) s.value = String(v);
+        draw();
+      }
+      if (n) n.addEventListener('input', function () { applyValue(n.value); });
+      if (s) s.addEventListener('input', function () { applyValue(s.value); });
+    });
+  }
+  function restartGame() {
+    state.stage = 1;
+    state.score = 0;
+    state.wins = 0;
+    state.hintUsed = 0;
+    state.finished = false;
+    state.busy = false;
+    closeModal();
+    buildStage();
+    startTimer();
+  }
+
+  /* ---------- 안전 마운트 (Gen-3 표준 템플릿 A) ---------- */
+  function mount(container, context) {
+    var host = null;
+    if (typeof container === 'string') {
+      try { host = document.querySelector(container); } catch (e) { host = null; }
+    } else if (container instanceof HTMLElement) {
+      host = container;
+    }
+    if (!host && window.MathLabUtils && typeof window.MathLabUtils.getMountContainer === 'function') {
+      try { host = window.MathLabUtils.getMountContainer(container); } catch (e) { host = null; }
+    }
+    if (!host || !(host instanceof HTMLElement)) {
+      host = document.getElementById('mathlab-view') || document.getElementById('new-root') || document.getElementById('game-container');
+    }
+    if (!host || !(host instanceof HTMLElement) || host === document.body) {
+      var createdHost = document.getElementById('matrix-distortion-force-host');
+      if (!createdHost) {
+        createdHost = document.createElement('div');
+        createdHost.id = 'matrix-distortion-force-host';
+        document.body.appendChild(createdHost);
+      }
+      host = createdHost;
+    }
+    var footerEl = document.querySelector('footer, #footer, .app-footer');
+    if (footerEl && host && typeof host.compareDocumentPosition === 'function' && (host.compareDocumentPosition(footerEl) & Node.DOCUMENT_POSITION_PRECEDING)) {
+      try { footerEl.parentNode.insertBefore(host, footerEl); } catch (e) {}
+    }
+    host.style.display = '';
+    host.style.visibility = 'visible';
+    host.style.opacity = '1';
+    var parent = host.parentElement;
+    while (parent && parent !== document.body && parent !== document.documentElement) {
+      if (parent.style && parent.style.display === 'none') parent.style.display = 'block';
+      if (parent.style && parent.style.visibility === 'hidden') parent.style.visibility = 'visible';
+      parent = parent.parentElement;
+    }
+    document.querySelectorAll('header, .navbar, #app-header, .top-bar, #floating-home-btn, .floating-home').forEach(function (el) {
+      if (el && el.style && el.style.display === 'none') el.style.display = '';
+    });
+    state.host = host;
+    state.mounted = true;
+    host.innerHTML = buildHTML();
+    bindEvents();
+    refreshModeBar();
+    restartGame();
+    renderBottomLeaderboard();
+  }
+
+  /* ---------- 정리·홈 복귀 ---------- */
+  function destroy() {
+    stopTimer();
+    closeModal();
+    state.mounted = false;
+    if (state.host) {
+      try { state.host.innerHTML = ''; } catch (e) {}
+    }
+    state.host = null;
+  }
+  function goHomeSafe() {
+    stopTimer();
+    closeModal();
+    destroy();
+    try {
+      
+    } catch (e) { console.warn('matrix-distortion backHome 방어:', e); }
+    var forced = document.getElementById('matrix-distortion-force-host');
+    if (forced) {
+      forced.style.display = 'none';
+      forced.innerHTML = '';
+    }
+    if (typeof window.goHome === 'function') {
+      try { window.goHome(); } catch (e) { console.warn('matrix-distortion goHome 방어:', e); }
+    }
+  }
+
+  var MatrixDistortion = {
+    mount: mount,
+    resetGame: restartGame,
+    destroy: destroy,
+    goHome: goHomeSafe
+  };
+
+  /* ---------- 3중 자율 등록 & 상호 실행 브리지 (Gen-3 표준 템플릿 B) ---------- */
+  function registerMatrixDistortion() {
+    if (typeof window.MathLabGames !== 'undefined' && typeof window.MathLabGames.register === 'function') {
+      var exists = false;
+      try { exists = typeof window.MathLabGames.get === 'function' && !!window.MathLabGames.get(APP_ID); } catch (e) { exists = false; }
+      if (!exists) {
+        try {
+          window.MathLabGames.register({
+            id: APP_ID,
+            title: APP_TITLE,
+            icon: '🌀',
+            sourceType: 'new',
+            players: '1인',
+            isMultiplayer: false,
+            mount: function (container, context) { MatrixDistortion.mount(container, context); },
+            reset: function () { MatrixDistortion.resetGame(); },
+            destroy: function () { MatrixDistortion.destroy(); },
+            goHome: function () { MatrixDistortion.goHome(); }
+          });
+        } catch (e) { console.warn('matrix-distortion 안전 등록 방어:', e); }
+      }
+    }
+  }
+
+  registerMatrixDistortion();
+  window.addEventListener('DOMContentLoaded', registerMatrixDistortion);
+  setTimeout(registerMatrixDistortion, 100);
+  setTimeout(registerMatrixDistortion, 500);
+
+  window.MatrixDistortion = MatrixDistortion;
+
+  window.initMatrixDistortionGame = function () {
+    registerMatrixDistortion();
+    if (window.LegacyBridge && typeof window.LegacyBridge.hideAllLegacySections === 'function') {
+      window.LegacyBridge.hideAllLegacySections();
+      if (typeof window.LegacyBridge.showNewRoot === 'function') window.LegacyBridge.showNewRoot();
+    }
+    if (typeof window.MathLabGames !== 'undefined' && typeof window.MathLabGames.mount === 'function') {
+      try { window.MathLabGames.mount(APP_ID); return; } catch (e) { console.warn('matrix-distortion 범용 마운트 방어:', e); }
+    }
+    var targetEl = document.getElementById('mathlab-view') || document.getElementById('new-root');
+    MatrixDistortion.mount(targetEl);
+  };
+
+  window.launchMatrixDistortionGame = function () {
+    window.initMatrixDistortionGame();
+  };
+})();
+</script>

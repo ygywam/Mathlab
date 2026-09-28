@@ -1,0 +1,887 @@
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;700;800;900&display=swap');
+@import url('https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css');
+
+.ae-concept, .ae-concept * { box-sizing: border-box; }
+.ae-concept {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 20px 22px 28px;
+  font-family: 'Pretendard', system-ui, sans-serif;
+  background: #f8fafc;
+  color: #0f172a;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+}
+
+/* Header */
+.ae-concept .h {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  background: #ffffff;
+  padding: 16px 22px;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+  margin-bottom: 16px;
+}
+.ae-concept .t {
+  font-size: 1.35rem;
+  font-weight: 900;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #0284c7;
+}
+.ae-concept .sub-title {
+  font-size: 0.88rem;
+  color: #64748b;
+  font-weight: 700;
+}
+
+/* Nav Tabs */
+.ae-concept .nav-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  background: #ffffff;
+  padding: 6px;
+  border-radius: 14px;
+  border: 1px solid #e2e8f0;
+}
+.ae-concept .tab-btn {
+  flex: 1;
+  padding: 12px 14px;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.98rem;
+  font-weight: 800;
+  cursor: pointer;
+  background: transparent;
+  color: #64748b;
+  transition: all 0.2s;
+  text-align: center;
+}
+.ae-concept .tab-btn.active {
+  background: #0284c7;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(2,132,199,0.25);
+}
+
+/* Card & Layout */
+.ae-concept .card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+.ae-concept .card-title {
+  font-size: 1.15rem;
+  font-weight: 900;
+  color: #0f172a;
+  margin-top: 0;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 2px solid #f1f5f9;
+  padding-bottom: 10px;
+}
+
+.ae-concept .grid-2 {
+  display: grid;
+  grid-template-columns: 1.35fr 1fr;
+  gap: 16px;
+}
+@media(max-width: 860px) {
+  .ae-concept .grid-2 { grid-template-columns: 1fr; }
+}
+
+/* Canvas Styling */
+.ae-concept canvas {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 14px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  touch-action: none;
+  cursor: crosshair;
+}
+
+/* Controls & Sliders */
+.ae-concept .slider-item {
+  margin-bottom: 10px;
+}
+.ae-concept .slider-label {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 800;
+  color: #334155;
+  font-size: 0.9rem;
+  margin-bottom: 4px;
+}
+.ae-concept .slider {
+  width: 100%;
+  accent-color: #0284c7;
+  height: 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* Equal 50%:50% Grid Buttons Container */
+.ae-concept .btn-grid-50 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  width: 100%;
+  margin-top: 10px;
+}
+
+/* Buttons & Inputs */
+.ae-concept .btn {
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #1e293b;
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-weight: 800;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+.ae-concept .btn:hover { background: #f1f5f9; }
+.ae-concept .btn.p { background: #0284c7; border-color: #0284c7; color: #ffffff; box-shadow: 0 3px 0 #0369a1; }
+.ae-concept .btn.g { background: #059669; border-color: #059669; color: #ffffff; box-shadow: 0 3px 0 #047857; }
+
+.ae-concept .inp {
+  width: 100%;
+  display: block;
+  padding: 12px 14px;
+  border: 2px solid #cbd5e1;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 800;
+  outline: none;
+  background: #ffffff;
+  margin-bottom: 10px;
+}
+
+/* Math Display Box */
+.ae-concept .math-block {
+  background: #ffffff;
+  padding: 12px 18px;
+  border-radius: 12px;
+  display: block;
+  border: 1px solid #bae6fd;
+  margin: 10px 0;
+  font-size: 1.02rem;
+  overflow-x: auto;
+}
+
+/* Status Chips */
+.ae-concept .chip-bar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+.ae-concept .chip {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: #475569;
+}
+.ae-concept .chip b { color: #0284c7; }
+
+/* Slide Modal */
+.ae-concept .modal { position: fixed; inset: 0; background: rgba(15,23,42,0.55); display: none; align-items: center; justify-content: center; z-index: 9400; padding: 14px; backdrop-filter: blur(4px); }
+.ae-concept .modal.on { display: flex; }
+.ae-concept .modal .mbox { background: #fff; border-radius: 18px; max-width: 600px; width: 100%; padding: 24px; max-height: 88vh; overflow: auto; box-shadow: 0 20px 50px rgba(15,23,42,0.3); }
+.ae-concept .dots { display: flex; gap: 6px; justify-content: center; margin: 16px 0 8px; }
+.ae-concept .dot { width: 8px; height: 8px; border-radius: 50%; background: #cbd5e1; transition: all 0.2s; }
+.ae-concept .dot.on { background: #0284c7; width: 22px; border-radius: 10px; }
+</style>
+
+<!-- KaTeX Script -->
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+
+<script>
+(function(){
+'use strict';
+var APP_ID = 'asymptote-escape';
+var APP_TITLE = '유리함수 점근선 탐구 해부학';
+var ICON = '📐';
+var FORCE = 'asymptote-escape-force-host';
+
+var CW = 620, CH = 460;
+var BOUND_X = 6.0, BOUND_Y = 6.0;
+
+// Slide Guide Content
+var SLIDE_GUIDE = [
+  {
+    title: '📐 유리함수와 점근선의 개념',
+    html: '<p>유리함수 <span class="math-tex" data-tex="y = \\frac{k}{x - a} + b"></span> 는 분모가 0이 될 수 없는 수학적 성질로 인해 두 직선 <b>x = a</b> 와 <b>y = b</b> 에 한없이 다가가는 <b>점근선(Asymptote)</b>을 가집니다.</p>' +
+          '<ul>' +
+          '  <li><b>세로 점근선:</b> <span class="math-tex" data-tex="x = a"></span> (분모가 0이 되는 지점)</li>' +
+          '  <li><b>가로 점근선:</b> <span class="math-tex" data-tex="y = b"></span> (x가 무한히 커질 때 분수항이 0으로 수렴)</li>' +
+          '</ul>'
+  },
+  {
+    title: '🔄 일반형에서 표준형으로의 다항식 변환',
+    html: '<p>일반형 <span class="math-tex" data-tex="y = \\frac{cx + d}{x - a}"></span> 형태는 다항식 나누셈을 통해 표준형으로 변환됩니다:</p>' +
+          '<div style="background:#f0f9ff; border:1px solid #bae6fd; padding:12px; border-radius:12px; margin:8px 0; text-align:center;">' +
+          '  <span class="math-tex" data-display="true" data-tex="y = \\frac{c(x - a) + (ca + d)}{x - a} = \\frac{ca + d}{x - a} + c"></span>' +
+          '</div>' +
+          '<p>이때 상수 <span class="math-tex" data-tex="k = ca + d"></span> 의 부호에 따라 그래프의 대칭 사분면 위치가 결정됩니다.</p>'
+  },
+  {
+    title: '🕹️ 대칭 중심과 대칭축 탐구',
+    html: '<p>유리함수는 점근선의 교점인 <b>대칭 중심 <span class="math-tex" data-tex="(a, b)"></span></b> 에 대하여 점대칭이며,</p>' +
+          '<p>기울기가 <span class="math-tex" data-tex="\\pm 1"></span> 인 두 직선 <span class="math-tex" data-tex="y = (x - a) + b"></span> 및 <span class="math-tex" data-tex="y = -(x - a) + b"></span> 에 대해 선대칭입니다.</p>'
+  }
+];
+
+var S = {
+  host: null,
+  activeTab: 'sim',
+  mode: 'standard', // 'standard' or 'general'
+  a: 1.00,
+  b: 1.00,
+  k: 2.00,
+  c: 2.00,
+  d: 3.00,
+  showSymmetryLines: true,
+  x0: 3.00,
+  guidePage: 0
+};
+
+function $(id) { return document.getElementById(id); }
+
+function renderMath(latex, container, displayMode) {
+  if (typeof katex !== 'undefined' && container) {
+    try {
+      katex.render(latex, container, { throwOnError: false, displayMode: !!displayMode });
+      return;
+    } catch(e){}
+  }
+  if (container) container.textContent = latex;
+}
+
+function updateMathElements() {
+  document.querySelectorAll('.math-tex').forEach(function(el) {
+    var tex = el.getAttribute('data-tex');
+    var isDisplay = el.getAttribute('data-display') === 'true';
+    if (tex) renderMath(tex, el, isDisplay);
+  });
+}
+
+function getA() { return S.a; }
+function getB() { return S.mode === 'standard' ? S.b : S.c; }
+function getK() { return S.mode === 'standard' ? S.k : (S.c * S.a + S.d); }
+
+function fx(x) {
+  var a = getA(), b = getB(), k = getK();
+  if (Math.abs(x - a) < 0.0001) return NaN;
+  return k / (x - a) + b;
+}
+
+var AsymptoteConceptApp = {
+  mount: function(container) {
+    var host = null;
+    if (typeof container === 'string') { try { host = document.querySelector(container); } catch(e){} }
+    else if (container instanceof HTMLElement) host = container;
+    if (!host && window.MathLabUtils && window.MathLabUtils.getMountContainer) {
+      try { host = window.MathLabUtils.getMountContainer(container); } catch(e){}
+    }
+    if (!host || !(host instanceof HTMLElement)) host = document.getElementById('mathlab-view') || document.getElementById('new-root');
+    
+    if (!host || !(host instanceof HTMLElement) || host === document.body) {
+      host = document.getElementById(FORCE);
+      if (!host) { host = document.createElement('div'); host.id = FORCE; document.body.appendChild(host); }
+    }
+    
+    var footerEl = document.querySelector('footer,#footer,.app-footer');
+    if (footerEl && host && typeof host.compareDocumentPosition === 'function' && (footerEl.compareDocumentPosition(host) & Node.DOCUMENT_POSITION_PRECEDING)) {
+      try { footerEl.parentNode.insertBefore(host, footerEl); } catch(e){}
+    }
+    
+    host.style.display = ''; host.style.visibility = 'visible'; host.style.opacity = '1';
+    S.host = host;
+    host.innerHTML = this.renderChrome();
+    this.bindEvents();
+    this.updateHUD();
+    this.drawCanvas();
+    updateMathElements();
+  },
+
+  renderChrome: function() {
+    var h = '';
+    h += '<div class="ae-concept" id="ae-app-root">';
+    
+    /* Header */
+    h += '  <div class="h">';
+    h += '    <div>';
+    h += '      <h2 class="t">' + ICON + ' ' + APP_TITLE + '</h2>';
+    h += '      <div class="sub-title">유리함수의 표준형·일반형 변환과 점근선 기하 탐구 모듈</div>';
+    h += '    </div>';
+    h += '    <button type="button" class="btn" id="btn-open-guide">📖 자세한 교과 개념 안내</button>';
+    h += '  </div>';
+
+    /* Navigation Tabs */
+    h += '  <div class="nav-tabs">';
+    h += '    <button type="button" class="tab-btn active" data-tab="sim">1. 🔬 유리함수 점근선 동적 시뮬레이터</button>';
+    h += '    <button type="button" class="tab-btn" data-tab="math">2. 📐 유리함수의 성질 & 대칭성 이론</button>';
+    h += '    <button type="button" class="tab-btn" data-tab="prob">3. 🧩 실전 유리함수 탐구 문제 (4선)</button>';
+    h += '  </div>';
+
+    /* TAB 1: Simulator */
+    h += '  <div id="tab-sec-sim">';
+    h += '    <div class="card">';
+    h += '      <div class="card-title">📐 유리함수 동적 평행이동 및 점근선 시각화</div>';
+
+    h += '      <div class="chip-bar">';
+    h += '        <span class="chip">세로 점근선: <b id="lbl-va">x = 1.00</b></span>';
+    h += '        <span class="chip">가로 점근선: <b id="lbl-ha">y = 1.00</b></span>';
+    h += '        <span class="chip">대칭 중심: <b id="lbl-center" style="color:#0284c7;">(1.00, 1.00)</b></span>';
+    h += '        <span class="chip">분자 계수 k: <b id="lbl-k-val">2.00</b></span>';
+    h += '      </div>';
+
+    h += '      <div class="grid-2">';
+    
+    /* Canvas */
+    h += '        <div>';
+    h += '          <canvas id="ae-cv" width="' + CW + '" height="' + CH + '"></canvas>';
+    
+    h += '          <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:12px; margin-top:10px;">';
+    h += '            <div id="lbl-sim-status" style="font-weight:800; font-size:0.9rem; color:#334155;">마우스를 움직이거나 계수를 조절하여 점근선과 함숫값의 접근 양상을 관찰하세요.</div>';
+    h += '          </div>';
+
+    h += '          <div class="btn-grid-50">';
+    h += '            <button type="button" class="btn p" id="btn-toggle-sym">대칭축 표시 온/오프</button>';
+    h += '            <button type="button" class="btn g" id="btn-switch-mode">일반형 ↔ 표준형 변환</button>';
+    h += '          </div>';
+    h += '        </div>';
+
+    /* Sliders & Controls */
+    h += '        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:14px; padding:16px;">';
+    h += '          <div style="font-weight:900; font-size:1.05rem; color:#0f172a; margin-bottom:10px;">⚙️ 계수 파라미터 조절</div>';
+
+    h += '          <div id="il-sliders-container">';
+    /* Standard Sliders */
+    h += '            <div class="slider-item">';
+    h += '              <div class="slider-label"><span>x축 이동 (a): <b id="lbl-a-slider">1.00</b></span></div>';
+    h += '              <input type="range" class="slider" id="rng-a" min="-4.00" max="4.00" step="0.01" value="1.00">';
+    h += '            </div>';
+    h += '            <div class="slider-item">';
+    h += '              <div class="slider-label"><span>y축 이동 (b): <b id="lbl-b-slider">1.00</b></span></div>';
+    h += '              <input type="range" class="slider" id="rng-b" min="-4.00" max="4.00" step="0.01" value="1.00">';
+    h += '            </div>';
+    h += '            <div class="slider-item">';
+    h += '              <div class="slider-label"><span>분수 계수 (k): <b id="lbl-k-slider">2.00</b></span></div>';
+    h += '              <input type="range" class="slider" id="rng-k" min="-5.00" max="5.00" step="0.01" value="2.00">';
+    h += '            </div>';
+    h += '            <div class="slider-item">';
+    h += '              <div class="slider-label"><span>탐구 점 x₀: <b id="lbl-x0-slider" style="color:#dc2626;">3.00</b></span></div>';
+    h += '              <input type="range" class="slider" id="rng-x0" min="-5.50" max="5.50" step="0.01" value="3.00">';
+    h += '            </div>';
+    h += '          </div>';
+
+    h += '          <div style="background:#ffffff; border:1px solid #cbd5e1; border-radius:12px; padding:14px; margin-top:14px;">';
+    h += '            <div style="font-weight:900; font-size:0.9rem; color:#0369a1; margin-bottom:6px;">📊 수식 변환 단계</div>';
+    h += '            <div class="math-block" style="margin:4px 0;"><span class="math-tex" id="lbl-math-formula" data-display="true" data-tex="y = \\frac{2.00}{x - 1.00} + 1.00"></span></div>';
+    h += '            <div style="font-weight:800; font-size:0.88rem; color:#dc2626; margin-top:6px;">📍 탐구 점 P(x₀): <span class="math-tex" id="lbl-math-point" data-tex="P(3.00, 2.00)"></span></div>';
+    h += '          </div>';
+
+    h += '        </div>';
+    h += '      </div>';
+
+    h += '    </div>';
+    h += '  </div>';
+
+    /* TAB 2: Math Model & Clean LaTeX */
+    h += '  <div id="tab-sec-math" style="display:none;">';
+    h += '    <div class="card">';
+    h += '      <div class="card-title">📐 유리함수와 점근선의 수학적 성질</div>';
+
+    h += '      <div style="line-height:1.7; color:#334155; margin-bottom:16px;">';
+    h += '        유리함수(Rational Function)는 분모가 0이 되는 지점에서 함숫값이 정의되지 않아 점근선을 가지며, 대칭 중심에 대한 대칭성을 띱니다.';
+    h += '      </div>';
+
+    h += '      <div style="background:#f0f9ff; border:1px solid #bae6fd; border-radius:14px; padding:16px; margin-bottom:14px; line-height:1.7;">';
+    h += '        <div style="font-weight:900; font-size:1.05rem; color:#0369a1; margin-bottom:6px;">1. 표준형 유리함수의 점근선 및 대칭성</div>';
+    h += '        <div class="math-block"><span class="math-tex" data-display="true" data-tex="y = \\frac{k}{x - a} + b \\quad (k \\neq 0)"></span></div>';
+    h += '        <p>• <b>세로 점근선:</b> <span class="math-tex" data-tex="x = a"></span> / <b>가로 점근선:</b> <span class="math-tex" data-tex="y = b"></span><br>';
+    h += '        • <b>대칭 중심:</b> 점 <span class="math-tex" data-tex="(a, b)"></span> 점대칭<br>';
+    h += '        • <b>대칭축:</b> <span class="math-tex" data-tex="y = (x - a) + b"></span> 및 <span class="math-tex" data-tex="y = -(x - a) + b"></span> 선대칭</p>';
+    h += '      </div>';
+
+    h += '      <div style="background:#fefce8; border:1px solid #fde047; border-radius:14px; padding:16px; margin-bottom:14px; line-height:1.7;">';
+    h += '        <div style="font-weight:900; font-size:1.05rem; color:#854d0e; margin-bottom:6px;">2. 일반형 <span class="math-tex" data-tex="y = \\frac{cx + d}{px + q}"></span> 변환</div>';
+    h += '        <p>다항식 나눗셈을 통해 표준형으로 쉽게 변환할 수 있습니다:</p>';
+    h += '        <div class="math-block"><span class="math-tex" data-display="true" data-tex="x = -\\frac{q}{p}, \\quad y = \\frac{c}{p}"></span></div>';
+    h += '      </div>';
+
+    /* Non-squished Quiz Controls */
+    h += '      <div style="background:#ffffff; border:1px solid #cbd5e1; border-radius:14px; padding:18px; margin-top:16px;">';
+    h += '        <div style="font-weight:900; color:#0284c7; margin-bottom:8px; font-size:1.05rem;">🧠 개념 확인 퀴즈</div>';
+    h += '        <div style="font-size:0.95rem; font-weight:800; color:#0f172a; margin-bottom:12px;">Q. 유리함수 <span class="math-tex" data-tex="y = \\frac{4}{x - 2} + 3"></span> 의 대칭 중심 좌표의 <span class="math-tex" data-tex="x"></span>값은 얼마일까요?</div>';
+    h += '        <input type="text" id="inp-quiz-ans" class="inp" placeholder="예: 2 키보드로 입력">';
+    h += '        <button type="button" class="btn p" id="btn-submit-quiz" style="width:100%; padding:12px; font-size:1rem;">퀴즈 제출</button>';
+    h += '        <div id="lbl-quiz-msg" style="margin-top:10px; font-weight:800; font-size:0.92rem;"></div>';
+    h += '      </div>';
+
+    h += '    </div>';
+    h += '  </div>';
+
+    /* TAB 3: Problem Solving */
+    h += '  <div id="tab-sec-prob" style="display:none;">';
+    h += '    <div class="card">';
+    h += '      <div class="card-title">🧩 실전 유리함수 탐구 문제 (4선)</div>';
+
+    var probs = [
+      {
+        title: "Q1. 유리함수의 점근선 방정식",
+        q: "유리함수 <span class=\"math-tex\" data-tex=\"y = \\frac{2x + 1}{x - 1}\"></span> 의 두 점근선의 교점 좌표는?",
+        sol: "<b>[수학적 변환]</b><br>• <span class=\"math-tex\" data-tex=\"y = \\frac{2(x-1) + 3}{x - 1} = \\frac{3}{x - 1} + 2\"></span><br>• 세로 점근선: <span class=\"math-tex\" data-tex=\"x = 1\"></span>, 가로 점근선: <span class=\"math-tex\" data-tex=\"y = 2\"></span><br>• 점근선의 교점 좌표: <b>(1, 2)</b>"
+      },
+      {
+        title: "Q2. 유리함수 그래프가 지나는 사분면",
+        q: "<span class=\"math-tex\" data-tex=\"y = \\frac{-4}{x + 2} + 1\"></span> 그래프가 지나지 않는 사분면은?",
+        sol: "<b>[수학적 해설]</b><br>• 대칭 중심 (-2, 1), k = -4 이므로 2, 4사분면 방향 곡선<br>• y절편: <span class=\"math-tex\" data-tex=\"x=0 \\implies y = -4/2 + 1 = -1\"></span><br>• 그래프를 그리면 **제1사분면**을 지나지 않습니다."
+      },
+      {
+        title: "Q3. 유리함수의 역함수 구하기",
+        q: "<span class=\"math-tex\" data-tex=\"f(x) = \\frac{ax + b}{cx + d}\"></span> 의 역함수 공식 <span class=\"math-tex\" data-tex=\"f^{-1}(x)\"></span> 는?",
+        sol: "<b>[역함수 공식]</b><br>• 대각선 a와 d의 위치를 바꾸고 부호를 반전합니다:<br>• <span class=\"math-tex\" data-tex=\"f^{-1}(x) = \\frac{-dx + b}{cx - a}\"></span>"
+      },
+      {
+        title: "Q4. 실생활 광학 렌즈의 초점거리 공식",
+        q: "렌즈 초점거리 <span class=\"math-tex\" data-tex=\"f\"></span>에 대해 물체 거리 <span class=\"math-tex\" data-tex=\"x\"></span>와 상의 거리 <span class=\"math-tex\" data-tex=\"y\"></span>의 관계식 <span class=\"math-tex\" data-tex=\"\\frac{1}{x} + \\frac{1}{y} = \\frac{1}{f}\"></span> 를 <span class=\"math-tex\" data-tex=\"y\"></span>에 대해 정리하면?",
+        sol: "<b>[유리함수 수식 정리]</b><br>• <span class=\"math-tex\" data-tex=\"\\frac{1}{y} = \\frac{1}{f} - \\frac{1}{x} = \\frac{x - f}{fx} \\implies y = \\frac{fx}{x - f} = f + \\frac{f^2}{x - f}\"></span> (점근선 x = f, y = f)"
+      }
+    ];
+
+    probs.forEach(function(item, idx) {
+      h += '<div style="background:#ffffff; border:1px solid #e2e8f0; border-radius:14px; padding:16px; margin-bottom:14px;">';
+      h += '  <div style="font-weight:900; font-size:1.05rem; color:#0284c7; margin-bottom:6px;">' + item.title + '</div>';
+      h += '  <div style="line-height:1.6; color:#334155; margin-bottom:10px;">' + item.q + '</div>';
+      h += '  <button type="button" class="btn p btn-show-sol" data-idx="' + idx + '">💡 수학적 해설 보기</button>';
+      h += '  <div id="sol-' + idx + '" style="display:none; background:#f8fafc; border:1px solid #cbd5e1; border-radius:12px; padding:14px; margin-top:10px; font-size:0.92rem; line-height:1.65;">' + item.sol + '</div>';
+      h += '</div>';
+    });
+
+    h += '  </div>';
+    h += '  </div>';
+
+    /* Slide Modal */
+    h += '<div class="modal" id="ae-modal">';
+    h += '  <div class="mbox" id="ae-modal-box"></div>';
+    h += '</div>';
+
+    h += '</div>';
+    return h;
+  },
+
+  bindEvents: function() {
+    var _this = this;
+    var root = S.host.querySelector('#ae-app-root');
+
+    /* Tabs */
+    root.querySelectorAll('.tab-btn').forEach(function(btn) {
+      btn.onclick = function() {
+        root.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
+        this.classList.add('active');
+        S.activeTab = this.getAttribute('data-tab');
+
+        root.querySelector('#tab-sec-sim').style.display = (S.activeTab === 'sim') ? 'block' : 'none';
+        root.querySelector('#tab-sec-math').style.display = (S.activeTab === 'math') ? 'block' : 'none';
+        root.querySelector('#tab-sec-prob').style.display = (S.activeTab === 'prob') ? 'block' : 'none';
+
+        updateMathElements();
+      };
+    });
+
+    /* Sliders */
+    var rngA = root.querySelector('#rng-a');
+    var rngB = root.querySelector('#rng-b');
+    var rngK = root.querySelector('#rng-k');
+    var rngX0 = root.querySelector('#rng-x0');
+
+    function updateVal(key, val, rngEl) {
+      S[key] = Math.round(parseFloat(val) * 100) / 100;
+      if (rngEl) rngEl.value = S[key];
+      _this.updateHUD();
+      _this.drawCanvas();
+    }
+
+    rngA.oninput = function() { updateVal('a', this.value, rngA); };
+    rngB.oninput = function() { updateVal('b', this.value, rngB); };
+    rngK.oninput = function() { updateVal('k', this.value, rngK); };
+    rngX0.oninput = function() { updateVal('x0', this.value, rngX0); };
+
+    function bindWheel(el, key) {
+      el.onwheel = function(e) {
+        e.preventDefault();
+        var delta = e.deltaY < 0 ? 0.01 : -0.01;
+        var minV = parseFloat(el.min), maxV = parseFloat(el.max);
+        var nVal = Math.min(maxV, Math.max(minV, S[key] + delta));
+        updateVal(key, nVal, el);
+      };
+    }
+    bindWheel(rngA, 'a');
+    bindWheel(rngB, 'b');
+    bindWheel(rngK, 'k');
+    bindWheel(rngX0, 'x0');
+
+    /* Canvas Mousemove */
+    var cv = root.querySelector('#ae-cv');
+    cv.onmousemove = function(e) {
+      var rect = cv.getBoundingClientRect();
+      var mouseX = e.clientX - rect.left;
+      var pad = 40;
+      var xVal = -BOUND_X + (mouseX - pad) / (CW - pad * 2) * (2 * BOUND_X);
+      xVal = Math.min(BOUND_X - 0.2, Math.max(-BOUND_X + 0.2, xVal));
+      updateVal('x0', xVal, rngX0);
+    };
+
+    /* Actions */
+    root.querySelector('#btn-toggle-sym').onclick = function() {
+      S.showSymmetryLines = !S.showSymmetryLines;
+      _this.drawCanvas();
+    };
+    root.querySelector('#btn-switch-mode').onclick = function() {
+      S.mode = S.mode === 'standard' ? 'general' : 'standard';
+      this.textContent = S.mode === 'standard' ? '일반형 ↔ 표준형 변환' : '표준형 ↔ 일반형 변환';
+      _this.updateHUD();
+      _this.drawCanvas();
+    };
+
+    /* Quiz */
+    root.querySelector('#btn-submit-quiz').onclick = function() {
+      var val = (root.querySelector('#inp-quiz-ans').value || '').trim();
+      var msgEl = root.querySelector('#lbl-quiz-msg');
+      if (val === '2') {
+        msgEl.innerHTML = '✅ <b>정답입니다!</b> x - 2 = 0 이므로 대칭 중심 x 의 값은 2 입니다.';
+        msgEl.style.color = '#059669';
+      } else {
+        msgEl.innerHTML = '❌ 오답입니다. (힌트: 분모를 0으로 만드는 x의 값인 2 입니다)';
+        msgEl.style.color = '#ef4444';
+      }
+    };
+
+    /* Solutions Toggle */
+    root.querySelectorAll('.btn-show-sol').forEach(function(btn) {
+      btn.onclick = function() {
+        var idx = this.getAttribute('data-idx');
+        var solEl = root.querySelector('#sol-' + idx);
+        if (solEl) {
+          var isShown = solEl.style.display === 'block';
+          solEl.style.display = isShown ? 'none' : 'block';
+          this.textContent = isShown ? '💡 수학적 해설 보기' : '🙈 해설 닫기';
+          updateMathElements();
+        }
+      };
+    });
+
+    /* Modal Open & Render Slide */
+    root.querySelector('#btn-open-guide').onclick = function() {
+      S.guidePage = 0;
+      _this.renderSlideGuide();
+      root.querySelector('#ae-modal').classList.add('on');
+    };
+  },
+
+  updateHUD: function() {
+    var root = S.host.querySelector('#ae-app-root');
+    if (!root) return;
+
+    var a = getA(), b = getB(), k = getK();
+    var y0 = fx(S.x0);
+
+    root.querySelector('#lbl-va').textContent = 'x = ' + a.toFixed(2);
+    root.querySelector('#lbl-ha').textContent = 'y = ' + b.toFixed(2);
+    root.querySelector('#lbl-center').textContent = '(' + a.toFixed(2) + ', ' + b.toFixed(2) + ')';
+    root.querySelector('#lbl-k-val').textContent = k.toFixed(2);
+
+    root.querySelector('#lbl-a-slider').textContent = S.a.toFixed(2);
+    root.querySelector('#lbl-b-slider').textContent = S.b.toFixed(2);
+    root.querySelector('#lbl-k-slider').textContent = S.k.toFixed(2);
+    root.querySelector('#lbl-x0-slider').textContent = S.x0.toFixed(2);
+
+    var formTex = '';
+    if (S.mode === 'standard') {
+      formTex = 'y = \\frac{' + k.toFixed(2) + '}{x ' + (a >= 0 ? '- ' + a.toFixed(2) : '+ ' + Math.abs(a).toFixed(2)) + '} ' + (b >= 0 ? '+ ' + b.toFixed(2) : '- ' + Math.abs(b).toFixed(2));
+    } else {
+      var cVal = b;
+      var dVal = k - cVal * a;
+      formTex = 'y = \\frac{' + cVal.toFixed(2) + 'x ' + (dVal >= 0 ? '+ ' + dVal.toFixed(2) : '- ' + Math.abs(dVal).toFixed(2)) + '}{x ' + (a >= 0 ? '- ' + a.toFixed(2) : '+ ' + Math.abs(a).toFixed(2)) + '} \\implies \\frac{' + k.toFixed(2) + '}{x ' + (a >= 0 ? '- ' + a.toFixed(2) : '+ ' + Math.abs(a).toFixed(2)) + '} ' + (b >= 0 ? '+ ' + b.toFixed(2) : '- ' + Math.abs(b).toFixed(2));
+    }
+
+    var ptTex = isNaN(y0) ? 'P(' + S.x0.toFixed(2) + ', \\text{정의되지 않음})' : 'P(' + S.x0.toFixed(2) + ', ' + y0.toFixed(2) + ')';
+
+    var elForm = root.querySelector('#lbl-math-formula');
+    var elPt = root.querySelector('#lbl-math-point');
+
+    if (elForm) { elForm.setAttribute('data-tex', formTex); renderMath(formTex, elForm, true); }
+    if (elPt) { elPt.setAttribute('data-tex', ptTex); renderMath(ptTex, elPt, false); }
+  },
+
+  worldToPx: function(x, y) {
+    var pad = 40;
+    return {
+      X: pad + (x + BOUND_X) / (2 * BOUND_X) * (CW - pad * 2),
+      Y: CH / 2 - (y / BOUND_Y) * (CH / 2 - 20)
+    };
+  },
+
+  drawCanvas: function() {
+    var root = S.host.querySelector('#ae-app-root');
+    if (!root) return;
+    var cv = root.querySelector('#ae-cv');
+    if (!cv) return;
+    var ctx = cv.getContext('2d');
+
+    ctx.clearRect(0, 0, CW, CH);
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, CW, CH);
+
+    var _this = this;
+    var a = getA(), b = getB(), k = getK();
+    var pad = 40;
+
+    // Grid & Axes
+    var o = _this.worldToPx(0, 0);
+    ctx.strokeStyle = '#e2e8f0';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(pad, o.Y); ctx.lineTo(CW - pad, o.Y);
+    ctx.moveTo(o.X, 20); ctx.lineTo(o.X, CH - 20);
+    ctx.stroke();
+
+    // Asymptotes (Red Dashed)
+    var va = _this.worldToPx(a, 0);
+    var hb = _this.worldToPx(0, b);
+
+    ctx.strokeStyle = '#ef4444';
+    ctx.lineWidth = 2.5;
+    ctx.setLineDash([6, 4]);
+
+    ctx.beginPath();
+    ctx.moveTo(va.X, 20); ctx.lineTo(va.X, CH - 20);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(pad, hb.Y); ctx.lineTo(CW - pad, hb.Y);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Symmetry Lines (y = (x-a)+b  and  y = -(x-a)+b)
+    if (S.showSymmetryLines) {
+      ctx.strokeStyle = '#cbd5e1';
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([3, 3]);
+
+      ctx.beginPath();
+      for (var t = -BOUND_X; t <= BOUND_X; t += BOUND_X) {
+        var sy1 = (t - a) + b;
+        var sp1 = _this.worldToPx(t, sy1);
+        if (t === -BOUND_X) ctx.moveTo(sp1.X, sp1.Y);
+        else ctx.lineTo(sp1.X, sp1.Y);
+      }
+      ctx.stroke();
+
+      ctx.beginPath();
+      for (var t2 = -BOUND_X; t2 <= BOUND_X; t2 += BOUND_X) {
+        var sy2 = -(t2 - a) + b;
+        var sp2 = _this.worldToPx(t2, sy2);
+        if (t2 === -BOUND_X) ctx.moveTo(sp2.X, sp2.Y);
+        else ctx.lineTo(sp2.X, sp2.Y);
+      }
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    // Rational Hyperbola Curve
+    ctx.strokeStyle = '#0284c7';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    var started = false;
+    for (var i = 0; i <= 300; i++) {
+      var x = -BOUND_X + i * (2 * BOUND_X) / 300;
+      if (Math.abs(x - a) < 0.08) {
+        started = false;
+        continue;
+      }
+      var y = k / (x - a) + b;
+      if (y > BOUND_Y + 2 || y < -BOUND_Y - 2) {
+        started = false;
+        continue;
+      }
+      var p = _this.worldToPx(x, y);
+      if (!started) { ctx.moveTo(p.X, p.Y); started = true; }
+      else ctx.lineTo(p.X, p.Y);
+    }
+    ctx.stroke();
+
+    // Center of Symmetry (a, b)
+    var cp = _this.worldToPx(a, b);
+    ctx.fillStyle = '#0284c7';
+    ctx.beginPath();
+    ctx.arc(cp.X, cp.Y, 6, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Point P(x0, y0)
+    var y0 = fx(S.x0);
+    if (!isNaN(y0)) {
+      var p0 = _this.worldToPx(S.x0, y0);
+      ctx.fillStyle = '#dc2626';
+      ctx.beginPath();
+      ctx.arc(p0.X, p0.Y, 6, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Vertical line to x0
+      var px0 = _this.worldToPx(S.x0, 0);
+      ctx.strokeStyle = '#fca5a5';
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([3, 3]);
+      ctx.beginPath();
+      ctx.moveTo(p0.X, p0.Y); ctx.lineTo(px0.X, px0.Y);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    ctx.fillStyle = '#dc2626';
+    ctx.font = 'bold 12px Pretendard';
+    ctx.fillText('x = ' + a.toFixed(2), va.X + 6, 30);
+    ctx.fillText('y = ' + b.toFixed(2), pad + 6, hb.Y - 8);
+    ctx.fillText('대칭중심 (' + a.toFixed(2) + ', ' + b.toFixed(2) + ')', cp.X + 8, cp.Y + 16);
+  },
+
+  renderSlideGuide: function() {
+    var _this = this;
+    var root = S.host.querySelector('#ae-app-root');
+    var mBox = root.querySelector('#ae-modal-box');
+    if (!mBox) return;
+
+    var pg = SLIDE_GUIDE[S.guidePage] || SLIDE_GUIDE[0];
+    var dots = SLIDE_GUIDE.map(function(_, i) {
+      return '<span class="dot' + (i === S.guidePage ? ' on' : '') + '"></span>';
+    }).join('');
+    var isLast = S.guidePage >= SLIDE_GUIDE.length - 1;
+
+    var h = '';
+    h += '<div style="font-size:.8rem; font-weight:800; color:#0284c7; margin-bottom:4px;">온보딩 슬라이드 탐구 ' + (S.guidePage + 1) + ' / ' + SLIDE_GUIDE.length + '</div>';
+    h += '<h3 style="margin:0 0 12px; color:#0f172a; font-weight:900;">' + pg.title + '</h3>';
+    h += '<div style="line-height:1.65; color:#334155; font-size:0.95rem;">' + pg.html + '</div>';
+    h += '<div class="dots">' + dots + '</div>';
+
+    h += '<div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:16px;">';
+    h += '  <button type="button" class="btn" id="btn-slide-prev"' + (S.guidePage === 0 ? ' disabled' : '') + '>← 이전</button>';
+    h += '  <button type="button" class="btn p" id="btn-slide-next">' + (isLast ? '탐구 시작하기 🚀' : '다음 →') + '</button>';
+    h += '</div>';
+
+    mBox.innerHTML = h;
+    updateMathElements();
+
+    var prevBtn = mBox.querySelector('#btn-slide-prev');
+    var nextBtn = mBox.querySelector('#btn-slide-next');
+
+    if (prevBtn) {
+      prevBtn.onclick = function() {
+        if (S.guidePage > 0) {
+          S.guidePage--;
+          _this.renderSlideGuide();
+        }
+      };
+    }
+    if (nextBtn) {
+      nextBtn.onclick = function() {
+        if (isLast) {
+          root.querySelector('#ae-modal').classList.remove('on');
+        } else {
+          S.guidePage++;
+          _this.renderSlideGuide();
+        }
+      };
+    }
+  },
+
+  destroy: function() {
+    if (S.host) S.host.innerHTML = '';
+    S.host = null;
+  }
+};
+
+function goHome() {
+  if (S.host) S.host.innerHTML = '';
+  if (typeof window.LegacyBridge !== 'undefined' && typeof window.LegacyBridge.backHome === 'function') {
+    window.LegacyBridge.backHome();
+  } else if (typeof window.MathLabGames !== 'undefined' && window.MathLabGames.goHome) {
+    window.MathLabGames.goHome();
+  } else {
+    window.location.reload();
+  }
+}
+
+function reg() {
+  if (typeof window.MathLabGames === 'undefined' || typeof window.MathLabGames.register !== 'function') return;
+  try {
+    if (window.MathLabGames.get && window.MathLabGames.get(APP_ID)) return;
+    window.MathLabGames.register({
+      id: APP_ID,
+      title: APP_TITLE,
+      icon: ICON,
+      sourceType: 'new',
+      players: '1인',
+      isMultiplayer: false,
+      mount: function(c, x) { AsymptoteConceptApp.mount(c, x); },
+      reset: function() { AsymptoteConceptApp.updateHUD(); AsymptoteConceptApp.drawCanvas(); },
+      destroy: function() { AsymptoteConceptApp.destroy(); },
+      goHome: function() { goHome(); }
+    });
+  } catch (e) {
+    console.warn(APP_ID + ' reg', e);
+  }
+}
+
+reg();
+window.addEventListener('DOMContentLoaded', reg);
+setTimeout(reg, 100);
+setTimeout(reg, 500);
+
+window.AsymptoteConcept = {
+  mount: function(c) { AsymptoteConceptApp.mount(c); },
+  destroy: function() { AsymptoteConceptApp.destroy(); },
+  goHome: goHome
+};
+
+window.initAsymptoteEscape = function() {
+  reg();
+  try {
+    if (window.LegacyBridge) {
+      window.LegacyBridge.hideAllLegacySections();
+      if (window.LegacyBridge.showNewRoot) window.LegacyBridge.showNewRoot();
+    }
+  } catch (e) {}
+  if (window.MathLabGames && window.MathLabGames.mount) {
+    try { window.MathLabGames.mount(APP_ID); return; } catch (e) {}
+  }
+  AsymptoteConceptApp.mount(document.getElementById('mathlab-view'));
+};
+
+window.launchAsymptoteEscape = window.initAsymptoteEscape;
+})();
+</script>

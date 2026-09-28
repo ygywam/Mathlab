@@ -1,0 +1,718 @@
+<style>
+  /* 3세대 앱 전용 독립 디자인 (반응형 2단 & 시각화 업그레이드) */
+  #concept-angle-container {
+    transition: background 0.6s ease, border-color 0.6s ease;
+    border-radius: 20px;
+    padding: 25px;
+    background: var(--mathlab-panel, #ffffff);
+    box-shadow: var(--mathlab-shadow, 0 14px 36px rgba(15, 23, 42, 0.08));
+    border: 2px solid transparent;
+    max-width: 1100px; /* 크기 상한선 설정 */
+    margin: 0 auto;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  /* 단계별 테마 배경 */
+  #concept-angle-container.bg-step-0 {
+    background: #ffffff;
+    border-color: #e5e7eb;
+  }
+  #concept-angle-container.bg-step-1 {
+    background: linear-gradient(135deg, #f3e8ff 0%, #e0e7ff 100%);
+    border-color: #c084fc;
+  }
+  #concept-angle-container.bg-step-2 {
+    background: linear-gradient(135deg, #ffedd5 0%, #ffed4a 100%);
+    border-color: #fb923c;
+  }
+  #concept-angle-container.bg-result {
+    background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+    border-color: #4ade80;
+  }
+
+  /* 2단 반응형 레이아웃 */
+  .angle-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    width: 100%;
+  }
+  
+  .visual-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+  }
+  
+  .quiz-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    max-width: 100%;
+  }
+
+  @media (min-width: 768px) {
+    .angle-layout {
+      flex-direction: row; /* PC/패드에서는 좌우 배치 */
+      align-items: flex-start;
+    }
+    .visual-panel {
+      position: sticky;
+      top: 20px;
+      padding-top: 10px;
+    }
+  }
+
+  .canvas-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 450px;
+    gap: 10px;
+  }
+  
+  #angle-canvas, #graph-canvas {
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid #cbd5e1;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    width: 100%;
+    max-width: 450px;
+    transition: opacity 0.5s ease;
+  }
+  
+  #angle-canvas {
+    aspect-ratio: 1 / 1;
+  }
+  
+  #graph-canvas {
+    display: none;
+    aspect-ratio: 4 / 3;
+  }
+
+  /* 폰트 및 퀴즈 UI 반응형 설정 */
+  .problem-display {
+    font-size: clamp(2rem, 5vw, 3rem) !important;
+    padding: 10px !important;
+    background: rgba(255,255,255,0.7);
+    border-radius: 12px;
+    text-align: center;
+  }
+
+  .btn-grid-4 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  .btn-grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  
+  .option-btn {
+    font-size: clamp(1rem, 2.5vw, 1.2rem) !important;
+    padding: 15px 10px !important;
+    width: 100%;
+  }
+
+  .final-result {
+    font-size: clamp(2rem, 5vw, 2.8rem) !important;
+    margin-bottom: 20px;
+  }
+</style>
+
+<script>
+const ConceptAngleApp = (function() {
+  const angleTypes = [ 
+    {text: "θ", quad: 1, isChange: false}, 
+    {text: "-θ", quad: 4, isChange: false}, 
+    {text: "π/2 - θ", quad: 1, isChange: true}, 
+    {text: "π/2 + θ", quad: 2, isChange: true}, 
+    {text: "π - θ", quad: 2, isChange: false}, 
+    {text: "π + θ", quad: 3, isChange: false} 
+  ];
+  let currentAngleProb = {};
+  let currentStep = 0; // 0: init, 1: quad checked, 2: sign checked, 3: result
+  let animRayProgress = 0;
+  let isAnimatingRay = false;
+  let graphAnimId = null;
+
+  function initAngleApp() {
+    currentStep = 0;
+    animRayProgress = 0;
+    isAnimatingRay = false;
+    updateBackgroundClass('bg-step-0');
+    cancelAnimationFrame(graphAnimId);
+    
+    document.getElementById('angle-canvas').style.display = 'block';
+    document.getElementById('graph-canvas').style.display = 'none';
+    
+    let f = ["sin", "cos", "tan"][Math.floor(Math.random()*3)]; 
+    let a = angleTypes[Math.floor(Math.random()*angleTypes.length)];
+    let s = "+"; 
+    if (f === "sin" && (a.quad === 3 || a.quad === 4)) s = "-"; 
+    if (f === "cos" && (a.quad === 2 || a.quad === 3)) s = "-"; 
+    if (f === "tan" && (a.quad === 2 || a.quad === 4)) s = "-";
+    
+    let rf = f; 
+    if (a.isChange) { 
+      if (f === "sin") rf = "cos"; 
+      else if (f === "cos") rf = "sin"; 
+      else if (f === "tan") rf = "1/tan"; 
+    }
+    currentAngleProb = { func: f, angle: a.text, quad: a.quad, sign: s, resultFunc: rf, isChange: a.isChange };
+    
+    const probEl = document.getElementById('angle-problem');
+    if (probEl) probEl.innerText = `${f}(${a.text})`;
+    
+    const s1 = document.getElementById('step-1');
+    const s2 = document.getElementById('step-2');
+    const s3 = document.getElementById('step-3');
+    const sr = document.getElementById('step-result');
+    
+    if (s1) s1.className = 'step-card'; 
+    if (s2) s2.className = 'step-card hidden'; 
+    if (s3) s3.className = 'step-card hidden'; 
+    if (sr) sr.className = 'step-card hidden';
+    
+    drawAngle(0);
+  }
+
+  function updateBackgroundClass(cls) {
+    const container = document.getElementById('concept-angle-container');
+    if (container) {
+      container.className = `game-concept-angle ${cls}`;
+    }
+  }
+
+  function checkQuad(q) { 
+    if (q === currentAngleProb.quad) { 
+      currentStep = 1;
+      updateBackgroundClass('bg-step-1');
+      document.getElementById('step-2').classList.remove('hidden'); 
+      isAnimatingRay = true;
+      animRayProgress = 0;
+      animateRay();
+    } else {
+      wrongEffect('step-1'); 
+    }
+  }
+
+  function animateRay() {
+    animRayProgress += 0.03;
+    if (animRayProgress >= 1) {
+      animRayProgress = 1;
+      isAnimatingRay = false;
+    }
+    drawAngle(1);
+    if (isAnimatingRay) requestAnimationFrame(animateRay);
+  }
+
+  function checkSign(s) { 
+    if (s === currentAngleProb.sign) { 
+      currentStep = 2;
+      updateBackgroundClass('bg-step-2');
+      document.getElementById('step-3').classList.remove('hidden'); 
+      drawAngle(2);
+    } else {
+      wrongEffect('step-2'); 
+    }
+  }
+
+  function checkFunc(f) { 
+    if (f === currentAngleProb.resultFunc) { 
+      currentStep = 3;
+      updateBackgroundClass('bg-result');
+      document.getElementById('angle-result').innerText = `${currentAngleProb.sign} ${f === "1/tan" ? "1/tan(θ)" : f+"(θ)"}`; 
+      document.getElementById('step-result').classList.remove('hidden'); 
+      drawAngle(3);
+      
+      // 1초 뒤 그래프 화면으로 전환 및 애니메이션 시작
+      setTimeout(() => {
+        document.getElementById('angle-canvas').style.display = 'none';
+        document.getElementById('graph-canvas').style.display = 'block';
+        drawGraph();
+      }, 1000);
+
+    } else {
+      wrongEffect('step-3'); 
+    }
+  }
+
+  function wrongEffect(id) { 
+    const el = document.getElementById(id); 
+    if (!el) return;
+    el.classList.remove('shake'); 
+    void el.offsetWidth; 
+    el.classList.add('shake'); 
+  }
+
+  function drawAngle(step) {
+    const canvas = document.getElementById('angle-canvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const w = canvas.width;
+    const h = canvas.height;
+    const cx = w / 2;
+    const cy = h / 2 - 10;
+    const r = w * 0.35; // 반응형 캔버스 대비 동경 크기 조절
+
+    ctx.clearRect(0, 0, w, h);
+
+    // 1. Draw quadrant highlight if step >= 1
+    if (step >= 1) {
+      ctx.fillStyle = 'rgba(255, 235, 59, 0.4)';
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      if (currentAngleProb.quad === 1) ctx.arc(cx, cy, r, 0, -Math.PI/2, true);
+      if (currentAngleProb.quad === 2) ctx.arc(cx, cy, r, -Math.PI/2, -Math.PI, true);
+      if (currentAngleProb.quad === 3) ctx.arc(cx, cy, r, -Math.PI, -3*Math.PI/2, true);
+      if (currentAngleProb.quad === 4) ctx.arc(cx, cy, r, -3*Math.PI/2, -2*Math.PI, true);
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    // 2. Axes
+    ctx.strokeStyle = '#bdc3c7';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(10, cy); ctx.lineTo(w - 10, cy);
+    ctx.moveTo(cx, 10); ctx.lineTo(cx, h - 30);
+    ctx.stroke();
+    
+    ctx.fillStyle = '#7f8c8d';
+    ctx.font = '13px sans-serif';
+    ctx.fillText('x', w - 15, cy - 8);
+    ctx.fillText('y', cx + 8, 20);
+    ctx.fillText('O', cx - 15, cy + 15);
+
+    // 3. Unit circle
+    ctx.strokeStyle = '#ecf0f1';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, 2*Math.PI);
+    ctx.stroke();
+
+    // 4. Reference Axis Highlight (Step >= 3)
+    if (step >= 3) {
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      if (currentAngleProb.isChange) {
+        ctx.strokeStyle = 'rgba(231, 76, 60, 0.8)'; // Red y-axis
+        ctx.moveTo(cx, cy - r - 15); ctx.lineTo(cx, cy + r + 15);
+      } else {
+        ctx.strokeStyle = 'rgba(52, 152, 219, 0.8)'; // Blue x-axis
+        ctx.moveTo(cx - r - 15, cy); ctx.lineTo(cx + r + 15, cy);
+      }
+      ctx.stroke();
+      
+      ctx.textAlign = 'center';
+      ctx.fillStyle = currentAngleProb.isChange ? '#c0392b' : '#2980b9';
+      ctx.font = 'bold 13px sans-serif';
+      if (currentAngleProb.isChange) {
+        ctx.fillText('y축 기준 (π/2 계열) ➔ 함수 바뀜!', cx, 15);
+      } else {
+        ctx.fillText('x축 기준 (π 계열) ➔ 함수 유지!', cx, cy + r + 25);
+      }
+    }
+
+    // 5. Terminal Ray (동경)
+    if (step >= 1) {
+      let thetaMath = 30 * Math.PI / 180;
+      let baseAngle = 0;
+      let targetAngle = 0;
+      
+      if (currentAngleProb.angle === "θ") { baseAngle = 0; targetAngle = thetaMath; }
+      if (currentAngleProb.angle === "-θ") { baseAngle = 0; targetAngle = -thetaMath; }
+      if (currentAngleProb.angle === "π/2 - θ") { baseAngle = Math.PI/2; targetAngle = Math.PI/2 - thetaMath; }
+      if (currentAngleProb.angle === "π/2 + θ") { baseAngle = Math.PI/2; targetAngle = Math.PI/2 + thetaMath; }
+      if (currentAngleProb.angle === "π - θ") { baseAngle = Math.PI; targetAngle = Math.PI - thetaMath; }
+      if (currentAngleProb.angle === "π + θ") { baseAngle = Math.PI; targetAngle = Math.PI + thetaMath; }
+
+      let currentDrawAngle = baseAngle + (targetAngle - baseAngle) * (step > 1 ? 1 : animRayProgress);
+
+      // Draw faint base angle axis if not 0
+      if (baseAngle !== 0) {
+        ctx.strokeStyle = 'rgba(189, 195, 199, 0.6)';
+        ctx.lineWidth = 2;
+        ctx.setLineDash([5, 5]);
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(cx + (r + 15) * Math.cos(baseAngle), cy - (r + 15) * Math.sin(baseAngle));
+        ctx.stroke();
+        ctx.setLineDash([]);
+      }
+
+      // Draw sweeping Arc
+      let arcRadius = r * 0.35;
+      if (step > 1 || animRayProgress > 0.05) {
+        ctx.beginPath();
+        ctx.strokeStyle = 'rgba(231, 76, 60, 0.8)';
+        ctx.lineWidth = 3;
+        ctx.arc(cx, cy, arcRadius, -baseAngle, -currentDrawAngle, targetAngle > baseAngle);
+        ctx.stroke();
+        
+        let txtProg = step > 1 ? 1 : animRayProgress;
+        if (txtProg > 0.5) {
+           let midAngle = (baseAngle + currentDrawAngle) / 2;
+           ctx.fillStyle = '#c0392b';
+           ctx.font = 'bold 15px sans-serif';
+           let txt = (targetAngle > baseAngle) ? "+θ" : "-θ";
+           ctx.fillText(txt, cx + (arcRadius + 18) * Math.cos(midAngle), cy - (arcRadius + 18) * Math.sin(midAngle));
+        }
+      }
+
+      let endX = cx + (r + 30) * Math.cos(currentDrawAngle);
+      let endY = cy - (r + 30) * Math.sin(currentDrawAngle);
+
+      ctx.strokeStyle = '#2c3e50';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.lineTo(endX, endY);
+      ctx.stroke();
+      
+      // Arrow head
+      let headlen = 12;
+      let angleCanvas = -currentDrawAngle; 
+      ctx.beginPath();
+      ctx.moveTo(endX, endY);
+      ctx.lineTo(endX - headlen * Math.cos(angleCanvas - Math.PI/6), endY - headlen * Math.sin(angleCanvas - Math.PI/6));
+      ctx.lineTo(endX - headlen * Math.cos(angleCanvas + Math.PI/6), endY - headlen * Math.sin(angleCanvas + Math.PI/6));
+      ctx.lineTo(endX, endY);
+      ctx.fillStyle = '#2c3e50';
+      ctx.fill();
+    }
+
+    // 6. ALL/SIN/TAN/COS texts (Step >= 2)
+    if (step >= 2) {
+      ctx.font = 'bold 16px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      
+      // 1st
+      ctx.fillStyle = (currentAngleProb.quad === 1) ? '#e74c3c' : '#bdc3c7';
+      ctx.fillText('ALL (+)', cx + r/1.5, cy - r/1.5);
+      // 2nd
+      ctx.fillStyle = (currentAngleProb.quad === 2) ? '#e74c3c' : '#bdc3c7';
+      ctx.fillText('sin (+)', cx - r/1.5, cy - r/1.5);
+      // 3rd
+      ctx.fillStyle = (currentAngleProb.quad === 3) ? '#e74c3c' : '#bdc3c7';
+      ctx.fillText('tan (+)', cx - r/1.5, cy + r/1.5);
+      // 4th
+      ctx.fillStyle = (currentAngleProb.quad === 4) ? '#e74c3c' : '#bdc3c7';
+      ctx.fillText('cos (+)', cx + r/1.5, cy + r/1.5);
+
+      ctx.fillStyle = '#8e44ad';
+      ctx.font = 'bold 15px sans-serif';
+      ctx.fillText(`원래 함수 ${currentAngleProb.func}의 ➔ 부호는 ${currentAngleProb.sign} !`, cx, h - 15);
+    }
+  }
+
+  function evalOriginalFunc(x) {
+    let angleVal = 0;
+    if (currentAngleProb.angle === "θ") angleVal = x;
+    if (currentAngleProb.angle === "-θ") angleVal = -x;
+    if (currentAngleProb.angle === "π/2 - θ") angleVal = Math.PI/2 - x;
+    if (currentAngleProb.angle === "π/2 + θ") angleVal = Math.PI/2 + x;
+    if (currentAngleProb.angle === "π - θ") angleVal = Math.PI - x;
+    if (currentAngleProb.angle === "π + θ") angleVal = Math.PI + x;
+
+    if (currentAngleProb.func === "sin") return Math.sin(angleVal);
+    if (currentAngleProb.func === "cos") return Math.cos(angleVal);
+    if (currentAngleProb.func === "tan") return Math.tan(angleVal);
+    return 0;
+  }
+
+  function evalTargetFunc(x) {
+    let base = 0;
+    if (currentAngleProb.resultFunc === "sin") base = Math.sin(x);
+    else if (currentAngleProb.resultFunc === "cos") base = Math.cos(x);
+    else if (currentAngleProb.resultFunc === "tan") base = Math.tan(x);
+    else if (currentAngleProb.resultFunc === "1/tan") base = 1 / Math.tan(x);
+    
+    return (currentAngleProb.sign === "+") ? base : -base;
+  }
+
+  function drawGraph() {
+    const canvas = document.getElementById('graph-canvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    
+    // 해상도를 높여 선명하게 그리기 위해 실제 크기의 2배로 설정
+    const rect = canvas.getBoundingClientRect();
+    canvas.width = rect.width || 450;
+    canvas.height = rect.height || 337;
+    
+    const w = canvas.width;
+    const h = canvas.height;
+    
+    ctx.clearRect(0, 0, w, h);
+
+    // Map: x from -PI to 2*PI, y from -2 to 2
+    function mapX(xVal) { return ((xVal + Math.PI) / (3 * Math.PI)) * w; }
+    function mapY(yVal) { return h/2 - (yVal / 2) * (h/2); }
+
+    // 1. Draw Grid & Axes
+    ctx.strokeStyle = '#e2e8f0';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    for(let i = -1; i <= 2; i++) {
+      let py = mapY(i);
+      ctx.moveTo(0, py); ctx.lineTo(w, py);
+    }
+    for(let i = -1; i <= 2; i++) {
+      let px = mapX(i * Math.PI);
+      ctx.moveTo(px, 0); ctx.lineTo(px, h);
+    }
+    ctx.stroke();
+
+    ctx.strokeStyle = '#94a3b8';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(0, mapY(0)); ctx.lineTo(w, mapY(0)); // x axis
+    ctx.moveTo(mapX(0), 0); ctx.lineTo(mapX(0), h); // y axis
+    ctx.stroke();
+
+    // Labels
+    ctx.fillStyle = '#64748b';
+    ctx.font = '14px sans-serif';
+    ctx.fillText('0', mapX(0) - 12, mapY(0) + 15);
+    ctx.fillText('π', mapX(Math.PI) - 5, mapY(0) + 15);
+    ctx.fillText('2π', mapX(2*Math.PI) - 8, mapY(0) + 15);
+    ctx.fillText('-π', mapX(-Math.PI) + 5, mapY(0) + 15);
+    ctx.fillText('1', mapX(0) - 15, mapY(1) + 4);
+    ctx.fillText('-1', mapX(0) - 20, mapY(-1) + 4);
+
+    // 2. Draw Original Function (Blue thick line)
+    ctx.beginPath();
+    ctx.strokeStyle = 'rgba(52, 152, 219, 0.4)';
+    ctx.lineWidth = 8;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    let prevY = 0;
+    for(let px = 0; px <= w; px++) {
+      let xVal = -Math.PI + (px/w) * 3 * Math.PI;
+      let yVal = evalOriginalFunc(xVal);
+      // 탄젠트 점근선 처리
+      if (px === 0) { ctx.moveTo(px, mapY(yVal)); prevY = yVal; continue; }
+      if (Math.abs(yVal - prevY) > 2) {
+        ctx.moveTo(px, mapY(yVal));
+      } else {
+        ctx.lineTo(px, mapY(yVal));
+      }
+      prevY = yVal;
+    }
+    ctx.stroke();
+    
+    // Draw text for Original Function
+    ctx.fillStyle = '#2980b9';
+    ctx.font = 'bold 16px sans-serif';
+    ctx.fillText(`y = ${currentAngleProb.func}(${currentAngleProb.angle.replace('θ', 'x')})`, 10, 25);
+
+    // 3. Animate Target Function (Red dashed line)
+    let animPx = 0;
+    cancelAnimationFrame(graphAnimId);
+    
+    function drawFrame() {
+      ctx.beginPath();
+      ctx.strokeStyle = '#e74c3c';
+      ctx.lineWidth = 3;
+      ctx.setLineDash([8, 8]);
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      
+      let startPx = Math.max(0, animPx - 10);
+      let pPrevY = evalTargetFunc(-Math.PI + (startPx/w) * 3 * Math.PI);
+      
+      for(let px = startPx; px <= animPx; px++) {
+         let xVal = -Math.PI + (px/w) * 3 * Math.PI;
+         let yVal = evalTargetFunc(xVal);
+         
+         if (px === startPx) { ctx.moveTo(px, mapY(yVal)); pPrevY = yVal; continue; }
+         if (Math.abs(yVal - pPrevY) > 2) {
+            ctx.moveTo(px, mapY(yVal));
+         } else {
+            ctx.lineTo(px, mapY(yVal));
+         }
+         pPrevY = yVal;
+      }
+      ctx.stroke();
+      ctx.setLineDash([]);
+      
+      animPx += 8;
+      if (animPx <= w) {
+        graphAnimId = requestAnimationFrame(drawFrame);
+      } else {
+        // Draw text for Target Function
+        ctx.fillStyle = '#c0392b';
+        ctx.font = 'bold 16px sans-serif';
+        const displaySign = currentAngleProb.sign === "+" ? "" : "-";
+        const displayFunc = currentAngleProb.resultFunc === "1/tan" ? "1/tan(x)" : `${currentAngleProb.resultFunc}(x)`;
+        ctx.fillText(`y = ${displaySign}${displayFunc}`, 10, 50);
+        
+        ctx.fillStyle = '#27ae60';
+        ctx.font = 'bold 18px sans-serif';
+        ctx.fillText(`두 그래프가 완전히 포개어집니다! ✨`, 10, h - 20);
+      }
+    }
+    drawFrame();
+  }
+
+  function mount(container, context = {}) {
+    let host = null;
+    if (typeof container === 'string') host = document.querySelector(container);
+    else if (container instanceof HTMLElement) host = container;
+    if (!host) host = window.MathLabUtils?.getMountContainer ? window.MathLabUtils.getMountContainer(container) : document.getElementById('mathlab-view');
+    if (!host || !(host instanceof HTMLElement)) host = document.getElementById('new-root') || document.getElementById('game-container') || document.getElementById('mathlab-view');
+
+    if (!host || !(host instanceof HTMLElement) || host === document.body) {
+      let createdHost = document.getElementById('concept-angle-force-host');
+      if (!createdHost) {
+        createdHost = document.createElement('div');
+        createdHost.id = 'concept-angle-force-host';
+        document.body.appendChild(createdHost);
+      }
+      host = createdHost;
+    }
+
+    const footerEl = document.querySelector('footer, #footer, .app-footer') || 
+                     Array.from(document.querySelectorAll('div, p, span')).find(el => el.textContent && el.textContent.includes('2026 기록조율사'));
+    if (footerEl && host && typeof host.compareDocumentPosition === 'function' && (host.compareDocumentPosition(footerEl) & Node.DOCUMENT_POSITION_PRECEDING)) {
+      footerEl.parentNode.insertBefore(host, footerEl);
+    }
+
+    host.style.display = '';
+    host.style.visibility = 'visible';
+    host.style.opacity = '1';
+
+    let parent = host.parentElement;
+    while (parent && parent !== document.body && parent !== document.documentElement) {
+      if (parent.style && parent.style.display === 'none') parent.style.display = 'block';
+      if (parent.style && parent.style.visibility === 'hidden') parent.style.visibility = 'visible';
+      parent = parent.parentElement;
+    }
+
+    document.querySelectorAll('header, .navbar, #app-header, .top-bar, #floating-home-btn, .floating-home').forEach(el => {
+      if (el && el.style && el.style.display === 'none') el.style.display = '';
+    });
+
+    var h = '';
+    h += '<div class="game-concept-angle bg-step-0" id="concept-angle-container">';
+    h += '  <div style="display:flex; justify-content:space-between; align-items:center;">';
+    h += '    <h1 style="color:#2c3e50; font-size: 2.2rem; margin: 0;">각변환 마법사 &#129497;&#8205;&#9794;&#65039;</h1>';
+    h += '    <button class="home-btn" onclick="window.ConceptAngleApp.goHome()" style="margin:0;">&#127968; 대시보드</button>';
+    h += '  </div>';
+    h += '  <p class="highlight-msg" style="margin-bottom: 5px;">다음 삼각함수를 간단히 변환해 봅시다!</p>';
+    h += '  <!-- 2단 레이아웃 분할 -->';
+    h += '  <div class="angle-layout">';
+    h += '    <!-- 좌측: 시각화 캔버스 패널 -->';
+    h += '    <div class="visual-panel">';
+    h += '      <div class="canvas-wrapper">';
+    h += '        <canvas id="angle-canvas" width="400" height="400"></canvas>';
+    h += '        <canvas id="graph-canvas" width="450" height="337"></canvas>';
+    h += '      </div>';
+    h += '      <div style="color: #7f8c8d; font-size: 0.9rem; margin-top: 10px; text-align:center;">';
+    h += '        ※ 단계가 진행될수록 그래프와 정보가 나타납니다.';
+    h += '      </div>';
+    h += '    </div>';
+    h += '    <!-- 우측: 문제 및 퀴즈 패널 -->';
+    h += '    <div class="quiz-panel">';
+    h += '      <div class="problem-display" id="angle-problem">sin(&pi;/2 + &theta;)</div>';
+    h += '      <div class="quiz-steps">';
+    h += '        <div class="step-card" id="step-1">';
+    h += '          <h3>Step 1. 사분면 확인</h3><p>이 각은 제 몇 사분면의 각인가요? (단, &theta;는 예각)</p>';
+    h += '          <div class="btn-grid-4">';
+    h += '            <button class="btn option-btn" onclick="ConceptAngleApp.checkQuad(1)">제1사분면</button>';
+    h += '            <button class="btn option-btn" onclick="ConceptAngleApp.checkQuad(2)">제2사분면</button>';
+    h += '            <button class="btn option-btn" onclick="ConceptAngleApp.checkQuad(3)">제3사분면</button>';
+    h += '            <button class="btn option-btn" onclick="ConceptAngleApp.checkQuad(4)">제4사분면</button>';
+    h += '          </div>';
+    h += '        </div>';
+    h += '        <div class="step-card hidden" id="step-2">';
+    h += '          <h3>Step 2. 부호 판별</h3><p>선택한 사분면에서 원래 함수의 부호는?</p>';
+    h += '          <div class="btn-grid-2">';
+    h += '            <button class="btn option-btn" style="text-align:center; font-size:2rem !important;" onclick="ConceptAngleApp.checkSign(\'+\')">+</button>';
+    h += '            <button class="btn option-btn" style="text-align:center; font-size:2rem !important;" onclick="ConceptAngleApp.checkSign(\'-\')">-</button>';
+    h += '          </div>';
+    h += '        </div>';
+    h += '        <div class="step-card hidden" id="step-3">';
+    h += '          <h3>Step 3. 함수 변환</h3><p>기준 축에 따라 함수는 어떻게 바뀔까요?</p>';
+    h += '          <div class="btn-grid-4">';
+    h += '            <button class="btn option-btn" onclick="ConceptAngleApp.checkFunc(\'sin\')">sin</button>';
+    h += '            <button class="btn option-btn" onclick="ConceptAngleApp.checkFunc(\'cos\')">cos</button>';
+    h += '            <button class="btn option-btn" onclick="ConceptAngleApp.checkFunc(\'tan\')">tan</button>';
+    h += '            <button class="btn option-btn" onclick="ConceptAngleApp.checkFunc(\'1/tan\')">1/tan</button>';
+    h += '          </div>';
+    h += '        </div>';
+    h += '        <div class="step-card hidden" id="step-result" style="background: rgba(255,255,255,0.7); border-color: #6c5ce7; padding: 25px;">';
+    h += '          <h3 style="font-size: 1.5rem; color:#6c5ce7; margin-bottom:10px;">&#10024; 변환 완료! &#10024;</h3>';
+    h += '          <div class="final-result" id="angle-result">+ cos(&theta;)</div>';
+    h += '          <button class="btn save-btn" onclick="ConceptAngleApp.initAngleApp()" style="width: 100%; font-size: 1.2rem; padding: 15px;">다음 문제 도전</button>';
+    h += '        </div>';
+    h += '      </div>';
+    h += '    </div>';
+    h += '  </div>';
+    h += '</div>';
+    host.innerHTML = h;
+    
+    initAngleApp();
+  }
+
+  function goHome() {
+    cancelAnimationFrame(graphAnimId);
+    if (window.LegacyBridge && typeof window.LegacyBridge.backHome === 'function') {
+      window.LegacyBridge.backHome();
+    }
+  }
+
+  return {
+    mount,
+    initAngleApp,
+    checkQuad,
+    checkSign,
+    checkFunc,
+    goHome
+  };
+})();
+
+/* 하단 안전 등록 및 레거시/Gen-3 상호 실행 브리지 */
+function registerConceptAngleApp() {
+  if (typeof window.MathLabGames !== 'undefined' && typeof window.MathLabGames.register === 'function') {
+    if (!window.MathLabGames.get('concept-angle')) {
+      try {
+        const gameObj = {
+          id: 'concept-angle',
+          title: '각변환 마법사',
+          icon: '🧙‍♂️',
+          sourceType: 'new',
+          players: '1인',
+          isMultiplayer: false,
+          mount(container, context) { ConceptAngleApp.mount(container, context); },
+          reset() { ConceptAngleApp.initAngleApp(); },
+          destroy() {},
+          goHome() { ConceptAngleApp.goHome(); }
+        };
+        window.MathLabGames.register(gameObj);
+      } catch (e) {
+        console.warn('concept-angle 안전 등록 방어:', e);
+      }
+    }
+  }
+}
+
+registerConceptAngleApp();
+window.addEventListener('DOMContentLoaded', registerConceptAngleApp);
+setTimeout(registerConceptAngleApp, 100);
+setTimeout(registerConceptAngleApp, 500);
+
+window.ConceptAngleApp = ConceptAngleApp;
+
+
+</script>

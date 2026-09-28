@@ -1,0 +1,285 @@
+
+<script>
+(function() {
+  'use strict';
+
+  const TrigConceptApp = {
+    host: null,
+    chart: null,
+
+    mount(container) {
+      this.host = (typeof container === 'string') ? document.querySelector(container) : container;
+      if (!this.host) {
+        this.host = document.getElementById('mathlab-view') || document.getElementById('new-root') || document.body;
+      }
+      
+      this.host.style.display = '';
+      this.host.style.visibility = 'visible';
+      this.host.style.opacity = '1';
+      let parent = this.host.parentElement;
+      while (parent && parent !== document.body && parent !== document.documentElement) {
+        if (parent.style && parent.style.display === 'none') parent.style.display = 'block';
+        if (parent.style && parent.style.visibility === 'hidden') parent.style.visibility = 'visible';
+        parent = parent.parentElement;
+      }
+      
+      this.render();
+    },
+
+    goHome() {
+      this.destroy();
+      if (typeof window.LegacyBridge !== 'undefined' && typeof window.LegacyBridge.backHome === 'function') {
+        try { window.LegacyBridge.backHome(); return; } catch (e) {}
+      }
+      if (typeof window.MathLabUtils !== 'undefined' && typeof window.MathLabUtils.goHome === 'function') {
+        window.MathLabUtils.goHome();
+      } else {
+        location.reload();
+      }
+    },
+
+    destroy() {
+      if (this.chart) {
+        this.chart.destroy();
+        this.chart = null;
+      }
+      if (this.host) {
+        this.host.innerHTML = '';
+        this.host.style.display = 'none';
+      }
+    },
+
+    formatNumber(value) {
+      const num = Number(value);
+      if (!Number.isFinite(num)) return String(value);
+      const rounded = Math.round(num * 100) / 100;
+      if (Object.is(rounded, -0)) return '0';
+      return String(rounded);
+    },
+
+    getAngleLatex(angle) {
+      if (angle === '-x') return '-x';
+      if (angle === 'pi/2-x') return '\\frac{\\pi}{2} - x';
+      if (angle === 'pi/2+x') return '\\frac{\\pi}{2} + x';
+      if (angle === 'pi-x') return '\\pi - x';
+      if (angle === 'pi+x') return '\\pi + x';
+      return 'x';
+    },
+
+    renderFinalFormula(a, b, c, d, func, angle) {
+      if (!this.host) return;
+      const target = this.host.querySelector('#trig-final-formula');
+      if (!target) return;
+
+      const funcLatex = func === 'cos' ? '\\cos' : (func === 'tan' ? '\\tan' : '\\sin');
+      const aText = this.formatNumber(a);
+      const bText = this.formatNumber(b);
+      const cText = this.formatNumber(c);
+      const dText = this.formatNumber(d);
+      const angleLatex = this.getAngleLatex(angle);
+
+      let shiftPart = '';
+      if (c > 0) shiftPart = ` - ${cText}`;
+      else if (c < 0) shiftPart = ` + ${this.formatNumber(Math.abs(c))}`;
+
+      let verticalPart = '';
+      if (d > 0) verticalPart = ` + ${dText}`;
+      else if (d < 0) verticalPart = ` - ${this.formatNumber(Math.abs(d))}`;
+
+      const formula = `y = ${aText}${funcLatex}\\left(${bText}\\left(${angleLatex}${shiftPart}\\right)\\right)${verticalPart}`;
+
+      if (typeof katex !== 'undefined') {
+        katex.render(formula, target, { throwOnError: false, displayMode: true });
+      } else {
+        target.innerText = formula;
+      }
+    },
+
+    initChart() {
+      if (!this.host) return;
+      const canvas = this.host.querySelector('#trigChart');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      if (this.chart) this.chart.destroy();
+      
+      if (typeof Chart === 'undefined') return;
+
+      this.chart = new Chart(ctx, {
+        type: 'scatter',
+        data: {
+          datasets: [
+            { label: '현재 파동', data: [], borderColor: '#6c5ce7', borderWidth: 4, showLine: true, pointRadius: 0, tension: 0.4 },
+            { label: '기본형', data: [], borderColor: '#b2bec3', borderWidth: 2, borderDash: [5,5], showLine: true, pointRadius: 0, tension: 0.4 }
+          ]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false, animation: false,
+          scales: {
+            x: { min: -2*Math.PI, max: 2*Math.PI },
+            y: { min: -5, max: 5 }
+          }
+        }
+      });
+      
+      this.updateChart();
+    },
+
+    updateChart() {
+      if (!this.host || !this.chart) return;
+      
+      const a = parseFloat(this.host.querySelector('#slider-a').value);
+      const b = parseFloat(this.host.querySelector('#slider-b').value);
+      const c = parseFloat(this.host.querySelector('#slider-c').value);
+      const d = parseFloat(this.host.querySelector('#slider-d').value);
+      const func = this.host.querySelector('#func-select').value;
+      const angle = this.host.querySelector('#angle-select').value;
+      
+      this.host.querySelector('#val-a').innerText = a;
+      this.host.querySelector('#val-b').innerText = b;
+      this.host.querySelector('#val-c').innerText = c;
+      this.host.querySelector('#val-d').innerText = d;
+      
+      this.host.querySelector('#eq-a').innerText = a;
+      this.host.querySelector('#eq-b').innerText = b;
+      this.host.querySelector('#eq-c').innerText = c;
+      this.host.querySelector('#eq-d').innerText = d;
+      
+      this.renderFinalFormula(a, b, c, d, func, angle);
+      
+      let mainData = []; let baseData = [];
+      for (let x = -2 * Math.PI; x <= 2 * Math.PI; x += 0.03) {
+        let innerX = x;
+        if(angle === '-x') innerX = -x;
+        else if(angle === 'pi/2-x') innerX = Math.PI/2 - x;
+        else if(angle === 'pi/2+x') innerX = Math.PI/2 + x;
+        else if(angle === 'pi-x') innerX = Math.PI - x;
+        else if(angle === 'pi+x') innerX = Math.PI + x;
+        
+        let yVal = 0; let baseYVal = 0;
+        if(func === 'sin'){ yVal = Math.sin(b*(innerX-c)); baseYVal = Math.sin(x); }
+        else if(func === 'cos'){ yVal = Math.cos(b*(innerX-c)); baseYVal = Math.cos(x); }
+        else if(func === 'tan'){ yVal = Math.tan(b*(innerX-c)); baseYVal = Math.tan(x); }
+        
+        yVal = a * yVal + d;
+        if (func === 'tan' && (yVal > 7 || yVal < -7)) { yVal = null; baseYVal = null; }
+        
+        mainData.push({x: x, y: yVal});
+        baseData.push({x: x, y: baseYVal});
+      }
+      
+      this.chart.data.datasets[0].data = mainData;
+      this.chart.data.datasets[1].data = baseData;
+      this.chart.update();
+    },
+
+    render() {
+      if (!this.host) return;
+      this.host.innerHTML = `
+        <style>
+          .trig-container { padding: 24px; background: #ffffff; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); max-width: 800px; margin: 0 auto; font-family: 'Pretendard', sans-serif; }
+          .trig-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
+          .trig-header h1 { margin: 0; font-size: 2rem; color: #2c3e50; font-weight: 900; }
+          .trig-home-btn { padding: 10px 16px; background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 10px; cursor: pointer; color: #475569; font-weight: 800; transition: 0.2s; }
+          .trig-home-btn:hover { background: #e2e8f0; }
+          .trig-msg { background: #e8f8f5; color: #16a085; border: 1px solid #a3e4d7; padding: 12px; border-radius: 12px; text-align: center; margin-bottom: 20px; font-weight: 800; }
+          
+          .trig-eq { text-align: center; font-size: 1.4rem; font-weight: 800; color: #34495e; margin-bottom: 20px; background: #f8fafc; padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0; }
+          .trig-eq select { font-size: 1.3rem; font-weight: 900; color: #6c5ce7; border: none; background: transparent; cursor: pointer; outline: none; }
+          
+          .trig-canvas-wrap { height: 350px; width: 100%; margin-bottom: 20px; }
+          
+          .trig-sliders { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+          .trig-slider-group { background: #f8fafc; padding: 16px; border-radius: 14px; border: 1px solid #e2e8f0; }
+          .trig-slider-group label { display: block; font-weight: 800; color: #334155; margin-bottom: 12px; }
+          .trig-slider-group input { width: 100%; cursor: pointer; accent-color: #6c5ce7; }
+          
+          .trig-board { margin-top: 24px; padding: 20px; border-radius: 18px; background: #f8f9fa; border: 2px solid #e8ecf3; text-align: center; }
+          .trig-board-title { font-weight: 900; color: #2c3e50; margin-bottom: 12px; font-size: 1.1rem; }
+          .trig-board-math { color: #2c3e50; font-size: 1.3rem; line-height: 1.7; overflow-x: auto; padding: 8px 0; }
+        </style>
+        
+        <div class="trig-container">
+          <div class="trig-header">
+            <h1>삼각함수 DJ 🌊</h1>
+            <button class="trig-home-btn" onclick="window.TrigConceptApp.goHome()">🏠 대시보드</button>
+          </div>
+          
+          <div class="trig-msg">슬라이더를 움직여 파동을 믹싱해보세요!</div>
+          
+          <div class="trig-eq">
+            <span style="color:#2c3e50;">y =</span> <span id="eq-a" style="color:#e74c3c;">1</span> 
+            <select id="func-select" onchange="window.TrigConceptApp.updateChart()">
+              <option value="sin">sin</option><option value="cos">cos</option><option value="tan">tan</option>
+            </select>(<span id="eq-b" style="color:#3498db;">1</span>(
+            <select id="angle-select" onchange="window.TrigConceptApp.updateChart()">
+              <option value="x">x</option><option value="-x">-x</option><option value="pi/2-x">π/2 - x</option>
+              <option value="pi/2+x">π/2 + x</option><option value="pi-x">π - x</option><option value="pi+x">π + x</option>
+            </select> -<span id="eq-c" style="color:#f39c12;">0</span>) ) + <span id="eq-d" style="color:#9b59b6;">0</span>
+          </div>
+          
+          <div class="trig-canvas-wrap"><canvas id="trigChart"></canvas></div>
+          
+          <div class="trig-sliders">
+            <div class="trig-slider-group">
+              <label>진폭 (a) : <span id="val-a">1</span></label>
+              <input type="range" id="slider-a" min="-4" max="4" step="0.1" value="1" oninput="window.TrigConceptApp.updateChart()">
+            </div>
+            <div class="trig-slider-group">
+              <label>주기 결정 (b) : <span id="val-b">1</span></label>
+              <input type="range" id="slider-b" min="0.5" max="3" step="0.1" value="1" oninput="window.TrigConceptApp.updateChart()">
+            </div>
+            <div class="trig-slider-group">
+              <label>x축 이동 (c) : <span id="val-c">0</span></label>
+              <input type="range" id="slider-c" min="-3.14" max="3.14" step="0.1" value="0" oninput="window.TrigConceptApp.updateChart()">
+            </div>
+            <div class="trig-slider-group">
+              <label>y축 이동 (d) : <span id="val-d">0</span></label>
+              <input type="range" id="slider-d" min="-4" max="4" step="0.5" value="0" oninput="window.TrigConceptApp.updateChart()">
+            </div>
+          </div>
+          
+          <div class="trig-board">
+            <div class="trig-board-title">완성된 함수식</div>
+            <div id="trig-final-formula" class="trig-board-math"></div>
+          </div>
+        </div>
+      `;
+
+      setTimeout(() => this.initChart(), 50);
+    }
+  };
+
+  window.TrigConceptApp = TrigConceptApp;
+
+  function registerMyApp() {
+    if (typeof window.MathLabGames !== 'undefined' && typeof window.MathLabGames.register === 'function') {
+      window.MathLabGames.register({
+        id: 'trig-concept',
+        title: '삼각함수 DJ',
+        icon: '🌊',
+        appType: 'concept',
+        topApp: '수학 개념',
+        sourceType: 'new',
+        mount(container) { TrigConceptApp.mount(container); },
+        reset() { /* No special reset needed */ },
+        destroy() { TrigConceptApp.destroy(); },
+        goHome() { TrigConceptApp.goHome(); }
+      });
+    }
+  }
+
+  registerMyApp();
+  window.addEventListener('DOMContentLoaded', registerMyApp);
+
+  window.initTrigApp = function() {
+    if (window.LegacyBridge && typeof window.LegacyBridge.hideAllLegacySections === 'function') {
+      window.LegacyBridge.hideAllLegacySections();
+      window.LegacyBridge.showNewRoot();
+    }
+    if (typeof window.MathLabGames !== 'undefined' && typeof window.MathLabGames.mount === 'function') {
+      try { window.MathLabGames.mount('trig-concept'); return; } catch(e){}
+    }
+    TrigConceptApp.mount();
+  };
+})();
+</script>

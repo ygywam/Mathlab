@@ -1,0 +1,1257 @@
+<!-- 아인슈타인 로직 퍼즐 (Einstein Logic Puzzle) - Gen-3 연속 점수 누적 & 자동 승급 완결판 -->
+<style>
+  .game-einstein-logic {
+    width: 100%;
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: 18px;
+    background: #0f172a;
+    color: #e2e8f0;
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+    border-radius: 24px;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.55);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    position: relative;
+    box-sizing: border-box;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  .game-einstein-logic * { box-sizing: border-box; }
+
+  /* 상단 헤더 */
+  .game-einstein-logic .el-header {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    background: #1e293b;
+    border: 1px solid #334155;
+    padding: 14px 20px;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  }
+
+  .game-einstein-logic .title-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .game-einstein-logic .title-icon {
+    font-size: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    background: rgba(16, 185, 129, 0.15);
+    border-radius: 14px;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+  }
+
+  .game-einstein-logic .title-text {
+    font-size: 1.4rem;
+    font-weight: 900;
+    color: #f8fafc;
+    letter-spacing: -0.02em;
+  }
+
+  .game-einstein-logic .title-badge {
+    font-size: 0.78rem;
+    font-weight: 800;
+    background: #10b981;
+    color: #0f172a;
+    padding: 3px 10px;
+    border-radius: 6px;
+  }
+
+  .game-einstein-logic .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .game-einstein-logic .btn-header {
+    background: #334155;
+    color: #e2e8f0;
+    border: 1px solid #475569;
+    padding: 8px 14px;
+    border-radius: 10px;
+    font-size: 0.88rem;
+    font-weight: 800;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+  }
+
+  .game-einstein-logic .btn-header:hover {
+    background: #475569;
+    color: #ffffff;
+    transform: translateY(-1px);
+  }
+
+  .game-einstein-logic .btn-header.check-btn {
+    background: #3b82f6;
+    color: #ffffff;
+    border-color: #2563eb;
+  }
+
+  .game-einstein-logic .btn-header.check-btn:hover { background: #2563eb; }
+
+  .game-einstein-logic .btn-header.review-btn {
+    background: #f59e0b;
+    color: #0f172a;
+    border-color: #d97706;
+  }
+
+  .game-einstein-logic .btn-header.review-btn:hover { background: #d97706; color: #ffffff; }
+
+  .game-einstein-logic .btn-header.hof {
+    background: #10b981;
+    color: #ffffff;
+    border-color: #059669;
+  }
+
+  .game-einstein-logic .btn-header.hof:hover { background: #059669; }
+
+  .game-einstein-logic .btn-header.home {
+    background: rgba(244, 63, 94, 0.18);
+    color: #fda4af;
+    border-color: rgba(244, 63, 94, 0.4);
+  }
+
+  .game-einstein-logic .btn-header.home:hover {
+    background: rgba(244, 63, 94, 0.35);
+    color: #ffffff;
+  }
+
+  /* 모드 선택 탭 & 상태 바 */
+  .game-einstein-logic .el-status-bar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    background: rgba(30, 41, 59, 0.85);
+    border: 1px solid #334155;
+    padding: 12px 18px;
+    border-radius: 14px;
+  }
+
+  .game-einstein-logic .mode-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    background: #0f172a;
+    padding: 4px;
+    border-radius: 10px;
+    border: 1px solid #334155;
+  }
+
+  .game-einstein-logic .mode-btn {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    padding: 7px 16px;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .game-einstein-logic .mode-btn.active {
+    background: #10b981;
+    color: #ffffff;
+    box-shadow: 0 2px 6px rgba(16, 185, 129, 0.4);
+  }
+
+  .game-einstein-logic .info-group {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    flex-wrap: wrap;
+  }
+
+  .game-einstein-logic .info-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.95rem;
+    color: #cbd5e1;
+    font-weight: 700;
+  }
+
+  .game-einstein-logic .info-value { font-weight: 900; color: #34d399; }
+  .game-einstein-logic .info-value.warn { color: #f87171; }
+
+  /* 메인 퍼즐 레이아웃 */
+  .game-einstein-logic .puzzle-layout {
+    display: grid;
+    grid-template-columns: 340px 1fr;
+    gap: 16px;
+    width: 100%;
+  }
+
+  @media (max-width: 860px) {
+    .game-einstein-logic .puzzle-layout { grid-template-columns: 1fr; }
+  }
+
+  /* 좌측: 힌트 목록 패널 */
+  .game-einstein-logic .hints-panel {
+    background: #1e293b;
+    border: 2px solid #334155;
+    border-radius: 20px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    max-height: 600px;
+    overflow-y: auto;
+  }
+
+  .game-einstein-logic .hints-title {
+    font-size: 1.15rem;
+    font-weight: 900;
+    color: #fbbf24;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #334155;
+    padding-bottom: 10px;
+  }
+
+  .game-einstein-logic .hint-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .game-einstein-logic .hint-item {
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 12px;
+    padding: 12px 14px;
+    font-size: 0.94rem;
+    line-height: 1.5;
+    color: #e2e8f0;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .game-einstein-logic .hint-item:hover { border-color: #64748b; }
+  .game-einstein-logic .hint-item.checked {
+    opacity: 0.55;
+    background: rgba(15, 23, 42, 0.4);
+    text-decoration: line-through;
+  }
+
+  .game-einstein-logic .hint-num {
+    font-weight: 900;
+    color: #38bdf8;
+    min-width: 24px;
+  }
+
+  /* 우측: 속성 쌍 탭 & 그리드 */
+  .game-einstein-logic .grid-panel {
+    background: #1e293b;
+    border: 2px solid #334155;
+    border-radius: 20px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .game-einstein-logic .pair-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    border-bottom: 1px solid #334155;
+    padding-bottom: 12px;
+  }
+
+  .game-einstein-logic .pair-btn {
+    background: #0f172a;
+    border: 1px solid #334155;
+    color: #94a3b8;
+    padding: 8px 16px;
+    border-radius: 10px;
+    font-size: 0.92rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .game-einstein-logic .pair-btn.active {
+    background: #3b82f6;
+    color: #ffffff;
+    border-color: #2563eb;
+    box-shadow: 0 4px 10px rgba(59, 130, 246, 0.35);
+  }
+
+  .game-einstein-logic .grid-container {
+    overflow-x: auto;
+    padding: 10px 0;
+    display: flex;
+    justify-content: center;
+  }
+
+  .game-einstein-logic table.logic-table {
+    border-collapse: collapse;
+    background: #0f172a;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 2px solid #475569;
+  }
+
+  .game-einstein-logic .logic-table th, .game-einstein-logic .logic-table td {
+    border: 1px solid #334155;
+    text-align: center;
+    padding: 12px 14px;
+  }
+
+  .game-einstein-logic .logic-table th.col-hdr {
+    background: #1e293b;
+    color: #fbbf24;
+    font-weight: 900;
+    font-size: 0.95rem;
+  }
+
+  .game-einstein-logic .logic-table th.row-hdr {
+    background: #1e293b;
+    color: #38bdf8;
+    font-weight: 900;
+    font-size: 0.95rem;
+    text-align: right;
+  }
+
+  .game-einstein-logic .logic-table td.cell {
+    width: 64px;
+    height: 64px;
+    font-size: 1.5rem;
+    font-weight: 900;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+  }
+
+  .game-einstein-logic .logic-table td.cell:hover { background: #1e293b; }
+  .game-einstein-logic .logic-table td.cell.state-O { background: rgba(16, 185, 129, 0.25); color: #34d399; }
+  .game-einstein-logic .logic-table td.cell.state-X { color: #64748b; font-size: 1.2rem; }
+  .game-einstein-logic .logic-table td.cell.contradiction { background: rgba(244, 63, 94, 0.35); border: 2px solid #f43f5e; }
+
+  /* 피드백 바 */
+  .game-einstein-logic .feedback-box {
+    min-height: 48px;
+    padding: 12px 16px;
+    border-radius: 12px;
+    font-size: 0.96rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: #0f172a;
+    border: 1px solid #334155;
+  }
+
+  /* 하단 명예의 전당 보드 */
+  .game-einstein-logic .bottom-ranking-card {
+    background: #1e293b;
+    border: 2px solid #334155;
+    border-radius: 20px;
+    padding: 20px;
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .game-einstein-logic .ranking-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #334155;
+    padding-bottom: 10px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .game-einstein-logic .ranking-title {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #f8fafc;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* 모달 */
+  .game-einstein-logic .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(6px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    padding: 20px;
+  }
+
+  .game-einstein-logic .modal-backdrop.open { display: flex; }
+
+  .game-einstein-logic .modal-box {
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 22px;
+    width: 100%;
+    max-width: 580px;
+    max-height: 85vh;
+    overflow-y: auto;
+    padding: 24px;
+    color: #e2e8f0;
+    box-shadow: 0 24px 50px rgba(0, 0, 0, 0.75);
+  }
+
+  .game-einstein-logic .modal-title {
+    font-size: 1.35rem;
+    font-weight: 900;
+    color: #f8fafc;
+    margin: 0 0 16px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px solid #334155;
+    padding-bottom: 12px;
+  }
+
+  .game-einstein-logic .rule-list {
+    margin: 0 0 16px 0;
+    padding-left: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: #cbd5e1;
+  }
+
+  .game-einstein-logic .modal-close-btn {
+    width: 100%;
+    background: #10b981;
+    color: #0f172a;
+    border: none;
+    padding: 12px;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 900;
+    cursor: pointer;
+    margin-top: 18px;
+    transition: background 0.2s;
+  }
+
+  .game-einstein-logic .modal-close-btn:hover { background: #059669; color: #ffffff; }
+</style>
+
+<script>
+  /* ==========================================================================
+     EinsteinLogic 모듈 - 아인슈타인 로직 퍼즐 (연속 누적 & 자동 승급 완결판)
+     ========================================================================== */
+  const EinsteinLogic = (function () {
+    // 🌟 [보안] XSS 방어용 HTML 특수기호 이스케이프 함수
+    function escapeHTML(str) {
+      if (!str) return '';
+      return String(str).replace(/[&<>"']/g, function(match) {
+        const escape = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+        return escape[match];
+      });
+    }
+
+    const PUZZLE_SEEDS = {
+      EASY: [
+        {
+          size: 3,
+          attrNames: ['이름', '동아리', '좋아하는 간식'],
+          items: [
+            ['지우', '서준', '민아'],
+            ['과학반', '수학반', '코딩반'],
+            ['피자', '치킨', '마카롱']
+          ],
+          solution: [
+            { '이름': '지우', '동아리': '수학반', '좋아하는 간식': '치킨' },
+            { '이름': '서준', '동아리': '코딩반', '좋아하는 간식': '피자' },
+            { '이름': '민아', '동아리': '과학반', '좋아하는 간식': '마카롱' }
+          ],
+          hints: [
+            '지우는 수학반에 속해 있다.',
+            '피자를 좋아하는 학생은 코딩반이다.',
+            '민아는 과학반이다.',
+            '서준이는 마카롱을 좋아하지 않는다.'
+          ]
+        },
+        {
+          size: 3,
+          attrNames: ['이름', '좋아하는 과목', '반 번호'],
+          items: [
+            ['하늘', '도현', '수아'],
+            ['물리', '화학', '생명'],
+            ['1번', '2번', '3번']
+          ],
+          solution: [
+            { '이름': '하늘', '좋아하는 과목': '화학', '반 번호': '2번' },
+            { '이름': '도현', '좋아하는 과목': '물리', '반 번호': '1번' },
+            { '이름': '수아', '좋아하는 과목': '생명', '반 번호': '3번' }
+          ],
+          hints: [
+            '1번 학생은 물리를 가장 좋아한다.',
+            '하늘이는 2번 자리에 앉는다.',
+            '수아는 생명을 좋아한다.',
+            '도현이는 화학을 선택하지 않았다.'
+          ]
+        }
+      ],
+      NORMAL: [
+        {
+          size: 4,
+          attrNames: ['이름', '동아리', '과목', '자리 순서'],
+          items: [
+            ['지우', '서준', '민아', '도현'],
+            ['과학', '수학', '코딩', '로봇'],
+            ['대수', '기하', '확통', '미적'],
+            ['1번', '2번', '3번', '4번']
+          ],
+          solution: [
+            { '이름': '지우', '동아리': '수학', '과목': '대수', '자리 순서': '1번' },
+            { '이름': '서준', '동아리': '코딩', '과목': '기하', '자리 순서': '2번' },
+            { '이름': '민아', '동아리': '로봇', '과목': '미적', '자리 순서': '3번' },
+            { '이름': '도현', '동아리': '과학', '과목': '확통', '자리 순서': '4번' }
+          ],
+          hints: [
+            '1번 자리에 앉은 학생은 수학 동아리이고 대수 과목을 좋아한다.',
+            '서준이는 2번 자리에 앉으며 기하를 좋아한다.',
+            '민아의 바로 다음 번호(오른쪽) 자리에 과학 동아리 학생이 앉는다.',
+            '로봇 동아리 학생은 미적분을 선택했다.',
+            '도현이는 4번 자리에 앉는다.'
+          ]
+        },
+        {
+          size: 4,
+          attrNames: ['이름', '희망 진로', '음료', '자리 순서'],
+          items: [
+            ['준호', '예린', '성민', '지현'],
+            ['의사', '교사', '연구원', '개발자'],
+            ['주스', '녹차', '우유', '생수'],
+            ['1번', '2번', '3번', '4번']
+          ],
+          solution: [
+            { '이름': '준호', '희망 진로': '개발자', '음료': '생수', '자리 순서': '1번' },
+            { '이름': '예린', '희망 진로': '의사', '음료': '주스', '자리 순서': '2번' },
+            { '이름': '성민', '희망 진로': '연구원', '음료': '녹차', '자리 순서': '3번' },
+            { '이름': '지현', '희망 진로': '교사', '음료': '우유', '자리 순서': '4번' }
+          ],
+          hints: [
+            '개발자를 꿈꾸는 준호는 1번 자리에서 생수를 마신다.',
+            '의사를 꿈꾸는 학생은 2번 자리에 앉는다.',
+            '성민이는 예린이 바로 오른쪽 자리에 앉는다.',
+            '교사가 꿈인 지현이는 우유를 마신다.',
+            '3번 자리 학생은 녹차를 즐긴다.'
+          ]
+        }
+      ],
+      HARD: [
+        {
+          size: 5,
+          attrNames: ['이름', '동아리', '과목', '음료', '자리 순서'],
+          items: [
+            ['지우', '서준', '민아', '도현', '하늘'],
+            ['과학', '수학', '코딩', '로봇', '천문'],
+            ['대수', '기하', '확통', '미적', '벡터'],
+            ['녹차', '콜라', '생수', '우유', '주스'],
+            ['1번', '2번', '3번', '4번', '5번']
+          ],
+          solution: [
+            { '이름': '지우', '동아리': '수학', '과목': '대수', '음료': '생수', '자리 순서': '1번' },
+            { '이름': '서준', '동아리': '코딩', '과목': '기하', '음료': '콜라', '자리 순서': '2번' },
+            { '이름': '민아', '동아리': '로봇', '과목': '미적', '음료': '우유', '자리 순서': '3번' },
+            { '이름': '도현', '동아리': '과학', '과목': '확통', '음료': '녹차', '자리 순서': '4번' },
+            { '이름': '하늘', '동아리': '천문', '과목': '벡터', '음료': '주스', '자리 순서': '5번' }
+          ],
+          hints: [
+            '1번 학생은 생수를 마시며 수학 동아리이다.',
+            '콜라를 마시는 학생은 2번 자리에서 기하를 공부한다.',
+            '3번 자리의 민아는 우유를 마신다.',
+            '천문 동아리 학생은 주스를 마시며 5번 자리에 앉는다.',
+            '도현이는 4번 자리에서 확통을 공부하며 로봇 동아리가 아니다.',
+            '로봇 동아리 학생은 미적분을 좋아한다.'
+          ]
+        }
+      ]
+    };
+
+    let currentMode = 'EASY';
+    let round = 1;         // 전체 누적 진행 라운드
+    let modeStepIdx = 0;   // 현재 난이도 내의 퍼즐 인덱스
+    let currentPuzzle = null;
+    let activePairIdx = 0;
+    let attrPairs = [];
+    let gridData = {};
+    let checkedHints = new Set();
+    let score = 0;         // 연속 누적 점수
+    let reviewCount = 0;
+    let timeLeft = 0;
+    let timerInterval = null;
+    let isGameOver = false;
+    let isCurrentSolved = false;
+
+    function mount(container, context) {
+      let host = null;
+      if (typeof container === 'string') host = document.querySelector(container);
+      else if (container instanceof HTMLElement) host = container;
+      if (!host) host = window.MathLabUtils?.getMountContainer ? window.MathLabUtils.getMountContainer(container) : document.getElementById('mathlab-view');
+      if (!host) host = document.getElementById('new-root') || document.getElementById('game-container');
+
+      if (!host) {
+        let createdHost = document.getElementById('einstein-logic-force-host');
+        if (!createdHost) {
+          createdHost = document.createElement('div');
+          createdHost.id = 'einstein-logic-force-host';
+          document.body.appendChild(createdHost);
+        }
+        host = createdHost;
+      }
+
+      const footerEl = document.querySelector('footer, #footer, .app-footer') || 
+                       Array.from(document.querySelectorAll('div, p, span')).find(el => el.textContent && el.textContent.includes('2026 기록조율사'));
+      if (footerEl && host.compareDocumentPosition(footerEl) & Node.DOCUMENT_POSITION_PRECEDING) {
+        footerEl.parentNode.insertBefore(host, footerEl);
+      }
+
+      host.style.display = '';
+
+      host.innerHTML = `
+        <div class="game-einstein-logic" id="einstein-logic-app">
+          <!-- 상단 헤더 -->
+          <div class="el-header">
+            <div class="title-group">
+              <div class="title-icon">🧠</div>
+              <div>
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <span class="title-text">아인슈타인 로직 퍼즐</span>
+                  <span class="title-badge">연속 누적 모드</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="header-actions">
+              <button class="btn-header home" onclick="EinsteinLogic.goHome()"><span>🏠 홈으로</span></button>
+              <button class="btn-header" onclick="EinsteinLogic.showGuideModal()"><span>📖 규칙 안내</span></button>
+              <button class="btn-header review-btn" onclick="EinsteinLogic.reviewContradictions()"><span>🔍 모순 검토 (-5점)</span></button>
+              <button class="btn-header check-btn" id="el-main-action-btn" onclick="EinsteinLogic.onMainAction()"><span>✅ 최종 정답 제출</span></button>
+              <button class="btn-header hof" onclick="EinsteinLogic.showRankingModal()"><span>🏆 명예의 전당</span></button>
+              <button class="btn-header" style="background:#10b981; color:white;" onclick="EinsteinLogic.resetGame(false)"><span>🔄 처음부터 다시</span></button>
+            </div>
+          </div>
+
+          <!-- 상태 바 -->
+          <div class="el-status-bar">
+            <div class="mode-tabs">
+              <button class="mode-btn active" id="el-btn-easy" onclick="EinsteinLogic.handleTabClick('EASY')">🟢 쉬움 (3×3)</button>
+              <button class="mode-btn" id="el-btn-normal" onclick="EinsteinLogic.handleTabClick('NORMAL')">🔵 보통 (4×4)</button>
+              <button class="mode-btn" id="el-btn-hard" onclick="EinsteinLogic.handleTabClick('HARD')">🟣 도전 (5×5)</button>
+            </div>
+
+            <div class="info-group">
+              <div class="info-item"><span>📋 진행:</span> <span class="info-value" id="el-round-val">ROUND #1 (쉬움)</span></div>
+              <div class="info-item" id="el-timer-wrap" style="display:none;"><span>⏱️ 남은 시간:</span> <span class="info-value warn" id="el-timer-val">480초</span></div>
+              <div class="info-item"><span>🔍 검토 사용:</span> <span class="info-value warn" id="el-review-val">0회</span></div>
+              <div class="info-item"><span>⭐ 누적 점수:</span> <span class="info-value" id="el-score-val">0점</span></div>
+            </div>
+          </div>
+
+          <!-- 메인 레이아웃 -->
+          <div class="puzzle-layout">
+            <div class="hints-panel">
+              <div class="hints-title">
+                <span>📋 사건 단서 (클릭 시 체크 완료)</span>
+                <small style="font-size:0.78rem; color:#94a3b8;">* O 표시 시 행·열 X 자동 전파</small>
+              </div>
+              <div class="hint-list" id="el-hint-list"></div>
+            </div>
+
+            <div class="grid-panel">
+              <div class="pair-tabs" id="el-pair-tabs"></div>
+              <div class="grid-container" id="el-grid-container"></div>
+            </div>
+          </div>
+
+          <!-- 피드백 바 -->
+          <div class="feedback-box" id="el-feedback">💡 힌트를 읽고 그리드 칸을 클릭하여 [O 확정] / [X 불가] 논리를 채워보세요! 연속 클리어 시 자동 승급됩니다.</div>
+
+          <!-- 하단 상시 노출 명예의 전당 보드 영역 -->
+          <div class="bottom-ranking-card">
+            <div class="ranking-header">
+              <div class="ranking-title">🏆 아인슈타인 로직 퍼즐 명예의 전당 (실시간 랭킹 보드)</div>
+              <button class="btn-header review-btn" onclick="EinsteinLogic.manualStopAndSave()" style="font-size:0.82rem; padding:5px 10px;">🏁 내 점수 즉시 정산 등록</button>
+            </div>
+            <div id="board-einstein-logic-bottom">
+              <p style="text-align:center; color:#94a3b8; padding:12px 0;">랭킹 데이터를 불러오는 중...</p>
+            </div>
+          </div>
+
+          <!-- 1. 규칙 안내 모달 -->
+          <div class="modal-backdrop" id="el-guide-modal">
+            <div class="modal-box">
+              <h3 class="modal-title">📖 아인슈타인 로직 퍼즐 규칙</h3>
+              <ul class="rule-list">
+                <li><b>🎯 연속 누적 시스템</b>: 정답을 맞혀도 끝나지 않고 <b>[▶ 다음 퍼즐 진행 (+)]</b> 버튼을 눌러 점수를 계속 누적할 수 있습니다!</li>
+                <li><b>🚀 자동 난이도 승급</b>: 쉬움 퍼즐들을 완료하면 자동으로 🔵 보통 모드로, 보통을 완료하면 🟣 도전 모드로 승급되며 점수가 계속 이어집니다.</li>
+                <li><b>🏁 조기 정산 등록</b>: 언제든 <b>[🏁 내 점수 즉시 정산 등록]</b>을 누르면, 현재까지 멈춘 최종 난이도와 누적 점수를 명예의 전당에 박제할 수 있습니다.</li>
+                <li><b>⚡ 자동 전파 & 검토</b>: O 표시 시 같은 행·열에 X가 자동 전파되며, 꼬였을 땐 [🔍 모순 검토 (-5점)]를 이용할 수 있습니다.</li>
+              </ul>
+              <button class="modal-close-btn" onclick="EinsteinLogic.closeModals()">확인 및 퍼즐 도전 시작</button>
+            </div>
+          </div>
+
+          <!-- 2. 명예의 전당 등록 모달 -->
+          <div class="modal-backdrop" id="el-ranking-modal">
+            <div class="modal-box">
+              <h3 class="modal-title" id="el-ranking-modal-title">🏆 아인슈타인 로직 퍼즐 명예의 전당</h3>
+              <div id="el-gameover-summary" style="background:#0f172a; padding:14px; border-radius:12px; border:1px solid #334155; margin-bottom:14px; text-align:center;"></div>
+              <div id="board-einstein-logic">
+                <p style="text-align:center; color:#94a3b8;">랭킹 데이터를 불러오는 중...</p>
+              </div>
+              <div style="margin-top:16px; display:flex; gap:8px;">
+                <input type="text" id="el-nickname-input" placeholder="도전자 닉네임 (예: 2반 논리왕)" maxlength="18" style="flex:1; padding:12px; border-radius:10px; border:1px solid #334155; background:#0f172a; color:#f8fafc; font-weight:700; font-size:0.98rem; text-align:center;">
+                <button class="btn-header hof" style="padding:0 20px;" onclick="EinsteinLogic.submitRankScore()">등록</button>
+              </div>
+              <button class="modal-close-btn" onclick="EinsteinLogic.closeModals()">창 닫기</button>
+            </div>
+          </div>
+        </div>
+      `;
+
+      resetGame(false);
+      renderBottomLeaderboard();
+    }
+
+    function handleTabClick(targetMode) {
+      if (targetMode === currentMode) return;
+      if (score > 0) {
+        showBanner(`🔄 [${targetMode}] 모드로 이동합니다. 현재 누적 점수(${score}점)가 유지됩니다!`, '#facc15');
+      }
+      setMode(targetMode, true);
+    }
+
+    function setMode(mode, keepScore = true) {
+      currentMode = mode;
+      modeStepIdx = 0;
+      document.querySelectorAll('#einstein-logic-app .mode-btn').forEach(btn => btn.classList.remove('active'));
+      const activeBtn = document.getElementById('el-btn-' + mode.toLowerCase());
+      if (activeBtn) activeBtn.classList.add('active');
+
+      const timerWrap = document.getElementById('el-timer-wrap');
+      if (timerWrap) timerWrap.style.display = mode === 'HARD' ? 'flex' : 'none';
+
+      resetGame(keepScore);
+    }
+
+    function resetGame(keepScore = false) {
+      if (timerInterval) clearInterval(timerInterval);
+      timerInterval = null;
+
+      if (!keepScore) {
+        score = 0;
+        round = 1;
+        modeStepIdx = 0;
+      }
+
+      loadNextPuzzle(true);
+    }
+
+    function loadNextPuzzle(isInitialOrReset = false) {
+      if (timerInterval) clearInterval(timerInterval);
+      timerInterval = null;
+
+      isCurrentSolved = false;
+      checkedHints.clear();
+      reviewCount = 0;
+      timeLeft = currentMode === 'HARD' ? 480 : 0;
+      isGameOver = false;
+
+      // 액션 버튼 원복
+      const actionBtn = document.getElementById('el-main-action-btn');
+      if (actionBtn) {
+        actionBtn.style.background = '#3b82f6';
+        actionBtn.innerHTML = '<span>✅ 최종 정답 제출</span>';
+      }
+
+      // 난이도 내 퍼즐 시드 선택
+      const pool = PUZZLE_SEEDS[currentMode] || PUZZLE_SEEDS.EASY;
+      if (modeStepIdx < pool.length) {
+        currentPuzzle = JSON.parse(JSON.stringify(pool[modeStepIdx]));
+      } else {
+        // 모든 시드 소비 시 템플릿 항목을 약간 치환한 무한 생성 변형 사용
+        const base = pool[modeStepIdx % pool.length];
+        currentPuzzle = JSON.parse(JSON.stringify(base));
+      }
+
+      attrPairs = [];
+      for (let i = 0; i < currentPuzzle.attrNames.length; i++) {
+        for (let j = i + 1; j < currentPuzzle.attrNames.length; j++) {
+          attrPairs.push({
+            rowAttrIdx: i,
+            colAttrIdx: j,
+            key: `${i}-${j}`,
+            name: `${currentPuzzle.attrNames[i]} vs ${currentPuzzle.attrNames[j]}`
+          });
+        }
+      }
+
+      gridData = {};
+      attrPairs.forEach(pair => {
+        gridData[pair.key] = {};
+        currentPuzzle.items[pair.rowAttrIdx].forEach(rowItem => {
+          currentPuzzle.items[pair.colAttrIdx].forEach(colItem => {
+            gridData[pair.key][`${rowItem}-${colItem}`] = '';
+          });
+        });
+      });
+
+      activePairIdx = 0;
+
+      if (currentMode === 'HARD') {
+        timerInterval = setInterval(() => {
+          if (isGameOver || isCurrentSolved) return;
+          timeLeft--;
+          if (timeLeft <= 0) {
+            timeLeft = 0;
+            triggerGameOver('⏰ 도전 모드 타임어택 제한 시간 종료!');
+          }
+          updateUI();
+        }, 1000);
+      }
+
+      renderHints();
+      renderTabsAndGrid();
+      updateUI();
+
+      if (!isInitialOrReset) {
+        showBanner(`🚀 [ROUND #${round}] 새로운 퍼즐 개시! 이전 누적 점수를 이어갑니다.`, '#38bdf8');
+      } else {
+        showBanner(`💡 퍼즐 준비 완료 (${currentPuzzle.attrNames.join(', ')} 조합)! 논리를 채워보세요.`, '#38bdf8');
+      }
+    }
+
+    function renderHints() {
+      const listEl = document.getElementById('el-hint-list');
+      if (!listEl || !currentPuzzle) return;
+
+      listEl.innerHTML = currentPuzzle.hints.map((hint, idx) => `
+        <div class="hint-item ${checkedHints.has(idx) ? 'checked' : ''}" onclick="EinsteinLogic.toggleHint(${idx})">
+          <span class="hint-num">#${idx + 1}</span>
+          <div>${hint}</div>
+        </div>
+      `).join('');
+    }
+
+    function toggleHint(idx) {
+      if (checkedHints.has(idx)) checkedHints.delete(idx);
+      else checkedHints.add(idx);
+      renderHints();
+    }
+
+    function renderTabsAndGrid() {
+      const tabsEl = document.getElementById('el-pair-tabs');
+      const gridEl = document.getElementById('el-grid-container');
+      if (!tabsEl || !gridEl || attrPairs.length === 0) return;
+
+      tabsEl.innerHTML = attrPairs.map((pair, idx) => `
+        <button class="pair-btn ${idx === activePairIdx ? 'active' : ''}" onclick="EinsteinLogic.switchPair(${idx})">
+          ${pair.name}
+        </button>
+      `).join('');
+
+      const curPair = attrPairs[activePairIdx];
+      const rows = currentPuzzle.items[curPair.rowAttrIdx];
+      const cols = currentPuzzle.items[curPair.colAttrIdx];
+
+      gridEl.innerHTML = `
+        <table class="logic-table">
+          <thead>
+            <tr>
+              <th class="col-hdr" style="width:100px;">${currentPuzzle.attrNames[curPair.rowAttrIdx]} \\ ${currentPuzzle.attrNames[curPair.colAttrIdx]}</th>
+              ${cols.map(c => `<th class="col-hdr">${c}</th>`).join('')}
+            </tr>
+          </thead>
+          <tbody>
+            ${rows.map(r => `
+              <tr>
+                <th class="row-hdr">${r}</th>
+                ${cols.map(c => {
+                  const state = gridData[curPair.key][`${r}-${c}`] || '';
+                  return `
+                    <td class="cell state-${state}" id="cell-${curPair.key}-${r}-${c}" onclick="EinsteinLogic.onCellClick('${curPair.key}', '${r}', '${c}')">
+                      ${state}
+                    </td>
+                  `;
+                }).join('')}
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `;
+    }
+
+    function switchPair(idx) {
+      activePairIdx = idx;
+      renderTabsAndGrid();
+    }
+
+    function onCellClick(pairKey, rowItem, colItem) {
+      if (isGameOver || isCurrentSolved) return;
+      const cur = gridData[pairKey][`${rowItem}-${colItem}`];
+      let next = '';
+      if (cur === '') next = 'O';
+      else if (cur === 'O') next = 'X';
+      else next = '';
+
+      gridData[pairKey][`${rowItem}-${colItem}`] = next;
+
+      if (next === 'O') {
+        const curPair = attrPairs.find(p => p.key === pairKey);
+        const rows = currentPuzzle.items[curPair.rowAttrIdx];
+        const cols = currentPuzzle.items[curPair.colAttrIdx];
+
+        rows.forEach(r => {
+          if (r !== rowItem && gridData[pairKey][`${r}-${colItem}`] !== 'O') {
+            gridData[pairKey][`${r}-${colItem}`] = 'X';
+          }
+        });
+        cols.forEach(c => {
+          if (c !== colItem && gridData[pairKey][`${rowItem}-${c}`] !== 'O') {
+            gridData[pairKey][`${rowItem}-${c}`] = 'X';
+          }
+        });
+      }
+
+      renderTabsAndGrid();
+    }
+
+    function reviewContradictions() {
+      if (isGameOver || isCurrentSolved) return;
+      reviewCount++;
+      score = Math.max(0, score - 5);
+      updateUI();
+
+      let errorFound = false;
+      attrPairs.forEach(pair => {
+        const rows = currentPuzzle.items[pair.rowAttrIdx];
+        const cols = currentPuzzle.items[pair.colAttrIdx];
+
+        rows.forEach(r => {
+          cols.forEach(c => {
+            const state = gridData[pair.key][`${r}-${c}`];
+            if (!state) return;
+
+            const isTrueMatch = currentPuzzle.solution.some(item => 
+              item[currentPuzzle.attrNames[pair.rowAttrIdx]] === r && 
+              item[currentPuzzle.attrNames[pair.colAttrIdx]] === c
+            );
+
+            if ((state === 'O' && !isTrueMatch) || (state === 'X' && isTrueMatch)) {
+              errorFound = true;
+              if (pair.key === attrPairs[activePairIdx].key) {
+                const cellEl = document.getElementById(`cell-${pair.key}-${r}-${c}`);
+                if (cellEl) cellEl.classList.add('contradiction');
+              }
+            }
+          });
+        });
+      });
+
+      if (errorFound) {
+        showBanner(`⚠️ 모순 발견 (-5점)! 현재 열려있는 탭 또는 다른 탭에서 논리에 어긋난 칸이 있습니다.`, '#f87171');
+      } else {
+        showBanner(`✨ 완벽합니다! 지금까지 입력한 O/X 표시 중에 힌트와 어긋난 칸이 없습니다! (+추론 유지)`, '#34d399');
+      }
+    }
+
+    function onMainAction() {
+      if (isCurrentSolved) {
+        // 🌟 다음 퍼즐로 진행 & 자동 승급 검사
+        round++;
+        modeStepIdx++;
+
+        const pool = PUZZLE_SEEDS[currentMode] || PUZZLE_SEEDS.EASY;
+        if (currentMode === 'EASY' && modeStepIdx >= pool.length) {
+          showBanner(`🎉 쉬움 모드 마스터! [🔵 보통 모드(4×4)]로 자동 승급하여 누적 점수가 이어집니다!`, '#facc15');
+          setMode('NORMAL', true);
+        } else if (currentMode === 'NORMAL' && modeStepIdx >= pool.length) {
+          showBanner(`🔥 보통 모드 마스터! [🟣 도전 모드(5×5)]로 자동 승급하여 누적 점수가 이어집니다!`, '#facc15');
+          setMode('HARD', true);
+        } else {
+          loadNextPuzzle(false);
+        }
+      } else {
+        checkSolution();
+      }
+    }
+
+    function checkSolution() {
+      if (isGameOver || isCurrentSolved) return;
+
+      let isAllComplete = true;
+      let isAllCorrect = true;
+
+      attrPairs.forEach(pair => {
+        const rows = currentPuzzle.items[pair.rowAttrIdx];
+        const cols = currentPuzzle.items[pair.colAttrIdx];
+
+        rows.forEach(r => {
+          cols.forEach(c => {
+            const state = gridData[pair.key][`${r}-${c}`];
+            const isTrueMatch = currentPuzzle.solution.some(item => 
+              item[currentPuzzle.attrNames[pair.rowAttrIdx]] === r && 
+              item[currentPuzzle.attrNames[pair.colAttrIdx]] === c
+            );
+
+            if (isTrueMatch && state !== 'O') isAllComplete = false;
+            if (state === 'O' && !isTrueMatch) isAllCorrect = false;
+          });
+        });
+      });
+
+      if (!isAllComplete) {
+        score = Math.max(0, score - 2);
+        updateUI();
+        showBanner('⚠️ 아직 모든 확정 짝([O] 표시)이 채워지지 않았거나 오답 칸이 있습니다 (-2점). 더 추론해보세요!', '#f87171');
+        return;
+      }
+
+      if (isAllCorrect) {
+        isCurrentSolved = true;
+        let gain = 20;
+        if (currentMode === 'NORMAL') gain = 25;
+        if (currentMode === 'HARD') gain = 35;
+        if (reviewCount === 0) gain += 5;
+
+        score += gain;
+        updateUI();
+
+        showBanner(`🎉 정답 일치! (+${gain}점 누적) [▶ 다음 퍼즐 진행 (+)] 버튼을 눌러 승급 및 도전을 이어가세요!`, '#34d399');
+
+        const actionBtn = document.getElementById('el-main-action-btn');
+        if (actionBtn) {
+          actionBtn.style.background = '#10b981';
+          actionBtn.innerHTML = '<span>▶ 다음 퍼즐 진행 (+)</span>';
+        }
+      } else {
+        score = Math.max(0, score - 2);
+        updateUI();
+        showBanner('❌ 일부 짝이 잘못 확정되었습니다 (-2점). [🔍 모순 검토]를 활용하거나 힌트를 다시 읽어보세요!', '#f87171');
+      }
+    }
+
+    function showBanner(msg, color) {
+      const banner = document.getElementById('el-feedback');
+      if (banner) {
+        banner.textContent = msg;
+        banner.style.color = color || '#38bdf8';
+      }
+    }
+
+    function manualStopAndSave() {
+      triggerGameOver(`🏁 [${currentMode} ROUND #${round}] 최종 조기 정산 완료!`);
+    }
+
+    function triggerGameOver(reasonMsg) {
+      if (isGameOver && !reasonMsg.includes('정산')) return;
+      isGameOver = true;
+      if (timerInterval) clearInterval(timerInterval);
+
+      showBanner(reasonMsg, '#f87171');
+      setTimeout(() => {
+        showRankingModal(reasonMsg);
+      }, 500);
+    }
+
+    function updateUI() {
+      const roundVal = document.getElementById('el-round-val');
+      const timerVal = document.getElementById('el-timer-val');
+      const revVal = document.getElementById('el-review-val');
+      const scoreVal = document.getElementById('el-score-val');
+
+      if (roundVal) roundVal.textContent = `ROUND #${round} (${currentMode === 'EASY' ? '쉬움' : currentMode === 'NORMAL' ? '보통' : '도전'})`;
+      if (timerVal) timerVal.textContent = `${timeLeft}초`;
+      if (revVal) revVal.textContent = `${reviewCount}회`;
+      if (scoreVal) scoreVal.textContent = `${score}점`;
+    }
+
+    function showGuideModal() { document.getElementById('el-guide-modal')?.classList.add('open'); }
+    function showRankingModal(reasonMsg = '') {
+      document.getElementById('el-ranking-modal')?.classList.add('open');
+      const titleEl = document.getElementById('el-ranking-modal-title');
+      const sumEl = document.getElementById('el-gameover-summary');
+
+      if (titleEl) {
+        titleEl.textContent = reasonMsg ? '🏁 로직 퍼즐 수사 기록 정산' : '🏆 아인슈타인 로직 퍼즐 명예의 전당';
+      }
+
+      if (sumEl) {
+        sumEl.innerHTML = `
+          <div style="font-size:1.15rem; font-weight:900; color:#f87171; margin-bottom:6px;">${reasonMsg || '명예의 전당 랭킹 조회'}</div>
+          <div style="font-size:1.35rem; font-weight:900; color:#38bdf8;">최종 누적 점수: ${score}점</div>
+          <div style="font-size:0.98rem; color:#facc15; margin-top:4px; font-weight:800;">최종 멈춘 위치: [${currentMode}] ROUND #${round}</div>
+        `;
+      }
+
+      if (typeof loadGameLeaderboard === 'function') {
+        loadGameLeaderboard('아인슈타인로직퍼즐', true, 'board-einstein-logic');
+      }
+    }
+
+    function renderBottomLeaderboard() {
+      if (typeof loadGameLeaderboard === 'function') {
+        loadGameLeaderboard('아인슈타인로직퍼즐', false, 'board-einstein-logic-bottom');
+      } else {
+        try {
+          let list = JSON.parse(localStorage.getItem('mathlab_lb_einstein_logic') || '[]');
+          const bottomEl = document.getElementById('board-einstein-logic-bottom');
+          if (bottomEl) {
+            if (list.length === 0) {
+              bottomEl.innerHTML = '<p style="text-align:center; color:#94a3b8; padding:12px 0;">아직 등록된 명예의 전당 기록이 없습니다. 첫 번째 논리 왕이 되어보세요!</p>';
+            } else {
+              bottomEl.innerHTML = `
+                <div style="display:flex; flex-direction:column; gap:6px;">
+                  ${list.slice(0, 5).map((item, idx) => `
+                    <div style="display:flex; justify-content:space-between; align-items:center; background:#0f172a; padding:10px 14px; border-radius:10px; border:1px solid #334155;">
+                      <span style="font-weight:800; color:${idx === 0 ? '#facc15' : '#cbd5e1'};">${idx === 0 ? '👑 1위' : `${idx + 1}위`} - ${escapeHTML(item.nickname)}</span>
+                      <span style="color:#38bdf8; font-weight:900;">${item.score}점 (${item.modeSummary || item.mode || 'EASY'})</span>
+                    </div>
+                  `).join('')}
+                </div>
+              `;
+            }
+          }
+        } catch(e) {}
+      }
+    }
+
+    function closeModals() {
+      document.querySelectorAll('.game-einstein-logic .modal-backdrop').forEach(el => el.classList.remove('open'));
+    }
+
+    function submitRankScore() {
+      const input = document.getElementById('el-nickname-input');
+      const nickname = input ? input.value.trim() : '';
+      if (!nickname) {
+        const titleEl = document.getElementById('el-ranking-modal-title');
+        if(titleEl) { titleEl.innerHTML = '<span style="color:#f87171;">⚠️ 닉네임을 입력해 주세요!</span>'; setTimeout(() => titleEl.textContent = '🏆 아인슈타인 로직 퍼즐 명예의 전당', 2000); }
+        return;
+      }
+
+      const modeSummary = `${currentMode} (R#${round})`;
+
+      try {
+        let list = JSON.parse(localStorage.getItem('mathlab_lb_einstein_logic') || '[]');
+        const dateStr = new Date().toLocaleDateString('ko-KR', { month: '2-digit', day: '2-digit' });
+        list.push({ nickname, score, date: dateStr, mode: currentMode, round, modeSummary });
+        list.sort((a, b) => b.score - a.score);
+        localStorage.setItem('mathlab_lb_einstein_logic', JSON.stringify(list.slice(0, 20)));
+      } catch (e) {}
+
+      if (typeof window.submitRanking === 'function') {
+        window.submitRanking('아인슈타인로직퍼즐', score, true, 'el-nickname-input', 'board-einstein-logic');
+      } else if (typeof window.parent?.submitRanking === 'function') {
+        window.parent.submitRanking('아인슈타인로직퍼즐', score, true, 'el-nickname-input', 'board-einstein-logic');
+      } else {
+        const titleEl = document.getElementById('el-ranking-modal-title');
+        if(titleEl) { titleEl.innerHTML = '<span style="color:#34d399;">🎉 명예의 전당 등록 완료!</span>'; }
+        if (input) input.value = '';
+        setTimeout(() => closeModals(), 1500);
+      }
+
+      renderBottomLeaderboard();
+    }
+
+    function goHome() {
+      destroy();
+      if (window.LegacyBridge && typeof window.LegacyBridge.backHome === 'function') { try { window.LegacyBridge.backHome(); return; } catch(e) {} }
+      if (typeof window.renderLegacyDashboardHome === 'function') { try { window.renderLegacyDashboardHome(); return; } catch(e) {} }
+      if (typeof window.MathLabRenderHome === 'function') { try { window.MathLabRenderHome(); return; } catch(e) {} }
+
+      const mathlabRoot = document.getElementById('mathlab-root');
+      const legacyRoot = document.getElementById('legacy-root');
+      if (mathlabRoot) mathlabRoot.classList.add('hidden');
+      if (legacyRoot) legacyRoot.classList.remove('hidden');
+
+      const dashboard = document.getElementById('dashboard-screen');
+      if (dashboard) { dashboard.classList.add('active'); dashboard.style.display = ''; }
+      window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+    }
+
+    function destroy() {
+      if (timerInterval) clearInterval(timerInterval);
+    }
+
+    return {
+      id: 'einstein-logic',
+      title: '아인슈타인 로직 퍼즐',
+      icon: '🧠',
+      mount, resetGame, destroy, setMode, handleTabClick, toggleHint, switchPair, onCellClick,
+      reviewContradictions, onMainAction, manualStopAndSave,
+      showGuideModal, showRankingModal, closeModals, submitRankScore, renderBottomLeaderboard, goHome
+    };
+  })();
+
+  /* 하단 안전 등록 4중 브리지 */
+  function registerEinsteinLogic() {
+    if (typeof window.MathLabGames !== 'undefined' && typeof window.MathLabGames.register === 'function') {
+      if (!window.MathLabGames.get('einstein-logic')) {
+        try {
+          window.MathLabGames.register({
+            id: EinsteinLogic.id,
+            title: EinsteinLogic.title,
+            icon: EinsteinLogic.icon,
+            sourceType: 'new',
+            mount(container, context) { EinsteinLogic.mount(container, context); },
+            reset() { EinsteinLogic.resetGame(false); },
+            destroy() { EinsteinLogic.destroy(); },
+            goHome() { EinsteinLogic.goHome(); }
+          });
+        } catch (e) {
+          console.warn('einstein-logic 안전 등록 방어:', e);
+        }
+      }
+    }
+  }
+
+  registerEinsteinLogic();
+  window.addEventListener('DOMContentLoaded', registerEinsteinLogic);
+  setTimeout(registerEinsteinLogic, 100);
+  setTimeout(registerEinsteinLogic, 500);
+
+  window.EinsteinLogic = EinsteinLogic;
+  window.initEinsteinLogicGame = function() {
+    const target = document.getElementById('game-einstein-logic-app') || document.getElementById('mathlab-view');
+    EinsteinLogic.mount(target);
+  };
+  window.launchEinsteinLogicGame = function() {
+    registerEinsteinLogic();
+    if (typeof window.MathLabGames !== 'undefined' && typeof window.MathLabGames.mount === 'function') {
+      try { window.MathLabGames.mount('einstein-logic'); return; } catch(e) {}
+    }
+    EinsteinLogic.mount();
+  };
+</script>

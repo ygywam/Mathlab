@@ -1,0 +1,1193 @@
+<style>
+  /* ==========================================================================
+     Gen-3 수학 실험실 표준 스타일 - 나이트 투어 (Knight's Tour)
+     모던 슬레이트 & 다크 네이비 프리미엄 테마 (#0f172a, #1e293b)
+     ========================================================================== */
+  .game-knight-tour {
+    width: 100%;
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: 18px;
+    background: #0f172a;
+    color: #e2e8f0;
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    border-radius: 24px;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    position: relative;
+    box-sizing: border-box;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  .game-knight-tour * {
+    box-sizing: border-box;
+  }
+
+  /* 상단 헤더 바 */
+  .game-knight-tour .stats-bar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    background: #1e293b;
+    border: 1px solid #334155;
+    padding: 12px 18px;
+    border-radius: 16px;
+  }
+
+  .game-knight-tour .title-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .game-knight-tour .title-icon {
+    font-size: 1.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    height: 46px;
+    background: rgba(14, 165, 233, 0.18);
+    border-radius: 12px;
+    color: #38bdf8;
+  }
+
+  .game-knight-tour .title-text {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: #f8fafc;
+    letter-spacing: -0.02em;
+  }
+
+  .game-knight-tour .title-badge {
+    font-size: 0.76rem;
+    font-weight: 700;
+    background: #0ea5e9;
+    color: #ffffff;
+    padding: 3px 8px;
+    border-radius: 6px;
+  }
+
+  .game-knight-tour .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .game-knight-tour .btn-header {
+    background: #334155;
+    color: #e2e8f0;
+    border: 1px solid #475569;
+    padding: 8px 14px;
+    border-radius: 10px;
+    font-size: 0.86rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+  }
+
+  .game-knight-tour .btn-header:hover {
+    background: #475569;
+    color: #ffffff;
+    transform: translateY(-1px);
+  }
+
+  .game-knight-tour .btn-header.primary {
+    background: #0ea5e9;
+    color: #ffffff;
+    border-color: #0284c7;
+  }
+
+  .game-knight-tour .btn-header.primary:hover {
+    background: #0284c7;
+  }
+
+  .game-knight-tour .btn-header.demo {
+    background: rgba(139, 92, 246, 0.22);
+    color: #c4b5fd;
+    border-color: #8b5cf6;
+  }
+
+  .game-knight-tour .btn-header.demo:hover {
+    background: #8b5cf6;
+    color: #ffffff;
+  }
+
+  /* 상태 바 */
+  .game-knight-tour .status-panel {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    background: rgba(30, 41, 59, 0.75);
+    border: 1px solid #334155;
+    padding: 12px 18px;
+    border-radius: 14px;
+  }
+
+  .game-knight-tour .mode-tabs {
+    display: flex;
+    gap: 6px;
+    background: #0f172a;
+    padding: 4px;
+    border-radius: 10px;
+    border: 1px solid #334155;
+    flex-wrap: wrap;
+  }
+
+  .game-knight-tour .mode-btn {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    padding: 6px 14px;
+    border-radius: 7px;
+    font-size: 0.84rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .game-knight-tour .mode-btn.active {
+    background: #0ea5e9;
+    color: #ffffff;
+    box-shadow: 0 2px 6px rgba(14, 165, 233, 0.35);
+  }
+
+  .game-knight-tour .info-group {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    flex-wrap: wrap;
+  }
+
+  .game-knight-tour .info-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.92rem;
+    color: #cbd5e1;
+  }
+
+  .game-knight-tour .info-value {
+    font-weight: 800;
+    color: #38bdf8;
+  }
+
+  /* 메인 게임 및 컨트롤 영역 */
+  .game-knight-tour .main-layout {
+    display: grid;
+    grid-template-columns: 1fr 310px;
+    gap: 20px;
+    align-items: start;
+  }
+
+  @media (max-width: 840px) {
+    .game-knight-tour .main-layout {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* 체스판 영역 */
+  .game-knight-tour .board-container {
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 18px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .game-knight-tour .board-wrapper {
+    position: relative;
+    display: inline-block;
+  }
+
+  .game-knight-tour .chess-grid {
+    display: grid;
+    gap: 4px;
+    background: #0f172a;
+    padding: 8px;
+    border-radius: 14px;
+    border: 2px solid #334155;
+    position: relative;
+    z-index: 2;
+  }
+
+  .game-knight-tour .cell {
+    width: 62px;
+    height: 62px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  @media (max-width: 600px) {
+    .game-knight-tour .cell {
+      width: 48px;
+      height: 48px;
+      border-radius: 8px;
+    }
+  }
+
+  /* 칸 스타일 */
+  .game-knight-tour .cell.light {
+    background: #334155;
+    color: #f8fafc;
+  }
+
+  .game-knight-tour .cell.dark {
+    background: #1e293b;
+    color: #f8fafc;
+  }
+
+  .game-knight-tour .cell:hover:not(.visited) {
+    border: 2px solid #38bdf8;
+    transform: scale(1.04);
+  }
+
+  /* 이동 가능 칸 (Valid Next Move) */
+  .game-knight-tour .cell.valid-move {
+    background: rgba(14, 165, 233, 0.32) !important;
+    border: 2px solid #0ea5e9;
+    box-shadow: 0 0 14px rgba(14, 165, 233, 0.45);
+  }
+
+  .game-knight-tour .cell.valid-move:hover {
+    background: rgba(14, 165, 233, 0.55) !important;
+    transform: scale(1.06);
+  }
+
+  /* 현재 나이트 위치 */
+  .game-knight-tour .cell.current {
+    background: linear-gradient(135deg, #f59e0b, #d97706) !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 20px rgba(245, 158, 11, 0.65);
+    z-index: 5;
+    border: 2px solid #fef08a;
+  }
+
+  /* 방문 완료 칸 */
+  .game-knight-tour .cell.visited {
+    background: #0f172a !important;
+    color: #64748b;
+    cursor: default;
+    border: 1px solid #1e293b;
+  }
+
+  .game-knight-tour .cell.visited.start-cell {
+    border: 2px dashed #10b981;
+  }
+
+  /* 나이트 아이콘 & 뱃지 */
+  .game-knight-tour .knight-icon {
+    font-size: 1.6rem;
+    line-height: 1;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+  }
+
+  .game-knight-tour .visit-num {
+    font-size: 0.84rem;
+    font-weight: 800;
+  }
+
+  .game-knight-tour .degree-badge {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background: #10b981;
+    color: #ffffff;
+    font-size: 0.72rem;
+    font-weight: 800;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+  }
+
+  .game-knight-tour .degree-badge.warn-min {
+    background: #f59e0b;
+    color: #000;
+  }
+
+  /* SVG 경로 오버레이 */
+  .game-knight-tour .svg-path-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 3;
+  }
+
+  .game-knight-tour .tour-line {
+    stroke: rgba(56, 189, 248, 0.45);
+    stroke-width: 3.5;
+    stroke-linecap: round;
+    fill: none;
+    transition: all 0.2s ease;
+  }
+
+  .game-knight-tour .tour-line.recent {
+    stroke: #38bdf8;
+    stroke-width: 4.5;
+    filter: drop-shadow(0 0 6px rgba(56, 189, 248, 0.8));
+  }
+
+  .game-knight-tour .tour-line.closed-bonus {
+    stroke: #10b981;
+    stroke-width: 5;
+    stroke-dasharray: 6 4;
+  }
+
+  /* 우측 사이드 패널 */
+  .game-knight-tour .side-panel {
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 18px;
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .game-knight-tour .panel-title {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: #38bdf8;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .game-knight-tour .control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .game-knight-tour .btn-action {
+    background: #0f172a;
+    border: 1px solid #334155;
+    color: #e2e8f0;
+    padding: 12px 14px;
+    border-radius: 12px;
+    font-size: 0.92rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: all 0.18s;
+  }
+
+  .game-knight-tour .btn-action:hover:not(:disabled) {
+    background: #334155;
+    border-color: #475569;
+    color: #ffffff;
+  }
+
+  .game-knight-tour .btn-action:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  .game-knight-tour .guide-box {
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 12px;
+    padding: 13px;
+    font-size: 0.84rem;
+    color: #cbd5e1;
+    line-height: 1.55;
+  }
+
+  .game-knight-tour .guide-box b {
+    color: #38bdf8;
+  }
+
+  /* 플로팅 알림 및 결과 모달 */
+  .game-knight-tour .toast-banner {
+    position: absolute;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: rgba(15, 23, 42, 0.96);
+    border: 2px solid #f59e0b;
+    border-radius: 16px;
+    padding: 16px 22px;
+    color: #ffffff;
+    font-weight: 700;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    z-index: 500;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .game-knight-tour .toast-banner.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+    pointer-events: auto;
+  }
+
+  .game-knight-tour .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.78);
+    backdrop-filter: blur(5px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    padding: 20px;
+  }
+
+  .game-knight-tour .modal-backdrop.open {
+    display: flex;
+  }
+
+  .game-knight-tour .modal-box {
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 20px;
+    width: 100%;
+    max-width: 640px;
+    max-height: 88vh;
+    overflow-y: auto;
+    padding: 24px;
+    color: #e2e8f0;
+    box-shadow: 0 24px 50px rgba(0, 0, 0, 0.65);
+  }
+
+  .game-knight-tour .modal-title {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: #f8fafc;
+    margin: 0 0 14px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .game-knight-tour .modal-close-btn {
+    width: 100%;
+    background: #0ea5e9;
+    color: #ffffff;
+    border: none;
+    padding: 13px;
+    border-radius: 12px;
+    font-size: 0.96rem;
+    font-weight: 800;
+    cursor: pointer;
+    margin-top: 18px;
+    transition: background 0.2s;
+  }
+
+  .game-knight-tour .modal-close-btn:hover {
+    background: #0284c7;
+  }
+</style>
+
+<script>
+  /* ==========================================================================
+     KnightTour 모듈 - 나이트 투어 완결판 (동적 DOM 안전 삽입 & 푸터 상단 유지 보장)
+     ========================================================================== */
+  const KnightTour = (function () {
+    let boardSize = 6; // 기본 6x6
+    let board = [];
+    let pathHistory = []; // [ {r, c}, ... ]
+    let score = 0;
+    let timerInterval = null;
+    let elapsedSeconds = 0;
+    let hintActive = false;
+    let demoActive = false;
+    let demoTimeout = null;
+    let demoSpeedMs = 550;
+    let maxVisitedRecord = 0;
+    let toastTimer = null;
+
+    const escapeHTML = (str) => {
+      if (!str) return '';
+      return String(str).replace(/[&<>"']/g, function(match) {
+        const escape = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+        return escape[match];
+      });
+    };
+
+    function showToast(msg, isError = false) {
+      let host = document.getElementById('knight-tour-app');
+      if (!host) return;
+      let toast = host.querySelector('#kt-toast');
+      if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'kt-toast';
+        toast.style.cssText = 'position:absolute; top:20px; left:50%; transform:translateX(-50%); padding:12px 24px; border-radius:12px; font-weight:800; font-size:1rem; z-index:99999; box-shadow:0 10px 25px rgba(0,0,0,0.5); transition:all 0.3s; text-align:center; min-width:300px; pointer-events:none; opacity:0;';
+        host.appendChild(toast);
+      }
+      toast.style.background = isError ? '#ef4444' : '#10b981';
+      toast.style.color = isError ? '#ffffff' : '#0f172a';
+      toast.textContent = msg;
+      void toast.offsetWidth;
+      toast.style.opacity = '1';
+      toast.style.top = '20px';
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.top = '0px';
+      }, 3000);
+    }
+
+    const KNIGHT_MOVES = [
+      [-2, -1], [-2, 1], [-1, -2], [-1, 2],
+      [1, -2], [1, 2], [2, -1], [2, 1]
+    ];
+
+    function mount(container, context) {
+      let target = null;
+      if (typeof container === 'string') target = document.querySelector(container);
+      else if (container instanceof HTMLElement) target = container;
+      if (!target) target = document.getElementById('mathlab-view') || document.getElementById('new-root') || document.getElementById('game-container');
+
+      // 푸터 아래로 밀려나지 않도록 메인 콘텐츠 래퍼(#mathlab-view 또는 푸터 바로 앞) 내부에 안전 탑재
+      if (!target || target === document.body) {
+        let host = document.getElementById('knight-tour-force-host');
+        if (!host) {
+          host = document.createElement('div');
+          host.id = 'knight-tour-force-host';
+          host.style.cssText = 'width:100%; max-width:1040px; margin:0 auto; padding:16px; box-sizing:border-box; z-index:999; position:relative; background:#0f172a; border-radius:24px;';
+          const footer = document.querySelector('footer, #footer, .app-footer');
+          if (footer && footer.parentNode) {
+            footer.parentNode.insertBefore(host, footer);
+          } else {
+            document.body.appendChild(host);
+          }
+        }
+        target = host;
+      }
+      // 🌟 스킬 표준 방어막: 과거 goHome 등으로 인라인 display:none이 남아있다면 즉시 복구 (재진입 빈 화면 방지)
+      if (target) {
+        target.style.display = '';
+      }
+      target.innerHTML = `
+        <div class="game-knight-tour" id="knight-tour-app">
+          <div class="stats-bar">
+            <div class="title-group">
+              <div class="title-icon">♞</div>
+              <div>
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <span class="title-text">나이트 투어 (Knight's Tour)</span>
+                  <span class="title-badge">해밀턴 경로 탐구</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="header-actions">
+              <button class="btn-header home" onclick="KnightTour.goHome()">
+                <span>🏠 홈으로</span>
+              </button>
+              <button class="btn-header demo" onclick="KnightTour.startWarnsdorffDemo()">
+                <span>▶ Warnsdorff 자동 시연 모드</span>
+              </button>
+              <button class="btn-header" onclick="KnightTour.showGuideModal()">
+                <span>📖 수학 원리 & 휴리스틱</span>
+              </button>
+              <button class="btn-header" onclick="KnightTour.showRankingModal()">
+                <span>🏆 명예의 전당</span>
+              </button>
+              <button class="btn-header primary" onclick="KnightTour.resetGame()">
+                <span>🔄 재시작</span>
+              </button>
+            </div>
+
+          <div class="status-panel">
+            <div class="mode-tabs">
+              <button class="mode-btn" id="kt-btn-5" onclick="KnightTour.setBoardSize(5)">5×5 (입문)</button>
+              <button class="mode-btn active" id="kt-btn-6" onclick="KnightTour.setBoardSize(6)">6×6 (기본)</button>
+              <button class="mode-btn" id="kt-btn-8" onclick="KnightTour.setBoardSize(8)">8×8 (도전)</button>
+            </div>
+
+            <div class="info-group">
+              <div class="info-item">
+                <span>📍 방문 칸:</span>
+                <span class="info-value" id="kt-visit-count">0 / 36</span>
+              </div>
+              <div class="info-item">
+                <span>🏆 최고 기록:</span>
+                <span class="info-value" id="kt-max-record">0</span>
+              </div>
+              <div class="info-item">
+                <span>⏱️ 시간:</span>
+                <span class="info-value" id="kt-timer">00:00</span>
+              </div>
+              <div class="info-item">
+                <span>⭐ 점수:</span>
+                <span class="info-value" id="kt-score">0</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="main-layout">
+            <div class="board-container">
+              <div class="board-wrapper" id="kt-board-wrapper">
+                <div class="chess-grid" id="kt-chess-grid"></div>
+                <svg class="svg-path-overlay" id="kt-svg-overlay"></svg>
+              </div>
+            </div>
+
+            <div class="side-panel">
+              <div class="panel-title">⚡ 탐색 컨트롤</div>
+              <div class="control-group">
+                <button class="btn-action" id="kt-btn-undo" onclick="KnightTour.undoMove()" disabled>
+                  <span>↩️ 한 수 되돌리기 (Undo)</span>
+                  <span style="font-size:0.8rem; color:#94a3b8;">무제한</span>
+                </button>
+                <button class="btn-action" id="kt-btn-hint" onclick="KnightTour.toggleHint()">
+                  <span>💡 Warnsdorff 차수 힌트 보기</span>
+                  <span style="font-size:0.8rem; color:#f59e0b;">-15점</span>
+                </button>
+                <button class="btn-action" onclick="KnightTour.resetGame()">
+                  <span>🔄 현재 판 초기화</span>
+                  <span>▶</span>
+                </button>
+              </div>
+
+              <div class="guide-box">
+                <b>♞ Warnsdorff의 휴리스틱 법칙</b><br>
+                나이트가 이동할 수 있는 칸 중에서 <b>"다음에 진출할 수 있는 칸(차수)이 가장 적은 칸"</b>부터 우선 방문하면 막힐 확률이 획기적으로 줄어듭니다!<br><br>
+                <b>🌟 닫힌 투어 (Closed Tour) 도전</b>: 마지막 칸에서 시작 칸으로 다시 돌아올 수 있으면 해밀턴 순환 보너스(+150점) 획득!
+              </div>
+            </div>
+          </div>
+
+          <!-- 막힘 안내 배너 -->
+          <div class="toast-banner" id="kt-deadend-toast">
+            <span>⚠️ 이동할 수 있는 칸이 없습니다! <b>[↩️ 한 수 되돌리기]</b> 버튼을 눌러 다른 경로를 시도해 보세요.</span>
+          </div>
+
+          <!-- 가이드 모달 -->
+          <div class="modal-backdrop" id="kt-guide-modal">
+            <div class="modal-box">
+              <h3 class="modal-title">📖 나이트 투어 수학 원리 & 해밀턴 경로</h3>
+              <p style="color:#cbd5e1; line-height:1.6; margin:0 0 16px 0;">
+                <b>1. 해밀턴 경로 (Hamiltonian Path)</b><br>
+                그래프 이론에서 모든 꼭짓점(칸)을 정확히 한 번씩만 방문하는 경로를 말합니다. 체스판의 각 칸을 꼭짓점으로, 나이트의 행마법을 변으로 연결한 그래프입니다.<br><br>
+                <b>2. Warnsdorff의 탐욕적 휴리스틱 (Warnsdorff's Rule, 1823)</b><br>
+                - 이동 가능한 후보 칸 중에서 <b>다음에 방문할 수 있는 미방문 칸의 수(차수, Degree)</b>가 가장 작은 칸을 선택합니다.<br>
+                - 차수가 적은 외곽 칸을 먼저 처리해야 중앙부 칸이 나중을 위해 남아 고립을 방지할 수 있습니다.<br><br>
+                <b>3. 닫힌 투어 (Closed Tour - 해밀턴 순환)</b><br>
+                완주한 후, 마지막 칸에서 첫 시작 칸으로 나이트가 다시 이동할 수 있는 완벽한 순환 고리를 형성할 때 부릅니다.
+              </p>
+              <button class="modal-close-btn" onclick="KnightTour.closeModals()">확인 및 탐색 시작</button>
+            </div>
+          </div>
+
+          <!-- 명예의 전당 모달 -->
+          <div class="modal-backdrop" id="kt-ranking-modal">
+            <div class="modal-box">
+              <h3 class="modal-title">🏆 나이트 투어 명예의 전당 (Top 5)</h3>
+              <div id="board-knight-tour">
+                <p style="text-align:center; color:#94a3b8;">랭킹 데이터를 불러오는 중...</p>
+              </div>
+              <div style="margin-top:16px; display:flex; gap:8px;">
+                <input type="text" id="kt-nickname-input" placeholder="닉네임 입력" style="flex:1; padding:10px 14px; border-radius:10px; border:1px solid #334155; background:#0f172a; color:#f8fafc; font-weight:700;">
+                <button class="btn-header primary" onclick="KnightTour.submitRankScore()">등록</button>
+              </div>
+              <button class="modal-close-btn" onclick="KnightTour.closeModals()">닫기</button>
+            </div>
+          </div>
+        </div>
+      `;
+
+      setBoardSize(6);
+    }
+    // 🌟 스킬 표준 안전 홈 버튼 (타이머/시연 중단 및 표준 브리지 연동)
+    function goHome() {
+      stopTimer();
+      stopDemo();
+
+      // 1. 표준 브리지 최우선 호출 (상단 로고/우측 하단 홈버튼과 완벽 동일 동작)
+      if (window.LegacyBridge && typeof window.LegacyBridge.backHome === 'function') {
+        try { window.LegacyBridge.backHome(); return; } catch(e) {}
+      }
+      if (typeof window.renderLegacyDashboardHome === 'function') {
+        try { window.renderLegacyDashboardHome(); return; } catch(e) {}
+      }
+      if (typeof window.MathLabRenderHome === 'function') {
+        try { window.MathLabRenderHome(); return; } catch(e) {}
+      }
+
+      // 2. 브리지 부재 시 폴백: 수동 루트 전환 및 대시보드 활성화
+      const mathlabRoot = document.getElementById('mathlab-root');
+      const legacyRoot = document.getElementById('legacy-root');
+      if (mathlabRoot) mathlabRoot.classList.add('hidden');
+      if (legacyRoot) legacyRoot.classList.remove('hidden');
+
+      const dashboard = document.getElementById('dashboard-screen');
+      if (dashboard) {
+        dashboard.classList.add('active');
+        dashboard.style.display = '';
+      }
+      window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+    }
+    function setBoardSize(sz) {
+      boardSize = sz;
+      document.querySelectorAll('#knight-tour-app .mode-btn').forEach(btn => btn.classList.remove('active'));
+      const activeBtn = document.getElementById('kt-btn-' + sz);
+      if (activeBtn) activeBtn.classList.add('active');
+      hintActive = (sz === 5); // 5x5는 상시 힌트 제공
+      resetGame();
+    }
+
+    function resetGame() {
+      stopTimer();
+      stopDemo();
+      pathHistory = [];
+      score = 0;
+      elapsedSeconds = 0;
+      board = Array.from({ length: boardSize }, () => Array(boardSize).fill(0));
+      hideDeadendToast();
+      renderBoard();
+      updateStatusPanel();
+    }
+
+    function startTimer() {
+      stopTimer();
+      timerInterval = setInterval(() => {
+        elapsedSeconds++;
+        const min = String(Math.floor(elapsedSeconds / 60)).padStart(2, '0');
+        const sec = String(elapsedSeconds % 60).padStart(2, '0');
+        const timerEl = document.getElementById('kt-timer');
+        if (timerEl) timerEl.textContent = `${min}:${sec}`;
+      }, 1000);
+    }
+
+    function stopTimer() {
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+    }
+
+    function isValidPos(r, c) {
+      return r >= 0 && r < boardSize && c >= 0 && c < boardSize;
+    }
+
+    function getValidMovesFrom(r, c) {
+      const moves = [];
+      KNIGHT_MOVES.forEach(([dr, dc]) => {
+        const nr = r + dr;
+        const nc = c + dc;
+        if (isValidPos(nr, nc) && board[nr][nc] === 0) {
+          moves.push({ r: nr, c: nc });
+        }
+      });
+      return moves;
+    }
+
+    // Warnsdorff 차수 (진출 가능 수)
+    function getDegree(r, c) {
+      let deg = 0;
+      KNIGHT_MOVES.forEach(([dr, dc]) => {
+        const nr = r + dr;
+        const nc = c + dc;
+        if (isValidPos(nr, nc) && board[nr][nc] === 0) {
+          deg++;
+        }
+      });
+      return deg;
+    }
+
+    function clickCell(r, c) {
+      if (demoActive) return;
+
+      if (pathHistory.length === 0) {
+        // 첫 시작 칸 선택
+        startTimer();
+        makeMove(r, c);
+        return;
+      }
+
+      const current = pathHistory[pathHistory.length - 1];
+      const validMoves = getValidMovesFrom(current.r, current.c);
+      const isCandidate = validMoves.some(m => m.r === r && m.c === c);
+
+      if (isCandidate) {
+        makeMove(r, c);
+      }
+    }
+
+    function makeMove(r, c) {
+      pathHistory.push({ r, c });
+      const order = pathHistory.length;
+      board[r][c] = order;
+
+      if (!demoActive) {
+        score += 10; // 칸 방문당 +10점
+        maxVisitedRecord = Math.max(maxVisitedRecord, order);
+      }
+
+      hideDeadendToast();
+      renderBoard();
+      updateStatusPanel();
+
+      // 완주 체크
+      if (order === boardSize * boardSize) {
+        handleVictory();
+        return;
+      }
+
+      // 막힘 체크
+      const nextMoves = getValidMovesFrom(r, c);
+      if (nextMoves.length === 0 && !demoActive) {
+        showDeadendToast();
+      }
+    }
+
+    function undoMove() {
+      if (demoActive || pathHistory.length <= 1) return;
+      const last = pathHistory.pop();
+      board[last.r][last.c] = 0;
+      score = Math.max(0, score - 10);
+      hideDeadendToast();
+      renderBoard();
+      updateStatusPanel();
+    }
+
+    function toggleHint() {
+      hintActive = !hintActive;
+      if (hintActive && !demoActive) {
+        score = Math.max(0, score - 15);
+      }
+      renderBoard();
+      updateStatusPanel();
+    }
+
+    function renderBoard() {
+      const gridEl = document.getElementById('kt-chess-grid');
+      if (!gridEl) return;
+
+      gridEl.style.gridTemplateColumns = `repeat(${boardSize}, 1fr)`;
+      gridEl.innerHTML = '';
+
+      const current = pathHistory.length > 0 ? pathHistory[pathHistory.length - 1] : null;
+      const validMoves = current ? getValidMovesFrom(current.r, current.c) : [];
+
+      // Warnsdorff 최소 차수 계산
+      let minDegree = 99;
+      const moveDegrees = {};
+      validMoves.forEach(m => {
+        const deg = getDegree(m.r, m.c);
+        moveDegrees[`${m.r},${m.c}`] = deg;
+        if (deg < minDegree) minDegree = deg;
+      });
+
+      for (let r = 0; r < boardSize; r++) {
+        for (let c = 0; c < boardSize; c++) {
+          const cellEl = document.createElement('div');
+          const isLight = (r + c) % 2 === 0;
+          cellEl.className = `cell ${isLight ? 'light' : 'dark'}`;
+
+          const orderNum = board[r][c];
+          const isCurrent = current && current.r === r && current.c === c;
+          const isValidMove = validMoves.some(m => m.r === r && m.c === c);
+
+          if (orderNum > 0) {
+            cellEl.classList.add('visited');
+            if (orderNum === 1) cellEl.classList.add('start-cell');
+
+            if (isCurrent) {
+              cellEl.classList.add('current');
+              cellEl.innerHTML = `<span class="knight-icon">♞</span><span class="visit-num">#${orderNum}</span>`;
+            } else {
+              cellEl.innerHTML = `<span class="visit-num">${orderNum}</span>`;
+            }
+          } else if (isValidMove) {
+            cellEl.classList.add('valid-move');
+
+            if (hintActive) {
+              const deg = moveDegrees[`${r},${c}`];
+              const isMin = deg === minDegree;
+              const badge = document.createElement('div');
+              badge.className = `degree-badge ${isMin ? 'warn-min' : ''}`;
+              badge.textContent = deg;
+              badge.title = `다음 진출 가능 수: ${deg}`;
+              cellEl.appendChild(badge);
+            }
+          }
+
+          cellEl.onclick = () => clickCell(r, c);
+          gridEl.appendChild(cellEl);
+        }
+      }
+
+      const undoBtn = document.getElementById('kt-btn-undo');
+      if (undoBtn) undoBtn.disabled = (pathHistory.length <= 1 || demoActive);
+
+      requestAnimationFrame(renderSVGPath);
+    }
+
+    function renderSVGPath() {
+      const svg = document.getElementById('kt-svg-overlay');
+      const gridEl = document.getElementById('kt-chess-grid');
+      if (!svg || !gridEl || pathHistory.length < 2) {
+        if (svg) svg.innerHTML = '';
+        return;
+      }
+
+      const gridRect = gridEl.getBoundingClientRect();
+      svg.setAttribute('width', gridEl.offsetWidth);
+      svg.setAttribute('height', gridEl.offsetHeight);
+      svg.innerHTML = '';
+
+      const cells = gridEl.querySelectorAll('.cell');
+      if (cells.length < boardSize * boardSize) return;
+
+      const getCenter = (r, c) => {
+        const idx = r * boardSize + c;
+        const cell = cells[idx];
+        if (!cell) return { x: 0, y: 0 };
+        return {
+          x: cell.offsetLeft + cell.offsetWidth / 2,
+          y: cell.offsetTop + cell.offsetHeight / 2
+        };
+      };
+
+      for (let i = 0; i < pathHistory.length - 1; i++) {
+        const p1 = getCenter(pathHistory[i].r, pathHistory[i].c);
+        const p2 = getCenter(pathHistory[i + 1].r, pathHistory[i + 1].c);
+
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', p1.x);
+        line.setAttribute('y1', p1.y);
+        line.setAttribute('x2', p2.x);
+        line.setAttribute('y2', p2.y);
+        line.setAttribute('class', 'tour-line' + (i >= pathHistory.length - 6 ? ' recent' : ''));
+        svg.appendChild(line);
+      }
+    }
+
+    function handleVictory() {
+      stopTimer();
+
+      // 닫힌 투어(Closed Tour) 검증
+      const start = pathHistory[0];
+      const end = pathHistory[pathHistory.length - 1];
+      const dr = Math.abs(start.r - end.r);
+      const dc = Math.abs(start.c - end.c);
+      const isClosedTour = (dr === 1 && dc === 2) || (dr === 2 && dc === 1);
+
+      if (!demoActive) {
+        score += 100; // 완주 보너스
+        if (isClosedTour) score += 150; // 닫힌 투어 순환 보너스
+      }
+
+      updateStatusPanel();
+
+      const closedMsg = isClosedTour
+        ? `<b style="color:#34d399;">🌟 닫힌 투어(Closed Tour - 해밀턴 순환) 완성! (+150점 추가 보너스)</b>`
+        : `시작 칸으로 바로 갈 수는 없는 열린 해밀턴 경로를 완성했습니다!`;
+
+      setTimeout(() => {
+        showToast(`🎉 축하합니다! 완벽하게 완주했습니다! (+${score}점)${isClosedTour ? ' 🌟 닫힌 투어 보너스 포함!' : ''}`);
+        showRankingModal();
+      }, 350);
+    }
+
+    // Warnsdorff 자동 시연 모드
+    function startWarnsdorffDemo() {
+      stopDemo();
+      demoActive = true;
+      pathHistory = [];
+      board = Array.from({ length: boardSize }, () => Array(boardSize).fill(0));
+
+      // 시작 칸: 코너 또는 중앙
+      const sr = 0;
+      const sc = 0;
+      makeMove(sr, sc);
+
+      function stepDemo() {
+        if (!demoActive) return;
+        const cur = pathHistory[pathHistory.length - 1];
+        const nextMoves = getValidMovesFrom(cur.r, cur.c);
+
+        if (nextMoves.length === 0) {
+          demoActive = false;
+          return;
+        }
+
+        // Warnsdorff 휴리스틱 선택
+        let bestMoves = [];
+        let minDeg = 999;
+        nextMoves.forEach(m => {
+          const deg = getDegree(m.r, m.c);
+          if (deg < minDeg) {
+            minDeg = deg;
+            bestMoves = [m];
+          } else if (deg === minDeg) {
+            bestMoves.push(m);
+          }
+        });
+
+        // 중심으로부터의 거리가 더 먼 외곽 칸 우선 타이브레이크
+        const chosen = bestMoves.sort((a, b) => {
+          const distA = Math.abs(a.r - boardSize / 2) + Math.abs(a.c - boardSize / 2);
+          const distB = Math.abs(b.r - boardSize / 2) + Math.abs(b.c - boardSize / 2);
+          return distB - distA;
+        })[0];
+
+        makeMove(chosen.r, chosen.c);
+
+        if (pathHistory.length < boardSize * boardSize) {
+          demoTimeout = setTimeout(stepDemo, demoSpeedMs);
+        } else {
+          demoActive = false;
+        }
+      }
+
+      demoTimeout = setTimeout(stepDemo, demoSpeedMs);
+    }
+
+    function stopDemo() {
+      demoActive = false;
+      if (demoTimeout) {
+        clearTimeout(demoTimeout);
+        demoTimeout = null;
+      }
+    }
+
+    function showDeadendToast() {
+      const toast = document.getElementById('kt-deadend-toast');
+      if (toast) toast.classList.add('show');
+    }
+
+    function hideDeadendToast() {
+      const toast = document.getElementById('kt-deadend-toast');
+      if (toast) toast.classList.remove('show');
+    }
+
+    function updateStatusPanel() {
+      const cntEl = document.getElementById('kt-visit-count');
+      const maxEl = document.getElementById('kt-max-record');
+      const scoreEl = document.getElementById('kt-score');
+
+      if (cntEl) cntEl.textContent = `${pathHistory.length} / ${boardSize * boardSize}`;
+      if (maxEl) maxEl.textContent = maxVisitedRecord;
+      if (scoreEl) scoreEl.textContent = score;
+    }
+
+    function showGuideModal() {
+      document.getElementById('kt-guide-modal')?.classList.add('open');
+    }
+
+    function showRankingModal() {
+      document.getElementById('kt-ranking-modal')?.classList.add('open');
+      if (typeof loadGameLeaderboard === 'function') {
+        loadGameLeaderboard('나이트투어', true, 'board-knight-tour');
+      }
+    }
+
+    function closeModals() {
+      document.querySelectorAll('#knight-tour-app .modal-backdrop').forEach(el => el.classList.remove('open'));
+    }
+
+    function submitRankScore() {
+      const input = document.getElementById('kt-nickname-input');
+      const nickname = input ? input.value.trim() : '';
+      if (!nickname) {
+        showToast('닉네임을 입력해 주세요.', true);
+        return;
+      }
+
+      try {
+        let list = JSON.parse(localStorage.getItem('mathlab_lb_knight_tour') || '[]');
+        const dateStr = new Date().toLocaleDateString('ko-KR', { month: '2-digit', day: '2-digit' });
+        list.push({ nickname, score, date: dateStr });
+        list.sort((a, b) => b.score - a.score);
+        localStorage.setItem('mathlab_lb_knight_tour', JSON.stringify(list.slice(0, 20)));
+      } catch (e) {}
+
+      if (typeof window.submitRanking === 'function') {
+        window.submitRanking('나이트투어', score, true, 'kt-nickname-input', 'board-knight-tour');
+      } else if (typeof window.parent?.submitRanking === 'function') {
+        window.parent.submitRanking('나이트투어', score, true, 'kt-nickname-input', 'board-knight-tour');
+      } else {
+        showToast(`🎉 명예의 전당 등록 완료!`);
+        if (input) input.value = '';
+        closeModals();
+      }
+    }
+
+    function destroy() {
+      stopTimer();
+      stopDemo();
+    }
+
+    return {
+      mount,
+      resetGame,
+      destroy,
+      setBoardSize,
+      undoMove,
+      toggleHint,
+      startWarnsdorffDemo,
+      goHome, // 🌟 이 줄을 추가!
+      showGuideModal,
+      showRankingModal,
+      closeModals,
+      submitRankScore
+    };
+  })();
+
+  window.KnightTour = KnightTour;
+
+  // 🌟 스킬 표준 3중 자율 등록 (스크립트 로딩 순서 무관 100% 등록 보장)
+  function registerKnightTour() {
+    if (typeof window.MathLabGames !== 'undefined' && typeof window.MathLabGames.register === 'function') {
+      if (!window.MathLabGames.get('knight-tour')) {
+        window.MathLabGames.register({
+          id: 'knight-tour',
+          title: '나이트 투어',
+          icon: '♞',
+          sourceType: 'new',
+          mount(container, context) { KnightTour.mount(container, context); },
+          reset() { KnightTour.resetGame(); },
+          destroy() { KnightTour.destroy(); }
+        });
+      }
+    }
+  }
+
+  registerKnightTour();
+  window.addEventListener('DOMContentLoaded', registerKnightTour);
+  setTimeout(registerKnightTour, 100);
+  setTimeout(registerKnightTour, 500);
+</script>

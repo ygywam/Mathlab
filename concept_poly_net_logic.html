@@ -1,0 +1,379 @@
+<script>
+(function() {
+  'use strict';
+
+  // IIFE 내부에 고속 수학 연산 함수들을 배치하여 전역 오염 방지 및 성능 유지
+  const vSub = (a, b) => [a[0]-b[0], a[1]-b[1], a[2]-b[2]]; 
+  const vAdd = (a, b) => [a[0]+b[0], a[1]+b[1], a[2]+b[2]]; 
+  const vCross = (a, b) => [a[1]*b[2]-a[2]*b[1], a[2]*b[0]-a[0]*b[2], a[0]*b[1]-a[1]*b[0]]; 
+  const vDot = (a, b) => a[0]*b[0] + a[1]*b[1] + a[2]*b[2]; 
+  const vMag = a => Math.sqrt(vDot(a,a)); 
+  const vNorm = a => { let m = vMag(a); return m===0 ? [0,0,0] : [a[0]/m, a[1]/m, a[2]/m]; };
+  
+  function getRotationMatrix(axisPt, axisDir, angle) { 
+    let u = axisDir[0], v = axisDir[1], w = axisDir[2]; 
+    let c = Math.cos(angle), s = Math.sin(angle); 
+    let m = [ 
+      u*u*(1-c)+c, u*v*(1-c)-w*s, u*w*(1-c)+v*s, 0, 
+      u*v*(1-c)+w*s, v*v*(1-c)+c, v*w*(1-c)-u*s, 0, 
+      u*w*(1-c)-v*s, v*w*(1-c)+u*s, w*w*(1-c)+c, 0, 
+      0, 0, 0, 1 
+    ]; 
+    let tx = axisPt[0] - (m[0]*axisPt[0] + m[1]*axisPt[1] + m[2]*axisPt[2]); 
+    let ty = axisPt[1] - (m[4]*axisPt[0] + m[5]*axisPt[1] + m[6]*axisPt[2]); 
+    let tz = axisPt[2] - (m[8]*axisPt[0] + m[9]*axisPt[1] + m[10]*axisPt[2]); 
+    m[3] = tx; m[7] = ty; m[11] = tz; 
+    return m; 
+  }
+  
+  const mMult = (a, b) => { 
+    let c = Array(16).fill(0); 
+    for(let i=0; i<4; i++) 
+      for(let j=0; j<4; j++) 
+        for(let k=0; k<4; k++) 
+          c[i*4+j] += a[i*4+k]*b[k*4+j]; 
+    return c; 
+  }; 
+  
+  const mApply = (m, v) => [ 
+    m[0]*v[0] + m[1]*v[1] + m[2]*v[2] + m[3], 
+    m[4]*v[0] + m[5]*v[1] + m[6]*v[2] + m[7], 
+    m[8]*v[0] + m[9]*v[1] + m[10]*v[2] + m[11] 
+  ];
+
+  const PolyNetConceptApp = {
+    host: null,
+    poly3dCtx: null,
+    poly3dCanvas: null,
+    poly3dReqId: null,
+    polyFacesTree: [],
+    polyAngleX: 0,
+    polyAngleY: 0,
+    foldProgress: 0,
+    poly3dFoldRaf: null,
+    poly3dIsSliding: false,
+    currentPoly3dObj: null,
+
+    mount(container) {
+      this.host = (typeof container === 'string') ? document.querySelector(container) : container;
+      if (!this.host) {
+        this.host = document.getElementById('mathlab-view') || document.getElementById('new-root') || document.body;
+      }
+      
+      this.host.style.display = '';
+      this.host.style.visibility = 'visible';
+      this.host.style.opacity = '1';
+      let parent = this.host.parentElement;
+      while (parent && parent !== document.body && parent !== document.documentElement) {
+        if (parent.style && parent.style.display === 'none') parent.style.display = 'block';
+        if (parent.style && parent.style.visibility === 'hidden') parent.style.visibility = 'visible';
+        parent = parent.parentElement;
+      }
+      
+      this.render();
+    },
+
+    goHome() {
+      this.destroy();
+      if (typeof window.LegacyBridge !== 'undefined' && typeof window.LegacyBridge.backHome === 'function') {
+        try { window.LegacyBridge.backHome(); return; } catch (e) {}
+      }
+      if (typeof window.MathLabUtils !== 'undefined' && typeof window.MathLabUtils.goHome === 'function') {
+        window.MathLabUtils.goHome();
+      } else {
+        location.reload();
+      }
+    },
+
+    destroy() {
+      this.stopPoly3DLoop();
+      if (this.host) {
+        this.host.innerHTML = '';
+        this.host.style.display = 'none';
+      }
+    },
+
+    stopPoly3DLoop() {
+      if (this.poly3dReqId) {
+        cancelAnimationFrame(this.poly3dReqId);
+        this.poly3dReqId = null;
+      }
+    },
+
+    startPoly3DLoop() {
+      this.stopPoly3DLoop();
+      this.poly3dReqId = requestAnimationFrame(() => this.drawPoly3DLoop());
+    },
+
+    initPoly3DApp() {
+      this.stopPoly3DLoop();
+      if (!this.host) return;
+      this.poly3dCanvas = this.host.querySelector('#canvas-poly3d');
+      if (!this.poly3dCanvas) return;
+      this.poly3dCtx = this.poly3dCanvas.getContext('2d');
+      this.bindPoly3DFoldSliderState();
+      this.switchPoly3D('tetra');
+    },
+
+    bindPoly3DFoldSliderState() {
+      const slider = this.host.querySelector('#slider-poly-fold');
+      if (!slider) return;
+
+      if (slider.dataset.poly3dBound === '1') return;
+      slider.dataset.poly3dBound = '1';
+
+      slider.addEventListener('pointerdown', () => { this.poly3dIsSliding = true; });
+      slider.addEventListener('pointerup', () => { this.poly3dIsSliding = false; });
+      slider.addEventListener('pointercancel', () => { this.poly3dIsSliding = false; });
+      slider.addEventListener('touchstart', () => { this.poly3dIsSliding = true; }, { passive: true });
+      slider.addEventListener('touchend', () => { this.poly3dIsSliding = false; }, { passive: true });
+    },
+
+    updatePoly3DFold() {
+      const slider = this.host.querySelector('#slider-poly-fold');
+      if (!slider) return;
+      this.foldProgress = parseFloat(slider.value) || 0;
+    },
+
+    switchPoly3D(type) {
+      if (!this.host) return;
+      this.host.querySelectorAll('.poly-tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+        btn.style.borderColor = '#dfe6e9';
+        btn.style.color = '#7f8c8d';
+        btn.style.background = '#fff';
+      });
+
+      let activeBtn = this.host.querySelector(`.poly-tab-btn[data-type="${type}"]`);
+      if(activeBtn) {
+        activeBtn.classList.add('active');
+        activeBtn.style.borderColor = '#e67e22';
+        activeBtn.style.color = '#e67e22';
+      }
+
+      let slider = this.host.querySelector('#slider-poly-fold');
+      if(slider) {
+        slider.value = 0;
+        this.foldProgress = 0;
+      }
+
+      this.stopPoly3DLoop();
+
+      if (!this.poly3dCanvas || !this.poly3dCtx) {
+        this.poly3dCanvas = this.host.querySelector('#canvas-poly3d');
+        if (!this.poly3dCanvas) return;
+        this.poly3dCtx = this.poly3dCanvas.getContext('2d');
+      }
+
+      this.generatePolyhedron(type);
+    },
+
+    generatePolyhedron(type) {
+      const phi = (1 + Math.sqrt(5)) / 2; let v = []; let title = "", desc = ""; let vSet = new Set();
+      if (type === 'tetra') { v = [[1,1,1], [1,-1,-1], [-1,1,-1], [-1,-1,1]]; title = "정사면체 (Tetrahedron)"; desc = "면(F): 4, 모서리(E): 6, 꼭짓점(V): 4"; } 
+      else if (type === 'cube') { v = [[1,1,1],[1,1,-1],[1,-1,1],[1,-1,-1],[-1,1,1],[-1,1,-1],[-1,-1,1],[-1,-1,-1]]; title = "정육면체 (Cube)"; desc = "면(F): 6, 모서리(E): 12, 꼭짓점(V): 8"; } 
+      else if (type === 'octa') { v = [[1,0,0], [-1,0,0], [0,1,0], [0,-1,0], [0,0,1], [0,0,-1]]; title = "정팔면체 (Octahedron)"; desc = "면(F): 8, 모서리(E): 12, 꼭짓점(V): 6"; } 
+      else if (type === 'icosa') { v = [[0,1,phi],[0,-1,phi],[0,1,-phi],[0,-1,-phi],[1,phi,0],[-1,phi,0],[1,-phi,0],[-1,-phi,0],[phi,0,1],[-phi,0,1],[phi,0,-1],[-phi,0,-1]]; title = "정이십면체 (Icosahedron)"; desc = "면(F): 20, 모서리(E): 30, 꼭짓점(V): 12"; } 
+      else if (type === 'dodeca') { let inv = 1/phi; for(let i of [-1,1]) for(let j of [-1,1]) for(let k of [-1,1]) v.push([i,j,k]); for(let i of [-1,1]) for(let j of [-1,1]) { v.push([0, i*inv, j*phi]); v.push([i*inv, j*phi, 0]); v.push([i*phi, 0, j*inv]); } title = "정십이면체 (Dodecahedron)"; desc = "면(F): 12, 모서리(E): 30, 꼭짓점(V): 20"; } 
+      else if (type === 'cubocta') { for(let i of [-1,1]) for(let j of [-1,1]) { v.push([i,j,0]); v.push([i,0,j]); v.push([0,i,j]); } title = "육팔면체 (Cuboctahedron)"; desc = "정육면체나 정팔면체의 꼭짓점을 모서리의 중점까지 깊게 깎아내어(Truncation) 만든 준정다면체입니다.<br>면(F): 14, 모서리(E): 24, 꼭짓점(V): 12"; } 
+      else if (type === 'trunc_octa') { let base = [[0,1,2], [0,2,1], [1,0,2], [1,2,0], [2,0,1], [2,1,0]]; for(let b of base) { for(let i of [-1,1]) for(let j of [-1,1]) for(let k of [-1,1]) { let pt = [b[0]*i, b[1]*j, b[2]*k]; if(b[0]===0) pt[0]=0; if(b[1]===0) pt[1]=0; if(b[2]===0) pt[2]=0; let key = pt.join(','); if(!vSet.has(key)) { vSet.add(key); v.push(pt); } } } title = "깎은 정팔면체 (Truncated Octahedron)"; desc = "정팔면체의 6개 꼭짓점을 깎아내어 원래 꼭짓점 자리에 정사각형이 생기게 한 준정다면체입니다.<br>면(F): 14, 모서리(E): 36, 꼭짓점(V): 24"; } 
+      else if (type === 'icosidodeca') { for(let i of [-1,1]) { v.push([0, 0, i*2*phi]); v.push([0, i*2*phi, 0]); v.push([i*2*phi, 0, 0]); } for(let i of [-1,1]) for(let j of [-1,1]) for(let k of [-1,1]) { v.push([i, j*phi, k*phi*phi]); v.push([j*phi, k*phi*phi, i]); v.push([k*phi*phi, i, j*phi]); } title = "십이이십면체 (Icosidodecahedron)"; desc = "정이십면체나 정십이면체의 꼭짓점을 모서리의 중점까지 깊게 깎아 만든 준정다면체입니다.<br>면(F): 32, 모서리(E): 60, 꼭짓점(V): 30"; }
+
+      let faces = [];
+      for(let i=0; i<v.length; i++) for(let j=i+1; j<v.length; j++) for(let k=j+1; k<v.length; k++) {
+        let n = vCross(vSub(v[j],v[i]), vSub(v[k],v[i])); if(vMag(n) < 0.01) continue; n = vNorm(n); let d = vDot(n, v[i]); let faceV = []; let s1=0, s2=0;
+        for(let m=0; m<v.length; m++) { let dist = vDot(n, v[m]) - d; if(Math.abs(dist) < 0.05) faceV.push(m); else if(dist > 0) s1++; else s2++; }
+        if(s1===0 || s2===0) { let exists = faces.find(f => f.length===faceV.length && f.every(x=>faceV.includes(x))); if(!exists && faceV.length >= 3) { let c=[0,0,0]; faceV.forEach(x=>c=vAdd(c,v[x])); c=[c[0]/faceV.length, c[1]/faceV.length, c[2]/faceV.length]; let u = vNorm(vSub(v[faceV[0]], c)); let w = vNorm(vCross(n, u)); faceV.sort((a,b) => Math.atan2(vDot(vSub(v[a],c),w), vDot(vSub(v[a],c),u)) - Math.atan2(vDot(vSub(v[b],c),w), vDot(vSub(v[b],c),u))); faces.push(faceV); } }
+      }
+      const colors = ['#e74c3c','#3498db','#2ecc71','#f1c40f','#9b59b6','#e67e22','#1abc9c','#34495e','#d35400','#8e44ad','#c0392b','#16a085'];
+      let pFaces = faces.map((f, id) => { let pts = f.map(idx => v[idx]); let normal = vNorm(vCross(vSub(pts[1],pts[0]), vSub(pts[2],pts[0]))); let c=[0,0,0]; pts.forEach(p=>c=vAdd(c,p)); c=[c[0]/pts.length, c[1]/pts.length, c[2]/pts.length]; if(vDot(normal, c) < 0) normal = [-normal[0], -normal[1], -normal[2]]; return { id, pts, originalNormal: normal, children: [], color: colors[id % colors.length] }; });
+
+      let visited = new Set([0]); let q = [0];
+      while(q.length > 0) {
+        let curr = q.shift();
+        for(let i=0; i<faces.length; i++) {
+          if(!visited.has(i)) {
+            let shared = []; for(let p1 of pFaces[curr].pts) for(let p2 of pFaces[i].pts) if(vMag(vSub(p1,p2))<0.05) shared.push(p1);
+            if(shared.length === 2) { visited.add(i); let nA = pFaces[curr].originalNormal, nB = pFaces[i].originalNormal; let cross = vCross(nB, nA); if(vMag(cross) > 0.001) { let axis = vNorm(cross); let maxAng = Math.acos(Math.max(-1, Math.min(1, vDot(nA, nB)))); pFaces[curr].children.push({ child: pFaces[i], maxAng: maxAng, edgeDir: axis, pivot: shared[0] }); q.push(i); } }
+          }
+        }
+      }
+      this.polyFacesTree = pFaces[0];
+      
+      let n0 = this.polyFacesTree.originalNormal; let dot0 = vDot(n0, [0,0,1]); let alignMat = [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1];
+      if (dot0 < 0.999) { if (dot0 < -0.999) alignMat = getRotationMatrix([0,0,0], [1,0,0], Math.PI); else alignMat = getRotationMatrix([0,0,0], vNorm(vCross(n0, [0,0,1])), Math.acos(dot0)); }
+
+      this.applyUnfoldTransform(this.polyFacesTree, alignMat, 1.0);
+      let flatFaces = []; this.flattenTree(this.polyFacesTree, flatFaces);
+      let minX=Infinity, maxX=-Infinity, minY=Infinity, maxY=-Infinity;
+      flatFaces.forEach(f => f.currentPts.forEach(p => { if(p[0]<minX) minX=p[0]; if(p[0]>maxX) maxX=p[0]; if(p[1]<minY) minY=p[1]; if(p[1]>maxY) maxY=p[1]; }));
+      let w = maxX - minX; let h = maxY - minY;
+      if (h > w * 1.1) { alignMat = mMult(getRotationMatrix([0,0,0], [0,0,1], Math.PI/2), alignMat); let temp = w; w = h; h = temp; }
+      
+      // 여백 확보를 위해 1.3 계수를 적용하여 자동 축척 조절
+      let optScaleX = (this.poly3dCanvas.width / 1.3) / w; 
+      let optScaleY = (this.poly3dCanvas.height / 1.3) / h;
+      let maxDist = 0; v.forEach(pt => maxDist = Math.max(maxDist, Math.sqrt(pt[0]*pt[0] + pt[1]*pt[1] + pt[2]*pt[2])));
+      this.currentPoly3dObj = { alignMat: alignMat, baseScale: 190 / maxDist, unfoldScale: Math.min(optScaleX, optScaleY) };
+      
+      if(this.host.querySelector('#poly3d-title')) this.host.querySelector('#poly3d-title').innerText = title; 
+      if(this.host.querySelector('#poly3d-desc')) this.host.querySelector('#poly3d-desc').innerHTML = desc;
+      this.startPoly3DLoop();
+    },
+
+    applyUnfoldTransform(node, parentMat, progress) {
+      let m = parentMat; if (node.edgeInfo) { let e = node.edgeInfo; let rotMat = getRotationMatrix(e.pivot, e.edgeDir, progress * e.maxAng); m = mMult(parentMat, rotMat); }
+      node.currentPts = node.pts.map(p => mApply(m, p));
+      let n = vNorm(vCross(vSub(node.currentPts[1],node.currentPts[0]), vSub(node.currentPts[2],node.currentPts[0]))); let c=[0,0,0]; node.currentPts.forEach(p=>c=vAdd(c,p)); c=[c[0]/node.currentPts.length, c[1]/node.currentPts.length, c[2]/node.currentPts.length]; if(vDot(n, c) < 0) n = [-n[0], -n[1], -n[2]]; node.currentNormal = n;
+      node.children.forEach(cNode => { cNode.child.edgeInfo = cNode; this.applyUnfoldTransform(cNode.child, m, progress); });
+    },
+
+    flattenTree(node, arr) { arr.push(node); node.children.forEach(c => this.flattenTree(c.child, arr)); },
+
+    drawPoly3DLoop() {
+      if(!this.poly3dCtx || !this.polyFacesTree || !this.currentPoly3dObj) return; 
+      this.poly3dCtx.clearRect(0, 0, this.poly3dCanvas.width, this.poly3dCanvas.height);
+      
+      if (this.foldProgress < 1 && !this.poly3dIsSliding) {
+        this.polyAngleX += 0.005;
+        this.polyAngleY += 0.007;
+      }
+      let cY = Math.cos(this.polyAngleY); let sY = Math.sin(this.polyAngleY); 
+      let cX = Math.cos(this.polyAngleX); let sX = Math.sin(this.polyAngleX); 
+      
+      let f = 1 - this.foldProgress;
+      let rotMat = [ 
+        cY*f + 1*this.foldProgress, (sX*sY)*f, (cX*sY)*f, 0,   
+        0, cX*f + 1*this.foldProgress, (-sX)*f, 0,   
+        (-sY)*f, (sX*cY)*f, (cX*cY)*f + 1*this.foldProgress, 0,   
+        0, 0, 0, 1 
+      ];
+      let sceneMat = mMult(rotMat, this.currentPoly3dObj.alignMat);
+
+      this.applyUnfoldTransform(this.polyFacesTree, [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1], this.foldProgress);
+      let allFaces = []; this.flattenTree(this.polyFacesTree, allFaces);
+      const cx = this.poly3dCanvas.width / 2, cy = this.poly3dCanvas.height / 2;
+      const scale = this.currentPoly3dObj.baseScale * (1 - this.foldProgress) + this.currentPoly3dObj.unfoldScale * this.foldProgress;
+
+      allFaces.forEach(face => { face.projPts = face.currentPts.map(pt => { let p = mApply(sceneMat, pt); return { x: cx + p[0]*scale, y: cy - p[1]*scale, z: p[2] }; }); face.zDepth = face.projPts.reduce((sum, p) => sum + p.z, 0) / face.projPts.length; face.projNormal = mApply(sceneMat, face.currentNormal); });
+      allFaces.sort((a, b) => b.zDepth - a.zDepth); let lightDir = vNorm([0.5, 0.5, 1]);
+
+      allFaces.forEach(face => {
+        this.poly3dCtx.beginPath(); this.poly3dCtx.moveTo(face.projPts[0].x, face.projPts[0].y); for(let i=1; i<face.projPts.length; i++) this.poly3dCtx.lineTo(face.projPts[i].x, face.projPts[i].y); this.poly3dCtx.closePath();
+        let brightness = Math.max(0.2, Math.min(1.0, vDot(face.projNormal, lightDir) * 0.5 + 0.5));
+        this.poly3dCtx.fillStyle = face.color; this.poly3dCtx.globalAlpha = brightness; this.poly3dCtx.fill(); 
+        this.poly3dCtx.globalAlpha = 1.0; this.poly3dCtx.strokeStyle = 'rgba(255,255,255,0.7)'; this.poly3dCtx.lineWidth = 1.5; this.poly3dCtx.stroke();
+      });
+      this.poly3dReqId = requestAnimationFrame(() => this.drawPoly3DLoop());
+    },
+
+    render() {
+      if (!this.host) return;
+      var h = '';
+      h += '<style>';
+      h += '  .poly-net-container { padding: 24px; background: #ffffff; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); max-width: 800px; margin: 0 auto; font-family: "Pretendard", sans-serif; }';
+      h += '  .poly-net-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }';
+      h += '  .poly-net-header h1 { margin: 0; font-size: 2rem; color: #2c3e50; font-weight: 900; }';
+      h += '  .poly-home-btn { padding: 10px 16px; background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 10px; cursor: pointer; color: #475569; font-weight: 800; transition: 0.2s; }';
+      h += '  .poly-tab-btn { padding: 10px; border: 2px solid #dfe6e9; border-radius: 10px; background: #fff; color: #7f8c8d; font-weight: 800; font-size: 0.85rem; cursor: pointer; transition: 0.2s; text-align: center; }';
+      h += '  .poly-tab-btn.active { border-color: #e67e22; color: #e67e22; }';
+      h += '  .poly-slider-wrap { background: #f8fafc; padding: 15px; border-radius: 14px; border: 1px solid #e2e8f0; margin-bottom: 15px; }';
+      h += '  .poly-slider-wrap input[type="range"], .poly-slider-wrap #slider-poly-fold { width: 100%; accent-color: #e67e22; cursor: pointer; touch-action: pan-x; -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }';
+      // 캔버스 감싸는 영역 세로 높이를 550px로 확장
+      h += '  .poly-canvas-wrap { background: #2c3e50; border: 3px solid #34495e; border-radius: 16px; overflow: hidden; display: flex; justify-content: center; align-items: center; height: 550px; margin-bottom: 20px; }';
+      h += '</style>';
+      h += '<div class="poly-net-container">';
+      h += '  <div class="poly-net-header">';
+      h += '    <h1>3D 도형 공작소 &#128230;</h1>';
+      h += '    <button class="poly-home-btn" id="pn-btn-home">&#127968; 대시보드</button>';
+      h += '  </div>';
+      h += '  <p style="background:#fff3e0; color:#e67e22; padding:12px; border-radius:12px; font-weight:800; text-align:center; border:1px solid #ffeaa7; margin-bottom:20px;">';
+      h += '    정다면체와 이를 깎아 만든 준정다면체의 전개도를 펼치고 조립해 보세요.';
+      h += '  </p>';
+      h += '  <h3 style="font-size: 1.05rem; color:#2c3e50; margin-bottom:10px; border-left: 4px solid #3498db; padding-left: 8px;">&#128312; 정다면체 (Platonic Solids)</h3>';
+      h += '  <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-bottom: 20px;">';
+      h += '    <button class="poly-tab-btn active" data-type="tetra">정사면체</button>';
+      h += '    <button class="poly-tab-btn" data-type="cube">정육면체</button>';
+      h += '    <button class="poly-tab-btn" data-type="octa">정팔면체</button>';
+      h += '    <button class="poly-tab-btn" data-type="dodeca">정십이면체</button>';
+      h += '    <button class="poly-tab-btn" data-type="icosa">정이십면체</button>';
+      h += '  </div>';
+      h += '  <h3 style="font-size: 1.05rem; color:#2c3e50; margin-bottom:10px; border-left: 4px solid #e67e22; padding-left: 8px;">&#128310; 준정다면체 (Archimedean Solids)</h3>';
+      h += '  <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 15px;">';
+      h += '    <button class="poly-tab-btn" data-type="cubocta">육팔면체</button>';
+      h += '    <button class="poly-tab-btn" data-type="trunc_octa">깎은 정팔면체</button>';
+      h += '    <button class="poly-tab-btn" data-type="icosidodeca">십이이십면체</button>';
+      h += '  </div>';
+      h += '  <div class="poly-slider-wrap">';
+      h += '    <label style="color:#e67e22; font-weight:800; display:block; margin-bottom:10px;">&#128260; 전개도 펼치기 / 접기 조작</label>';
+      h += '    <input type="range" id="slider-poly-fold" min="0" max="1" step="0.01" value="0">';
+      h += '    <div style="display:flex; justify-content:space-between; font-size:0.85rem; color:#7f8c8d; margin-top:8px; font-weight:700;">';
+      h += '      <span>3D 입체 조립상태</span><span>2D 평면 전개도</span>';
+      h += '    </div>';
+      h += '  </div>';
+      h += '  <div class="poly-canvas-wrap">';
+      // 캔버스 자체 높이를 height="550"으로 지정
+      h += '    <canvas id="canvas-poly3d" width="600" height="550" style="max-width: 100%; height: auto;"></canvas>';
+      h += '  </div>';
+      h += '  <div style="background:#ffffff; border: 2px solid #e2e8f0; border-radius:12px; padding:20px;">';
+      h += '    <div id="poly3d-title" style="color:#e67e22; margin-bottom:10px; font-size: 1.2rem; font-weight: 800;">도형 이름</div>';
+      h += '    <div id="poly3d-desc" style="color:#2d3436; font-size:1rem; line-height:1.6; font-weight:600;">설명</div>';
+      h += '  </div>';
+      h += '</div>';
+      this.host.innerHTML = h;
+
+      var _this = this;
+      var btnHome = this.host.querySelector('#pn-btn-home');
+      if (btnHome) btnHome.onclick = function() { _this.goHome(); };
+      
+      var tabs = this.host.querySelectorAll('.poly-tab-btn');
+      for (var i = 0; i < tabs.length; i++) {
+        tabs[i].onclick = function() {
+          var type = this.getAttribute('data-type');
+          _this.switchPoly3D(type);
+        };
+      }
+      
+      var slider = this.host.querySelector('#slider-poly-fold');
+      if (slider) {
+        slider.oninput = function() { _this.updatePoly3DFold(); };
+      }
+
+      setTimeout(() => this.initPoly3DApp(), 50);
+    }
+  };
+
+  window.PolyNetConceptApp = PolyNetConceptApp;
+
+  function registerMyApp() {
+    if (typeof window.MathLabGames !== 'undefined' && typeof window.MathLabGames.register === 'function') {
+      window.MathLabGames.register({
+        id: 'poly-net-concept',
+        title: '3D 도형 공작소',
+        icon: '📦',
+        appType: 'concept',
+        topApp: '수학 개념',
+        sourceType: 'new',
+        mount(container) { PolyNetConceptApp.mount(container); },
+        reset() { /* 탭 초기화 */ },
+        destroy() { PolyNetConceptApp.destroy(); },
+        goHome() { PolyNetConceptApp.goHome(); }
+      });
+    }
+  }
+
+  registerMyApp();
+  window.addEventListener('DOMContentLoaded', registerMyApp);
+
+  window.initPolyNetApp = function() {
+    if (window.LegacyBridge && typeof window.LegacyBridge.hideAllLegacySections === 'function') {
+      window.LegacyBridge.hideAllLegacySections();
+      window.LegacyBridge.showNewRoot();
+    }
+    if (typeof window.MathLabGames !== 'undefined' && typeof window.MathLabGames.mount === 'function') {
+      try { window.MathLabGames.mount('poly-net-concept'); return; } catch(e){}
+    }
+    PolyNetConceptApp.mount();
+  };
+})();
+</script>

@@ -1,0 +1,1036 @@
+<style>
+  /* Gen-3 Slate & Dark Navy Theme */
+  .game-large-numbers-betting {
+    position: relative;
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto;
+    font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+    background: #0f172a;
+    color: #f8fafc;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 650px;
+    box-sizing: border-box;
+  }
+  .game-large-numbers-betting * { box-sizing: border-box; }
+
+  /* Header */
+  .game-large-numbers-betting .app-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background: #1e293b;
+    border-bottom: 2px solid #334155;
+  }
+  .game-large-numbers-betting .app-title {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #38bdf8;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .game-large-numbers-betting .header-btns {
+    display: flex;
+    gap: 10px;
+  }
+  .game-large-numbers-betting .btn {
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+    white-space: nowrap;
+    background: #334155;
+    color: #f8fafc;
+  }
+  .game-large-numbers-betting .btn:hover { background: #475569; transform: translateY(-2px); }
+  .game-large-numbers-betting .btn-primary { background: #0284c7; }
+  .game-large-numbers-betting .btn-primary:hover { background: #0369a1; }
+  .game-large-numbers-betting .btn-home { background: #ef4444; }
+  .game-large-numbers-betting .btn-home:hover { background: #dc2626; }
+
+  /* Mode Switcher */
+  .game-large-numbers-betting .mode-switcher {
+    display: flex;
+    background: #1e293b;
+    border-bottom: 2px solid #334155;
+  }
+  .game-large-numbers-betting .mode-tab {
+    flex: 1;
+    padding: 12px;
+    text-align: center;
+    font-weight: 800;
+    font-size: 1.1rem;
+    cursor: pointer;
+    background: #1e293b;
+    color: #94a3b8;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s;
+  }
+  .game-large-numbers-betting .mode-tab:hover { color: #e2e8f0; }
+  .game-large-numbers-betting .mode-tab.active {
+    color: #38bdf8;
+    background: #0f172a;
+    border-bottom-color: #38bdf8;
+  }
+
+  /* Main Area */
+  .game-large-numbers-betting .main-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    gap: 20px;
+    overflow-y: auto;
+  }
+
+  /* Status Bar */
+  .game-large-numbers-betting .status-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(30, 41, 59, 0.8);
+    padding: 15px 20px;
+    border-radius: 12px;
+    border: 1px solid #334155;
+  }
+  .game-large-numbers-betting .asset-display {
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: #facc15;
+    text-shadow: 0 0 10px rgba(250, 204, 21, 0.3);
+  }
+
+  /* Control Panel */
+  .game-large-numbers-betting .control-panel {
+    display: flex;
+    gap: 20px;
+  }
+  .game-large-numbers-betting .panel-box {
+    flex: 1;
+    background: #1e293b;
+    border-radius: 12px;
+    padding: 15px;
+    border: 1px solid #334155;
+  }
+  .game-large-numbers-betting .panel-title {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #cbd5e1;
+    margin-bottom: 12px;
+    text-align: center;
+  }
+  
+  .game-large-numbers-betting .btn-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+  }
+  .game-large-numbers-betting .opt-btn {
+    padding: 8px 12px;
+    border-radius: 8px;
+    background: #0f172a;
+    border: 2px solid #475569;
+    color: #94a3b8;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .game-large-numbers-betting .opt-btn.active {
+    background: #0284c7;
+    border-color: #38bdf8;
+    color: #fff;
+  }
+
+  /* Betting Inputs */
+  .game-large-numbers-betting .bet-inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+  }
+  .game-large-numbers-betting .input-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .game-large-numbers-betting .num-input {
+    width: 80px;
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #475569;
+    background: #0f172a;
+    color: #fff;
+    text-align: center;
+    font-weight: 700;
+    font-size: 1rem;
+  }
+  .game-large-numbers-betting .multiplier-info {
+    font-size: 1.1rem;
+    color: #34d399;
+    font-weight: 800;
+  }
+  .game-large-numbers-betting .action-btn {
+    width: 100%;
+    padding: 15px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #0284c7, #3b82f6);
+    color: #fff;
+    font-size: 1.3rem;
+    font-weight: 900;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(2, 132, 199, 0.4);
+    transition: transform 0.2s;
+  }
+  .game-large-numbers-betting .action-btn:hover:not(:disabled) { transform: scale(1.02); }
+  .game-large-numbers-betting .action-btn:disabled { background: #475569; cursor: not-allowed; box-shadow: none; color: #94a3b8; }
+
+  /* Chart Area */
+  .game-large-numbers-betting .chart-container {
+    background: #1e293b;
+    border-radius: 12px;
+    padding: 15px;
+    border: 1px solid #334155;
+    position: relative;
+    height: 250px;
+    display: flex;
+    flex-direction: column;
+  }
+  .game-large-numbers-betting canvas {
+    flex: 1;
+    width: 100%;
+    height: 100%;
+  }
+  .game-large-numbers-betting .chart-overlay {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(15, 23, 42, 0.8);
+    padding: 10px 15px;
+    border-radius: 8px;
+    border: 1px solid #475569;
+    text-align: right;
+  }
+  .game-large-numbers-betting .chart-stat {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #e2e8f0;
+  }
+  .game-large-numbers-betting .chart-prob {
+    font-size: 0.9rem;
+    color: #94a3b8;
+    margin-top: 4px;
+  }
+
+  /* Team Mode Table */
+  .game-large-numbers-betting .team-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+  }
+  .game-large-numbers-betting .team-table th, 
+  .game-large-numbers-betting .team-table td {
+    padding: 10px;
+    text-align: center;
+    border-bottom: 1px solid #334155;
+  }
+  .game-large-numbers-betting .team-table th { color: #94a3b8; font-weight: 700; }
+  .game-large-numbers-betting .team-table td { color: #f8fafc; font-weight: 800; }
+  .game-large-numbers-betting .team-table input {
+    width: 60px;
+    padding: 6px;
+    border-radius: 4px;
+    border: 1px solid #475569;
+    background: #0f172a;
+    color: #fff;
+    text-align: center;
+  }
+
+  /* Bottom Ranking */
+  .game-large-numbers-betting .bottom-ranking-card {
+    background: #1e293b;
+    border-top: 2px solid #334155;
+    padding: 15px 20px;
+  }
+  .game-large-numbers-betting .ranking-title {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #facc15;
+    margin-bottom: 10px;
+  }
+
+  /* Toasts & Modals */
+  .lnb-toast {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(15, 23, 42, 0.95);
+    color: #fff;
+    padding: 12px 24px;
+    border-radius: 30px;
+    font-weight: 700;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    z-index: 9999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s, top 0.3s;
+    border: 1px solid #334155;
+  }
+  .lnb-toast.show { opacity: 1; top: 40px; }
+  .lnb-toast.error { border-color: #ef4444; color: #f87171; }
+  .lnb-toast.success { border-color: #10b981; color: #34d399; }
+
+  .lnb-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(5px);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+  }
+  .lnb-modal {
+    background: #1e293b;
+    width: 90%;
+    max-width: 500px;
+    border-radius: 16px;
+    padding: 30px;
+    border: 1px solid #334155;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    text-align: center;
+    color: #f8fafc;
+  }
+  .lnb-modal h3 { font-size: 1.5rem; margin-bottom: 15px; color: #38bdf8; }
+  .lnb-modal p { font-size: 1.05rem; line-height: 1.6; color: #cbd5e1; margin-bottom: 20px; text-align: left; }
+  .lnb-modal .close-btn {
+    padding: 10px 20px;
+    background: #0284c7;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+</style>
+
+<script>
+const LargeNumbersBetting = (function() {
+  let host = null;
+  let mode = '1p'; // '1p' or 'team'
+  
+  // 1P State
+  let asset = 1000;
+  
+  // Team State
+  let teams = [
+    { id: 1, name: '1팀', asset: 1000, bet: 0, min: 0, max: 100 },
+    { id: 2, name: '2팀', asset: 1000, bet: 0, min: 0, max: 100 },
+    { id: 3, name: '3팀', asset: 1000, bet: 0, min: 0, max: 100 },
+    { id: 4, name: '4팀', asset: 1000, bet: 0, min: 0, max: 100 }
+  ];
+  
+  // Game Settings
+  let selectedTool = 'coin'; // 'coin', 'dice6', 'biased'
+  let selectedTrials = 10; // 10, 100, 1000
+  let isSimulating = false;
+  
+  // Simulation Data
+  let simData = [];
+  let trueProb = 0.5;
+  let animReq = null;
+  
+  function getTrueProb(tool) {
+    if (tool === 'coin') return 0.5;
+    if (tool === 'dice6') return 1/6;
+    if (tool === 'biased') return Math.floor(Math.random() * 5 + 3) / 10; // 0.3 ~ 0.7
+    return 0.5;
+  }
+
+  function getToolName(tool) {
+    if (tool === 'coin') return '동전 (앞면)';
+    if (tool === 'dice6') return '주사위 (6의 눈)';
+    if (tool === 'biased') return '편향 동전 (앞면)';
+    return '';
+  }
+  
+  function getMultiplier(trials, min, max) {
+    let width = Math.abs(max - min);
+    if (width <= 0) width = 0.1;
+    let base = 50;
+    let offset = 10;
+    if (trials === 10) { base = 100; offset = 15; }
+    else if (trials === 100) { base = 30; offset = 5; }
+    else if (trials === 1000) { base = 10; offset = 1; }
+    
+    let mult = base / (width + offset);
+    return Math.max(1.0, Math.min(50.0, mult));
+  }
+
+  function escapeHTML(str) {
+    if (!str) return '';
+    return str.replace(/[&<>'"]/g, tag => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+    }[tag]));
+  }
+
+  function showToast(msg, type) {
+    if (!type) type = 'normal';
+    let toast = document.getElementById('lnb-toast');
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.id = 'lnb-toast';
+      toast.className = 'lnb-toast';
+      document.body.appendChild(toast);
+    }
+    toast.className = 'lnb-toast ' + type + ' show';
+    toast.textContent = msg;
+    setTimeout(() => { toast.classList.remove('show'); }, 2500);
+  }
+
+  function showGuideModal() {
+    let modal = document.getElementById('lnb-guide-modal');
+    if (!modal) {
+      modal = document.createElement('div');
+      modal.id = 'lnb-guide-modal';
+      modal.className = 'lnb-modal-overlay';
+      modal.innerHTML = 
+        '<div class="lnb-modal">' +
+          '<h3>📖 게임 방법 안내</h3>' +
+          '<p>' +
+            '<b>대수의 법칙 베팅 챌린지</b>에 오신 것을 환영합니다!<br><br>' +
+            '- 동전이나 주사위를 여러 번 던질 때, 사건이 일어나는 <b>상대도수</b>가 결국 <b>이론적 확률</b>에 가까워진다는 대수의 법칙을 체험합니다.<br>' +
+            '- 시행 횟수(10/100/1000회)와 예측 범위를 선택해 자산을 베팅하세요.<br>' +
+            '- <b>적게 던질수록(10회) 변동성이 커서</b> 결과 예측이 어렵지만 적중 시 <b>배당률이 높습니다.</b><br>' +
+            '- 예측 범위를 좁게 설정할수록 배당률이 상승합니다.<br>' +
+            '- 팀전 모드에서는 교사가 일괄로 각 팀의 베팅을 받아 동시에 판정할 수 있습니다.' +
+          '</p>' +
+          '<button class="close-btn" onclick="document.getElementById(&quot;lnb-guide-modal&quot;).style.display=&quot;none&quot;">확인</button>' +
+        '</div>';
+      document.body.appendChild(modal);
+    }
+    modal.style.display = 'flex';
+  }
+
+  function renderUI() {
+    if (!host) return;
+    
+    // Mode Switcher
+    host.querySelector('#tab-1p').classList.toggle('active', mode === '1p');
+    host.querySelector('#tab-team').classList.toggle('active', mode === 'team');
+    
+    // Areas
+    host.querySelector('#area-1p').style.display = mode === '1p' ? 'block' : 'none';
+    host.querySelector('#area-team').style.display = mode === 'team' ? 'block' : 'none';
+    
+    // 1P Sync
+    if (mode === '1p') {
+      host.querySelector('#asset-1p').textContent = Math.floor(asset).toLocaleString() + ' P';
+      const minVal = parseFloat(host.querySelector('#in-min-1p').value) || 0;
+      const maxVal = parseFloat(host.querySelector('#in-max-1p').value) || 100;
+      const mult = getMultiplier(selectedTrials, minVal, maxVal).toFixed(1);
+      host.querySelector('#mult-1p').textContent = '적중 시 ' + mult + '배 배당';
+      
+      const btn = host.querySelector('#btn-run-1p');
+      btn.disabled = isSimulating;
+      btn.textContent = isSimulating ? '시행 중...' : '베팅 확정 & 시작 🚀';
+    } else {
+      // Team Sync
+      const tbody = host.querySelector('#team-tbody');
+      tbody.innerHTML = '';
+      teams.forEach(t => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = 
+          '<td>' + t.name + '</td>' +
+          '<td style="color:#facc15;">' + Math.floor(t.asset).toLocaleString() + ' P</td>' +
+          '<td><input type="number" id="t-min-' + t.id + '" value="' + t.min + '" min="0" max="100" ' + (isSimulating?'disabled':'') + '> %</td>' +
+          '<td><input type="number" id="t-max-' + t.id + '" value="' + t.max + '" min="0" max="100" ' + (isSimulating?'disabled':'') + '> %</td>' +
+          '<td><input type="number" id="t-bet-' + t.id + '" value="' + t.bet + '" min="0" max="' + Math.floor(t.asset) + '" ' + (isSimulating?'disabled':'') + '> P</td>' +
+          '<td style="color:#34d399;" id="t-mult-' + t.id + '">-</td>';
+        tbody.appendChild(tr);
+        
+        // Setup listener for multiplier update
+        const minEl = tr.querySelector('#t-min-' + t.id);
+        const maxEl = tr.querySelector('#t-max-' + t.id);
+        const updateMult = () => {
+          const mult = getMultiplier(selectedTrials, parseFloat(minEl.value)||0, parseFloat(maxEl.value)||0).toFixed(1);
+          tr.querySelector('#t-mult-' + t.id).textContent = mult + 'x';
+        };
+        minEl.addEventListener('input', updateMult);
+        maxEl.addEventListener('input', updateMult);
+        updateMult();
+      });
+      
+      const btn = host.querySelector('#btn-run-team');
+      btn.disabled = isSimulating;
+      btn.textContent = isSimulating ? '시행 중...' : '일괄 판정 시행 🚀';
+    }
+    
+    // Options
+    host.querySelectorAll('.btn-tool').forEach(b => b.classList.toggle('active', b.dataset.val === selectedTool));
+    host.querySelectorAll('.btn-trials').forEach(b => b.classList.toggle('active', parseInt(b.dataset.val) === selectedTrials));
+  }
+
+  function drawChart(currentFrame, maxFrames, isFinal) {
+    if (isFinal === undefined) isFinal = false;
+    const canvas = host.querySelector('#sim-canvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const w = canvas.width;
+    const h = canvas.height;
+    
+    ctx.clearRect(0, 0, w, h);
+    
+    // Draw true prob line
+    const yTrue = h - (trueProb * h);
+    ctx.beginPath();
+    ctx.moveTo(0, yTrue);
+    ctx.lineTo(w, yTrue);
+    ctx.strokeStyle = '#ef4444'; // red
+    ctx.lineWidth = 2;
+    ctx.setLineDash([5, 5]);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    
+    if (simData.length === 0) return;
+    
+    // Draw data
+    let pts = isFinal ? simData.length : Math.floor((currentFrame / maxFrames) * simData.length);
+    if (pts === 0) pts = 1;
+    
+    ctx.beginPath();
+    for (let i = 0; i < pts; i++) {
+      const x = (i / Math.max(1, simData.length - 1)) * w;
+      const y = h - (simData[i].relFreq * h);
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+    ctx.strokeStyle = '#38bdf8';
+    ctx.lineWidth = 3;
+    ctx.stroke();
+    
+    // Update overlay text
+    const lastData = simData[pts - 1];
+    if (lastData) {
+      host.querySelector('#chart-stat-text').innerHTML = '시행 횟수: ' + lastData.trials + ' / ' + selectedTrials + ' <br>상대도수: <span style="color:#facc15">' + (lastData.relFreq * 100).toFixed(1) + '%</span>';
+    }
+    
+    const probStr = (selectedTool==='biased') ? '??%' : (trueProb * 100).toFixed(1) + '%';
+    host.querySelector('#chart-prob-text').textContent = '이론적 확률: ' + probStr;
+  }
+
+  function runSimulation(callback) {
+    if (isSimulating) return;
+    isSimulating = true;
+    renderUI();
+    
+    trueProb = getTrueProb(selectedTool);
+    simData = [];
+    
+    let count = 0;
+    for (let i = 1; i <= selectedTrials; i++) {
+      if (Math.random() < trueProb) count++;
+      // save data points for chart. if 1000, save less points to save memory
+      if (selectedTrials <= 100 || i % (selectedTrials/100) === 0 || i === selectedTrials) {
+        simData.push({ trials: i, count: count, relFreq: count / i });
+      }
+    }
+    
+    let frames = 60; // 1 second animation roughly
+    let frame = 0;
+    
+    function animate() {
+      frame++;
+      drawChart(frame, frames, false);
+      if (frame < frames) {
+        animReq = requestAnimationFrame(animate);
+      } else {
+        drawChart(frames, frames, true);
+        isSimulating = false;
+        renderUI();
+        const finalFreq = simData[simData.length - 1].relFreq * 100;
+        callback(finalFreq);
+      }
+    }
+    
+    // clear old anim
+    if (animReq) cancelAnimationFrame(animReq);
+    
+    // Ensure canvas size
+    const canvas = host.querySelector('#sim-canvas');
+    if (canvas) {
+      canvas.width = canvas.parentElement.clientWidth;
+      canvas.height = canvas.parentElement.clientHeight;
+    }
+    
+    animate();
+  }
+
+  function handleBet1P() {
+    const betInput = host.querySelector('#in-bet-1p');
+    let betAmount = parseFloat(betInput.value);
+    if (isNaN(betAmount) || betAmount <= 0 || betAmount > asset) {
+      showToast('올바른 베팅 금액을 입력하세요.', 'error');
+      return;
+    }
+    
+    const minVal = parseFloat(host.querySelector('#in-min-1p').value) || 0;
+    const maxVal = parseFloat(host.querySelector('#in-max-1p').value) || 100;
+    if (minVal > maxVal) { showToast('최소값이 최대값보다 클 수 없습니다.', 'error'); return; }
+    
+    asset -= betAmount;
+    
+    runSimulation((finalFreq) => {
+      let won = (finalFreq >= minVal && finalFreq <= maxVal);
+      if (won) {
+        const mult = getMultiplier(selectedTrials, minVal, maxVal);
+        const payout = betAmount * mult;
+        asset += payout;
+        
+        // Bonus point for guessing correctly with narrowed range (bonus +10 logic as requested)
+        if (Math.abs(maxVal - minVal) <= 5 && selectedTrials >= 100) {
+          asset += 10;
+          showToast('수렴 곡선 정밀 예측 보너스 +10 P! 적중! ' + mult.toFixed(1) + '배 획득! (+' + Math.floor(payout) + ')', 'success');
+        } else {
+          showToast('적중! ' + mult.toFixed(1) + '배 배당 획득! (+' + Math.floor(payout) + ' P)', 'success');
+        }
+      } else {
+        showToast('실패... 최종 상대도수: ' + finalFreq.toFixed(1) + '%', 'error');
+      }
+      if (asset <= 0) {
+        showToast('자산이 모두 소진되었습니다! 랭킹에 등록하세요.', 'error');
+        setTimeout(showRankingModal, 1500);
+      }
+      renderUI();
+    });
+  }
+
+  function handleBetTeam() {
+    // Read team inputs
+    let valid = true;
+    teams.forEach(t => {
+      t.min = parseFloat(host.querySelector('#t-min-' + t.id).value) || 0;
+      t.max = parseFloat(host.querySelector('#t-max-' + t.id).value) || 100;
+      t.bet = parseFloat(host.querySelector('#t-bet-' + t.id).value) || 0;
+      if (t.bet > t.asset) valid = false;
+      if (t.min > t.max) valid = false;
+    });
+    if (!valid) {
+      showToast('베팅 금액이 자산을 초과했거나 범위가 잘못된 팀이 있습니다.', 'error');
+      return;
+    }
+    
+    teams.forEach(t => { t.asset -= t.bet; });
+    
+    runSimulation((finalFreq) => {
+      let results = [];
+      teams.forEach(t => {
+        if (t.bet > 0 && finalFreq >= t.min && finalFreq <= t.max) {
+          const mult = getMultiplier(selectedTrials, t.min, t.max);
+          const payout = t.bet * mult;
+          t.asset += payout;
+          results.push(t.name + ' 적중(+' + Math.floor(payout) + ')');
+        } else if (t.bet > 0) {
+          results.push(t.name + ' 실패');
+        }
+      });
+      if (results.length > 0) {
+        showToast('판정 완료: ' + results.join(', '), 'success');
+      } else {
+        showToast('베팅을 진행한 팀이 없습니다.', 'normal');
+      }
+      renderUI();
+    });
+  }
+
+  function resetGame() {
+    asset = 1000;
+    teams.forEach(t => { t.asset = 1000; t.bet = 0; t.min = 0; t.max = 100; });
+    simData = [];
+    isSimulating = false;
+    if (animReq) cancelAnimationFrame(animReq);
+    
+    const canvas = host && host.querySelector('#sim-canvas');
+    if (canvas) {
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+    if(host) {
+      host.querySelector('#chart-stat-text').innerHTML = '대기 중...';
+      host.querySelector('#chart-prob-text').textContent = '';
+    }
+    renderUI();
+  }
+
+  function renderBottomLeaderboard() {
+    if (typeof loadGameLeaderboard === 'function') {
+      loadGameLeaderboard('large-numbers-betting', true, 'board-large-numbers-betting');
+    } else {
+      try {
+        let list = JSON.parse(localStorage.getItem('mathlab_lb_large-numbers-betting') || '[]');
+        const bottomEl = document.getElementById('board-large-numbers-betting');
+        if (bottomEl) {
+          if (list.length === 0) {
+            bottomEl.innerHTML = '<p style="text-align:center; color:#94a3b8; padding:12px 0;">아직 등록된 기록이 없습니다. 첫 번째 도전을 완료해보세요!</p>';
+          } else {
+            bottomEl.innerHTML = list.slice(0, 5).map((item, idx) => {
+              return '<div style="display:flex; justify-content:space-between; align-items:center; background:#0f172a; padding:10px 14px; border-radius:10px; border:1px solid #334155; margin-bottom:6px;">' +
+                '<span style="font-weight:800; color:' + (idx === 0 ? '#facc15' : '#cbd5e1') + ';">' + (idx === 0 ? '👑 1위' : (idx + 1) + '위') + ' - ' + escapeHTML(item.nickname) + '</span>' +
+                '<span style="color:#38bdf8; font-weight:900;">' + item.score + ' P</span>' +
+              '</div>';
+            }).join('');
+          }
+        }
+      } catch(e) {}
+    }
+  }
+
+  function showRankingModal() {
+    if (mode === 'team') {
+      showToast('랭킹 등록은 1P 모드에서만 지원됩니다.', 'normal');
+      return;
+    }
+    let modal = document.getElementById('lnb-ranking-modal');
+    if (!modal) {
+      modal = document.createElement('div');
+      modal.id = 'lnb-ranking-modal';
+      modal.className = 'lnb-modal-overlay';
+      modal.innerHTML = 
+        '<div class="lnb-modal">' +
+          '<h3>🏆 명예의 전당 등록</h3>' +
+          '<p>최종 자산: <strong id="lnb-rank-score" style="color:#facc15; font-size:1.5rem;"></strong> P</p>' +
+          '<input type="text" id="lnb-rank-name" placeholder="닉네임 (10자 이내)" maxlength="10" style="width:100%; padding:10px; margin-bottom:15px; border-radius:8px; background:#0f172a; border:1px solid #475569; color:#fff; text-align:center;">' +
+          '<button class="close-btn" id="lnb-rank-submit">등록하기</button>' +
+          '<button class="close-btn" style="background:#475569; margin-left:10px;" onclick="document.getElementById(&quot;lnb-ranking-modal&quot;).style.display=&quot;none&quot;">닫기</button>' +
+        '</div>';
+      document.body.appendChild(modal);
+      
+      document.getElementById('lnb-rank-submit').addEventListener('click', () => {
+        const nameInput = document.getElementById('lnb-rank-name');
+        let name = nameInput.value.trim();
+        if (!name) { showToast('닉네임을 입력하세요.', 'error'); return; }
+        name = escapeHTML(name);
+        
+        const finalScore = Math.floor(asset);
+        if (typeof submitRankingScore === 'function') {
+          submitRankingScore('large-numbers-betting', name, finalScore);
+        } else {
+          let list = JSON.parse(localStorage.getItem('mathlab_lb_large-numbers-betting') || '[]');
+          list.push({ nickname: name, score: finalScore });
+          list.sort((a,b) => b.score - a.score);
+          localStorage.setItem('mathlab_lb_large-numbers-betting', JSON.stringify(list));
+        }
+        
+        showToast('명예의 전당에 등록되었습니다!', 'success');
+        document.getElementById('lnb-ranking-modal').style.display = 'none';
+        renderBottomLeaderboard();
+        resetGame();
+      });
+    }
+    document.getElementById('lnb-rank-score').textContent = Math.floor(asset);
+    document.getElementById('lnb-rank-name').value = '';
+    modal.style.display = 'flex';
+  }
+
+  function goHome() {
+    if (animReq) cancelAnimationFrame(animReq);
+
+    // Gen-3 strict home cleanup
+    if (host) {
+      host.style.display = 'none';
+      host.innerHTML = '';
+    }
+    const legacyHost = document.getElementById('mathlab-view');
+    if (legacyHost) {
+      legacyHost.style.display = 'none';
+      legacyHost.innerHTML = '';
+    }
+    const forceHost = document.getElementById('large-numbers-betting-force-host');
+    if (forceHost) {
+      forceHost.style.display = 'none';
+      forceHost.innerHTML = '';
+    }
+
+    // Restore dashboard elements if they were hidden manually
+    document.querySelectorAll('.app-grid, #dashboard-screen, #hero-section').forEach(el => {
+      if (el && el.style) {
+        el.style.display = '';
+        el.style.visibility = '';
+      }
+    });
+
+    if (window.LegacyBridge && typeof window.LegacyBridge.backHome === 'function') {
+      window.LegacyBridge.backHome();
+    } else if (typeof window.goHome === 'function') {
+      window.goHome();
+    }
+  }
+
+  function mount(container, context) {
+    let target = null;
+    if (typeof container === 'string') target = document.querySelector(container);
+    else if (container instanceof HTMLElement) target = container;
+    
+    if (!target) target = window.MathLabUtils && window.MathLabUtils.getMountContainer ? window.MathLabUtils.getMountContainer(container) : document.getElementById('mathlab-view');
+    if (!target || !(target instanceof HTMLElement)) target = document.getElementById('new-root') || document.getElementById('game-container') || document.getElementById('mathlab-view');
+
+    if (!target || !(target instanceof HTMLElement) || target === document.body) {
+      let createdHost = document.getElementById('large-numbers-betting-force-host');
+      if (!createdHost) {
+        createdHost = document.createElement('div');
+        createdHost.id = 'large-numbers-betting-force-host';
+        document.body.appendChild(createdHost);
+      }
+      target = createdHost;
+    }
+
+    const footerEl = document.querySelector('footer, #footer, .app-footer') || 
+                     Array.from(document.querySelectorAll('div, p, span')).find(el => el.textContent && el.textContent.includes('2026 기록조율사'));
+    if (footerEl && target && typeof target.compareDocumentPosition === 'function' && (target.compareDocumentPosition(footerEl) & Node.DOCUMENT_POSITION_PRECEDING)) {
+      footerEl.parentNode.insertBefore(target, footerEl);
+    }
+
+    target.style.display = '';
+    target.style.visibility = 'visible';
+    target.style.opacity = '1';
+
+    let parent = target.parentElement;
+    while (parent && parent !== document.body && parent !== document.documentElement) {
+      if (parent.style && parent.style.display === 'none') parent.style.display = 'block';
+      if (parent.style && parent.style.visibility === 'hidden') parent.style.visibility = 'visible';
+      parent = parent.parentElement;
+    }
+
+    document.querySelectorAll('header, .navbar, #app-header, .top-bar, #floating-home-btn, .floating-home').forEach(el => {
+      if (el && el.style && el.style.display === 'none') el.style.display = '';
+    });
+    
+    host = target;
+
+    host.innerHTML = 
+      '<div class="game-large-numbers-betting">' +
+        '<!-- Header -->' +
+        '<div class="app-header">' +
+          '<div class="app-title">🎲 대수의 법칙 베팅 챌린지</div>' +
+          '<div class="header-btns">' +
+            '<button class="btn btn-primary" id="btn-guide">📖 방법</button>' +
+            '<button class="btn" style="background:#f59e0b;" id="btn-rank-submit">🏆 랭킹</button>' +
+            '<button class="btn btn-home" id="btn-home">🏠 홈</button>' +
+          '</div>' +
+        '</div>' +
+        '<!-- Mode Switcher -->' +
+        '<div class="mode-switcher">' +
+          '<div class="mode-tab active" id="tab-1p" data-mode="1p">👤 1인 연습 모드 (랭킹 등록)</div>' +
+          '<div class="mode-tab" id="tab-team" data-mode="team">👥 팀 대항 / 교사용 일괄 판정</div>' +
+        '</div>' +
+        '<div class="main-area">' +
+          '<!-- Common Settings & Chart -->' +
+          '<div class="control-panel">' +
+            '<div class="panel-box">' +
+              '<div class="panel-title">시행 도구 (사건)</div>' +
+              '<div class="btn-group">' +
+                '<button class="opt-btn btn-tool active" data-val="coin">동전 (앞면)</button>' +
+                '<button class="opt-btn btn-tool" data-val="dice6">주사위 (6의 눈)</button>' +
+                '<button class="opt-btn btn-tool" data-val="biased">편향 주사위 (확률 미지수)</button>' +
+              '</div>' +
+            '</div>' +
+            '<div class="panel-box">' +
+              '<div class="panel-title">시행 횟수 (변동성)</div>' +
+              '<div class="btn-group">' +
+                '<button class="opt-btn btn-trials" data-val="10">10회 (고위험 고배당)</button>' +
+                '<button class="opt-btn btn-trials active" data-val="100">100회 (중간 배당)</button>' +
+                '<button class="opt-btn btn-trials" data-val="1000">1000회 (안정적 수렴)</button>' +
+              '</div>' +
+            '</div>' +
+          '</div>' +
+          '<div class="chart-container">' +
+            '<canvas id="sim-canvas"></canvas>' +
+            '<div class="chart-overlay">' +
+              '<div class="chart-stat" id="chart-stat-text">대기 중...</div>' +
+              '<div class="chart-prob" id="chart-prob-text"></div>' +
+            '</div>' +
+          '</div>' +
+          '<!-- 1P Betting Area -->' +
+          '<div class="panel-box" id="area-1p">' +
+            '<div class="status-bar" style="margin-bottom:15px;">' +
+              '<span style="font-weight:700; color:#cbd5e1;">내 자산:</span>' +
+              '<span class="asset-display" id="asset-1p">1,000 P</span>' +
+            '</div>' +
+            '<div class="bet-inputs">' +
+              '<div class="input-row">' +
+                '<span style="color:#cbd5e1; font-weight:700;">상대도수 예측:</span>' +
+                '<input type="number" id="in-min-1p" class="num-input" value="45" min="0" max="100"> % ~ ' +
+                '<input type="number" id="in-max-1p" class="num-input" value="55" min="0" max="100"> %' +
+              '</div>' +
+              '<div class="input-row">' +
+                '<span style="color:#cbd5e1; font-weight:700;">베팅 금액:</span>' +
+                '<input type="number" id="in-bet-1p" class="num-input" value="100" min="0"> P' +
+                '<span class="multiplier-info" id="mult-1p"></span>' +
+              '</div>' +
+              '<button class="action-btn" id="btn-run-1p" style="margin-top:10px;">베팅 확정 & 시작 🚀</button>' +
+            '</div>' +
+          '</div>' +
+          '<!-- Team Betting Area -->' +
+          '<div class="panel-box" id="area-team" style="display:none;">' +
+            '<div class="panel-title">팀별 베팅 현황</div>' +
+            '<table class="team-table">' +
+              '<thead>' +
+                '<tr>' +
+                  '<th>팀명</th>' +
+                  '<th>자산</th>' +
+                  '<th>최소(%)</th>' +
+                  '<th>최대(%)</th>' +
+                  '<th>베팅(P)</th>' +
+                  '<th>배당률</th>' +
+                '</tr>' +
+              '</thead>' +
+              '<tbody id="team-tbody"></tbody>' +
+            '</table>' +
+            '<button class="action-btn" id="btn-run-team" style="margin-top:15px;">일괄 판정 시행 🚀</button>' +
+          '</div>' +
+        '</div>' +
+        '<!-- 🌟 하단 상시 명예의 전당 랭킹 보드 -->' +
+        '<div class="bottom-ranking-card" id="board-large-numbers-betting-wrapper">' +
+          '<div class="ranking-title">🏆 명예의 전당 (실시간 랭킹 보드)</div>' +
+          '<div id="board-large-numbers-betting">' +
+            '<p style="text-align:center; color:#94a3b8; padding:12px 0;">랭킹 데이터를 불러오는 중...</p>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+
+    // Event Bindings
+    host.querySelector('#btn-home').addEventListener('click', goHome);
+    host.querySelector('#btn-guide').addEventListener('click', showGuideModal);
+    host.querySelector('#btn-rank-submit').addEventListener('click', showRankingModal);
+    
+    host.querySelectorAll('.mode-tab').forEach(t => {
+      t.addEventListener('click', (e) => {
+        if (isSimulating) return;
+        mode = e.target.dataset.mode;
+        renderUI();
+      });
+    });
+
+    host.querySelectorAll('.btn-tool').forEach(t => {
+      t.addEventListener('click', (e) => {
+        if (isSimulating) return;
+        selectedTool = e.target.dataset.val;
+        renderUI();
+      });
+    });
+
+    host.querySelectorAll('.btn-trials').forEach(t => {
+      t.addEventListener('click', (e) => {
+        if (isSimulating) return;
+        selectedTrials = parseInt(e.target.dataset.val);
+        renderUI();
+      });
+    });
+    
+    // 1P update mult on input
+    const update1PMult = () => {
+      if (mode !== '1p') return;
+      const minVal = parseFloat(host.querySelector('#in-min-1p').value) || 0;
+      const maxVal = parseFloat(host.querySelector('#in-max-1p').value) || 100;
+      const mult = getMultiplier(selectedTrials, minVal, maxVal).toFixed(1);
+      host.querySelector('#mult-1p').textContent = '적중 시 ' + mult + '배 배당';
+    };
+    host.querySelector('#in-min-1p').addEventListener('input', update1PMult);
+    host.querySelector('#in-max-1p').addEventListener('input', update1PMult);
+
+    host.querySelector('#btn-run-1p').addEventListener('click', handleBet1P);
+    host.querySelector('#btn-run-team').addEventListener('click', handleBetTeam);
+
+    // Initial Resize & Render
+    setTimeout(() => {
+      const canvas = host.querySelector('#sim-canvas');
+      if (canvas) {
+        canvas.width = canvas.parentElement.clientWidth;
+        canvas.height = canvas.parentElement.clientHeight;
+      }
+      renderUI();
+      renderBottomLeaderboard();
+    }, 100);
+    
+    window.addEventListener('resize', () => {
+      if (host && host.querySelector('#sim-canvas')) {
+        const c = host.querySelector('#sim-canvas');
+        c.width = c.parentElement.clientWidth;
+        c.height = c.parentElement.clientHeight;
+        let frames = 60;
+        drawChart(frames||0, frames||0, true);
+      }
+    });
+  }
+
+  function destroy() {
+    if (animReq) cancelAnimationFrame(animReq);
+    if (host) host.innerHTML = '';
+  }
+
+  return { mount: mount, resetGame: resetGame, destroy: destroy, goHome: goHome };
+})();
+
+// Gen-3 3중 방어막 자동 등록
+function registerLargeNumbersBetting() {
+  if (typeof window.MathLabGames !== 'undefined' && typeof window.MathLabGames.register === 'function') {
+    if (!window.MathLabGames.get('large-numbers-betting')) {
+      try {
+        window.MathLabGames.register({
+          id: 'large-numbers-betting',
+          title: '대수의 법칙 베팅 챌린지',
+          icon: '🎲',
+          sourceType: 'new',
+          players: '1인/다인',
+          isMultiplayer: true,
+          mount: function(container, context) { LargeNumbersBetting.mount(container, context); },
+          reset: function() { LargeNumbersBetting.resetGame(); },
+          destroy: function() { LargeNumbersBetting.destroy(); },
+          goHome: function() { LargeNumbersBetting.goHome(); }
+        });
+      } catch (e) {
+        console.warn('large-numbers-betting 안전 등록 방어:', e);
+      }
+    }
+  }
+}
+
+registerLargeNumbersBetting();
+window.addEventListener('DOMContentLoaded', registerLargeNumbersBetting);
+setTimeout(registerLargeNumbersBetting, 100);
+setTimeout(registerLargeNumbersBetting, 500);
+
+window.LargeNumbersBettingModule = LargeNumbersBetting;
+
+// Bridge
+window.initLargeNumbersBettingGame = function() {
+  registerLargeNumbersBetting();
+  if (window.LegacyBridge && typeof window.LegacyBridge.hideAllLegacySections === 'function') {
+    window.LegacyBridge.hideAllLegacySections();
+    window.LegacyBridge.showNewRoot();
+  }
+  if (typeof window.MathLabGames !== 'undefined' && typeof window.MathLabGames.mount === 'function') {
+    try { window.MathLabGames.mount('large-numbers-betting'); return; } catch(e) {}
+  }
+  const targetEl = document.getElementById('mathlab-view') || document.getElementById('new-root');
+  LargeNumbersBetting.mount(targetEl);
+};
+
+window.launchMathLabGame = window.launchMathLabGame || function(id) {
+  if (id === 'large-numbers-betting') {
+    window.initLargeNumbersBettingGame();
+  }
+};
+</script>

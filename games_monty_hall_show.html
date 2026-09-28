@@ -1,0 +1,928 @@
+<style>
+.game-monty-show {
+  width: 100%;
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 20px;
+  box-sizing: border-box;
+  color: #1f2937;
+}
+
+.game-monty-show * {
+  box-sizing: border-box;
+}
+
+.game-monty-show .monty-header {
+  margin-bottom: 18px;
+  padding: 18px;
+  border-radius: 22px;
+  background: linear-gradient(135deg, #ede9fe, #fee2e2);
+  border: 1px solid rgba(168, 85, 247, 0.25);
+}
+
+.game-monty-show .monty-title {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+}
+
+.game-monty-show .monty-desc {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.6;
+  color: #4b5563;
+}
+
+.game-monty-show .monty-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 16px;
+  align-items: start;
+}
+
+.game-monty-show .monty-card {
+  position: relative;
+  padding: 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+}
+
+.game-monty-show .round-box {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 14px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: #f9fafb;
+}
+
+.game-monty-show .team-name {
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.game-monty-show .round-info {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.game-monty-show .door-area {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.game-monty-show .door {
+  min-height: 148px;
+  border: 2px solid #e5e7eb;
+  border-radius: 20px;
+  background: linear-gradient(180deg, #fef3c7, #f59e0b);
+  cursor: pointer;
+  transition: transform 0.12s ease, border-color 0.12s ease, box-shadow 0.12s ease;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.game-monty-show .door:hover {
+  transform: translateY(-2px);
+}
+
+.game-monty-show .door.is-selected {
+  border-color: #7c3aed;
+  box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.18);
+}
+
+.game-monty-show .door.is-opened {
+  background: #f3f4f6;
+  border-color: #d1d5db;
+}
+
+.game-monty-show .door.is-final {
+  border-color: #10b981;
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.18);
+}
+
+.game-monty-show .door:disabled {
+  cursor: not-allowed;
+}
+
+.game-monty-show .door-number {
+  display: block;
+  font-size: 18px;
+  font-weight: 900;
+  color: #78350f;
+}
+
+.game-monty-show .door-icon {
+  display: block;
+  margin-top: 12px;
+  font-size: 48px;
+}
+
+.game-monty-show .door-label {
+  display: block;
+  margin-top: 10px;
+  font-weight: 900;
+  color: #111827;
+}
+
+.game-monty-show .action-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.game-monty-show .monty-btn {
+  border: 0;
+  border-radius: 999px;
+  padding: 11px 16px;
+  background: #111827;
+  color: #ffffff;
+  font-weight: 900;
+  cursor: pointer;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.game-monty-show .monty-btn.secondary {
+  background: #e5e7eb;
+  color: #111827;
+}
+
+.game-monty-show .monty-btn.danger {
+  background: #ef4444;
+  color: #ffffff;
+}
+
+.game-monty-show .monty-btn.switch {
+  background: #7c3aed;
+}
+
+.game-monty-show .monty-btn.stay {
+  background: #2563eb;
+}
+
+.game-monty-show .monty-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.game-monty-show .message {
+  min-height: 28px;
+  margin-top: 12px;
+  color: #7c2d12;
+  font-weight: 800;
+  line-height: 1.5;
+}
+
+.game-monty-show .score-board {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.game-monty-show .score-item {
+  padding: 12px;
+  border-radius: 14px;
+  background: #f3f4f6;
+  text-align: center;
+}
+
+.game-monty-show .score-label {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.game-monty-show .score-value {
+  font-size: 26px;
+  font-weight: 900;
+}
+
+.game-monty-show .stat-table {
+  width: 100%;
+  margin-top: 14px;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.game-monty-show .stat-table th,
+.game-monty-show .stat-table td {
+  border: 1px solid #e5e7eb;
+  padding: 9px;
+  text-align: center;
+}
+
+.game-monty-show .stat-table th {
+  background: #f9fafb;
+  color: #4b5563;
+}
+
+.game-monty-show .monty-guide {
+  margin-top: 14px;
+  border: 1px solid #ddd6fe;
+  border-radius: 16px;
+  background: #f5f3ff;
+  overflow: hidden;
+}
+
+.game-monty-show .monty-guide summary {
+  padding: 13px 14px;
+  font-weight: 900;
+  cursor: pointer;
+  color: #5b21b6;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.game-monty-show .guide-content {
+  padding: 0 14px 14px;
+  color: #374151;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.game-monty-show .guide-content h3 {
+  margin: 16px 0 6px;
+  font-size: 16px;
+  color: #111827;
+}
+
+.game-monty-show .guide-content p {
+  margin: 6px 0;
+}
+
+.game-monty-show .guide-content ol,
+.game-monty-show .guide-content ul {
+  margin: 8px 0;
+  padding-left: 20px;
+}
+
+/* Toast Message */
+.monty-toast {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #334155;
+  color: #fff;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-weight: bold;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+  z-index: 999999;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out, bottom 0.3s ease-in-out;
+}
+.monty-toast.show {
+  opacity: 1;
+  bottom: 40px;
+}
+
+@media (max-width: 760px) {
+  .game-monty-show {
+    padding: 14px;
+  }
+  .game-monty-show .monty-grid {
+    grid-template-columns: 1fr;
+  }
+  .game-monty-show .monty-title {
+    font-size: 24px;
+  }
+  .game-monty-show .door-area {
+    gap: 8px;
+  }
+  .game-monty-show .door {
+    min-height: 116px;
+  }
+  .game-monty-show .door-icon {
+    font-size: 36px;
+  }
+}
+</style>
+
+<script>
+(function () {
+  const MontyHallShowGame = {
+    container: null,
+    gameStarted: false,
+    maxRounds: 10,
+    mode: '1p', // '1p' or '2p'
+
+    round: 1,
+    currentTeam: 0,
+    teams: ['1팀', '2팀'],
+    prizeDoor: 0,
+    selectedDoor: null,
+    openedDoor: null,
+    finalDoor: null,
+    phase: 'select',
+    message: '문 하나를 선택하세요. 자동차는 세 문 중 하나 뒤에 숨어 있습니다.',
+    scores: [0, 0],
+    stats: {
+      stayTry: 0,
+      stayWin: 0,
+      switchTry: 0,
+      switchWin: 0
+    },
+
+    mount(container, context = {}) {
+      let host = null;
+      if (typeof container === 'string') host = document.querySelector(container);
+      else if (container instanceof HTMLElement) host = container;
+      if (!host) host = window.MathLabUtils?.getMountContainer ? window.MathLabUtils.getMountContainer(container) : document.getElementById('mathlab-view');
+      if (!host || !(host instanceof HTMLElement)) host = document.getElementById('new-root') || document.getElementById('game-container') || document.getElementById('mathlab-view');
+
+      if (!host || !(host instanceof HTMLElement) || host === document.body) {
+        let createdHost = document.getElementById('monty-force-host');
+        if (!createdHost) {
+          createdHost = document.createElement('div');
+          createdHost.id = 'monty-force-host';
+          document.body.appendChild(createdHost);
+        }
+        host = createdHost;
+      }
+
+      const footerEl = document.querySelector('footer, #footer, .app-footer') || 
+                       Array.from(document.querySelectorAll('div, p, span')).find(el => el.textContent && el.textContent.includes('2026 기록조율사'));
+      if (footerEl && host && typeof host.compareDocumentPosition === 'function' && (host.compareDocumentPosition(footerEl) & Node.DOCUMENT_POSITION_PRECEDING)) {
+        footerEl.parentNode.insertBefore(host, footerEl);
+      }
+
+      host.style.display = '';
+      host.style.visibility = 'visible';
+      host.style.opacity = '1';
+
+      let parent = host.parentElement;
+      while (parent && parent !== document.body && parent !== document.documentElement) {
+        if (parent.style && parent.style.display === 'none') parent.style.display = 'block';
+        if (parent.style && parent.style.visibility === 'hidden') parent.style.visibility = 'visible';
+        parent = parent.parentElement;
+      }
+
+      document.querySelectorAll('header, .navbar, #app-header, .top-bar, #floating-home-btn, .floating-home').forEach(el => {
+        if (el && el.style && el.style.display === 'none') el.style.display = '';
+      });
+
+      this.container = host;
+      this.reset();
+    },
+
+    reset() {
+      this.gameStarted = false;
+      this.round = 1;
+      this.currentTeam = 0;
+      this.scores = [0, 0];
+      this.stats = { stayTry: 0, stayWin: 0, switchTry: 0, switchWin: 0 };
+      this.render();
+    },
+
+    destroy() {
+      if (this.container) {
+        this.container.innerHTML = '';
+      }
+      this.container = null;
+    },
+
+    goHome() {
+      const topBottomHome = document.getElementById('mathlab-floating-home') || document.querySelector('#legacy-back-home-btn');
+      if (topBottomHome) topBottomHome.click();
+      else if (typeof window.MathLabRenderHome === 'function') window.MathLabRenderHome();
+      else if (typeof window.goHome === 'function') window.goHome();
+      else location.reload();
+    },
+
+    showToast(msg) {
+      if (typeof window.showToast === 'function') {
+        window.showToast(msg);
+        return;
+      }
+      let toast = document.getElementById('monty-toast-msg');
+      if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'monty-toast-msg';
+        toast.className = 'monty-toast';
+        document.body.appendChild(toast);
+      }
+      toast.innerText = msg;
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3000);
+    },
+
+    startGame(rounds, mode) {
+      this.maxRounds = rounds;
+      this.mode = mode;
+      this.gameStarted = true;
+      this.round = 1;
+      this.currentTeam = 0;
+      this.scores = [0, 0];
+      this.stats = { stayTry: 0, stayWin: 0, switchTry: 0, switchWin: 0 };
+      
+      this.teams = (mode === '1p') ? ['플레이어'] : ['1팀', '2팀'];
+      
+      this.showToast(`🎮 게임 시작! (목표: ${this.maxRounds === Infinity ? '무제한' : this.maxRounds + '라운드'})`);
+      this.startRound();
+      this.render();
+    },
+
+    startRound() {
+      this.prizeDoor = Math.floor(Math.random() * 3);
+      this.selectedDoor = null;
+      this.openedDoor = null;
+      this.finalDoor = null;
+      this.phase = 'select';
+      
+      const turnMsg = this.mode === '1p' ? '문 하나를 선택하세요.' : `${this.teams[this.currentTeam]} 차례입니다. 문 하나를 선택하세요.`;
+      this.message = turnMsg;
+    },
+
+    selectDoor(index) {
+      if (this.phase !== 'select') return;
+
+      this.selectedDoor = index;
+      this.openGoatDoor();
+      this.phase = 'decide';
+      this.message = '진행자가 염소가 있는 문 하나를 열었습니다. 처음 선택을 유지할까요, 아니면 바꿀까요?';
+      this.render();
+    },
+
+    openGoatDoor() {
+      const candidates = [0, 1, 2].filter(index => {
+        return index !== this.selectedDoor && index !== this.prizeDoor;
+      });
+      this.openedDoor = candidates[Math.floor(Math.random() * candidates.length)];
+    },
+
+    chooseStrategy(strategy) {
+      if (this.phase !== 'decide') return;
+
+      if (strategy === 'stay') {
+        this.finalDoor = this.selectedDoor;
+        this.stats.stayTry += 1;
+      } else {
+        this.finalDoor = [0, 1, 2].find(index => {
+          return index !== this.selectedDoor && index !== this.openedDoor;
+        });
+        this.stats.switchTry += 1;
+      }
+
+      const didWin = this.finalDoor === this.prizeDoor;
+
+      if (didWin) {
+        this.scores[this.currentTeam] += 1;
+        if (strategy === 'stay') this.stats.stayWin += 1;
+        else this.stats.switchWin += 1;
+      }
+
+      this.phase = 'result';
+      const teamStr = this.mode === '1p' ? '정답입니다! 1점을 얻었습니다.' : `정답입니다! ${this.teams[this.currentTeam]}이 1점을 얻었습니다.`;
+      this.message = didWin ? teamStr : '아쉽습니다. 자동차는 다른 문 뒤에 있었습니다.';
+
+      this.render();
+    },
+
+    nextRound() {
+      if (this.phase !== 'result') return;
+
+      if (this.maxRounds !== Infinity && this.round >= this.maxRounds) {
+        this.endGame('목표 라운드에 도달하여 게임이 종료되었습니다.');
+        return;
+      }
+
+      this.round += 1;
+      if (this.mode === '2p') {
+        this.currentTeam = this.currentTeam === 0 ? 1 : 0;
+      }
+      this.startRound();
+      this.render();
+    },
+
+    endGame(reason) {
+      this.showToast('🛑 ' + reason);
+      this.gameStarted = false;
+      this.phase = 'end';
+      
+      let finalScore = 0;
+      if (this.mode === '1p') {
+        finalScore = this.scores[0];
+      } else {
+        finalScore = Math.max(this.scores[0], this.scores[1]);
+      }
+
+      setTimeout(() => {
+        this.showInlineRankingModal('board-monty', finalScore, { mode: this.mode, rounds: this.round });
+      }, 500);
+      
+      this.render();
+    },
+
+    showInlineRankingModal(boardId, score, metadata) {
+      const existModal = document.getElementById('mathlab-inline-ranking-modal');
+      if (existModal) existModal.remove();
+
+      const modalHtml = `
+        <div id="mathlab-inline-ranking-modal" style="
+          position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+          background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(6px);
+          display: flex; align-items: center; justify-content: center;
+          z-index: 999999; padding: 20px; box-sizing: border-box;
+          font-family: 'Pretendard', -apple-system, sans-serif;
+        ">
+          <div style="
+            background: #ffffff; border-radius: 24px; padding: 28px 24px;
+            max-width: 400px; width: 100%; box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            text-align: center; border: 3px solid #7c3aed; animation: popInModal 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+          ">
+            <style>
+              @keyframes popInModal { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+            </style>
+            <div style="font-size: 42px; margin-bottom: 10px;">🏆</div>
+            <h2 style="margin: 0 0 8px; font-size: 24px; font-weight: 900; color: #1e293b;">게임 종료!</h2>
+            <p style="margin: 0 0 20px; font-size: 14px; color: #64748b; line-height: 1.5;">
+              수고하셨습니다. 최종 점수를 명예의 전당에 등록하세요!
+            </p>
+
+            <div style="
+              background: #f5f3ff; border: 1px solid #ddd6fe; border-radius: 16px;
+              padding: 14px; margin-bottom: 20px;
+            ">
+              <div style="font-size: 13px; color: #5b21b6; font-weight: 800; margin-bottom: 4px;">최종 점수 (승수)</div>
+              <div style="font-size: 32px; font-weight: 900; color: #7c3aed;">${score} <span style="font-size: 18px;">점</span></div>
+            </div>
+
+            <input type="text" id="inline-rank-nickname" placeholder="닉네임을 입력하세요" maxlength="10" style="
+              width: 100%; padding: 14px 16px; font-size: 16px; font-weight: 700;
+              border: 2px solid #cbd5e1; border-radius: 14px; outline: none;
+              text-align: center; margin-bottom: 20px; box-sizing: border-box;
+              transition: border-color 0.2s;
+            " onfocus="this.style.borderColor='#7c3aed'" onblur="this.style.borderColor='#cbd5e1'">
+
+            <div style="display: flex; gap: 10px;">
+              <button id="inline-rank-cancel" style="
+                flex: 1; padding: 14px; border-radius: 14px; font-size: 15px; font-weight: 800;
+                background: #e2e8f0; color: #475569; border: none; cursor: pointer;
+              ">건너뛰기</button>
+              <button id="inline-rank-submit" style="
+                flex: 2; padding: 14px; border-radius: 14px; font-size: 15px; font-weight: 800;
+                background: #7c3aed; color: #ffffff; border: none; cursor: pointer;
+                box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+              ">🚀 랭킹 등록</button>
+            </div>
+          </div>
+        </div>
+      `;
+
+      document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+      const inputEl = document.getElementById('inline-rank-nickname');
+      if (inputEl) inputEl.focus();
+
+      const closeAndClean = () => {
+        const m = document.getElementById('mathlab-inline-ranking-modal');
+        if (m) m.remove();
+      };
+
+      document.getElementById('inline-rank-cancel')?.addEventListener('click', closeAndClean);
+
+      const doSubmit = () => {
+        let nickname = (inputEl && inputEl.value ? inputEl.value.trim() : '') || '익명';
+        
+        if (typeof window.submitRanking === 'function') {
+          try { window.submitRanking('몬티홀', score, true, nickname, boardId); } 
+          catch(e) { console.error(e); }
+        }
+
+        const storageKey = `rank_${boardId}`;
+        let ranks = JSON.parse(localStorage.getItem(storageKey) || '[]');
+        ranks.push({ nickname, score, date: new Date().toISOString() });
+        ranks.sort((a, b) => (b.score || 0) - (a.score || 0));
+        ranks = ranks.slice(0, 50);
+        localStorage.setItem(storageKey, JSON.stringify(ranks));
+
+        closeAndClean();
+        setTimeout(() => this.renderBottomLeaderboard(), 500);
+      };
+
+      document.getElementById('inline-rank-submit')?.addEventListener('click', doSubmit);
+      inputEl?.addEventListener('keydown', (e) => { if (e.key === 'Enter') doSubmit(); });
+    },
+
+    getStayRate() {
+      if (this.stats.stayTry === 0) return '-';
+      return Math.round((this.stats.stayWin / this.stats.stayTry) * 100) + '%';
+    },
+
+    getSwitchRate() {
+      if (this.stats.switchTry === 0) return '-';
+      return Math.round((this.stats.switchWin / this.stats.switchTry) * 100) + '%';
+    },
+
+    getDoorIcon(index) {
+      if (this.phase === 'select') return '🚪';
+      if (index === this.openedDoor) return '🐐';
+      if (this.phase === 'result') {
+        return index === this.prizeDoor ? '🚗' : '🐐';
+      }
+      return '🚪';
+    },
+
+    getDoorLabel(index) {
+      if (this.phase === 'select') {
+        return index === this.selectedDoor ? '선택됨' : '선택하기';
+      }
+      if (index === this.openedDoor) return '공개됨';
+      if (this.phase === 'result') {
+        if (index === this.finalDoor && index === this.prizeDoor) return '최종 선택 · 승리';
+        if (index === this.finalDoor) return '최종 선택';
+        if (index === this.prizeDoor) return '자동차';
+        return '염소';
+      }
+      if (index === this.selectedDoor) return '처음 선택';
+      return '닫힌 문';
+    },
+
+    getDoorClass(index) {
+      const classes = ['door'];
+      if (index === this.selectedDoor) classes.push('is-selected');
+      if (index === this.openedDoor) classes.push('is-opened');
+      if (index === this.finalDoor) classes.push('is-final');
+      return classes.join(' ');
+    },
+
+    renderBottomLeaderboard() {
+      if (typeof window.loadGameLeaderboard === 'function') {
+        window.loadGameLeaderboard('몬티홀', true, 'board-monty-bottom');
+      } else {
+        try {
+          let list = JSON.parse(localStorage.getItem('rank_board-monty') || '[]');
+          const bottomEl = document.getElementById('board-monty-bottom');
+          if (bottomEl) {
+            if (list.length === 0) {
+              bottomEl.innerHTML = '<p style="text-align:center; color:#94a3b8; padding:12px 0;">아직 등록된 기록이 없습니다.</p>';
+            } else {
+              bottomEl.innerHTML = list.slice(0, 5).map((item, idx) => {
+                const safeName = item.nickname.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+                return `
+                <div style="display:flex; justify-content:space-between; align-items:center; background:#0f172a; padding:10px 14px; border-radius:10px; border:1px solid #334155; margin-bottom:6px; color:#fff;">
+                  <span style="font-weight:800; color:${idx === 0 ? '#facc15' : '#cbd5e1'};">${idx === 0 ? '👑 1위' : `${idx + 1}위`} - ${safeName}</span>
+                  <span style="color:#38bdf8; font-weight:900;">${item.score}점</span>
+                </div>
+              `;}).join('');
+            }
+          }
+        } catch(e) {}
+      }
+    },
+
+    render() {
+      if (!this.container) return;
+
+      const currentLimit = this.maxRounds === Infinity ? '무제한' : `${this.maxRounds}라운드`;
+      
+      this.container.innerHTML = `
+        <div class="game-monty-show">
+          <div class="monty-header">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+              <h2 class="monty-title">🎬 몬티홀 딜레마 쇼</h2>
+              <button class="monty-btn-home" id="monty-btn-home" style="background: #ef4444; color: #fff; border: none; border-radius: 8px; font-weight: bold; padding: 6px 12px; cursor: pointer;">🏠 홈으로</button>
+            </div>
+            <p class="monty-desc">
+              세 개의 문 중 하나를 고르고, 진행자가 염소 문을 하나 공개한 뒤
+              선택을 유지할지 바꿀지 결정하는 조건부 확률 게임입니다.
+            </p>
+          </div>
+
+          <div class="monty-grid">
+            <section class="monty-card">
+              ${!this.gameStarted ? `
+                <!-- Start Overlay -->
+                <div style="position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.95); z-index:10; display:flex; flex-direction:column; justify-content:center; align-items:center; border-radius:18px; padding:20px; text-align:center;">
+                  <h3 style="font-size:1.6rem; margin-bottom:10px; color:#5b21b6;">게임 설정</h3>
+                  <p style="color:#64748b; margin-bottom:20px;">라운드 수와 모드를 선택하고 게임을 시작하세요.</p>
+                  <div style="display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap; justify-content:center;">
+                    <button class="monty-btn secondary" onclick="MontyHallShowGame.startGame(5, '1p')">👤 1인용 (5라운드)</button>
+                    <button class="monty-btn secondary" onclick="MontyHallShowGame.startGame(10, '1p')">👤 1인용 (10라운드)</button>
+                    <button class="monty-btn secondary" onclick="MontyHallShowGame.startGame(20, '1p')">👤 1인용 (20라운드)</button>
+                  </div>
+                  <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center;">
+                    <button class="monty-btn" style="background:#ef4444;" onclick="MontyHallShowGame.startGame(5, '2p')">👥 2인용 대결 (5라운드)</button>
+                    <button class="monty-btn" style="background:#ef4444;" onclick="MontyHallShowGame.startGame(10, '2p')">👥 2인용 대결 (10라운드)</button>
+                    <button class="monty-btn" style="background:#ef4444;" onclick="MontyHallShowGame.startGame(Infinity, '2p')">👥 2인 대결 (무제한)</button>
+                  </div>
+                </div>
+              ` : ''}
+
+              <div class="round-box">
+                <div>
+                  <div class="team-name">${this.teams[this.currentTeam]} 차례</div>
+                  <div class="round-info">라운드 ${this.round} / ${currentLimit}</div>
+                </div>
+                <button class="monty-btn danger" data-action="endGame">🛑 게임 종료</button>
+              </div>
+
+              <div class="door-area">
+                ${[0, 1, 2].map(index => `
+                  <button
+                    class="${this.getDoorClass(index)}"
+                    data-action="door"
+                    data-index="${index}"
+                    ${this.phase !== 'select' ? 'disabled' : ''}
+                    aria-label="${index + 1}번 문"
+                  >
+                    <span class="door-number">${index + 1}번 문</span>
+                    <span class="door-icon">${this.getDoorIcon(index)}</span>
+                    <span class="door-label">${this.getDoorLabel(index)}</span>
+                  </button>
+                `).join('')}
+              </div>
+
+              <div class="action-row">
+                <button
+                  class="monty-btn stay"
+                  data-action="stay"
+                  ${this.phase !== 'decide' ? 'disabled' : ''}
+                >
+                  선택 유지
+                </button>
+                <button
+                  class="monty-btn switch"
+                  data-action="switch"
+                  ${this.phase !== 'decide' ? 'disabled' : ''}
+                >
+                  선택 변경
+                </button>
+                <button
+                  class="monty-btn secondary"
+                  data-action="next"
+                  ${this.phase !== 'result' ? 'disabled' : ''}
+                >
+                  다음 라운드
+                </button>
+              </div>
+
+              <div class="message">${this.message}</div>
+
+              <details class="monty-guide">
+                <summary>🎬 몬티홀 딜레마 쇼 사용설명서</summary>
+                <div class="guide-content">
+                  <h3>1. 어떤 게임인가요?</h3>
+                  <p>세 문 중 하나 뒤에는 자동차가 있고, 나머지 두 문 뒤에는 염소가 있습니다. 팀은 먼저 문 하나를 고릅니다. 그다음 진행자는 염소가 있는 문 하나를 열어 보여 줍니다.</p>
+                  <h3>2. 왜 선택을 바꾸는 것이 유리한가요?</h3>
+                  <p>처음 선택이 맞을 확률은 3분의 1입니다. 처음 선택이 틀릴 확률은 3분의 2입니다. 진행자가 염소 문 하나를 열어 준 뒤 선택을 바꾸면, 처음에 틀렸던 경우 대부분 자동차를 찾게 됩니다.</p>
+                  <h3>3. 게임 진행 및 종료</h3>
+                  <ol>
+                    <li>라운드 수를 정하고 게임을 시작합니다.</li>
+                    <li>선택 유지 또는 선택 변경 전략을 사용해 자동차를 찾습니다.</li>
+                    <li>정해진 라운드에 도달하거나 <b>[🛑 게임 종료]</b> 버튼을 누르면 최종 점수를 명예의 전당에 등록할 수 있습니다.</li>
+                  </ol>
+                </div>
+              </details>
+            </section>
+
+            <section class="monty-card">
+              <div class="score-board">
+                <div class="score-item">
+                  <div class="score-label">${this.teams[0]} 점수</div>
+                  <div class="score-value">${this.scores[0]}</div>
+                </div>
+                ${this.mode === '2p' ? `
+                <div class="score-item">
+                  <div class="score-label">${this.teams[1]} 점수</div>
+                  <div class="score-value">${this.scores[1]}</div>
+                </div>` : ''}
+              </div>
+
+              <table class="stat-table">
+                <thead>
+                  <tr>
+                    <th>전략</th>
+                    <th>시도</th>
+                    <th>성공</th>
+                    <th>승률</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>선택 유지</td>
+                    <td>${this.stats.stayTry}</td>
+                    <td>${this.stats.stayWin}</td>
+                    <td>${this.getStayRate()}</td>
+                  </tr>
+                  <tr>
+                    <td>선택 변경</td>
+                    <td>${this.stats.switchTry}</td>
+                    <td>${this.stats.switchWin}</td>
+                    <td>${this.getSwitchRate()}</td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <!-- 명예의 전당 보드 -->
+              <div style="margin-top:20px; background:#1e293b; padding:16px; border-radius:16px; border:1px solid #334155;">
+                <div style="color:#facc15; font-weight:bold; font-size:1.1rem; margin-bottom:10px; text-align:center;">🏆 명예의 전당</div>
+                <div id="board-monty-bottom"><p style="text-align:center; color:#94a3b8; padding:12px 0;">랭킹 데이터를 불러오는 중...</p></div>
+              </div>
+            </section>
+          </div>
+        </div>
+      `;
+
+      this.bindEvents();
+      this.renderBottomLeaderboard();
+    },
+
+    bindEvents() {
+      const root = this.container && typeof this.container.querySelector === 'function'
+          ? this.container.querySelector('.game-monty-show')
+          : document.querySelector('.game-monty-show');
+
+      if (!root) return;
+
+      const homeBtn = root.querySelector('#monty-btn-home');
+      if (homeBtn) homeBtn.addEventListener('click', () => this.goHome());
+
+      root.querySelectorAll('[data-action="door"]').forEach(button => {
+        button.addEventListener('click', () => {
+          const index = Number(button.getAttribute('data-index'));
+          this.selectDoor(index);
+        });
+      });
+
+      root.querySelectorAll('[data-action="stay"]').forEach(button => {
+        button.addEventListener('click', () => this.chooseStrategy('stay'));
+      });
+
+      root.querySelectorAll('[data-action="switch"]').forEach(button => {
+        button.addEventListener('click', () => this.chooseStrategy('switch'));
+      });
+
+      root.querySelectorAll('[data-action="next"]').forEach(button => {
+        button.addEventListener('click', () => this.nextRound());
+      });
+
+      root.querySelectorAll('[data-action="endGame"]').forEach(button => {
+        button.addEventListener('click', () => {
+          this.endGame('사용자가 조기 종료를 선택했습니다.');
+        });
+      });
+    }
+  };
+
+  window.MontyHallShowGame = MontyHallShowGame;
+
+  const gameMeta = {
+    id: 'monty-hall-show',
+    title: '몬티홀 딜레마 쇼',
+    icon: '🎬',
+    sourceType: 'new',
+    mount(container, context) { MontyHallShowGame.mount(container, context); },
+    reset() { MontyHallShowGame.reset(); },
+    destroy() { MontyHallShowGame.destroy(); },
+    goHome() { MontyHallShowGame.goHome(); }
+  };
+
+  function registerMontyGameApp() {
+    if (typeof window.MathLabGames !== 'undefined' && typeof window.MathLabGames.register === 'function') {
+      if (!window.MathLabGames.get || !window.MathLabGames.get('monty-hall-show')) {
+        try { window.MathLabGames.register(gameMeta); } catch (e) { console.warn('monty register error', e); }
+      }
+    } else {
+      if (typeof window.MathLabGames === 'undefined') {
+        window.MathLabGames = { _registry: {}, register(game) { this._registry[game.id] = game; } };
+      }
+      if (window.MathLabGames._registry) window.MathLabGames._registry['monty-hall-show'] = gameMeta;
+    }
+  }
+
+  registerMontyGameApp();
+  window.addEventListener('DOMContentLoaded', registerMontyGameApp);
+  setTimeout(registerMontyGameApp, 100);
+  setTimeout(registerMontyGameApp, 500);
+
+  window.launchMontyHallShow = function() {
+    registerMontyGameApp();
+    if (window.LegacyBridge && typeof window.LegacyBridge.hideAllLegacySections === 'function') {
+      window.LegacyBridge.hideAllLegacySections();
+      window.LegacyBridge.showNewRoot();
+    }
+    if (typeof window.MathLabGames !== 'undefined' && typeof window.MathLabGames.mount === 'function') {
+      try { window.MathLabGames.mount('monty-hall-show'); return; } catch(e) {}
+    }
+    const targetEl = document.getElementById('mathlab-view') || document.getElementById('new-root');
+    MontyHallShowGame.mount(targetEl);
+  };
+})();
+</script>

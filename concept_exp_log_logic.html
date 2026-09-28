@@ -1,0 +1,386 @@
+
+<script>
+(function() {
+  'use strict';
+
+  const ExpLogConceptApp = {
+    host: null,
+    expLogChart: null,
+    currentExpLogMode: 'exp',
+    renderTimeout: null, // 디바운싱용 타이머
+
+    mount(container) {
+      let host = null;
+      if (typeof container === 'string') host = document.querySelector(container);
+      else if (container instanceof HTMLElement) host = container;
+      if (!host && window.MathLabUtils && window.MathLabUtils.getMountContainer) {
+        host = window.MathLabUtils.getMountContainer(container);
+      }
+      if (!host || !(host instanceof HTMLElement)) {
+        host = document.getElementById('mathlab-view') || document.getElementById('new-root') || document.body;
+      }
+      this.host = host;
+      
+      this.host.style.display = '';
+      this.host.style.visibility = 'visible';
+      this.host.style.opacity = '1';
+      let parent = this.host.parentElement;
+      while (parent && parent !== document.body && parent !== document.documentElement) {
+        if (parent.style && parent.style.display === 'none') parent.style.display = 'block';
+        if (parent.style && parent.style.visibility === 'hidden') parent.style.visibility = 'visible';
+        parent = parent.parentElement;
+      }
+      
+      this.render();
+      this.initChart();
+      this.switchExpLog('exp');
+    },
+
+    destroy() {
+      if (this.renderTimeout) {
+        clearTimeout(this.renderTimeout);
+        this.renderTimeout = null;
+      }
+      if (this.expLogChart) {
+        this.expLogChart.destroy();
+        this.expLogChart = null;
+      }
+      if (this.host) {
+        this.host.innerHTML = '';
+        this.host.style.display = 'none';
+      }
+    },
+
+    goHome() {
+      this.destroy();
+      if (typeof window.LegacyBridge !== 'undefined' && typeof window.LegacyBridge.backHome === 'function') {
+        try { window.LegacyBridge.backHome(); return; } catch(e) {}
+      }
+      if (typeof window.MathLabUtils !== 'undefined' && typeof window.MathLabUtils.goHome === 'function') {
+        window.MathLabUtils.goHome();
+      } else {
+        location.reload();
+      }
+    },
+
+    render() {
+      if (!this.host) return;
+      this.host.innerHTML = `
+        <div class="exp-log-container">
+          <div style="display:flex; justify-content:flex-end; padding:10px 0; margin-bottom: 10px;">
+            <button class="btn" style="padding: 8px 14px; background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 8px; cursor: pointer; color: #475569; font-weight: 800; font-size: 0.9rem;" onclick="window.ExpLogConceptApp.goHome()">🏠 대시보드</button>
+          </div>
+          ${ `        
+        <div class="finance-container">
+          <h1>지수·로그 롤러코스터 🎢</h1>
+          <p class="highlight-msg" style="background:#fff3e0; color:#e67e22; border-color:#ffeaa7;">밑의 크기가 1을 기준으로 어떻게 역전되는지 확인하세요!</p>
+          <div class="mission-tabs" id="exp-tabs" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; background: transparent; padding: 0;">
+            <button class="tab-btn active" onclick="window.ExpLogConceptApp.switchExpLog('exp')" style="border:2px solid #dfe6e9; background:#fff; font-size: 0.9rem;">지수함수</button>
+            <button class="tab-btn" onclick="window.ExpLogConceptApp.switchExpLog('log')" style="border:2px solid #dfe6e9; background:#fff; font-size: 0.9rem;">로그함수</button>
+            <button class="tab-btn" onclick="window.ExpLogConceptApp.switchExpLog('both')" style="border:2px solid #dfe6e9; background:#fff; font-size: 0.9rem;">역함수 보기</button>
+          </div>
+          <div class="chart-wrapper" style="height: 350px;"><canvas id="canvas-exp-log"></canvas></div>
+          <div class="sliders-wrapper" id="sliders-exp">
+            <div class="slider-group"><label>밑 (a): <span id="val-exp-a">2.0</span></label><input type="range" id="slider-exp-a" min="0.1" max="4.0" step="0.1" value="2.0" oninput="window.ExpLogConceptApp.handleSliderInput()"></div>
+            <div class="slider-group"><label>x축 이동 (p): <span id="val-exp-p">0.0</span></label><input type="range" id="slider-exp-p" min="-5.0" max="5.0" step="0.5" value="0.0" oninput="window.ExpLogConceptApp.handleSliderInput()"></div>
+            <div class="slider-group"><label>y축 이동 (q): <span id="val-exp-q">0.0</span></label><input type="range" id="slider-exp-q" min="-5.0" max="5.0" step="0.5" value="0.0" oninput="window.ExpLogConceptApp.handleSliderInput()"></div>
+          </div>
+          <div class="sliders-wrapper hidden" id="sliders-log">
+            <div class="slider-group"><label>밑 (a): <span id="val-log-a">2.0</span></label><input type="range" id="slider-log-a" min="0.1" max="4.0" step="0.1" value="2.0" oninput="window.ExpLogConceptApp.handleSliderInput()"></div>
+            <div class="slider-group"><label>x축 이동 (p): <span id="val-log-p">0.0</span></label><input type="range" id="slider-log-p" min="-5.0" max="5.0" step="0.5" value="0.0" oninput="window.ExpLogConceptApp.handleSliderInput()"></div>
+            <div class="slider-group"><label>y축 이동 (q): <span id="val-log-q">0.0</span></label><input type="range" id="slider-log-q" min="-5.0" max="5.0" step="0.5" value="0.0" oninput="window.ExpLogConceptApp.handleSliderInput()"></div>
+          </div>
+          <div class="calc-board" style="background:#2c3e50;">
+            <div class="formula-title" style="color:#e67e22;" id="el-title">수학적 표현</div>
+            <div class="formula-math" id="exp-log-formula" style="color:#ffffff; font-size:1.3rem; padding:10px 0; min-height:45px;"></div>
+            <div class="survey-result" style="color:#bdc3c7; font-size:0.95rem; line-height:1.5; border-top:1px dashed #7f8c8d; padding-top:12px;" id="exp-log-desc">설명</div>
+          </div>
+        </div>
+` }
+        </div>
+      `;
+    },
+
+    initChart() {
+      if (this.expLogChart) {
+        this.expLogChart.destroy();
+      }
+
+      const canvas = this.host.querySelector('#canvas-exp-log');
+      if (!canvas) return;
+
+      this.expLogChart = new Chart(
+        canvas.getContext('2d'),
+        {
+          type: 'scatter',
+          data: {
+            datasets: [
+              {
+                label: '지수함수',
+                data: [],
+                borderColor: '#e67e22',
+                borderWidth: 3,
+                showLine: true,
+                pointRadius: 0,
+                tension: 0.1
+              },
+              {
+                label: 'y=x 대칭선',
+                data: [
+                  { x: -10, y: -10 },
+                  { x: 10, y: 10 }
+                ],
+                borderColor: '#95a5a6',
+                borderWidth: 1.5,
+                borderDash: [4, 4],
+                showLine: true,
+                pointRadius: 0
+              },
+              {
+                label: '로그함수',
+                data: [],
+                borderColor: '#3498db',
+                borderWidth: 3,
+                showLine: true,
+                pointRadius: 0,
+                tension: 0.1
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: {
+              duration: 0 // 성능을 위해 애니메이션 끄기
+            },
+            scales: {
+              x: { min: -10, max: 10 },
+              y: { min: -10, max: 10 }
+            }
+          }
+        }
+      );
+    },
+
+    switchExpLog(mode) {
+      this.currentExpLogMode = mode;
+
+      this.host.querySelectorAll('#exp-tabs .tab-btn').forEach((btn) => {
+        btn.classList.remove('active');
+        btn.style.borderColor = '#dfe6e9';
+        btn.style.color = '#7f8c8d';
+      });
+
+      const activeBtn = this.host.querySelector(`#exp-tabs button[onclick="window.ExpLogConceptApp.switchExpLog('${mode}')"]`);
+      if (activeBtn) {
+        activeBtn.classList.add('active');
+        activeBtn.style.borderColor = '#e67e22';
+        activeBtn.style.color = '#e67e22';
+      }
+
+      if (mode === 'exp') {
+        this.host.querySelector('#sliders-exp').classList.remove('hidden');
+        this.host.querySelector('#sliders-log').classList.add('hidden');
+      } else if (mode === 'log') {
+        this.host.querySelector('#sliders-exp').classList.add('hidden');
+        this.host.querySelector('#sliders-log').classList.remove('hidden');
+      } else {
+        this.host.querySelector('#sliders-exp').classList.remove('hidden');
+        this.host.querySelector('#sliders-log').classList.add('hidden');
+      }
+
+      this.updateExpLog();
+    },
+
+    handleSliderInput() {
+      // UI 레이블만 즉시 업데이트 (부드러운 피드백)
+      this.updateLabelsOnly();
+
+      // 차트 업데이트 (requestAnimationFrame으로 60fps 제한하여 버벅임 방지)
+      if (this.chartRaf) cancelAnimationFrame(this.chartRaf);
+      this.chartRaf = requestAnimationFrame(() => {
+        this.updateExpLogChart();
+      });
+
+      // 무거운 수식/텍스트 렌더링은 디바운스 (50ms)
+      if (this.renderTimeout) clearTimeout(this.renderTimeout);
+      this.renderTimeout = setTimeout(() => {
+        this.updateExpLogFormula();
+      }, 50);
+    },
+
+    updateLabelsOnly() {
+      let a, p, q;
+      if (this.currentExpLogMode === 'exp' || this.currentExpLogMode === 'both') {
+        a = parseFloat(this.host.querySelector('#slider-exp-a').value);
+        p = parseFloat(this.host.querySelector('#slider-exp-p').value);
+        q = parseFloat(this.host.querySelector('#slider-exp-q').value);
+        this.host.querySelector('#val-exp-a').innerText = a.toFixed(1);
+        this.host.querySelector('#val-exp-p').innerText = p.toFixed(1);
+        this.host.querySelector('#val-exp-q').innerText = q.toFixed(1);
+      } else {
+        a = parseFloat(this.host.querySelector('#slider-log-a').value);
+        p = parseFloat(this.host.querySelector('#slider-log-p').value);
+        q = parseFloat(this.host.querySelector('#slider-log-q').value);
+        this.host.querySelector('#val-log-a').innerText = a.toFixed(1);
+        this.host.querySelector('#val-log-p').innerText = p.toFixed(1);
+        this.host.querySelector('#val-log-q').innerText = q.toFixed(1);
+      }
+    },
+
+    updateExpLog() {
+      this.updateExpLogChart();
+      this.updateExpLogFormula();
+    },
+
+    getValues() {
+      let a, p, q;
+      if (this.currentExpLogMode === 'exp' || this.currentExpLogMode === 'both') {
+        a = parseFloat(this.host.querySelector('#slider-exp-a').value);
+        p = parseFloat(this.host.querySelector('#slider-exp-p').value);
+        q = parseFloat(this.host.querySelector('#slider-exp-q').value);
+
+        this.host.querySelector('#val-exp-a').innerText = a.toFixed(1);
+        this.host.querySelector('#val-exp-p').innerText = p.toFixed(1);
+        this.host.querySelector('#val-exp-q').innerText = q.toFixed(1);
+      } else {
+        a = parseFloat(this.host.querySelector('#slider-log-a').value);
+        p = parseFloat(this.host.querySelector('#slider-log-p').value);
+        q = parseFloat(this.host.querySelector('#slider-log-q').value);
+
+        this.host.querySelector('#val-log-a').innerText = a.toFixed(1);
+        this.host.querySelector('#val-log-p').innerText = p.toFixed(1);
+        this.host.querySelector('#val-log-q').innerText = q.toFixed(1);
+      }
+
+      if (Math.abs(a - 1.0) < 0.05) {
+        a = a >= 1.0 ? 1.05 : 0.95;
+      }
+      return { a, p, q };
+    },
+
+    updateExpLogChart() {
+      if (!this.expLogChart) return;
+
+      const { a, p, q } = this.getValues();
+      let expData = [];
+      let logData = [];
+
+      if (this.currentExpLogMode === 'exp') {
+        for (let x = -10; x <= 10; x += 0.1) {
+          const y = Math.pow(a, x - p) + q;
+          if (Number.isFinite(y)) expData.push({ x: x, y: y });
+        }
+        this.expLogChart.data.datasets[0].data = expData;
+        this.expLogChart.data.datasets[2].data = [];
+      } else if (this.currentExpLogMode === 'log') {
+        for (let x = p + 0.01; x <= 10; x += 0.05) {
+          const y = Math.log(x - p) / Math.log(a) + q;
+          if (Number.isFinite(y)) logData.push({ x: x, y: y });
+        }
+        this.expLogChart.data.datasets[0].data = [];
+        this.expLogChart.data.datasets[2].data = logData;
+      } else {
+        for (let x = -10; x <= 10; x += 0.1) {
+          const y = Math.pow(a, x - p) + q;
+          if (Number.isFinite(y)) {
+            expData.push({ x: x, y: y });
+            logData.push({ x: y, y: x });
+          }
+        }
+        this.expLogChart.data.datasets[0].data = expData;
+        this.expLogChart.data.datasets[2].data = logData;
+      }
+
+      this.expLogChart.update();
+    },
+
+    updateExpLogFormula() {
+      const { a, p, q } = this.getValues();
+
+      let fText = '';
+      let descText = '';
+
+      const pTerm = p === 0 ? 'x' : (p > 0 ? `(x - ${p.toFixed(1)})` : `(x + ${Math.abs(p).toFixed(1)})`);
+      const qTerm = q === 0 ? '' : (q > 0 ? `+ ${q.toFixed(1)}` : `- ${Math.abs(q).toFixed(1)}`);
+      
+      const logInputTerm = p === 0 ? 'x' : (p > 0 ? `(x - ${p.toFixed(1)})` : `(x + ${Math.abs(p).toFixed(1)})`);
+      const inverseLogInputTerm = q === 0 ? 'x' : (q > 0 ? `(x - ${q.toFixed(1)})` : `(x + ${Math.abs(q).toFixed(1)})`);
+      const inversePlusTerm = p === 0 ? '' : (p > 0 ? `+ ${p.toFixed(1)}` : `- ${Math.abs(p).toFixed(1)}`);
+
+      if (this.currentExpLogMode === 'exp') {
+        fText = `y = ${a.toFixed(1)}^{${pTerm}} ${qTerm}`;
+        descText = `지수함수 개형입니다. 밑 $a = ${a.toFixed(1)}$ 조건에 의해 그래프가 ` +
+          `${a > 1 ? '증가' : '감소'}합니다. 점근선은 $y = ${q.toFixed(1)}$ 입니다.`;
+      } else if (this.currentExpLogMode === 'log') {
+        fText = `y = \\log_{${a.toFixed(1)}} ${logInputTerm} ${qTerm}`;
+        descText = `로그함수 개형입니다. 진수 조건 $x > ${p.toFixed(1)}$ 범위에서만 정의되며, ` +
+          `점근선은 $x = ${p.toFixed(1)}$ 입니다.`;
+      } else {
+        fText = `\\begin{cases}` +
+          ` y = ${a.toFixed(1)}^{${pTerm}} ${qTerm} \\\\ ` +
+          ` y = \\log_{${a.toFixed(1)}} ${inverseLogInputTerm} ${inversePlusTerm}` +
+          `\\end{cases}`;
+        descText = `지수함수와 그 역함수를 함께 표시합니다. ` +
+          `역함수는 지수함수의 좌표 $(x, y)$를 $(y, x)$로 바꾸어 그리므로 ` +
+          `$y=x$ 직선에 대해 정확히 대칭입니다.`;
+      }
+
+      if (typeof katex !== 'undefined') {
+        katex.render(fText, this.host.querySelector('#exp-log-formula'), { throwOnError: false });
+      }
+      const descEl = this.host.querySelector('#exp-log-desc');
+      if (descEl) {
+        descEl.innerHTML = descText;
+        if (typeof katex !== 'undefined') {
+           // 설명 내의 $...$ 렌더링
+           const parts = descText.split(/(\$[^$]+\$)/g);
+           descEl.innerHTML = '';
+           parts.forEach((part) => {
+             if (part.startsWith('$') && part.endsWith('$')) {
+               const span = document.createElement('span');
+               katex.render(part.slice(1, -1), span, { throwOnError: false, displayMode: false });
+               descEl.appendChild(span);
+             } else {
+               descEl.appendChild(document.createTextNode(part));
+             }
+           });
+        }
+      }
+    }
+  };
+
+  window.ExpLogConceptApp = ExpLogConceptApp;
+
+  function registerMyApp() {
+    if (typeof window.MathLabGames !== 'undefined' && typeof window.MathLabGames.register === 'function') {
+      window.MathLabGames.register({
+        id: 'exp-log-concept',
+        title: '지수·로그 롤러코스터',
+        icon: '🎢',
+        appType: 'concept',
+        topApp: '수학 개념',
+        sourceType: 'new',
+        mount(container) { ExpLogConceptApp.mount(container); },
+        reset() { ExpLogConceptApp.switchExpLog('exp'); },
+        destroy() { ExpLogConceptApp.destroy(); },
+        goHome() { ExpLogConceptApp.goHome(); }
+      });
+    }
+  }
+
+  registerMyApp();
+  window.addEventListener('DOMContentLoaded', registerMyApp);
+
+  window.initExpLogApp = function() {
+    if (window.LegacyBridge && typeof window.LegacyBridge.hideAllLegacySections === 'function') {
+      window.LegacyBridge.hideAllLegacySections();
+      window.LegacyBridge.showNewRoot();
+    }
+    if (typeof window.MathLabGames !== 'undefined' && typeof window.MathLabGames.mount === 'function') {
+      try { window.MathLabGames.mount('exp-log-concept'); return; } catch(e){}
+    }
+    ExpLogConceptApp.mount();
+  };
+})();
+</script>

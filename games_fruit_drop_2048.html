@@ -1,0 +1,1440 @@
+<!-- 과일 2048 드롭 (Fruit Drop 2048) - 실시간 동시 듀얼 대결 & 12단계 왕관 완결판 스니펫 -->
+<style>
+  .game-fruit-drop-2048 {
+    width: 100%;
+    max-width: 1140px;
+    margin: 0 auto;
+    padding: 16px;
+    background: #0f172a;
+    color: #e2e8f0;
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    border-radius: 24px;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.45);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    position: relative;
+    box-sizing: border-box;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  .game-fruit-drop-2048 * {
+    box-sizing: border-box;
+  }
+
+  /* 상단 헤더 바 */
+  .game-fruit-drop-2048 .stats-bar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    background: #1e293b;
+    border: 1px solid #334155;
+    padding: 12px 18px;
+    border-radius: 14px;
+  }
+
+  .game-fruit-drop-2048 .title-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .game-fruit-drop-2048 .title-icon {
+    font-size: 1.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    background: rgba(16, 185, 129, 0.15);
+    border-radius: 12px;
+  }
+
+  .game-fruit-drop-2048 .title-text {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: #f8fafc;
+    letter-spacing: -0.02em;
+  }
+
+  .game-fruit-drop-2048 .title-badge {
+    font-size: 0.75rem;
+    font-weight: 700;
+    background: #10b981;
+    color: #ffffff;
+    padding: 3px 8px;
+    border-radius: 6px;
+  }
+
+  .game-fruit-drop-2048 .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .game-fruit-drop-2048 .btn-header {
+    background: #334155;
+    color: #e2e8f0;
+    border: 1px solid #475569;
+    padding: 7px 13px;
+    border-radius: 10px;
+    font-size: 0.86rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+  }
+
+  .game-fruit-drop-2048 .btn-header:hover {
+    background: #475569;
+    color: #ffffff;
+    transform: translateY(-1px);
+  }
+
+  .game-fruit-drop-2048 .btn-header.stop-save {
+    background: #f59e0b;
+    color: #0f172a;
+    border-color: #d97706;
+    font-weight: 800;
+  }
+
+  .game-fruit-drop-2048 .btn-header.stop-save:hover {
+    background: #d97706;
+    color: #ffffff;
+  }
+
+  .game-fruit-drop-2048 .btn-header.primary {
+    background: #0ea5e9;
+    color: #ffffff;
+    border-color: #0284c7;
+  }
+
+  .game-fruit-drop-2048 .btn-header.primary:hover {
+    background: #0284c7;
+  }
+
+  .game-fruit-drop-2048 .btn-header.home {
+    background: rgba(244, 63, 94, 0.18);
+    color: #fda4af;
+    border-color: rgba(244, 63, 94, 0.4);
+  }
+
+  .game-fruit-drop-2048 .btn-header.home:hover {
+    background: rgba(244, 63, 94, 0.35);
+    color: #ffffff;
+  }
+
+  /* 상태 인포 바 & 모드 선택 탭 */
+  .game-fruit-drop-2048 .status-panel {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    background: rgba(30, 41, 59, 0.75);
+    border: 1px solid #334155;
+    padding: 10px 16px;
+    border-radius: 12px;
+    min-height: 56px;
+  }
+
+  .game-fruit-drop-2048 .mode-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    background: #0f172a;
+    padding: 4px;
+    border-radius: 10px;
+    border: 1px solid #334155;
+  }
+
+  .game-fruit-drop-2048 .mode-btn {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    padding: 7px 12px;
+    border-radius: 7px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .game-fruit-drop-2048 .mode-btn.active {
+    background: #10b981;
+    color: #ffffff;
+    box-shadow: 0 2px 6px rgba(16, 185, 129, 0.35);
+  }
+
+  .game-fruit-drop-2048 .mode-btn.dual-btn.active {
+    background: #e11d48;
+    box-shadow: 0 2px 8px rgba(225, 29, 72, 0.45);
+  }
+
+  .game-fruit-drop-2048 .info-group {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    flex-wrap: wrap;
+  }
+
+  .game-fruit-drop-2048 .info-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.94rem;
+    color: #cbd5e1;
+  }
+
+  .game-fruit-drop-2048 .info-value {
+    font-weight: 800;
+    color: #38bdf8;
+  }
+
+  /* 🌟 듀얼 대결 상단 레이스 현황 바 */
+  .game-fruit-drop-2048 .dual-status-bar {
+    display: none;
+    width: 100%;
+    background: #1e293b;
+    border: 2px solid #e11d48;
+    padding: 12px 18px;
+    border-radius: 14px;
+    justify-content: space-between;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+  .game-fruit-drop-2048 .dual-status-bar.active { display: flex; }
+  
+  .game-fruit-drop-2048 .dual-player-tag {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 800;
+    font-size: 1.05rem;
+    padding: 8px 14px;
+    border-radius: 10px;
+    background: #0f172a;
+    border: 1px solid #334155;
+  }
+  .game-fruit-drop-2048 .dual-player-tag.p1 { border-color: #3b82f6; color: #60a5fa; }
+  .game-fruit-drop-2048 .dual-player-tag.p2 { border-color: #f97316; color: #fb923c; }
+
+  /* 메인 게임 영역 (싱글 레이아웃 vs 듀얼 레이아웃) */
+  .game-fruit-drop-2048 .single-layout {
+    display: grid;
+    grid-template-columns: 1fr 310px;
+    gap: 20px;
+    align-items: start;
+  }
+  @media (max-width: 820px) {
+    .game-fruit-drop-2048 .single-layout { grid-template-columns: 1fr; }
+  }
+
+  .game-fruit-drop-2048 .board-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 18px;
+    padding: 16px;
+    gap: 12px;
+  }
+
+  .game-fruit-drop-2048 .canvas-container {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    background: #090d16;
+    border: 3px solid #475569;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: inset 0 0 24px rgba(0, 0, 0, 0.8);
+    touch-action: none;
+  }
+  .game-fruit-drop-2048 canvas { display: block; cursor: crosshair; }
+
+  /* 하단 컨트롤러 바 */
+  .game-fruit-drop-2048 .controller-bar {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+    max-width: 440px;
+    justify-content: space-between;
+  }
+  .game-fruit-drop-2048 .ctrl-btn {
+    flex: 1;
+    background: #334155;
+    border: 1px solid #475569;
+    color: #f8fafc;
+    padding: 12px 0;
+    border-radius: 12px;
+    font-size: 1.05rem;
+    font-weight: 800;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: all 0.15s ease;
+  }
+  .game-fruit-drop-2048 .ctrl-btn:hover { background: #475569; transform: translateY(-2px); }
+  .game-fruit-drop-2048 .ctrl-btn.drop { flex: 1.4; background: #10b981; border-color: #059669; color: #ffffff; }
+  .game-fruit-drop-2048 .ctrl-btn.drop.p1-drop { background: #3b82f6; border-color: #2563eb; }
+  .game-fruit-drop-2048 .ctrl-btn.drop.p2-drop { background: #f97316; border-color: #ea580c; }
+
+  /* 🌟 2인 동시 듀얼 대결 전용 레이아웃 (좌우 2개 캔버스) */
+  .game-fruit-drop-2048 .dual-layout {
+    display: none;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    align-items: start;
+    width: 100%;
+  }
+  .game-fruit-drop-2048 .dual-layout.active { display: grid; }
+  @media (max-width: 960px) {
+    .game-fruit-drop-2048 .dual-layout { grid-template-columns: 1fr; }
+  }
+
+  .game-fruit-drop-2048 .dual-box-card {
+    background: #1e293b;
+    border: 2px solid #334155;
+    border-radius: 20px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    position: relative;
+  }
+  .game-fruit-drop-2048 .dual-box-card.p1-card { border-color: #3b82f6; }
+  .game-fruit-drop-2048 .dual-box-card.p2-card { border-color: #f97316; }
+
+  .game-fruit-drop-2048 .dual-header-info {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #0f172a;
+    padding: 8px 14px;
+    border-radius: 12px;
+    font-weight: 800;
+  }
+
+  /* 우측 패널 (사이드 도감 & 미리보기) */
+  .game-fruit-drop-2048 .side-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .game-fruit-drop-2048 .card-panel {
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 16px;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .game-fruit-drop-2048 .panel-title {
+    font-size: 0.92rem;
+    font-weight: 800;
+    color: #94a3b8;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .game-fruit-drop-2048 .preview-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 12px;
+    padding: 14px;
+    gap: 16px;
+  }
+  .game-fruit-drop-2048 .preview-item { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .game-fruit-drop-2048 .preview-circle {
+    display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid #ffffff; box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+  }
+  .game-fruit-drop-2048 .preview-name { font-size: 0.85rem; font-weight: 700; color: #cbd5e1; }
+
+  /* 12단계 도감표 */
+  .game-fruit-drop-2048 .dict-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: 4px;
+  }
+  .game-fruit-drop-2048 .dict-item {
+    display: flex; align-items: center; gap: 8px; background: #0f172a; border: 1px solid #334155; padding: 6px 10px; border-radius: 10px; font-size: 0.82rem;
+  }
+  .game-fruit-drop-2048 .dict-item.unlocked { border-color: #38bdf8; background: rgba(14, 165, 233, 0.1); }
+  .game-fruit-drop-2048 .dict-item.target { border-color: #f59e0b; background: rgba(245, 158, 11, 0.18); }
+  .game-fruit-drop-2048 .dict-emoji { font-size: 1.4rem; }
+  .game-fruit-drop-2048 .dict-info { display: flex; flex-direction: column; line-height: 1.25; }
+  .game-fruit-drop-2048 .dict-label { font-weight: 800; color: #f8fafc; }
+  .game-fruit-drop-2048 .dict-val { font-size: 0.74rem; color: #38bdf8; font-weight: 700; }
+
+  /* 공통 모달 팝업 */
+  .game-fruit-drop-2048 .modal-backdrop {
+    position: fixed; inset: 0; background: rgba(0, 0, 0, 0.78); backdrop-filter: blur(5px); display: none; align-items: center; justify-content: center; z-index: 10000; padding: 20px;
+  }
+  .game-fruit-drop-2048 .modal-backdrop.open { display: flex; }
+  .game-fruit-drop-2048 .modal-box {
+    background: #1e293b; border: 1px solid #334155; border-radius: 20px; width: 100%; max-width: 560px; max-height: 85vh; overflow-y: auto; padding: 24px; color: #e2e8f0; box-shadow: 0 24px 50px rgba(0, 0, 0, 0.7);
+  }
+  .game-fruit-drop-2048 .modal-title { font-size: 1.35rem; font-weight: 800; color: #f8fafc; margin: 0 0 14px 0; display: flex; align-items: center; gap: 8px; }
+  .game-fruit-drop-2048 .rule-list { margin: 0 0 16px 0; padding-left: 20px; display: flex; flex-direction: column; gap: 8px; font-size: 0.93rem; line-height: 1.55; color: #cbd5e1; }
+  .game-fruit-drop-2048 .modal-close-btn { width: 100%; background: #10b981; color: #ffffff; border: none; padding: 12px; border-radius: 12px; font-size: 0.98rem; font-weight: 800; cursor: pointer; margin-top: 18px; transition: background 0.2s; }
+  .game-fruit-drop-2048 .modal-close-btn:hover { background: #059669; }
+</style>
+
+<script>
+  /* ==========================================================================
+     FruitDrop2048 모듈 - 2인 동시 듀얼 대결 & 12단계 왕관 완결판
+     ========================================================================== */
+  const FruitDrop2048 = (function () {
+    const FRUIT_STAGES = [
+      { stage: 1,  name: '블루베리', emoji: '🫐', value: 2,    radius: 14,  color: '#38bdf8' },
+      { stage: 2,  name: '체리',    emoji: '🍒', value: 4,    radius: 19,  color: '#f43f5e' },
+      { stage: 3,  name: '딸기',    emoji: '🍓', value: 8,    radius: 25,  color: '#ef4444' },
+      { stage: 4,  name: '귤',      emoji: '🍊', value: 16,   radius: 32,  color: '#f97316' },
+      { stage: 5,  name: '키위',    emoji: '🥝', value: 32,   radius: 41,  color: '#84cc16' },
+      { stage: 6,  name: '사과',    emoji: '🍎', value: 64,   radius: 51,  color: '#dc2626' },
+      { stage: 7,  name: '배',      emoji: '🍐', value: 128,  radius: 63,  color: '#a3e635' },
+      { stage: 8,  name: '복숭아',  emoji: '🍑', value: 256,  radius: 76,  color: '#fb7185' },
+      { stage: 9,  name: '멜론',    emoji: '🍈', value: 512,  radius: 89,  color: '#22c55e' },
+      { stage: 10, name: '파인애플', emoji: '🍍', value: 1024, radius: 103, color: '#eab308' },
+      { stage: 11, name: '수박',    emoji: '🍉', value: 2048, radius: 118, color: '#10b981' },
+      { stage: 12, name: '황금 왕관', emoji: '👑', value: 4096, radius: 128, color: '#f59e0b' }
+    ];
+
+    let currentMode = 'NORMAL'; // 'EASY', 'NORMAL', 'HARD', 'TURN_VS'(한상자턴제), 'DUAL_VS'(동시듀얼)
+    let currentTimeMode = '10M'; // '10M', 'UNLIMIT'
+    let gameTimeLeft = 600;
+    let gameTimerId = null;
+    let boxWidth = 400;
+    let boxHeight = 580;
+    const dangerLineY = 70;
+
+    // 싱글/턴제 물리 상태
+    let bodies = [];
+    let nextBodyId = 1;
+    let dropX = 200;
+    let currentPieceStage = 1;
+    let nextPieceStage = 1;
+    let score = 0;
+    let maxStageReached = 1;
+
+    // 🌟 듀얼 동시 대결(P1, P2) 물리 및 점수 상태
+    let bodiesP1 = [], bodiesP2 = [];
+    let dropXP1 = 200, dropXP2 = 200;
+    let curPieceP1 = 1, nextPieceP1 = 1;
+    let curPieceP2 = 1, nextPieceP2 = 1;
+    let p1Score = 0, p2Score = 0;
+    let maxStageP1 = 1, maxStageP2 = 1;
+    let canDropP1 = true, canDropP2 = true;
+    let dangerTimeP1 = 0, dangerTimeP2 = 0;
+    let lastDropP1 = 0, lastDropP2 = 0;
+    let currentTurnPlayer = 1; // TURN_VS 모드용
+
+    let isGameOver = false;
+    let canDrop = true;
+    let dangerTime = 0;
+    let lastDropTime = 0;
+
+    let physicsLoopId = null;
+    let autoDropTimer = null;
+    let toastTimer = null;
+
+    function showToast(msg, isError = false) {
+      let host = document.getElementById('fruit-drop-app');
+      if (!host) return;
+      let toast = host.querySelector('#fd-toast');
+      if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'fd-toast';
+        toast.style.cssText = 'position:absolute; top:20px; left:50%; transform:translateX(-50%); padding:12px 24px; border-radius:12px; font-weight:800; font-size:1rem; z-index:99999; box-shadow:0 10px 25px rgba(0,0,0,0.5); transition:all 0.3s; text-align:center; min-width:300px; pointer-events:none; opacity:0;';
+        host.appendChild(toast);
+      }
+      toast.style.background = isError ? '#ef4444' : '#10b981';
+      toast.style.color = isError ? '#ffffff' : '#0f172a';
+      toast.textContent = msg;
+      void toast.offsetWidth;
+      toast.style.opacity = '1';
+      toast.style.top = '20px';
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.top = '0px';
+      }, 3000);
+    }
+
+    /* --------------------------------------------------------------------------
+       Gen-3 동적 마운트
+       -------------------------------------------------------------------------- */
+    function mount(container, context) {
+      let host = null;
+      if (typeof container === 'string') host = document.querySelector(container);
+      else if (container instanceof HTMLElement) host = container;
+      if (!host) host = window.MathLabUtils?.getMountContainer ? window.MathLabUtils.getMountContainer(container) : document.getElementById('mathlab-view');
+      if (!host) host = document.getElementById('new-root') || document.getElementById('game-container');
+
+      if (!host) {
+        let createdHost = document.getElementById('fruit-drop-2048-force-host');
+        if (!createdHost) {
+          createdHost = document.createElement('div');
+          createdHost.id = 'fruit-drop-2048-force-host';
+          document.body.appendChild(createdHost);
+        }
+        host = createdHost;
+      }
+
+      const footerEl = document.querySelector('footer, #footer, .app-footer') || 
+                       Array.from(document.querySelectorAll('div, p, span')).find(el => el.textContent && el.textContent.includes('2026 기록조율사'));
+      if (footerEl && host.compareDocumentPosition(footerEl) & Node.DOCUMENT_POSITION_PRECEDING) {
+        footerEl.parentNode.insertBefore(host, footerEl);
+      }
+
+      host.style.display = '';
+
+      host.innerHTML = `
+        <div class="game-fruit-drop-2048" id="fruit-drop-app">
+          <!-- 상단 헤더 바 -->
+          <div class="stats-bar">
+            <div class="title-group">
+              <div class="title-icon">🍉</div>
+              <div>
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <span class="title-text">과일 2048 드롭</span>
+                  <span class="title-badge">실시간 동시 듀얼 + 2D 물리</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="header-actions">
+              <button class="btn-header home" onclick="FruitDrop2048.goHome()">
+                <span>🏠 홈으로</span>
+              </button>
+              <button class="btn-header" onclick="FruitDrop2048.showGuideModal()">
+                <span>📖 규칙 & 조작법</span>
+              </button>
+              <button class="btn-header stop-save" onclick="FruitDrop2048.manualStopAndSave()">
+                <span>🏁 승자 정산 & 기록</span>
+              </button>
+              <button class="btn-header primary" onclick="FruitDrop2048.resetGame()">
+                <span>🔄 새 게임</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 상태 인포 바 & 모드 선택 탭 -->
+          <div class="status-panel">
+            <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
+              <div class="mode-tabs">
+                <button class="mode-btn active" id="fd-btn-easy" onclick="FruitDrop2048.setMode('EASY')">🟢 쉬움</button>
+                <button class="mode-btn" id="fd-btn-normal" onclick="FruitDrop2048.setMode('NORMAL')">🔵 보통</button>
+                <button class="mode-btn" id="fd-btn-hard" onclick="FruitDrop2048.setMode('HARD')">🟣 도전</button>
+                <button class="mode-btn" id="fd-btn-turn-vs" onclick="FruitDrop2048.setMode('TURN_VS')">🧑‍🤝‍🧑 2인 한상자 턴제</button>
+                <button class="mode-btn dual-btn" id="fd-btn-dual-vs" onclick="FruitDrop2048.setMode('DUAL_VS')">⚔️ 2인 동시 듀얼 대결</button>
+              </div>
+              <div class="time-tabs" style="display: flex; flex-wrap: wrap; gap: 6px; background: #0f172a; padding: 4px; border-radius: 10px; border: 1px solid #334155;">
+                <button class="mode-btn active" id="fd-btn-time-10m" onclick="FruitDrop2048.setTimeMode('10M')">⏱️ 10분 제한</button>
+                <button class="mode-btn" id="fd-btn-time-unlimit" onclick="FruitDrop2048.setTimeMode('UNLIMIT')">♾️ 무제한</button>
+              </div>
+            </div>
+
+            <div style="display:flex; align-items:center; gap:16px;">
+              <div class="info-item" style="background:#1e293b; padding:6px 12px; border-radius:8px; border:1px solid #ef4444;">
+                <span>⏱️ 시간:</span>
+                <span class="info-value" id="fd-time-left" style="color:#ef4444; font-size:1.1rem;">10:00</span>
+              </div>
+              <div class="info-group" id="fd-single-score-wrap">
+                <div class="info-item">
+                  <span>⭐ 점수:</span>
+                  <span class="info-value" id="fd-score">0</span>
+                </div>
+                <div class="info-item">
+                  <span>👑 최고 과일:</span>
+                  <span class="info-value" id="fd-max-fruit">🫐 블루베리(2)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 🌟 2인 동시 듀얼 대결 상단 상태 바 -->
+          <div class="dual-status-bar" id="fd-dual-status-bar">
+            <div class="dual-player-tag p1">
+              <span>🟦 P1 (파랑) 점수: <strong id="fd-dual-p1-score">0</strong></span>
+              <span style="font-size:0.8rem; background:#1e3a8a; padding:2px 8px; border-radius:6px; color:white;">최고: <span id="fd-dual-p1-max">🫐 블루베리</span></span>
+            </div>
+            <div style="color:#f43f5e; font-weight:900; font-size:1.15rem;">⚔️ 실시간 동시 스피드 레이스 ⚔️</div>
+            <div class="dual-player-tag p2">
+              <span>🟧 P2 (주황) 점수: <strong id="fd-dual-p2-score">0</strong></span>
+              <span style="font-size:0.8rem; background:#7c2d12; padding:2px 8px; border-radius:6px; color:white;">최고: <span id="fd-dual-p2-max">🫐 블루베리</span></span>
+            </div>
+          </div>
+
+          <!-- 1. 싱글 & 한상자 턴제 레이아웃 -->
+          <div class="single-layout" id="fd-single-layout">
+            <div class="board-wrapper">
+              <div class="canvas-container" id="fd-canvas-wrap">
+                <canvas id="fd-canvas" width="400" height="580"></canvas>
+              </div>
+
+              <div class="controller-bar">
+                <button class="ctrl-btn" onclick="FruitDrop2048.moveLeft()">⬅️ 좌측</button>
+                <button class="ctrl-btn drop" onclick="FruitDrop2048.dropPiece()">⬇️ 드롭 (Space / 터치)</button>
+                <button class="ctrl-btn" onclick="FruitDrop2048.moveRight()">➡️ 우측</button>
+              </div>
+            </div>
+
+            <div class="side-panel">
+              <div class="card-panel">
+                <div class="panel-title" id="fd-preview-title">📦 다음 대기 과일</div>
+                <div class="preview-box">
+                  <div class="preview-item">
+                    <div class="preview-circle" id="fd-preview-circle" style="width:44px; height:44px; background:#f43f5e;">
+                      <span style="font-size:1.5rem;">🍒</span>
+                    </div>
+                    <span class="preview-name" id="fd-preview-name">체리 (4)</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card-panel">
+                <div class="panel-title">📊 12단계 크기 비례 도감</div>
+                <div class="dict-grid" id="fd-dict-grid"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 🌟 2. 2인 동시 듀얼 분할 캔버스 레이아웃 (P1 왼쪽 vs P2 오른쪽) -->
+          <div class="dual-layout" id="fd-dual-layout">
+            <!-- P1 파랑 경기장 -->
+            <div class="dual-box-card p1-card">
+              <div class="dual-header-info">
+                <span style="color:#60a5fa;">🟦 P1 파랑 경기장 (A/D/S 키)</span>
+                <span id="fd-dual-preview-p1">📦 대기: 🍒 체리(4)</span>
+              </div>
+              <div class="canvas-container" id="fd-canvas-p1-wrap">
+                <canvas id="fd-canvas-p1" width="400" height="580"></canvas>
+              </div>
+              <div class="controller-bar" style="max-width:400px;">
+                <button class="ctrl-btn" onclick="FruitDrop2048.moveLeftP1()">⬅️ A (좌)</button>
+                <button class="ctrl-btn drop p1-drop" onclick="FruitDrop2048.dropPieceP1()">⬇️ S / 터치 드롭</button>
+                <button class="ctrl-btn" onclick="FruitDrop2048.moveRightP1()">➡️ D (우)</button>
+              </div>
+            </div>
+
+            <!-- P2 주황 경기장 -->
+            <div class="dual-box-card p2-card">
+              <div class="dual-header-info">
+                <span style="color:#fb923c;">🟧 P2 주황 경기장 (←/→/↓ 키)</span>
+                <span id="fd-dual-preview-p2">📦 대기: 🍒 체리(4)</span>
+              </div>
+              <div class="canvas-container" id="fd-canvas-p2-wrap">
+                <canvas id="fd-canvas-p2" width="400" height="580"></canvas>
+              </div>
+              <div class="controller-bar" style="max-width:400px;">
+                <button class="ctrl-btn" onclick="FruitDrop2048.moveLeftP2()">⬅️ ← (좌)</button>
+                <button class="ctrl-btn drop p2-drop" onclick="FruitDrop2048.dropPieceP2()">⬇️ ↓ / 터치 드롭</button>
+                <button class="ctrl-btn" onclick="FruitDrop2048.moveRightP2()">➡️ → (우)</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 1. 규칙 및 원리 안내 모달 -->
+          <div class="modal-backdrop" id="fd-guide-modal">
+            <div class="modal-box">
+              <h3 class="modal-title">📖 과일 2048 드롭 규칙 및 2인 듀얼 안내</h3>
+              <ul class="rule-list">
+                <li><b>⚔️ 2인 동시 듀얼 대결</b>: 한 모니터나 전자칠판을 좌우로 넓게 나누어 <b>두 사람이 동시에 과일을 떨어뜨리는 스피드 & 고득점 대결</b>입니다! P1은 <b>A/S/D 키(또는 좌측 캔버스 터치)</b>, P2는 <b>화살표 ←/↓/→ 키(또는 우측 캔버스 터치)</b>로 독립 조작합니다.</li>
+                <li><b>🏆 승자 전용 명예의 전당</b>: 대결이 종료되면 <b>끝까지 살아남거나 점수가 더 높은 최종 승자 1명의 기록만 명예의 전당에 영광스럽게 등록</b>됩니다!</li>
+                <li><b>수박(2048) 및 왕관(4096) 소멸</b>: 수박 2개가 만나면 <b>👑 황금 왕관(4096)</b>으로 합체되고, 왕관 2개가 만나면 <b>💥 대폭발 소멸(+10,000점)</b>하여 상자 속 공간이 쾌적하게 확보됩니다.</li>
+                <li><b>전체 캔버스 터치 드롭</b>: 마우스나 손가락으로 캔버스 어디를 터치/클릭해도 해당 X 좌표로 과일이 즉시 떨어집니다!</li>
+              </ul>
+              <button class="modal-close-btn" onclick="FruitDrop2048.closeModals()">확인 및 게임 시작</button>
+            </div>
+          </div>
+
+          <!-- 2. 명예의 전당 모달 -->
+          <div class="modal-backdrop" id="fd-ranking-modal">
+            <div class="modal-box">
+              <h3 class="modal-title" id="fd-ranking-modal-title">🏆 과일 2048 드롭 명예의 전당</h3>
+              <div id="fd-gameover-summary" style="background:#0f172a; padding:12px 16px; border-radius:12px; border:1px solid #334155; margin-bottom:14px;"></div>
+              <div id="board-fruit-drop-2048">
+                <p style="text-align:center; color:#94a3b8;">랭킹 데이터를 불러오는 중...</p>
+              </div>
+              <div style="margin-top:16px; display:flex; gap:8px;">
+                <input type="text" id="fd-nickname-input" placeholder="최종 챔피언 닉네임 (예: 3반 김과일)" maxlength="18" style="flex:1; padding:12px; border-radius:10px; border:1px solid #334155; background:#0f172a; color:#f8fafc; font-weight:700; font-size:0.98rem; text-align:center;">
+                <button class="btn-header primary" onclick="FruitDrop2048.submitRankScore()">등록</button>
+              </div>
+              <button class="modal-close-btn" onclick="FruitDrop2048.closeModals()">창 닫기 (보드 확인)</button>
+            </div>
+          </div>
+        </div>
+      `;
+
+      window.addEventListener('keydown', onKeyDown);
+      setupAllCanvasEvents();
+      renderFruitDictionary();
+      setMode('NORMAL');
+    }
+
+    function setMode(mode) {
+      currentMode = mode;
+      document.querySelectorAll('#fruit-drop-app .mode-btn').forEach(btn => btn.classList.remove('active'));
+      let btnId = mode.toLowerCase().replace('_', '-');
+      const activeBtn = document.getElementById('fd-btn-' + btnId);
+      if (activeBtn) activeBtn.classList.add('active');
+
+      const singleLayout = document.getElementById('fd-single-layout');
+      const dualLayout = document.getElementById('fd-dual-layout');
+      const dualStatusBar = document.getElementById('fd-dual-status-bar');
+      const singleScoreWrap = document.getElementById('fd-single-score-wrap');
+
+      if (mode === 'DUAL_VS') {
+        boxWidth = 400; boxHeight = 580;
+        if (singleLayout) singleLayout.style.display = 'none';
+        if (dualLayout) dualLayout.classList.add('active');
+        if (dualStatusBar) dualStatusBar.classList.add('active');
+        if (singleScoreWrap) singleScoreWrap.style.display = 'none';
+      } else {
+        if (mode === 'EASY') { boxWidth = 440; boxHeight = 580; }
+        else if (mode === 'NORMAL' || mode === 'TURN_VS') { boxWidth = 400; boxHeight = 580; }
+        else if (mode === 'HARD') { boxWidth = 350; boxHeight = 580; }
+
+        if (singleLayout) singleLayout.style.display = 'grid';
+        if (dualLayout) dualLayout.classList.remove('active');
+        if (dualStatusBar) dualStatusBar.classList.remove('active');
+        if (singleScoreWrap) singleScoreWrap.style.display = 'flex';
+      }
+
+      resetGame();
+    }
+
+    function updateTimeDisplay() {
+      const timeEl = document.getElementById('fd-time-left');
+      if (!timeEl) return;
+      if (currentTimeMode === 'UNLIMIT') {
+        timeEl.textContent = '무제한';
+      } else {
+        const m = Math.floor(gameTimeLeft / 60).toString().padStart(2, '0');
+        const s = (gameTimeLeft % 60).toString().padStart(2, '0');
+        timeEl.textContent = `${m}:${s}`;
+      }
+    }
+
+    function setTimeMode(mode) {
+      if (isGameOver && gameTimeLeft === 0) return;
+      currentTimeMode = mode;
+      document.querySelectorAll('.time-tabs .mode-btn').forEach(btn => btn.classList.remove('active'));
+      if (mode === '10M') document.getElementById('fd-btn-time-10m').classList.add('active');
+      else document.getElementById('fd-btn-time-unlimit').classList.add('active');
+      updateTimeDisplay();
+    }
+
+    function resetGame() {
+      isGameOver = false;
+      canDrop = true;
+      score = 0; p1Score = 0; p2Score = 0;
+      maxStageReached = 1; maxStageP1 = 1; maxStageP2 = 1;
+      bodies = []; bodiesP1 = []; bodiesP2 = [];
+      
+      gameTimeLeft = currentTimeMode === '10M' ? 600 : 0;
+      updateTimeDisplay();
+      if (gameTimerId) clearInterval(gameTimerId);
+      if (currentTimeMode === '10M') {
+        gameTimerId = setInterval(() => {
+          if (isGameOver) { clearInterval(gameTimerId); return; }
+          gameTimeLeft--;
+          updateTimeDisplay();
+          if (gameTimeLeft <= 0) {
+            clearInterval(gameTimerId);
+            showToast('⏱️ 제한 시간 종료! Time Over!', true);
+            manualStopAndSave();
+          }
+        }, 1000);
+      }
+      nextBodyId = 1;
+      dangerTime = 0; dangerTimeP1 = 0; dangerTimeP2 = 0;
+      lastDropTime = 0; lastDropP1 = 0; lastDropP2 = 0;
+      currentTurnPlayer = 1;
+      dropX = boxWidth / 2; dropXP1 = boxWidth / 2; dropXP2 = boxWidth / 2;
+      canDropP1 = true; canDropP2 = true;
+
+      if (physicsLoopId) cancelAnimationFrame(physicsLoopId);
+      if (autoDropTimer) clearInterval(autoDropTimer);
+
+      currentPieceStage = getRandomSpawnStage(); nextPieceStage = getRandomSpawnStage();
+      curPieceP1 = getRandomSpawnStage(); nextPieceP1 = getRandomSpawnStage();
+      curPieceP2 = getRandomSpawnStage(); nextPieceP2 = getRandomSpawnStage();
+
+      // 캔버스 사이즈 설정
+      ['fd-canvas', 'fd-canvas-p1', 'fd-canvas-p2'].forEach(id => {
+        const c = document.getElementById(id);
+        if (c) { c.width = boxWidth; c.height = boxHeight; }
+      });
+
+      if (currentMode === 'HARD') {
+        autoDropTimer = setInterval(() => {
+          if (canDrop && !isGameOver) dropPiece();
+        }, 5500);
+      }
+
+      updateUI();
+      physicsLoop();
+    }
+
+    function getRandomSpawnStage() {
+      const r = Math.random();
+      if (r < 0.48) return 1;
+      if (r < 0.83) return 2;
+      return 3;
+    }
+
+    // 🌟 캔버스 터치 연동 (싱글, P1 좌측, P2 우측 독립 터치)
+    function setupAllCanvasEvents() {
+      // 1. 싱글 캔버스
+      const cSingle = document.getElementById('fd-canvas');
+      if (cSingle) {
+        cSingle.addEventListener('mousemove', e => {
+          if (!canDrop || isGameOver || currentMode === 'DUAL_VS') return;
+          const rect = cSingle.getBoundingClientRect();
+          const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+          const radius = FRUIT_STAGES[currentPieceStage - 1].radius;
+          dropX = Math.max(radius + 4, Math.min(boxWidth - radius - 4, x));
+        });
+        cSingle.addEventListener('pointerdown', e => {
+          if (!canDrop || isGameOver || currentMode === 'DUAL_VS') return;
+          e.preventDefault();
+          const rect = cSingle.getBoundingClientRect();
+          const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+          const radius = FRUIT_STAGES[currentPieceStage - 1].radius;
+          dropX = Math.max(radius + 4, Math.min(boxWidth - radius - 4, x));
+          dropPiece();
+        });
+      }
+
+      // 2. 듀얼 P1 캔버스 (왼쪽)
+      const cP1 = document.getElementById('fd-canvas-p1');
+      if (cP1) {
+        cP1.addEventListener('mousemove', e => {
+          if (!canDropP1 || isGameOver || currentMode !== 'DUAL_VS') return;
+          const rect = cP1.getBoundingClientRect();
+          const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+          const radius = FRUIT_STAGES[curPieceP1 - 1].radius;
+          dropXP1 = Math.max(radius + 4, Math.min(boxWidth - radius - 4, x));
+        });
+        cP1.addEventListener('pointerdown', e => {
+          if (!canDropP1 || isGameOver || currentMode !== 'DUAL_VS') return;
+          e.preventDefault();
+          const rect = cP1.getBoundingClientRect();
+          const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+          const radius = FRUIT_STAGES[curPieceP1 - 1].radius;
+          dropXP1 = Math.max(radius + 4, Math.min(boxWidth - radius - 4, x));
+          dropPieceP1();
+        });
+      }
+
+      // 3. 듀얼 P2 캔버스 (오른쪽)
+      const cP2 = document.getElementById('fd-canvas-p2');
+      if (cP2) {
+        cP2.addEventListener('mousemove', e => {
+          if (!canDropP2 || isGameOver || currentMode !== 'DUAL_VS') return;
+          const rect = cP2.getBoundingClientRect();
+          const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+          const radius = FRUIT_STAGES[curPieceP2 - 1].radius;
+          dropXP2 = Math.max(radius + 4, Math.min(boxWidth - radius - 4, x));
+        });
+        cP2.addEventListener('pointerdown', e => {
+          if (!canDropP2 || isGameOver || currentMode !== 'DUAL_VS') return;
+          e.preventDefault();
+          const rect = cP2.getBoundingClientRect();
+          const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+          const radius = FRUIT_STAGES[curPieceP2 - 1].radius;
+          dropXP2 = Math.max(radius + 4, Math.min(boxWidth - radius - 4, x));
+          dropPieceP2();
+        });
+      }
+    }
+
+    // 싱글/턴제 좌우 이동 및 드롭
+    function moveLeft() {
+      if (!canDrop || isGameOver) return;
+      const r = FRUIT_STAGES[currentPieceStage - 1].radius;
+      dropX = Math.max(r + 4, dropX - 26);
+    }
+    function moveRight() {
+      if (!canDrop || isGameOver) return;
+      const r = FRUIT_STAGES[currentPieceStage - 1].radius;
+      dropX = Math.min(boxWidth - r - 4, dropX + 26);
+    }
+    function dropPiece() {
+      if (!canDrop || isGameOver) return;
+      canDrop = false; lastDropTime = Date.now();
+      const stageObj = FRUIT_STAGES[currentPieceStage - 1];
+      bodies.push({
+        id: nextBodyId++, stage: currentPieceStage, x: dropX, y: dangerLineY - stageObj.radius - 2,
+        vx: (Math.random() - 0.5) * 0.5, vy: 2.2, radius: stageObj.radius, mass: stageObj.radius * stageObj.radius,
+        angle: 0, vAngle: 0, isMerging: false, isSleeping: false
+      });
+      setTimeout(() => {
+        if (!isGameOver) {
+          if (currentMode === 'TURN_VS') currentTurnPlayer = currentTurnPlayer === 1 ? 2 : 1;
+          currentPieceStage = nextPieceStage; nextPieceStage = getRandomSpawnStage();
+          const nr = FRUIT_STAGES[currentPieceStage - 1].radius;
+          dropX = Math.max(nr + 4, Math.min(boxWidth - nr - 4, dropX));
+          canDrop = true; updateUI();
+        }
+      }, 750);
+    }
+
+    // 🌟 듀얼 P1 좌우 이동 및 드롭
+    function moveLeftP1() {
+      if (!canDropP1 || isGameOver) return;
+      const r = FRUIT_STAGES[curPieceP1 - 1].radius;
+      dropXP1 = Math.max(r + 4, dropXP1 - 26);
+    }
+    function moveRightP1() {
+      if (!canDropP1 || isGameOver) return;
+      const r = FRUIT_STAGES[curPieceP1 - 1].radius;
+      dropXP1 = Math.min(boxWidth - r - 4, dropXP1 + 26);
+    }
+    function dropPieceP1() {
+      if (!canDropP1 || isGameOver || currentMode !== 'DUAL_VS') return;
+      canDropP1 = false; lastDropP1 = Date.now();
+      const stageObj = FRUIT_STAGES[curPieceP1 - 1];
+      bodiesP1.push({
+        id: nextBodyId++, stage: curPieceP1, x: dropXP1, y: dangerLineY - stageObj.radius - 2,
+        vx: (Math.random() - 0.5) * 0.5, vy: 2.2, radius: stageObj.radius, mass: stageObj.radius * stageObj.radius,
+        angle: 0, vAngle: 0, isMerging: false, isSleeping: false
+      });
+      setTimeout(() => {
+        if (!isGameOver) {
+          curPieceP1 = nextPieceP1; nextPieceP1 = getRandomSpawnStage();
+          const nr = FRUIT_STAGES[curPieceP1 - 1].radius;
+          dropXP1 = Math.max(nr + 4, Math.min(boxWidth - nr - 4, dropXP1));
+          canDropP1 = true; updateUI();
+        }
+      }, 700);
+    }
+
+    // 🌟 듀얼 P2 좌우 이동 및 드롭
+    function moveLeftP2() {
+      if (!canDropP2 || isGameOver) return;
+      const r = FRUIT_STAGES[curPieceP2 - 1].radius;
+      dropXP2 = Math.max(r + 4, dropXP2 - 26);
+    }
+    function moveRightP2() {
+      if (!canDropP2 || isGameOver) return;
+      const r = FRUIT_STAGES[curPieceP2 - 1].radius;
+      dropXP2 = Math.min(boxWidth - r - 4, dropXP2 + 26);
+    }
+    function dropPieceP2() {
+      if (!canDropP2 || isGameOver || currentMode !== 'DUAL_VS') return;
+      canDropP2 = false; lastDropP2 = Date.now();
+      const stageObj = FRUIT_STAGES[curPieceP2 - 1];
+      bodiesP2.push({
+        id: nextBodyId++, stage: curPieceP2, x: dropXP2, y: dangerLineY - stageObj.radius - 2,
+        vx: (Math.random() - 0.5) * 0.5, vy: 2.2, radius: stageObj.radius, mass: stageObj.radius * stageObj.radius,
+        angle: 0, vAngle: 0, isMerging: false, isSleeping: false
+      });
+      setTimeout(() => {
+        if (!isGameOver) {
+          curPieceP2 = nextPieceP2; nextPieceP2 = getRandomSpawnStage();
+          const nr = FRUIT_STAGES[curPieceP2 - 1].radius;
+          dropXP2 = Math.max(nr + 4, Math.min(boxWidth - nr - 4, dropXP2));
+          canDropP2 = true; updateUI();
+        }
+      }, 700);
+    }
+
+    // 메인 물리 루프
+    function physicsLoop() {
+      if (!isGameOver) {
+        if (currentMode === 'DUAL_VS') {
+          stepPhysicsBox(bodiesP1, 1);
+          stepPhysicsBox(bodiesP2, 2);
+          checkDangerBox(bodiesP1, 1);
+          checkDangerBox(bodiesP2, 2);
+        } else {
+          stepPhysicsBox(bodies, 0);
+          checkDangerBox(bodies, 0);
+        }
+      }
+      renderAllCanvases();
+      physicsLoopId = requestAnimationFrame(physicsLoop);
+    }
+
+    // 물리 및 합체 연산 (boxId: 0(싱글/턴), 1(P1), 2(P2))
+    function stepPhysicsBox(bodyList, boxId) {
+      const gravity = 0.38, wallBounce = 0.30, floorBounce = 0.22;
+
+      for (let i = 0; i < bodyList.length; i++) {
+        let b = bodyList[i];
+        if (b.isSleeping) continue;
+        b.vy += gravity; b.vx *= 0.985; b.vy *= 0.995; b.vAngle *= 0.82;
+        b.x += b.vx; b.y += b.vy; b.angle += b.vAngle;
+
+        if (b.x - b.radius < 0) { b.x = b.radius; b.vx = -b.vx * wallBounce; b.vAngle += b.vy * 0.015; }
+        else if (b.x + b.radius > boxWidth) { b.x = boxWidth - b.radius; b.vx = -b.vx * wallBounce; b.vAngle -= b.vy * 0.015; }
+
+        if (b.y + b.radius > boxHeight) {
+          b.y = boxHeight - b.radius;
+          if (b.vy > 1.2) b.vy = -b.vy * floorBounce; else b.vy = 0;
+          b.vx *= 0.86; b.vAngle += b.vx * 0.02;
+        }
+        if (b.vx * b.vx + b.vy * b.vy < 0.04 && Math.abs(b.vAngle) < 0.02 && b.y + b.radius > boxHeight - 2) {
+          b.vx = 0; b.vy = 0; b.vAngle = 0; b.isSleeping = true;
+        }
+      }
+
+      let toMerge = [];
+      for (let iter = 0; iter < 6; iter++) {
+        for (let i = 0; i < bodyList.length; i++) {
+          for (let j = i + 1; j < bodyList.length; j++) {
+            let A = bodyList[i], B = bodyList[j];
+            if (A.isMerging || B.isMerging || (A.isSleeping && B.isSleeping)) continue;
+
+            let dx = B.x - A.x, dy = B.y - A.y;
+            let dist = Math.hypot(dx, dy), minDist = A.radius + B.radius;
+
+            if (dist < minDist) {
+              A.isSleeping = false; B.isSleeping = false;
+              if (A.stage === B.stage && iter === 0) {
+                A.isMerging = true; B.isMerging = true; toMerge.push({ A, B });
+                continue;
+              }
+              if (dist === 0) { dx = 0.1; dy = 0; dist = 0.1; }
+              let nx = dx / dist, ny = dy / dist, overlap = minDist - dist;
+              let totalMass = A.mass + B.mass;
+              A.x -= nx * overlap * (B.mass / totalMass); A.y -= ny * overlap * (B.mass / totalMass);
+              B.x += nx * overlap * (A.mass / totalMass); B.y += ny * overlap * (A.mass / totalMass);
+
+              let rvx = B.vx - A.vx, rvy = B.vy - A.vy;
+              let velAlongNormal = rvx * nx + rvy * ny;
+              if (velAlongNormal < 0) {
+                let jImp = -(1 + 0.18) * velAlongNormal / (1 / A.mass + 1 / B.mass);
+                A.vx -= (jImp * nx) / A.mass; A.vy -= (jImp * ny) / A.mass;
+                B.vx += (jImp * nx) / B.mass; B.vy += (jImp * ny) / B.mass;
+                let velTang = rvx * (-ny) + rvy * nx;
+                A.vAngle -= velTang * 0.008; B.vAngle += velTang * 0.008;
+              }
+            }
+          }
+        }
+      }
+
+      for (let i = 0; i < bodyList.length; i++) {
+        let b = bodyList[i];
+        if (!b.isSleeping && Math.abs(b.vx) < 0.03 && Math.abs(b.vy) < 0.03 && Math.abs(b.vAngle) < 0.005 && b.y + b.radius > boxHeight - 20) {
+          b.vx = 0; b.vy = 0; b.vAngle = 0; b.isSleeping = true;
+        }
+      }
+
+      if (toMerge.length > 0) {
+        for (let pair of toMerge) {
+          let { A, B } = pair;
+          if (boxId === 1) bodiesP1 = bodiesP1.filter(b => b.id !== A.id && b.id !== B.id);
+          else if (boxId === 2) bodiesP2 = bodiesP2.filter(b => b.id !== A.id && b.id !== B.id);
+          else bodies = bodies.filter(b => b.id !== A.id && b.id !== B.id);
+
+          let nextSt = A.stage + 1;
+          let midX = (A.x + B.x) / 2, midY = (A.y + B.y) / 2;
+
+          // 12단계 왕관끼리 합체 시 대폭발 소멸(+10,000점)
+          if (nextSt > 12) {
+            let bonus = 10000;
+            if (boxId === 1) p1Score += bonus;
+            else if (boxId === 2) p2Score += bonus;
+            else if (currentMode === 'TURN_VS') { if (currentTurnPlayer === 1) p1Score += bonus; else p2Score += bonus; }
+            else score += bonus;
+            if (typeof showToast === 'function') showToast('💥 전설의 황금 왕관 대폭발 소멸! (+10,000점 & 공간 확보!)', false);
+            continue;
+          }
+
+          let stageObj = FRUIT_STAGES[nextSt - 1];
+          let upgradedBody = {
+            id: nextBodyId++, stage: nextSt, x: midX, y: midY, vx: (Math.random() - 0.5) * 1.0, vy: -3.2,
+            radius: stageObj.radius, mass: stageObj.radius * stageObj.radius, angle: 0, vAngle: (Math.random() - 0.5) * 0.05,
+            isMerging: false, isSleeping: false
+          };
+
+          if (boxId === 1) { bodiesP1.push(upgradedBody); if (nextSt > maxStageP1) maxStageP1 = nextSt; }
+          else if (boxId === 2) { bodiesP2.push(upgradedBody); if (nextSt > maxStageP2) maxStageP2 = nextSt; }
+          else { bodies.push(upgradedBody); if (nextSt > maxStageReached) maxStageReached = nextSt; }
+
+          let gain = stageObj.value + (nextSt === 11 ? 300 : (nextSt === 12 ? 3000 : 0));
+          if (boxId === 1) p1Score += gain;
+          else if (boxId === 2) p2Score += gain;
+          else if (currentMode === 'TURN_VS') { if (currentTurnPlayer === 1) p1Score += gain; else p2Score += gain; }
+          else score += gain;
+
+          if (nextSt === 11) { if (typeof showToast === 'function') showToast('🎉 수박(2048) 달성! (+300점 보너스)', false); }
+          else if (nextSt === 12) { if (typeof showToast === 'function') showToast('👑 전설의 황금 왕관(4096) 달성!! (+3,000점)', false); }
+        }
+        updateUI();
+      }
+    }
+
+    // 위험선 검사 및 탈락 판정
+    function checkDangerBox(bodyList, boxId) {
+      let now = Date.now();
+      let lastDrop = boxId === 1 ? lastDropP1 : (boxId === 2 ? lastDropP2 : lastDropTime);
+      if (now - lastDrop < 700) return;
+
+      let anyAbove = false;
+      for (let b of bodyList) {
+        if (b.y - b.radius < dangerLineY + 6 && Math.abs(b.vy) < 2.8) { anyAbove = true; break; }
+      }
+
+      if (boxId === 1) {
+        if (anyAbove) { dangerTimeP1 += 1/60; if (dangerTimeP1 > 1.8) triggerGameOver(false, 'P1_OVERFLOW'); }
+        else dangerTimeP1 = Math.max(0, dangerTimeP1 - 0.05);
+      } else if (boxId === 2) {
+        if (anyAbove) { dangerTimeP2 += 1/60; if (dangerTimeP2 > 1.8) triggerGameOver(false, 'P2_OVERFLOW'); }
+        else dangerTimeP2 = Math.max(0, dangerTimeP2 - 0.05);
+      } else {
+        if (anyAbove) { dangerTime += 1/60; if (dangerTime > 1.8) triggerGameOver(false, 'SINGLE_OVERFLOW'); }
+        else dangerTime = Math.max(0, dangerTime - 0.05);
+      }
+    }
+
+    // 수동 정산 버튼
+    function manualStopAndSave() {
+      if (isGameOver) return;
+      showToast('승부 정산을 시작합니다!', false);
+      triggerGameOver(true, 'MANUAL_STOP');
+    }
+
+    function triggerGameOver(isManual, reason) {
+      if (isGameOver) return;
+      isGameOver = true;
+      canDrop = false; canDropP1 = false; canDropP2 = false;
+      if (autoDropTimer) clearInterval(autoDropTimer);
+      if (gameTimerId) clearInterval(gameTimerId);
+
+      if (currentMode === 'DUAL_VS' || currentMode === 'TURN_VS') {
+        let winMsg = '';
+        if (reason === 'P1_OVERFLOW') winMsg = '🎉 P1(파랑) 상자 과적 탈락 -> 🏆 P2(주황) 최종 승리!!';
+        else if (reason === 'P2_OVERFLOW') winMsg = '🎉 P2(주황) 상자 과적 탈락 -> 🏆 P1(파랑) 최종 승리!!';
+        else if (p1Score > p2Score) winMsg = '🏆 최종 점수 판정 -> P1 (파랑) 승리!!';
+        else if (p2Score > p1Score) winMsg = '🏆 최종 점수 판정 -> P2 (주황) 승리!!';
+        else winMsg = '🤝 동점 명승부 무승부!';
+        if (typeof showToast === 'function') showToast(winMsg, false);
+      } else {
+        if (typeof showToast === 'function') showToast(`🏁 최종 점수: ${score}점`, isManual ? false : true);
+      }
+
+      setTimeout(() => { showRankingModal(isManual, reason); }, 400);
+    }
+
+    function renderAllCanvases() {
+      if (currentMode === 'DUAL_VS') {
+        renderSingleCanvas('fd-canvas-p1', bodiesP1, dropXP1, curPieceP1, canDropP1, dangerTimeP1, '#3b82f6', 'P1');
+        renderSingleCanvas('fd-canvas-p2', bodiesP2, dropXP2, curPieceP2, canDropP2, dangerTimeP2, '#f97316', 'P2');
+      } else {
+        renderSingleCanvas('fd-canvas', bodies, dropX, currentPieceStage, canDrop, dangerTime, '#10b981', 'SINGLE');
+      }
+    }
+
+    function renderSingleCanvas(canvasId, bodyList, dropPos, curStage, canDropFlag, dangerTimeVal, themeColor, tag) {
+      const canvas = document.getElementById(canvasId);
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      ctx.save();
+      ctx.beginPath();
+      ctx.setLineDash([6, 6]); ctx.lineWidth = 2;
+      ctx.strokeStyle = dangerTimeVal > 0.5 ? '#ef4444' : 'rgba(239, 68, 68, 0.45)';
+      ctx.moveTo(0, dangerLineY); ctx.lineTo(canvas.width, dangerLineY);
+      ctx.stroke(); ctx.setLineDash([]); ctx.restore();
+
+      if (dangerTimeVal > 0.2 && !isGameOver) {
+        ctx.fillStyle = 'rgba(239, 68, 68, 0.15)';
+        ctx.fillRect(0, 0, canvas.width, dangerLineY);
+        ctx.fillStyle = '#ef4444'; ctx.font = '800 13px Pretendard, sans-serif'; ctx.textAlign = 'center';
+        ctx.fillText(`⚠️ 과적 경고! ${Math.max(0, (1.8 - dangerTimeVal)).toFixed(1)}초 후 탈락!`, canvas.width / 2, dangerLineY - 10);
+      }
+
+      for (let b of bodyList) {
+        drawPhysicalFruit(ctx, b.x, b.y, b.stage, b.radius, b.angle);
+      }
+
+      if (canDropFlag && !isGameOver) {
+        ctx.save(); ctx.globalAlpha = 0.88;
+        const stObj = FRUIT_STAGES[curStage - 1];
+        drawPhysicalFruit(ctx, dropPos, dangerLineY - stObj.radius - 4, curStage, stObj.radius, 0);
+        ctx.beginPath(); ctx.setLineDash([3, 5]); ctx.strokeStyle = themeColor;
+        ctx.moveTo(dropPos, dangerLineY); ctx.lineTo(dropPos, canvas.height); ctx.stroke();
+        ctx.restore();
+      }
+
+      if (isGameOver) {
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.88)'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#f8fafc'; ctx.font = '800 30px Pretendard, sans-serif'; ctx.textAlign = 'center';
+        ctx.fillText('GAME OVER', canvas.width / 2, canvas.height / 2 - 20);
+        ctx.font = '700 17px Pretendard, sans-serif'; ctx.fillStyle = '#38bdf8';
+        if (currentMode === 'DUAL_VS' || currentMode === 'TURN_VS') {
+          let winText = p1Score > p2Score ? '🏆 P1 (파랑) 최종 승리!' : (p2Score > p1Score ? '🏆 P2 (주황) 최종 승리!' : '🤝 무승부 명승부!');
+          ctx.fillText(winText, canvas.width / 2, canvas.height / 2 + 16);
+          ctx.font = '600 14px Pretendard, sans-serif'; ctx.fillStyle = '#cbd5e1';
+          ctx.fillText(`P1: ${p1Score}점 / P2: ${p2Score}점`, canvas.width / 2, canvas.height / 2 + 42);
+        } else {
+          ctx.fillText(`최종 점수: ${score}점`, canvas.width / 2, canvas.height / 2 + 24);
+        }
+      }
+    }
+
+    function drawPhysicalFruit(ctx, cx, cy, stageIdx, radius, angle) {
+      const f = FRUIT_STAGES[stageIdx - 1];
+      if (!f) return;
+      ctx.save(); ctx.translate(cx, cy);
+      ctx.save(); ctx.rotate(angle);
+      ctx.beginPath(); ctx.arc(0, 0, radius, 0, Math.PI * 2); ctx.fillStyle = f.color; ctx.fill();
+      ctx.lineWidth = Math.max(2, radius * 0.08); ctx.strokeStyle = '#ffffff'; ctx.stroke();
+      ctx.beginPath(); ctx.arc(-radius * 0.3, -radius * 0.3, radius * 0.2, 0, Math.PI * 2); ctx.fillStyle = 'rgba(255, 255, 255, 0.25)'; ctx.fill();
+      ctx.restore();
+
+      let visualTilt = Math.max(-0.4, Math.min(0.4, angle * 0.4));
+      ctx.rotate(visualTilt);
+      ctx.font = `${Math.floor(radius * 1.15)}px Pretendard, sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(f.emoji, 0, 2);
+      if (radius >= 18) {
+        ctx.font = `800 ${Math.max(9, Math.floor(radius * 0.34))}px Pretendard, sans-serif`; ctx.fillStyle = '#ffffff';
+        ctx.fillText(f.value, 0, radius * 0.64);
+      }
+      ctx.restore();
+    }
+
+    function renderFruitDictionary() {
+      const grid = document.getElementById('fd-dict-grid');
+      if (!grid) return;
+      grid.innerHTML = FRUIT_STAGES.map(f => {
+        let maxReached = currentMode === 'DUAL_VS' ? Math.max(maxStageP1, maxStageP2) : maxStageReached;
+        const isUnlocked = f.stage <= maxReached;
+        return `
+          <div class="dict-item ${isUnlocked ? 'unlocked' : ''} ${f.stage === 12 ? 'target' : ''}">
+            <span class="dict-emoji">${f.emoji}</span>
+            <div class="dict-info">
+              <span class="dict-label">${f.name}</span>
+              <span class="dict-val">${f.value} (${isUnlocked ? '달성' : '미확보'})</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function updateUI() {
+      // 1. 싱글 점수
+      const scoreEl = document.getElementById('fd-score');
+      if (scoreEl) scoreEl.textContent = currentMode === 'TURN_VS' ? Math.max(p1Score, p2Score) : score;
+
+      const maxObj = FRUIT_STAGES[maxStageReached - 1] || FRUIT_STAGES[0];
+      const maxEl = document.getElementById('fd-max-fruit');
+      if (maxEl) maxEl.textContent = `${maxObj.emoji} ${maxObj.name}(${maxObj.value})`;
+
+      // 2. 듀얼 동시 대결 UI 업데이트
+      const dp1Score = document.getElementById('fd-dual-p1-score');
+      const dp2Score = document.getElementById('fd-dual-p2-score');
+      const dp1Max = document.getElementById('fd-dual-p1-max');
+      const dp2Max = document.getElementById('fd-dual-p2-max');
+      if (dp1Score) dp1Score.textContent = p1Score;
+      if (dp2Score) dp2Score.textContent = p2Score;
+      if (dp1Max) { const m1 = FRUIT_STAGES[maxStageP1 - 1] || FRUIT_STAGES[0]; dp1Max.textContent = `${m1.emoji} ${m1.name}`; }
+      if (dp2Max) { const m2 = FRUIT_STAGES[maxStageP2 - 1] || FRUIT_STAGES[0]; dp2Max.textContent = `${m2.emoji} ${m2.name}`; }
+
+      const prevP1 = document.getElementById('fd-dual-preview-p1');
+      const prevP2 = document.getElementById('fd-dual-preview-p2');
+      if (prevP1) { const f1 = FRUIT_STAGES[nextPieceP1 - 1] || FRUIT_STAGES[0]; prevP1.textContent = `📦 대기: ${f1.emoji} ${f1.name}(${f1.value})`; }
+      if (prevP2) { const f2 = FRUIT_STAGES[nextPieceP2 - 1] || FRUIT_STAGES[0]; prevP2.textContent = `📦 대기: ${f2.emoji} ${f2.name}(${f2.value})`; }
+
+      // 3. 싱글 사이드 미리보기 업데이트
+      const nextObj = FRUIT_STAGES[nextPieceStage - 1] || FRUIT_STAGES[0];
+      const prevCircle = document.getElementById('fd-preview-circle');
+      const prevName = document.getElementById('fd-preview-name');
+      const prevTitle = document.getElementById('fd-preview-title');
+      if (prevCircle) {
+        prevCircle.style.background = nextObj.color;
+        prevCircle.style.width = Math.min(68, nextObj.radius * 2) + 'px';
+        prevCircle.style.height = Math.min(68, nextObj.radius * 2) + 'px';
+        prevCircle.innerHTML = `<span style="font-size:${Math.min(2.0, nextObj.radius * 0.08)}rem;">${nextObj.emoji}</span>`;
+      }
+      if (prevName) prevName.textContent = `${nextObj.name} (${nextObj.value})`;
+      if (prevTitle) {
+        if (currentMode === 'TURN_VS') {
+          prevTitle.textContent = currentTurnPlayer === 1 ? '🟦 P1(파랑) 대기 과일' : '🟧 P2(주황) 대기 과일';
+          prevTitle.style.color = currentTurnPlayer === 1 ? '#60a5fa' : '#fb923c';
+        } else {
+          prevTitle.textContent = '📦 다음 대기 과일'; prevTitle.style.color = '#94a3b8';
+        }
+      }
+
+      renderFruitDictionary();
+    }
+
+    // 🌟 키보드 조작 (싱글 vs 듀얼 P1(A/S/D) 및 P2(←/↓/→) 완벽 지원)
+    function onKeyDown(e) {
+      if (isGameOver) return;
+      if (currentMode === 'DUAL_VS') {
+        // P1 키보드 (A, D, S, W)
+        if (e.key === 'a' || e.key === 'A' || e.key === 'ㅁ') { e.preventDefault(); moveLeftP1(); }
+        else if (e.key === 'd' || e.key === 'D' || e.key === 'ㅇ') { e.preventDefault(); moveRightP1(); }
+        else if (e.key === 's' || e.key === 'S' || e.key === 'w' || e.key === 'W' || e.key === 'ㄴ') { e.preventDefault(); dropPieceP1(); }
+        // P2 키보드 (화살표 ←, →, ↓, Enter)
+        else if (e.key === 'ArrowLeft') { e.preventDefault(); moveLeftP2(); }
+        else if (e.key === 'ArrowRight') { e.preventDefault(); moveRightP2(); }
+        else if (e.key === 'ArrowDown' || e.key === 'Enter') { e.preventDefault(); dropPieceP2(); }
+      } else {
+        if (e.key === 'ArrowLeft') { e.preventDefault(); moveLeft(); }
+        else if (e.key === 'ArrowRight') { e.preventDefault(); moveRight(); }
+        else if (e.key === 'ArrowDown' || e.key === ' ' || e.key === 'Enter') { e.preventDefault(); dropPiece(); }
+      }
+    }
+
+    function showGuideModal() { document.getElementById('fd-guide-modal')?.classList.add('open'); }
+
+    function showRankingModal(isManual = false, reason = '') {
+      document.getElementById('fd-ranking-modal')?.classList.add('open');
+      const titleEl = document.getElementById('fd-ranking-modal-title');
+      const sumEl = document.getElementById('fd-gameover-summary');
+      if (titleEl) titleEl.textContent = isManual ? '🏁 승부 정산 & 승자 명예의 전당' : '🏆 대결 종료 & 승자 명예의 전당';
+
+      if (sumEl) {
+        if (currentMode === 'DUAL_VS' || currentMode === 'TURN_VS') {
+          let winName = '🏆 최종 챔피언: P1 (파랑)';
+          if (reason === 'P1_OVERFLOW') winName = '🏆 P1 상자 가득 참 -> P2 (주황) 최종 승리!!';
+          else if (reason === 'P2_OVERFLOW') winName = '🏆 P2 상자 가득 참 -> P1 (파랑) 최종 승리!!';
+          else if (p2Score > p1Score) winName = '🏆 최종 챔피언: P2 (주황)';
+          else if (p1Score === p2Score) winName = '🤝 명승부 무승부 (공동 승리)';
+
+          sumEl.innerHTML = `
+            <div style="font-size:1.18rem; font-weight:900; color:#fbbf24; text-align:center; margin-bottom:8px;">${winName}</div>
+            <div style="display:flex; justify-content:space-around; font-weight:800; font-size:1.05rem;">
+              <span style="color:#60a5fa;">P1 파랑: ${p1Score}점</span>
+              <span style="color:#fb923c;">P2 주황: ${p2Score}점</span>
+            </div>
+            <p style="text-align:center; color:#cbd5e1; font-size:0.85rem; margin:8px 0 0;">✨ 승리한 챔피언의 닉네임을 아래에 입력하여 영광을 기록하세요!</p>
+          `;
+        } else {
+          const maxObj = FRUIT_STAGES[maxStageReached - 1] || FRUIT_STAGES[0];
+          sumEl.innerHTML = `
+            <div style="font-size:1.1rem; font-weight:800; color:#10b981; text-align:center; margin-bottom:4px;">최종 획득 점수: ${score}점</div>
+            <div style="text-align:center; color:#cbd5e1; font-size:0.92rem;">최고 달성 과일: ${maxObj.emoji} ${maxObj.name} (${maxObj.value})</div>
+          `;
+        }
+      }
+
+      if (typeof loadGameLeaderboard === 'function') {
+        loadGameLeaderboard('과일2048드롭', true, 'board-fruit-drop-2048');
+      }
+    }
+
+    function closeModals() {
+      document.querySelectorAll('.game-fruit-drop-2048 .modal-backdrop').forEach(el => el.classList.remove('open'));
+    }
+
+    // 🌟 승자 전용 명예의 전당 등록
+    function submitRankScore() {
+      const input = document.getElementById('fd-nickname-input');
+      const nickname = input ? input.value.trim() : '';
+      if (!nickname) {
+        showToast('⚠️ 승리자의 닉네임을 입력해주세요!', true);
+        return;
+      }
+
+      let finalScore = score;
+      if (currentMode === 'DUAL_VS' || currentMode === 'TURN_VS') {
+        finalScore = Math.max(p1Score, p2Score); // 승자 점수 기록
+      }
+
+      try {
+        let list = JSON.parse(localStorage.getItem('mathlab_lb_fruit_drop_2048') || '[]');
+        const dateStr = new Date().toLocaleDateString('ko-KR', { month: '2-digit', day: '2-digit' });
+        list.push({ nickname, score: finalScore, date: dateStr });
+        list.sort((a, b) => b.score - a.score);
+        localStorage.setItem('mathlab_lb_fruit_drop_2048', JSON.stringify(list.slice(0, 20)));
+      } catch (e) {}
+
+      if (typeof window.submitRanking === 'function') {
+        window.submitRanking('과일2048드롭', finalScore, true, 'fd-nickname-input', 'board-fruit-drop-2048');
+      } else if (typeof window.parent?.submitRanking === 'function') {
+        window.parent.submitRanking('과일2048드롭', finalScore, true, 'fd-nickname-input', 'board-fruit-drop-2048');
+      } else {
+        showToast('🎉 승자의 기록이 명예의 전당에 저장되었습니다!', false);
+        if (input) input.value = '';
+        closeModals();
+      }
+    }
+
+    function goHome() {
+      destroy();
+      if (window.LegacyBridge && typeof window.LegacyBridge.backHome === 'function') { try { window.LegacyBridge.backHome(); return; } catch(e) {} }
+      if (typeof window.renderLegacyDashboardHome === 'function') { try { window.renderLegacyDashboardHome(); return; } catch(e) {} }
+      if (typeof window.MathLabRenderHome === 'function') { try { window.MathLabRenderHome(); return; } catch(e) {} }
+
+      const mathlabRoot = document.getElementById('mathlab-root');
+      const legacyRoot = document.getElementById('legacy-root');
+      if (mathlabRoot) mathlabRoot.classList.add('hidden');
+      if (legacyRoot) legacyRoot.classList.remove('hidden');
+
+      const dashboard = document.getElementById('dashboard-screen');
+      if (dashboard) { dashboard.classList.add('active'); dashboard.style.display = ''; }
+      window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+    }
+
+    function destroy() {
+      if (physicsLoopId) cancelAnimationFrame(physicsLoopId);
+      if (autoDropTimer) clearInterval(autoDropTimer);
+      if (gameTimerId) clearInterval(gameTimerId);
+      window.removeEventListener('keydown', onKeyDown);
+    }
+
+    return {
+      mount, resetGame, destroy, setMode, setTimeMode, moveLeft, moveRight, dropPiece,
+      moveLeftP1, moveRightP1, dropPieceP1, moveLeftP2, moveRightP2, dropPieceP2,
+      showGuideModal, showRankingModal, closeModals, submitRankScore, manualStopAndSave, goHome
+    };
+  })();
+
+  function registerFruitDrop2048() {
+    if (typeof window.MathLabGames !== 'undefined' && typeof window.MathLabGames.register === 'function') {
+      if (!window.MathLabGames.get('fruit-drop-2048')) {
+        window.MathLabGames.register({
+          id: 'fruit-drop-2048', title: '과일 2048 드롭', icon: '🍉', sourceType: 'new',
+          mount(container, context) { FruitDrop2048.mount(container, context); },
+          reset() { FruitDrop2048.resetGame(); }, destroy() { FruitDrop2048.destroy(); }, goHome() { FruitDrop2048.goHome(); }
+        });
+      }
+    }
+  }
+
+  registerFruitDrop2048();
+  window.addEventListener('DOMContentLoaded', registerFruitDrop2048);
+  setTimeout(registerFruitDrop2048, 100);
+  setTimeout(registerFruitDrop2048, 500);
+
+  window.launchFruitDrop2048Game = function() {
+    if (typeof window.MathLabGames !== 'undefined' && typeof window.MathLabGames.mount === 'function') {
+      try { window.MathLabGames.mount('fruit-drop-2048'); return; } catch(e) {}
+    }
+    FruitDrop2048.mount();
+  };
+</script>

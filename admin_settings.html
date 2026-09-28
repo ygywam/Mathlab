@@ -1,0 +1,397 @@
+<style>
+/* Gen-3 Settings App Light Theme */
+.app-settings-container {
+  width: 100%;
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 40px 20px 80px;
+  background: #f8fafc;
+  color: #0f172a;
+  font-family: 'Pretendard', -apple-system, sans-serif;
+  text-align: left;
+}
+
+.app-settings-header {
+  margin-bottom: 30px;
+}
+
+.app-settings-header h1 {
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: #0f172a;
+  margin: 0 0 8px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.app-settings-header p {
+  color: #475569;
+  font-size: 1rem;
+  margin: 0;
+  line-height: 1.6;
+}
+
+.settings-section {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  padding: 24px 28px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03);
+}
+
+.settings-section h2 {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #1e293b;
+  margin: 0 0 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 2px solid #f1f5f9;
+  padding-bottom: 12px;
+}
+
+.settings-field {
+  margin-bottom: 20px;
+}
+
+.settings-field:last-child {
+  margin-bottom: 0;
+}
+
+.settings-field label {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #334155;
+  margin-bottom: 8px;
+}
+
+.settings-input {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  background: #f8fafc;
+  color: #0f172a;
+  font-size: 1rem;
+  transition: all 0.2s;
+  box-sizing: border-box;
+}
+
+.settings-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.settings-radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.settings-radio-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  background: #ffffff;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.settings-radio-label:hover {
+  border-color: #94a3b8;
+  background: #f1f5f9;
+}
+
+.settings-radio-label input[type="radio"] {
+  margin-top: 4px;
+  accent-color: #3b82f6;
+}
+
+.settings-radio-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.settings-radio-text strong {
+  color: #0f172a;
+  font-size: 0.95rem;
+  margin-bottom: 4px;
+}
+
+.settings-radio-text span {
+  color: #64748b;
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.settings-radio-label:has(input:checked) {
+  border-color: #3b82f6;
+  background: #eff6ff;
+}
+
+.settings-btn-save {
+  width: 100%;
+  background: #3b82f6;
+  color: #ffffff;
+  border: none;
+  border-radius: 14px;
+  padding: 16px;
+  font-size: 1.1rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.25);
+  transition: all 0.2s;
+  margin-top: 10px;
+}
+
+.settings-btn-save:hover {
+  background: #2563eb;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.35);
+}
+
+.settings-btn-save:active {
+  transform: translateY(1px);
+}
+
+.settings-btn-secondary {
+  width: 100%;
+  background: #ffffff;
+  color: #3b82f6;
+  border: 1px solid #3b82f6;
+  border-radius: 12px;
+  padding: 14px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 16px;
+}
+
+.settings-btn-secondary:hover {
+  background: #eff6ff;
+}
+</style>
+
+<script>
+const AdminSettingsModule = (function() {
+  function getAppHtml() {
+    return `
+      <div class="app-settings-container">
+        <div class="app-settings-header">
+          <h1>⚙️ 환경 설정</h1>
+          <p>AI 과외 기능과 랭킹 시스템 구동에 필요한 기본 설정을 관리합니다.</p>
+        </div>
+
+        <div class="settings-section">
+          <h2>🤖 AI 및 데이터베이스 연결</h2>
+          <div class="settings-field">
+            <label for="set-api-key">1. Gemini API Key (AI 튜터 필수)</label>
+            <input type="password" id="set-api-key" class="settings-input" placeholder="AI 키를 입력하세요">
+          </div>
+          <div class="settings-field">
+            <label for="set-sheet-id">2. Google Spreadsheet ID (기록 저장소)</label>
+            <input type="text" id="set-sheet-id" class="settings-input" placeholder="구글 시트 ID를 입력하세요">
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <h2>🏆 명예의 전당 저장 위치</h2>
+          <div class="settings-radio-group">
+            <label class="settings-radio-label">
+              <input type="radio" name="set-lb-mode" value="default" id="set-lb-default">
+              <div class="settings-radio-text">
+                <strong>전체 랭킹 사용하기</strong>
+                <span>기본 연결 시트에 저장되어 전체 사용자와 경쟁합니다.</span>
+              </div>
+            </label>
+            <label class="settings-radio-label">
+              <input type="radio" name="set-lb-mode" value="personal" id="set-lb-personal">
+              <div class="settings-radio-text">
+                <strong>개인/학급 랭킹 사용하기</strong>
+                <span>위 2번에 입력한 개인 Google Spreadsheet 안에만 점수가 저장됩니다.</span>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <h2>🏫 학교 정보 기본값</h2>
+          <div class="settings-field">
+            <label for="set-school-level">3. 학교급</label>
+            <select id="set-school-level" class="settings-input">
+              <option value="">학교급을 선택하세요</option>
+              <option value="elementary">초등학교</option>
+              <option value="middle">중학교</option>
+              <option value="high">고등학교</option>
+            </select>
+          </div>
+          <div class="settings-field">
+            <label for="set-school-name">4. 학교명</label>
+            <input type="text" id="set-school-name" class="settings-input" placeholder="예: 한국초, 대한중, 미래고">
+          </div>
+          <div class="settings-field">
+            <label for="set-class-name">5. 학년/반 또는 그룹명</label>
+            <input type="text" id="set-class-name" class="settings-input" placeholder="예: 5-2, 2학년 3반, 수학동아리">
+          </div>
+        </div>
+
+        <button type="button" class="settings-btn-save" id="btn-save-settings">💾 환경설정 저장하기</button>
+        <button type="button" class="settings-btn-secondary" onclick="if(typeof generateDedicatedLink === 'function') generateDedicatedLink(); else alert('개발자 도구에서 확인해주세요.');">🔗 학생 배포용 전용 링크 복사</button>
+      </div>
+    `;
+  }
+
+  function loadValues() {
+    const apiKey = localStorage.getItem('math_lab_api_key') || '';
+    const sheetId = localStorage.getItem('math_lab_sheet_id') || '';
+    const schoolLevel = localStorage.getItem('math_lab_school_level') || '';
+    const schoolName = localStorage.getItem('math_lab_school_name') || '';
+    const className = localStorage.getItem('math_lab_class_name') || '';
+    const lbMode = localStorage.getItem('math_lab_leaderboard_storage_mode') || 'default';
+
+    document.getElementById('set-api-key').value = apiKey;
+    document.getElementById('set-sheet-id').value = sheetId;
+    document.getElementById('set-school-level').value = schoolLevel;
+    document.getElementById('set-school-name').value = schoolName;
+    document.getElementById('set-class-name').value = className;
+
+    if (lbMode === 'personal') {
+      document.getElementById('set-lb-personal').checked = true;
+    } else {
+      document.getElementById('set-lb-default').checked = true;
+    }
+  }
+
+  function saveValues() {
+    const apiKey = document.getElementById('set-api-key').value.trim();
+    const sheetId = document.getElementById('set-sheet-id').value.trim();
+    const schoolLevel = document.getElementById('set-school-level').value;
+    const schoolName = document.getElementById('set-school-name').value.trim();
+    const className = document.getElementById('set-class-name').value.trim();
+    const lbPersonal = document.getElementById('set-lb-personal').checked;
+    
+    const lbMode = lbPersonal ? 'personal' : 'default';
+
+    if (lbMode === 'personal' && !sheetId) {
+      if(typeof showToast === 'function') showToast("⚠️ 개인/학급 랭킹을 선택하려면 Google Spreadsheet ID가 필요합니다.", true);
+      return;
+    }
+
+    localStorage.setItem('math_lab_api_key', apiKey);
+    localStorage.setItem('math_lab_sheet_id', sheetId);
+    localStorage.setItem('math_lab_school_level', schoolLevel);
+    localStorage.setItem('math_lab_school_name', schoolName);
+    localStorage.setItem('math_lab_class_name', className);
+    localStorage.setItem('math_lab_leaderboard_storage_mode', lbMode);
+
+    if (typeof showToast === 'function') {
+      if (!apiKey || !sheetId) {
+        showToast("🏫 학교 정보가 저장되었습니다. (AI 기능은 API Key 입력 시 활성화)");
+      } else {
+        showToast("✨ 환경 설정이 성공적으로 저장되었습니다!");
+      }
+    }
+
+    setTimeout(() => {
+      if (typeof goHome === 'function') goHome();
+    }, 800);
+  }
+
+  function mount(container, context = {}) {
+    let host = null;
+    if (typeof container === 'string') host = document.querySelector(container);
+    else if (container instanceof HTMLElement) host = container;
+    
+    if (!host) host = window.MathLabUtils?.getMountContainer ? window.MathLabUtils.getMountContainer(container) : document.getElementById('mathlab-view');
+    if (!host || !(host instanceof HTMLElement)) host = document.getElementById('new-root') || document.getElementById('game-container') || document.getElementById('mathlab-view');
+
+    if (!host || !(host instanceof HTMLElement) || host === document.body) {
+      let createdHost = document.getElementById('admin-settings-host');
+      if (!createdHost) {
+        createdHost = document.createElement('div');
+        createdHost.id = 'admin-settings-host';
+        document.body.appendChild(createdHost);
+      }
+      host = createdHost;
+    }
+
+    const footerEl = document.querySelector('footer, #footer, .app-footer');
+    if (footerEl && host && typeof host.compareDocumentPosition === 'function' && (host.compareDocumentPosition(footerEl) & Node.DOCUMENT_POSITION_PRECEDING)) {
+      footerEl.parentNode.insertBefore(host, footerEl);
+    }
+
+    host.style.display = '';
+    host.style.visibility = 'visible';
+    host.style.opacity = '1';
+
+    let parent = host.parentElement;
+    while (parent && parent !== document.body && parent !== document.documentElement) {
+      if (parent.style && parent.style.display === 'none') parent.style.display = 'block';
+      if (parent.style && parent.style.visibility === 'hidden') parent.style.visibility = 'visible';
+      parent = parent.parentElement;
+    }
+
+    document.querySelectorAll('header, .navbar, #app-header, .top-bar, #floating-home-btn, .floating-home').forEach(el => {
+      if (el && el.style && el.style.display === 'none') el.style.display = '';
+    });
+
+    host.innerHTML = getAppHtml();
+    loadValues();
+
+    document.getElementById('btn-save-settings').addEventListener('click', saveValues);
+  }
+
+  function destroy() {}
+  
+  function goHomeFallback() {
+    if (typeof goHome === 'function') goHome();
+  }
+
+  return { mount, destroy, goHome: goHomeFallback };
+})();
+
+function registerAdminSettings() {
+  if (typeof window.MathLabGames !== 'undefined' && typeof window.MathLabGames.register === 'function') {
+    if (!window.MathLabGames.get('settings')) {
+      try {
+        window.MathLabGames.register({
+          id: 'settings',
+          title: '환경 설정',
+          icon: '⚙️',
+          sourceType: 'gen3',
+          mount(container, context) { AdminSettingsModule.mount(container, context); },
+          reset() {},
+          destroy() { AdminSettingsModule.destroy(); },
+          goHome() { AdminSettingsModule.goHome(); }
+        });
+      } catch (e) {
+        console.warn('settings 안전 등록 실패:', e);
+      }
+    }
+  }
+}
+
+registerAdminSettings();
+window.addEventListener('DOMContentLoaded', registerAdminSettings);
+setTimeout(registerAdminSettings, 100);
+setTimeout(registerAdminSettings, 500);
+
+window.initSettingsApp = function() {
+  registerAdminSettings();
+  if (typeof window.MathLabGames !== 'undefined' && typeof window.MathLabGames.mount === 'function') {
+    try { window.MathLabGames.mount('settings'); return; } catch(e) {}
+  }
+  const targetEl = document.getElementById('mathlab-view') || document.getElementById('new-root');
+  if (targetEl) AdminSettingsModule.mount(targetEl);
+};
+</script>

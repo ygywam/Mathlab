@@ -1,0 +1,887 @@
+<!-- 에라토스테네스의 체 정화 (Eratosthenes' Sieve Purification) 홈 버튼 & 랭킹 시트 연동 완결판 -->
+<script>
+(function () {
+  function escapeHTML(str) { return String(str || '').replace(/[&<>'"]/g, s => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[s])); }
+  const EratosthenesSieveGame = {
+    difficulty: 'normal', // 'easy'(1~50), 'normal'(1~100), 'hard'(1~100 타이머)
+    maxNum: 100,
+    currentStep: 0,       // 0: 1 제거, 1: 2의 배수, 2: 3의 배수, 3: 5의 배수, 4: 7의 배수, 5: 완료
+    stepPrimes: [1, 2, 3, 5, 7], // 0번 인덱스는 '1'(소수도 합성수도 아님)
+    
+    score: 0,
+    combo: 0,
+    timer: 90,
+    life: 3,
+    timerId: null,
+    gameOver: false,
+    hintCount: 0,
+
+    cells: [],            // { num, removed: false, isPrime: boolean, stepRemoved: -1 }
+    containerEl: null,
+
+    // 소수 판별 알고리즘
+    isPrime(n) {
+      if (n <= 1) return false;
+      if (n <= 3) return true;
+      if (n % 2 === 0 || n % 3 === 0) return false;
+      for (let i = 5; i * i <= n; i += 6) {
+        if (n % i === 0 || n % (i + 2) === 0) return false;
+      }
+      return true;
+    },
+
+    mount(container) {
+      let target = null;
+      if (typeof container === 'string') target = document.querySelector(container);
+      else if (container instanceof HTMLElement) target = container;
+      if (!target) target = document.getElementById('mathlab-view') || document.getElementById('new-root') || document.getElementById('game-container');
+
+      // 💡 [자가 복구 엔진] 컨테이너가 없거나 가려져 있다면, 100% 보이는 전용 도화지 생성!
+      if (!target || target === document.body) {
+        let host = document.getElementById('eratosthenes-sieve-force-host');
+        if (!host) {
+          host = document.createElement('div'); host.id = 'eratosthenes-sieve-force-host';
+          host.style.cssText = 'width:100%; max-width:960px; margin:0 auto; padding:20px 10px; box-sizing:border-box; z-index:999; position:relative; background:#ffffff; min-height:650px; display:block;';
+          const header = document.querySelector('header, .navbar, #app-header, .top-bar');
+          if (header && header.parentNode) header.parentNode.insertBefore(host, header.nextSibling);
+          else document.body.appendChild(host);
+        }
+        target = host;
+      }
+
+      this.containerEl = target;
+      this.containerEl.style.display = 'block'; this.containerEl.style.visibility = 'visible'; this.containerEl.style.opacity = '1'; this.containerEl.style.minHeight = '650px';
+
+      let parent = this.containerEl.parentElement;
+      while (parent && parent !== document.body && parent !== document.documentElement) {
+        if (parent.style && parent.style.display === 'none') parent.style.display = 'block';
+        if (parent.style && parent.style.visibility === 'hidden') parent.style.visibility = 'visible';
+        parent = parent.parentElement;
+      }
+
+      this.restoreGlobalNavigation();
+      this.renderStyleAndDOM();
+      this.bindEvents();
+      this.resetGame();
+      this.loadLeaderboard();
+    },
+
+    restoreGlobalNavigation() {
+      const navElements = document.querySelectorAll('header, .navbar, #app-header, .top-bar, #floating-home-btn, .floating-home, [id*="home"], [class*="floating"]');
+      navElements.forEach(el => { if (el && el.style && el.style.display === 'none') el.style.display = ''; });
+    },
+
+    renderStyleAndDOM() {
+      if (!this.containerEl) return;
+      this.containerEl.innerHTML = `
+        <style>
+          .game-eratosthenes-sieve {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 20px 14px;
+            color: #1e293b;
+            user-select: none;
+            -webkit-user-select: none;
+            box-sizing: border-box;
+            width: 100%;
+            overflow-x: hidden;
+          }
+          .game-eratosthenes-sieve * { box-sizing: border-box; }
+
+          /* 헤더 영역 */
+          .game-eratosthenes-sieve .sieve-header {
+            text-align: center;
+            background: linear-gradient(135deg, #f0fdf4, #ecfdf5);
+            border: 2px solid #6ee7b7;
+            border-radius: 24px;
+            padding: 24px 18px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.08);
+          }
+          .game-eratosthenes-sieve .title-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 8px;
+          }
+          .game-eratosthenes-sieve .title-icon { font-size: 32px; }
+          .game-eratosthenes-sieve .title-text {
+            font-size: 30px;
+            font-weight: 900;
+            color: #047857;
+            margin: 0;
+          }
+          .game-eratosthenes-sieve .title-badge {
+            background: #065f46;
+            color: #ffffff;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 800;
+          }
+          .game-eratosthenes-sieve .desc-text {
+            color: #475569;
+            font-size: 15px;
+            margin: 0 0 16px;
+            line-height: 1.5;
+            word-break: keep-all;
+          }
+
+          /* 통계 바 */
+          .game-eratosthenes-sieve .stats-bar {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            background: #ffffff;
+            border: 1px solid #a7f3d0;
+            border-radius: 16px;
+            padding: 12px;
+            gap: 8px;
+            flex-wrap: wrap;
+            font-weight: 800;
+            font-size: 15px;
+          }
+          .game-eratosthenes-sieve .stat-item span { color: #059669; font-size: 18px; }
+
+          /* 난이도 탭 */
+          .game-eratosthenes-sieve .diff-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+          }
+          .game-eratosthenes-sieve .diff-btn {
+            padding: 10px 20px;
+            border-radius: 14px;
+            font-weight: 800;
+            font-size: 14px;
+            border: 2px solid #e2e8f0;
+            background: #ffffff;
+            color: #64748b;
+            cursor: pointer;
+            transition: all 0.2s;
+          }
+          .game-eratosthenes-sieve .diff-btn:hover { background: #f8fafc; border-color: #cbd5e1; }
+          .game-eratosthenes-sieve .diff-btn.active {
+            background: #059669;
+            border-color: #059669;
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.25);
+          }
+
+          /* 단계 진행 바 (2, 3, 5, 7 단계) */
+          .game-eratosthenes-sieve .step-progress {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-bottom: 18px;
+            background: #f8fafc;
+            padding: 12px;
+            border-radius: 16px;
+            border: 1px solid #e2e8f0;
+          }
+          .game-eratosthenes-sieve .step-pill {
+            padding: 6px 14px;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 13px;
+            background: #ffffff;
+            color: #64748b;
+            border: 1px solid #cbd5e1;
+            transition: all 0.3s;
+          }
+          .game-eratosthenes-sieve .step-pill.active {
+            background: #10b981;
+            color: #ffffff;
+            border-color: #059669;
+            transform: scale(1.08);
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+          }
+          .game-eratosthenes-sieve .step-pill.done {
+            background: #e2e8f0;
+            color: #94a3b8;
+            text-decoration: line-through;
+          }
+
+          /* 메인 2단 그리드 */
+          .game-eratosthenes-sieve .main-grid {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 20px;
+          }
+          @media (max-width: 768px) {
+            .game-eratosthenes-sieve .main-grid { grid-template-columns: 1fr; }
+          }
+
+          /* 좌측 게임 플레이 보드 */
+          .game-eratosthenes-sieve .play-area {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 24px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+          }
+
+          /* 상태 안내 메시지 */
+          .game-eratosthenes-sieve .status-banner {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 12px;
+            text-align: center;
+            font-weight: 800;
+            font-size: 15px;
+            color: #334155;
+            word-break: keep-all;
+          }
+          .game-eratosthenes-sieve .status-banner.success { background: #dcfce7; color: #15803d; border-color: #86efac; }
+          .game-eratosthenes-sieve .status-banner.error { background: #fee2e2; color: #b91c1c; border-color: #fecaca; }
+
+          /* 숫자 격자 보드 (모바일에서 가로로 넘치지 않는 10열 대응) */
+          .game-eratosthenes-sieve .grid-board {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 6px;
+            width: 100%;
+          }
+          @media (max-width: 500px) {
+            .game-eratosthenes-sieve .grid-board { gap: 4px; }
+          }
+
+          .game-eratosthenes-sieve .grid-cell {
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #f8fafc;
+            border: 1.5px solid #cbd5e1;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 900;
+            color: #1e293b;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+          }
+          @media (max-width: 500px) {
+            .game-eratosthenes-sieve .grid-cell { font-size: 13px; border-radius: 6px; }
+          }
+
+          .game-eratosthenes-sieve .grid-cell:hover:not(.removed):not(.prime-saved) {
+            transform: translateY(-2px);
+            border-color: #10b981;
+            background: #ecfdf5;
+            box-shadow: 0 4px 8px rgba(16, 185, 129, 0.15);
+          }
+
+          /* 제거된 배수 발판 (회색 및 취소선) */
+          .game-eratosthenes-sieve .grid-cell.removed {
+            background: #f1f5f9 !important;
+            border-color: #e2e8f0 !important;
+            color: #94a3b8 !important;
+            text-decoration: line-through;
+            cursor: not-allowed;
+            opacity: 0.5;
+          }
+
+          /* 보존된 소수 발판 (금색/녹색 강조) */
+          .game-eratosthenes-sieve .grid-cell.prime-saved {
+            background: #fef9c3 !important;
+            border-color: #facc15 !important;
+            color: #854d0e !important;
+            box-shadow: inset 0 0 8px rgba(234, 179, 8, 0.3);
+          }
+
+          /* 힌트 깜빡임 강조 */
+          .game-eratosthenes-sieve .grid-cell.hint-highlight {
+            border: 2.5px solid #f59e0b !important;
+            background: #fef3c7 !important;
+            color: #d97706 !important;
+            animation: pulseHint 0.8s infinite;
+          }
+          @keyframes pulseHint {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); box-shadow: 0 0 14px rgba(245, 158, 11, 0.6); }
+          }
+
+          /* 하단 액션 버튼 */
+          .game-eratosthenes-sieve .action-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+          }
+          .game-eratosthenes-sieve .btn-action {
+            flex: 1;
+            min-width: 100px;
+            padding: 12px;
+            border-radius: 14px;
+            font-size: 14px;
+            font-weight: 800;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+          }
+          .game-eratosthenes-sieve .btn-check { background: #10b981; color: #ffffff; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.25); }
+          .game-eratosthenes-sieve .btn-check:hover { background: #059669; }
+          .game-eratosthenes-sieve .btn-hint { background: #fef3c7; color: #d97706; border: 1px solid #fde68a; }
+          .game-eratosthenes-sieve .btn-hint:hover { background: #fde68a; }
+          .game-eratosthenes-sieve .btn-restart { background: #e2e8f0; color: #475569; }
+          .game-eratosthenes-sieve .btn-restart:hover { background: #cbd5e1; }
+          .game-eratosthenes-sieve .btn-home { background: #475569; color: #ffffff; }
+          .game-eratosthenes-sieve .btn-home:hover { background: #334155; }
+
+          /* 우측 사이드 패널 */
+          .game-eratosthenes-sieve .side-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+          }
+          .game-eratosthenes-sieve .side-box {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 20px;
+            padding: 18px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+          }
+          .game-eratosthenes-sieve .side-title {
+            font-size: 16px;
+            font-weight: 900;
+            color: #1e293b;
+            margin: 0 0 12px;
+          }
+          .game-eratosthenes-sieve .rule-list {
+            margin: 0;
+            padding-left: 18px;
+            font-size: 14px;
+            color: #475569;
+            line-height: 1.6;
+          }
+          .game-eratosthenes-sieve .rank-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+          }
+          .game-eratosthenes-sieve .rank-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f8fafc;
+            border: 1px solid #f1f5f9;
+            padding: 10px 14px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 700;
+          }
+          .game-eratosthenes-sieve .rank-num { color: #059669; font-weight: 900; margin-right: 8px; }
+          .game-eratosthenes-sieve .rank-score { color: #047857; font-weight: 900; }
+        </style>
+
+        <div class="game-eratosthenes-sieve">
+          <div class="sieve-header">
+            <div class="title-row">
+              <span class="title-icon">🧹</span>
+              <h1 class="title-text">에라토스테네스의 체 정화</h1>
+              <span class="title-badge">초5·중1 소수 판별</span>
+            </div>
+            <p class="desc-text">소수도 합성수도 아닌 <strong>1</strong>과 소수의 <strong>배수(합성수)</strong>를 순서대로 제거하여 순수한 <strong>소수</strong>만 걸러내세요!</p>
+
+            <div class="stats-bar">
+              <div class="stat-item">🏆 점수: <span id="es-score">0</span>점</div>
+              <div class="stat-item">🔥 콤보: <span id="es-combo">0</span>연속</div>
+              <div class="stat-item" id="es-timer-box" style="display: none;">⏱️ 남은 시간: <span id="es-timer">90</span>초</div>
+              <div class="stat-item" id="es-life-box">❤️ 남은 생명: <span id="es-life">3</span>개</div>
+            </div>
+          </div>
+
+          <!-- 난이도 탭 -->
+          <div class="diff-tabs">
+            <button class="diff-btn" data-diff="easy">🌱 쉬움 (1~50 • 생명 3개)</button>
+            <button class="diff-btn active" data-diff="normal">🔥 보통 (1~100 • 생명 3개)</button>
+            <button class="diff-btn" data-diff="hard">👑 도전 (1~100 • 90초 타이머)</button>
+          </div>
+
+          <!-- 단계 진행 바 -->
+          <div class="step-progress">
+            <span class="step-pill active" id="sp-0">1단계: [1] 제거</span> ➡
+            <span class="step-pill" id="sp-1">2단계: 2의 배수</span> ➡
+            <span class="step-pill" id="sp-2">3단계: 3의 배수</span> ➡
+            <span class="step-pill" id="sp-3">4단계: 5의 배수</span> ➡
+            <span class="step-pill" id="sp-4">5단계: 7의 배수</span> ➡
+            <span class="step-pill" id="sp-5">✨ 소수 정화 완료!</span>
+          </div>
+
+          <!-- 메인 2단 그리드 -->
+          <div class="main-grid">
+            <div class="play-area">
+              <div class="status-banner" id="es-status">소수도 합성수도 아닌 숫자 '1'을 클릭하여 가장 먼저 제거하세요!</div>
+
+              <!-- 숫자 격자 보드 -->
+              <div class="grid-board" id="es-grid-board"></div>
+
+              <!-- 하단 액션 버튼 -->
+              <div class="action-row">
+                <button class="btn-action btn-check" id="es-btn-check">✅ 단계 완료 검사 (+50점)</button>
+                <button class="btn-action btn-hint" id="es-btn-hint">💡 힌트 보기 (-10점)</button>
+                <button class="btn-action btn-restart" id="es-btn-restart">🔄 판 다시하기</button>
+                <button class="btn-action btn-home" id="es-btn-home">🏠 홈으로</button>
+              </div>
+            </div>
+
+            <div class="side-panel">
+              <div class="side-box">
+                <h3 class="side-title">👑 명예의 전당 Top 5</h3>
+                <!-- 🚨 [패치 완료] 시스템 공식 랭킹 함수가 정확히 찾을 수 있도록 ID를 board-eratosthenes-sieve로 일치! -->
+                <div class="rank-list" id="board-eratosthenes-sieve">
+                  <div style="text-align:center; color:#94a3b8; padding: 12px 0;">랭킹 로딩 중...</div>
+                </div>
+              </div>
+
+              <div class="side-box">
+                <h3 class="side-title">📖 에라토스테네스의 체 원리</h3>
+                <ul class="rule-list">
+                  <li><strong>1 제거:</strong> 1은 소수도 합성수도 아니므로 가장 먼저 걸러냅니다.</li>
+                  <li><strong>배수 제거:</strong> 2, 3, 5, 7을 제외한 그 배수들(합성수)을 단계별로 클릭해 지웁니다.</li>
+                  <li><strong>소수 보존:</strong> 100 이하의 합성수는 7 이하의 소인수를 반드시 가지므로, 7의 배수까지만 지우면 남은 수는 100% 소수입니다!</li>
+                  <li><strong>점수 규칙:</strong> 합성수 제거 +10점, 연속 정답 콤보(+2점씩), 단계 완료 검사 통과 시 +50점 보너스가 지급됩니다.</li>
+                  <li><strong>오답 주의:</strong> 소수나 현재 단계가 아닌 수를 잘못 지우면 -20점 감점 및 생명이 깎입니다.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    },
+
+    bindEvents() {
+      if (!this.containerEl) return;
+
+      this.containerEl.querySelectorAll('.diff-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          this.containerEl.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active'));
+          e.target.classList.add('active');
+          this.difficulty = e.target.getAttribute('data-diff');
+          this.resetGame();
+        });
+      });
+
+      const checkBtn = this.containerEl.querySelector('#es-btn-check');
+      if (checkBtn) checkBtn.addEventListener('click', () => this.checkStepComplete());
+
+      const hintBtn = this.containerEl.querySelector('#es-btn-hint');
+      if (hintBtn) hintBtn.addEventListener('click', () => this.useHint());
+
+      const restartBtn = this.containerEl.querySelector('#es-btn-restart');
+      if (restartBtn) restartBtn.addEventListener('click', () => this.resetGame());
+
+      // 🚨 [패치 완료] 홈으로 버튼: 상단/하단의 이미 잘 작동하는 공식 홈 버튼을 그대로 클릭하도록 100% 안전하게 연결!
+      const homeBtn = this.containerEl.querySelector('#es-btn-home');
+      if (homeBtn) {
+        homeBtn.onclick = null;
+        homeBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          this.destroy();
+          if (window.LegacyBridge && typeof window.LegacyBridge.backHome === 'function') {
+            try { window.LegacyBridge.backHome(); return; } catch(err) {}
+          }
+          const topBottomHome = document.getElementById('mathlab-floating-home') || document.querySelector('#legacy-back-home-btn') || document.querySelector('.floating-home');
+          if (topBottomHome) {
+            topBottomHome.click();
+          } else if (typeof window.MathLabRenderHome === 'function') {
+            window.MathLabRenderHome();
+          } else if (typeof window.goHome === 'function') {
+            window.goHome();
+          } else {
+            location.reload();
+          }
+        });
+      }
+    },
+
+    resetGame() {
+      this.stopTimer();
+      this.score = 0;
+      this.combo = 0;
+      this.currentStep = 0;
+      this.gameOver = false;
+      this.hintCount = 0;
+
+      if (this.difficulty === 'easy') {
+        this.maxNum = 50;
+        this.life = 3;
+      } else if (this.difficulty === 'normal') {
+        this.maxNum = 100;
+        this.life = 3;
+      } else {
+        this.maxNum = 100;
+        this.timer = 90;
+        this.life = 3;
+      }
+
+      const timerBox = this.containerEl.querySelector('#es-timer-box');
+      const lifeBox = this.containerEl.querySelector('#es-life-box');
+      if (this.difficulty === 'hard') {
+        if (timerBox) timerBox.style.display = 'flex';
+        if (lifeBox) lifeBox.style.display = 'flex';
+        this.startTimer();
+      } else {
+        if (timerBox) timerBox.style.display = 'none';
+        if (lifeBox) lifeBox.style.display = 'flex';
+      }
+
+      // 셀 격자 초기화
+      this.cells = [];
+      for (let i = 1; i <= this.maxNum; i++) {
+        this.cells.push({
+          num: i,
+          removed: false,
+          isPrime: this.isPrime(i),
+          stepRemoved: -1
+        });
+      }
+
+      this.updateUI();
+      this.showStatus("1단계: 소수도 합성수도 아닌 숫자 '1'을 클릭하여 제거하세요!", '');
+    },
+
+    startTimer() {
+      this.stopTimer();
+      this.timerId = setInterval(() => {
+        if (this.gameOver) return;
+        this.timer--;
+        this.updateStatsUI();
+        if (this.timer <= 0) {
+          this.endGame('⏱️ 제한 시간 90초가 모두 소진되었습니다!');
+        }
+      }, 1000);
+    },
+
+    stopTimer() {
+      if (this.timerId) {
+        clearInterval(this.timerId);
+        this.timerId = null;
+      }
+    },
+
+    // 현재 단계에서 지워야 할 정답 타겟 판별
+    isCurrentStepTarget(num) {
+      if (num === 1) return this.currentStep === 0;
+      const basePrime = this.stepPrimes[this.currentStep];
+      if (!basePrime || basePrime === 1) return false;
+      // 기준 소수 자기 자신은 제외하고, 기준 소수의 배수만 정답!
+      return (num !== basePrime && num % basePrime === 0);
+    },
+
+    handleCellClick(num) {
+      if (this.gameOver) return;
+      const cell = this.cells[num - 1];
+      if (cell.removed) return;
+
+      if (this.isCurrentStepTarget(num)) {
+        // 🎉 정답 제거 성공!
+        cell.removed = true;
+        cell.stepRemoved = this.currentStep;
+        
+        this.combo++;
+        const earned = 10 + (this.combo * 2);
+        this.score += earned;
+        
+        let desc = (num === 1) ? "'1'은 소수도 합성수도 아닙니다!" : `${this.stepPrimes[this.currentStep]}의 배수(합성수) 제거!`;
+        this.showStatus(`🎉 정답! ${num} 제거 완료! (${desc}) (+${earned}점)`, 'success');
+        this.updateUI();
+
+        // 자동 다음 단계 전환 검사 (남은 타겟이 없으면 자동 안내)
+        const remTargets = this.cells.filter(c => !c.removed && this.isCurrentStepTarget(c.num));
+        if (remTargets.length === 0) {
+          this.showStatus(`✨ 현재 단계의 배수를 모두 지웠습니다! 하단의 [✅ 단계 완료 검사] 버튼을 눌러 다음으로 넘어가세요!`, 'success');
+        }
+      } else {
+        // ❌ 오답 제거 시도
+        this.combo = 0;
+        this.score = Math.max(0, this.score - 20);
+        this.life--;
+        this.updateStatsUI();
+
+        if (cell.isPrime) {
+          this.showStatus(`❌ 오답! ${num}은(는) 1과 자기 자신만을 약수로 가지는 '소수(Prime Number)'이므로 지우면 안 됩니다! (-20점, ❤️ -1)`, 'error');
+        } else {
+          this.showStatus(`❌ 오답! ${num}은(는) 현재 단계(${this.stepPrimes[this.currentStep]}의 배수)에 지우는 숫자가 아닙니다! (-20점, ❤️ -1)`, 'error');
+        }
+
+        if (this.life <= 0) {
+          this.endGame('💔 생명이 모두 소진되었습니다. 소수와 배수 규칙을 확인하고 다시 도전해 보세요!');
+        }
+      }
+    },
+
+    // 단계 완료 검사 버튼
+    checkStepComplete() {
+      if (this.gameOver) return;
+      const remTargets = this.cells.filter(c => !c.removed && this.isCurrentStepTarget(c.num));
+
+      if (remTargets.length > 0) {
+        this.showStatus(`⚠️ 아직 현재 단계에서 지우지 못한 숫자가 ${remTargets.length}개 남아있습니다! 더 찾아보세요.`, 'error');
+        return;
+      }
+
+      // 단계 완료 성공! +50점 보너스 및 다음 단계로 이동
+      this.score += 50;
+      this.currentStep++;
+      
+      // 50까지 난이도에서는 7의 배수 단계(step 4)를 건너뛰고 완료 처리
+      if (this.difficulty === 'easy' && this.currentStep === 4) {
+        this.currentStep = 5;
+      }
+
+      this.updateUI();
+
+      if (this.currentStep >= 5) {
+        // 🎉 최종 완료! 100 이하 모든 소수(25개) 정화 완수!
+        this.score += 300;
+        this.updateStatsUI();
+        this.endGame(`🏆 축하합니다! 에라토스테네스의 체를 이용해 순수한 소수들만 완벽하게 솎아냈습니다! (+300점 보너스)`);
+      } else {
+        const nextPrime = this.stepPrimes[this.currentStep];
+        this.showStatus(`✅ 단계 통과 (+50점)! 다음 단계: 소수 [${nextPrime}]은 남겨두고, [${nextPrime}의 배수]들을 모두 찾아 클릭해 제거하세요!`, 'success');
+      }
+    },
+
+    useHint() {
+      if (this.gameOver) return;
+      const remTargets = this.cells.filter(c => !c.removed && this.isCurrentStepTarget(c.num));
+      if (remTargets.length === 0) {
+        const msg = '현재 단계에서 더 이상 지울 숫자가 없습니다! [✅ 단계 완료 검사] 버튼을 눌러 다음 단계로 넘어가세요.';
+        this.showStatus(msg, 'success');
+        if (typeof showToast === 'function') showToast(msg, false);
+        return;
+      }
+
+      this.score = Math.max(0, this.score - 10);
+      this.hintCount++;
+      this.updateStatsUI();
+      this.showStatus(`💡 힌트 사용! 현재 단계에서 지워야 할 후보 중 하나가 노란색으로 깜빡입니다. (-10점)`, '');
+
+      // 정답 후보 중 첫 번째 것을 강조
+      const target = remTargets[0];
+      const el = this.containerEl.querySelector(`.grid-cell[data-num="${target.num}"]`);
+      if (el) {
+        el.classList.add('hint-highlight');
+        setTimeout(() => el.classList.remove('hint-highlight'), 1600);
+      }
+    },
+
+    updateUI() {
+      if (!this.containerEl) return;
+      this.updateStatsUI();
+
+      // 단계 핀바 갱신
+      for (let i = 0; i <= 5; i++) {
+        const pill = this.containerEl.querySelector(`#sp-${i}`);
+        if (!pill) continue;
+        pill.className = 'step-pill';
+        if (i < this.currentStep) pill.classList.add('done');
+        else if (i === this.currentStep) pill.classList.add('active');
+      }
+
+      // 격자 보드 렌더링
+      const boardEl = this.containerEl.querySelector('#es-grid-board');
+      if (!boardEl) return;
+      boardEl.innerHTML = '';
+
+      this.cells.forEach(cell => {
+        const div = document.createElement('div');
+        div.className = 'grid-cell';
+        div.setAttribute('data-num', cell.num);
+        div.innerText = cell.num;
+
+        if (cell.removed) {
+          div.classList.add('removed');
+          div.innerHTML = `${cell.num}<br><span style="font-size:9px;">❌</span>`;
+        } else if (this.currentStep >= 5 || (this.currentStep > 0 && this.stepPrimes.slice(1, this.currentStep).includes(cell.num))) {
+          // 이미 지나간 기준 소수이거나 게임이 끝나서 살아남은 소수는 금색 강조
+          div.classList.add('prime-saved');
+          div.innerHTML = `${cell.num}<br><span style="font-size:9px; color:#b45309;">✨ 소수</span>`;
+        } else {
+          div.addEventListener('click', () => this.handleCellClick(cell.num));
+        }
+
+        boardEl.appendChild(div);
+      });
+    },
+
+    updateStatsUI() {
+      if (!this.containerEl) return;
+      const scoreEl = this.containerEl.querySelector('#es-score');
+      const comboEl = this.containerEl.querySelector('#es-combo');
+      const timerEl = this.containerEl.querySelector('#es-timer');
+      const lifeEl = this.containerEl.querySelector('#es-life');
+
+      if (scoreEl) scoreEl.innerText = this.score;
+      if (comboEl) comboEl.innerText = this.combo;
+      if (timerEl) timerEl.innerText = this.timer;
+      if (lifeEl) lifeEl.innerText = this.life;
+    },
+
+    showStatus(msg, type) {
+      if (!this.containerEl) return;
+      const statusEl = this.containerEl.querySelector('#es-status');
+      if (statusEl) {
+        statusEl.className = 'status-banner ' + (type || '');
+        statusEl.innerText = msg;
+      }
+    },
+
+    endGame(reasonMsg) {
+      this.gameOver = true;
+      this.stopTimer();
+      this.showStatus(reasonMsg, this.life <= 0 || this.timer <= 0 ? 'error' : 'success');
+
+      setTimeout(() => {
+        const metadata = {
+          gameTitle: '에라토스테네스의 체 정화',
+          score: this.score,
+          difficulty: this.difficulty,
+          stepReached: this.currentStep,
+          hintCount: this.hintCount
+        };
+        this.showInlineRankingModal('board-eratosthenes-sieve', this.score, metadata);
+      }, 600);
+    },
+
+    showInlineRankingModal(boardId, score, metadata) {
+      document.getElementById('mathlab-inline-ranking-modal')?.remove();
+      const gameName = '에라토스테네스의 체 정화';
+      const modalHtml = `
+        <div id="mathlab-inline-ranking-modal" style="position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(15,23,42,0.75); backdrop-filter:blur(6px); display:flex; align-items:center; justify-content:center; z-index:999999; padding:20px; box-sizing:border-box; font-family:'Pretendard',sans-serif;">
+          <div style="background:#ffffff; border-radius:24px; padding:28px 24px; max-width:400px; width:100%; box-shadow:0 20px 40px rgba(0,0,0,0.3); text-align:center; border:3px solid #10b981;">
+            <div style="font-size:42px; margin-bottom:10px;">🧹✨</div>
+            <h2 style="margin:0 0 8px; font-size:24px; font-weight:900; color:#1e293b;">명예의 전당 등록</h2>
+            <p style="margin:0 0 20px; font-size:14px; color:#64748b;">에라토스테네스의 체 정화를 훌륭히 마쳤습니다!<br>이름을 남겨 Top 5 랭킹에 도전하세요!</p>
+            <div style="background:#ecfdf5; border:1px solid #a7f3d0; border-radius:16px; padding:14px; margin-bottom:20px;">
+              <div style="font-size:13px; color:#047857; font-weight:800; margin-bottom:4px;">🏆 최종 점수</div>
+              <div style="font-size:32px; font-weight:900; color:#059669;">${score} <span style="font-size:18px;">점</span></div>
+            </div>
+            <input type="text" id="inline-rank-nickname" placeholder="우승자 닉네임 입력 (예: 소수왕)" maxlength="10" style="width:100%; padding:14px 16px; font-size:16px; font-weight:700; border:2px solid #cbd5e1; border-radius:14px; outline:none; text-align:center; margin-bottom:20px; box-sizing:border-box;">
+            <div style="display:flex; gap:10px;">
+              <button id="inline-rank-cancel" style="flex:1; padding:14px; border-radius:14px; font-size:15px; font-weight:800; background:#e2e8f0; color:#475569; border:none; cursor:pointer;">건너뛰기</button>
+              <button id="inline-rank-submit" style="flex:2; padding:14px; border-radius:14px; font-size:15px; font-weight:800; background:#10b981; color:#ffffff; border:none; cursor:pointer;">🚀 등록하기</button>
+            </div>
+          </div>
+        </div>
+      `;
+      document.body.insertAdjacentHTML('beforeend', modalHtml);
+      const inputEl = document.getElementById('inline-rank-nickname'); if (inputEl) inputEl.focus();
+      const closeAndClean = () => document.getElementById('mathlab-inline-ranking-modal')?.remove();
+      document.getElementById('inline-rank-cancel')?.addEventListener('click', closeAndClean);
+      const doSubmit = () => {
+        let nickname = (inputEl?.value.trim() || '소수왕');
+        
+        // 🚨 [패치 완료] 1. 구글 시트 및 수학실험실 공식 저장 함수(submitRanking) 호출!
+        if (typeof window.submitRanking === 'function') {
+          try { const nickArg = { value: nickname, trim: function () { return nickname.trim(); }, toString: function() { return nickname; } }; window.submitRanking(gameName, score, true, nickArg, boardId); } catch(e){}
+        } else if (typeof google !== 'undefined' && google.script && google.script.run && typeof google.script.run.saveGameScore === 'function') {
+          try {
+            const sheetId = (typeof getLeaderboardSheetId === 'function') ? getLeaderboardSheetId() : '';
+            const meta = (typeof getLeaderboardMeta === 'function') ? getLeaderboardMeta() : {};
+            google.script.run.withSuccessHandler(() => { this.loadLeaderboard(); }).saveGameScore(sheetId, gameName, nickname, score, true, meta);
+          } catch(e){}
+        }
+
+        // 🚨 [패치 완료] 2. 닉네임 덮어쓰기 원천 봉쇄 (...metadata를 먼저 풀고 nickname을 뒤에 배치)
+        let ranks = JSON.parse(localStorage.getItem(`rank_${boardId}`) || '[]');
+        ranks.push({ ...(metadata || {}), nickname: nickname, score: score, date: new Date().toISOString() });
+        ranks.sort((a, b) => (b.score || 0) - (a.score || 0));
+        localStorage.setItem(`rank_${boardId}`, JSON.stringify(ranks.slice(0, 50)));
+        closeAndClean(); this.loadLeaderboard();
+      };
+      document.getElementById('inline-rank-submit')?.addEventListener('click', doSubmit);
+      inputEl?.addEventListener('keydown', (e) => { if (e.key === 'Enter') doSubmit(); });
+    },
+
+    loadLeaderboard() {
+      if (!this.containerEl) return;
+      // 🚨 [패치 완료] 우리 시스템 공식 구글 시트 랭킹 불러오기 호출!
+      if (typeof window.loadGameLeaderboard === 'function') {
+        window.loadGameLeaderboard('에라토스테네스의 체 정화', true, 'board-eratosthenes-sieve');
+      } else {
+        const localRanks = JSON.parse(localStorage.getItem('rank_board-eratosthenes-sieve') || '[]');
+        this.renderRankList(localRanks.slice(0, 5));
+      }
+    },
+
+    renderRankList(ranks) {
+      const el = this.containerEl?.querySelector('#board-eratosthenes-sieve') || this.containerEl?.querySelector('#es-rank-list');
+      if (!el) return;
+
+      if (!ranks || ranks.length === 0) {
+        el.innerHTML = '<div style="text-align:center; color:#94a3b8; padding: 12px 0;">아직 등록된 랭킹이 없습니다. 첫 주인공이 되어보세요!</div>';
+        return;
+      }
+
+      el.innerHTML = ranks.map((r, i) => `
+        <div class="rank-item">
+          <div><span class="rank-num">${i + 1}위</span> ${escapeHTML(r.nickname || '익명')}</div>
+          <div class="rank-score">${r.score || 0}점</div>
+        </div>
+      `).join('');
+    },
+
+    destroy() {
+      this.stopTimer();
+      this.gameOver = true;
+      document.getElementById('mathlab-inline-ranking-modal')?.remove();
+      const host = document.getElementById('eratosthenes-sieve-force-host'); if (host) host.remove();
+      if (this.containerEl) { this.containerEl.innerHTML = ''; }
+    }
+  };
+
+  window.EratosthenesSieveGame = EratosthenesSieveGame;
+
+  function registerEratosthenesSieve() {
+    if (typeof window.MathLabGames !== 'undefined' && typeof window.MathLabGames.register === 'function') {
+      window.MathLabGames.register({
+        id: 'eratosthenes-sieve',
+        title: '에라토스테네스의 체 정화',
+        icon: '🧹',
+        sourceType: 'new',
+        mount(container, context) {
+          EratosthenesSieveGame.mount(container, context);
+        },
+        reset() {
+          EratosthenesSieveGame.resetGame();
+        },
+        destroy() {
+          EratosthenesSieveGame.destroy();
+        }
+      });
+    }
+  }
+
+  registerEratosthenesSieve();
+  document.addEventListener('DOMContentLoaded', registerEratosthenesSieve);
+  setTimeout(registerEratosthenesSieve, 300);
+
+  window.launchEratosthenesSieveGame = function() {
+    if (typeof window.MathLabGames !== 'undefined' && typeof window.MathLabGames.mount === 'function') {
+      try {
+        window.MathLabGames.mount('eratosthenes-sieve');
+        return;
+      } catch(e) {
+        console.warn('MathLabGames mount 실패, 직접 마운트 시도:', e);
+      }
+    }
+    const target = document.getElementById('mathlab-view') || document.getElementById('new-root') || document.body;
+    EratosthenesSieveGame.mount(target);
+  };
+})();
+</script>

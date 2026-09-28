@@ -1,0 +1,1205 @@
+<!--
+  Gen-3 수학 실험실 신규 앱: 프랙탈 트리 키우기 (fractal-tree)
+  100개 원본 게임 목록 37번 기반
+  자기닮음(프랙탈) 및 기하급수적 증가(2^n, 3^n) 체감 샌드박스 + 탐구 미션 시스템
+  (Gen-3 표준 동적 마운트 템플릿, 5대 감사 기준 완벽 준수)
+-->
+<style>
+  /* Gen-3 전용 스코프 스타일 (.game-fractal-tree) - 눈이 편안한 모던 다크 네이비/슬레이트 테마 */
+  .game-fractal-tree {
+    --bg-primary: #0f172a;
+    --bg-surface: #1e293b;
+    --bg-card: #202e48;
+    --accent-color: #38bdf8;
+    --accent-glow: rgba(56, 189, 248, 0.35);
+    --success-color: #22c55e;
+    --warning-color: #f59e0b;
+    --danger-color: #ef4444;
+    --text-main: #f8fafc;
+    --text-sub: #cbd5e1;
+    --border-color: #3b82f6;
+
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #172554 100%);
+    color: var(--text-main);
+    min-height: 100%;
+    width: 100%;
+    padding: 24px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    user-select: none;
+    -webkit-user-select: none;
+    border-radius: 24px;
+    border: 3px solid #3b82f6;
+    box-shadow: inset 0 0 40px rgba(0,0,0,0.6), 0 16px 36px rgba(0,0,0,0.5);
+    position: relative;
+  }
+
+  .game-fractal-tree * {
+    box-sizing: border-box;
+  }
+
+  /* 상단 한 줄 반응형 헤더 (균등 배열 및 2열 정렬) */
+  .game-fractal-tree .app-header {
+    width: 100%;
+    max-width: 1040px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--bg-surface);
+    padding: 16px 24px;
+    border-radius: 18px;
+    border: 2px solid var(--border-color);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+
+  .game-fractal-tree .title-area {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 0 0 auto;
+  }
+
+  .game-fractal-tree .app-title {
+    font-size: clamp(1.3rem, 2.2vw, 1.8rem);
+    font-weight: 900;
+    color: var(--text-main);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+    text-shadow: 0 0 10px var(--accent-glow);
+  }
+
+  .game-fractal-tree .app-badge {
+    background: #1e1b4b;
+    color: #fef08a;
+    font-size: 0.86rem;
+    font-weight: 800;
+    padding: 6px 12px;
+    border-radius: 20px;
+    border: 1px solid #f59e0b;
+  }
+
+  /* 버튼 그룹: 글자 길이가 가장 긴 '🎨 자유 샌드박스', '🏆 명예의 전당'을 기준으로 최소 너비 126px을 설정하고
+     flex: 1 1 126px로 가로 폭 변화에 따라 동적으로 동일한 비율/크기가 유지되게 배열.
+     공간이 넉넉하면 1줄에 모두 균등 배치, 부족할 경우 2줄에 우아하게 분배됨 */
+  .game-fractal-tree .header-btn-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    flex: 1 1 auto;
+    justify-content: flex-end;
+    align-items: center;
+  }
+
+  .game-fractal-tree .btn {
+    flex: 1 1 126px;
+    min-width: 126px;
+    background: #334155;
+    color: var(--text-main);
+    border: 2px solid #475569;
+    height: 40px;
+    padding: 0 12px;
+    border-radius: 12px;
+    font-size: 13.5px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    white-space: nowrap;
+    gap: 6px;
+  }
+
+  .game-fractal-tree .btn:hover {
+    background: #475569;
+    border-color: var(--accent-color);
+    transform: translateY(-2px);
+  }
+
+  .game-fractal-tree .btn.primary {
+    background: linear-gradient(135deg, #0284c7, #2563eb);
+    border-color: #38bdf8;
+    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
+  }
+  .game-fractal-tree .btn.primary:hover {
+    background: linear-gradient(135deg, #0369a1, #1d4ed8);
+  }
+
+  .game-fractal-tree .btn.success {
+    background: linear-gradient(135deg, #16a34a, #15803d);
+    border-color: #4ade80;
+  }
+
+  .game-fractal-tree .btn.warning {
+    background: linear-gradient(135deg, #d97706, #b45309);
+    border-color: #fbbf24;
+  }
+
+  .game-fractal-tree .mode-tab-btn {
+    background: #1e293b;
+    border: 2px solid #334155;
+    color: #94a3b8;
+  }
+  .game-fractal-tree .mode-tab-btn.active {
+    background: #0f172a;
+    border-color: #38bdf8;
+    color: #38bdf8;
+    box-shadow: 0 0 12px rgba(56, 189, 248, 0.3);
+  }
+
+  /* 상단 상태 및 수학 개념 배너 */
+  .game-fractal-tree .status-banner {
+    width: 100%;
+    max-width: 1040px;
+    background: var(--bg-card);
+    border: 2px solid #3b82f6;
+    border-radius: 16px;
+    padding: 14px 22px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .game-fractal-tree .stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .game-fractal-tree .stat-label {
+    font-size: 12px;
+    color: #94a3b8;
+    font-weight: 700;
+  }
+  .game-fractal-tree .stat-val {
+    font-size: 20px;
+    font-weight: 900;
+    color: #fef08a;
+  }
+  .game-fractal-tree .stat-val.accent {
+    color: #38bdf8;
+  }
+
+  /* 메인 콘텐츠 영역 (좌측 Canvas, 우측 조작/미션 보드) */
+  .game-fractal-tree .main-grid {
+    width: 100%;
+    max-width: 1040px;
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 20px;
+    align-items: start;
+  }
+
+  @media (max-width: 900px) {
+    .game-fractal-tree .main-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* 캔버스 컨테이너 */
+  .game-fractal-tree .canvas-box {
+    background: #090e17;
+    border: 3px solid #38bdf8;
+    border-radius: 20px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+    position: relative;
+  }
+
+  .game-fractal-tree canvas {
+    background: #070b12;
+    border-radius: 14px;
+    width: 100%;
+    max-width: 600px;
+    height: auto;
+    aspect-ratio: 6 / 5;
+    display: block;
+  }
+
+  .game-fractal-tree .canvas-caption {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+    padding: 0 6px;
+    font-size: 13px;
+    color: #94a3b8;
+    font-weight: 700;
+  }
+
+  /* 우측 컨트롤 및 미션 패널 */
+  .game-fractal-tree .control-panel {
+    background: var(--bg-surface);
+    border: 2px solid #334155;
+    border-radius: 20px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  }
+
+  .game-fractal-tree .panel-section-title {
+    font-size: 16px;
+    font-weight: 900;
+    color: #38bdf8;
+    border-bottom: 2px solid rgba(56, 189, 248, 0.2);
+    padding-bottom: 8px;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* 슬라이더 제어부 */
+  .game-fractal-tree .slider-row {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .game-fractal-tree .slider-top {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13.5px;
+    font-weight: 800;
+  }
+  .game-fractal-tree input[type="range"] {
+    width: 100%;
+    accent-color: #38bdf8;
+    height: 8px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  /* 세대 성장 제어 버튼부 */
+  .game-fractal-tree .gen-actions {
+    display: flex;
+    gap: 8px;
+  }
+  .game-fractal-tree .gen-actions .btn {
+    flex: 1;
+    justify-content: center;
+  }
+
+  /* 미션 박스 */
+  .game-fractal-tree .mission-box {
+    background: #0f172a;
+    border: 2px solid #3b82f6;
+    border-radius: 16px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .game-fractal-tree .mission-badge {
+    align-self: flex-start;
+    background: linear-gradient(135deg, #0284c7, #2563eb);
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 900;
+    padding: 4px 10px;
+    border-radius: 6px;
+  }
+
+  .game-fractal-tree .mission-text {
+    font-size: 14px;
+    font-weight: 800;
+    color: #ffffff;
+    line-height: 1.5;
+  }
+
+  .game-fractal-tree .quiz-options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .game-fractal-tree .quiz-btn {
+    background: #1e293b;
+    border: 2px solid #475569;
+    color: var(--text-main);
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 13.5px;
+    font-weight: 700;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .game-fractal-tree .quiz-btn:hover {
+    background: #334155;
+    border-color: #38bdf8;
+  }
+  .game-fractal-tree .quiz-btn.correct {
+    background: #0a2316;
+    border-color: #22c55e;
+    color: #86efac;
+  }
+  .game-fractal-tree .quiz-btn.wrong {
+    background: #381313;
+    border-color: #ef4444;
+    color: #fca5a5;
+  }
+
+  /* 샌드박스 테마 선택 바 */
+  .game-fractal-tree .theme-picker {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .game-fractal-tree .theme-btn {
+    flex: 1;
+    min-width: 60px;
+    padding: 8px;
+    font-size: 12px;
+    font-weight: 800;
+    background: #1e293b;
+    border: 1px solid #475569;
+    border-radius: 8px;
+    color: #cbd5e1;
+    cursor: pointer;
+    text-align: center;
+  }
+  .game-fractal-tree .theme-btn.active {
+    background: #0f172a;
+    border-color: #38bdf8;
+    color: #38bdf8;
+  }
+
+  /* 모달 공통 스타일 */
+  .game-fractal-tree .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.88);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  .game-fractal-tree .modal-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .game-fractal-tree .modal-card {
+    background: #0f172a;
+    border: 3px solid #3b82f6;
+    border-radius: 24px;
+    padding: 28px;
+    width: 90%;
+    max-width: 560px;
+    max-height: 85vh;
+    overflow-y: auto;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.8);
+    text-align: center;
+    transform: scale(0.9);
+    transition: transform 0.3s ease;
+    color: #ffffff;
+  }
+  .game-fractal-tree .modal-overlay.active .modal-card {
+    transform: scale(1);
+  }
+  .game-fractal-tree .modal-title {
+    font-size: 22px;
+    font-weight: 900;
+    margin: 0 0 16px 0;
+    color: #38bdf8;
+  }
+  .game-fractal-tree .modal-desc {
+    font-size: 14.5px;
+    color: #cbd5e1;
+    line-height: 1.6;
+    margin-bottom: 20px;
+    text-align: left;
+    font-weight: 700;
+  }
+  .game-fractal-tree .hall-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    font-size: 14px;
+  }
+  .game-fractal-tree .hall-table th,
+  .game-fractal-tree .hall-table td {
+    padding: 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    text-align: center;
+  }
+  .game-fractal-tree .hall-table th {
+    color: #38bdf8;
+    font-weight: 900;
+  }
+</style>
+
+<script>
+(function() {
+  const BOARD_KEY = 'board-fractal-tree';
+  const GAME_NAME = '프랙탈 트리 키우기';
+
+  const state = {
+    mode: 'tree', // 'tree', 'sierp', 'sandbox'
+    generation: 1,
+    maxGen: 10,
+    angle: 30, // 도 단위
+    ratio: 0.70,
+    theme: 'neon',
+    score: 0,
+    combo: 0,
+    round: 1,
+    maxRound: 5,
+    hintUsed: false,
+    targetAngle: 0,
+    targetRatio: 0,
+    missionSolved: false,
+    rafId: null
+  };
+
+  const FractalTree = {
+    container: null,
+
+    showToast(msg, isError = false) {
+      if (!this.container) return;
+      let toast = this.container.querySelector('#ft-toast');
+      if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'ft-toast';
+        toast.style.cssText = 'position:absolute; top:20px; left:50%; transform:translateX(-50%); padding:12px 24px; border-radius:12px; font-weight:800; font-size:1rem; z-index:99999; box-shadow:0 10px 25px rgba(0,0,0,0.5); transition:all 0.3s; text-align:center; min-width:300px; pointer-events:none; opacity:0;';
+        this.container.appendChild(toast);
+      }
+      toast.style.background = isError ? '#ef4444' : '#10b981';
+      toast.style.color = isError ? '#ffffff' : '#0f172a';
+      toast.textContent = msg;
+      
+      void toast.offsetWidth;
+      toast.style.opacity = '1';
+      toast.style.top = '20px';
+      
+      if (this._toastTimer) clearTimeout(this._toastTimer);
+      this._toastTimer = setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.top = '0px';
+      }, 3000);
+    },
+
+    mount(container, context = {}) {
+      let target = container;
+      if (typeof target === 'string') target = document.querySelector(target);
+      if (!target || !(target instanceof HTMLElement)) {
+        target = window.MathLabUtils?.getMountContainer ? window.MathLabUtils.getMountContainer(container) : document.getElementById('mathlab-view');
+      }
+      if (!target) target = document.getElementById('new-root') || document.getElementById('game-container');
+      
+      // 🌟 푸터 아래로 밀려나지 않도록 안전 마운트 보장
+      if (!target || target === document.body) {
+        let host = document.getElementById('fractal-tree-force-host');
+        if (!host) {
+          host = document.createElement('div');
+          host.id = 'fractal-tree-force-host';
+          host.style.cssText = 'width:100%; max-width:1040px; margin:0 auto; padding:16px; box-sizing:border-box; z-index:999; position:relative; background:#0f172a; border-radius:24px;';
+          const footer = document.querySelector('footer, #footer, .app-footer, #legacy-footer, .mathlab-footer');
+          if (footer && footer.parentNode) {
+            footer.parentNode.insertBefore(host, footer);
+          } else {
+            document.body.appendChild(host);
+          }
+        }
+        target = host;
+      }
+
+      // 🌟 핵심 방어막: 잔류 display: none 복구
+      if (target) {
+        target.style.display = '';
+        target.style.visibility = 'visible';
+        target.style.opacity = '1';
+      }
+
+      let parent = target?.parentElement;
+      while (parent && parent !== document.body && parent !== document.documentElement) {
+        if (parent.style && parent.style.display === 'none') parent.style.display = 'block';
+        if (parent.style && parent.style.visibility === 'hidden') parent.style.visibility = 'visible';
+        parent = parent.parentElement;
+      }
+
+      document.querySelectorAll('header, .navbar, #app-header, .top-bar, #floating-home-btn, .floating-home').forEach(el => {
+        if (el && el.style && el.style.display === 'none') el.style.display = '';
+      });
+
+      this.container = target;
+
+      // 🌟 Gen-3 표준 동적 DOM 렌더링
+      target.innerHTML = `
+        <div class="game-fractal-tree" id="fractal-tree-root">
+          <!-- 1. 한 줄 반응형 헤더 -->
+          <header class="app-header">
+            <div class="title-area">
+              <h1 class="app-title">🌳 프랙탈 트리 키우기</h1>
+              <span class="app-badge">고1 교과수학 · 교과개념</span>
+            </div>
+            <div class="header-btn-group">
+              <button class="btn mode-tab-btn active" id="ft-btn-mode-tree">🌳 트리 미션</button>
+              <button class="btn mode-tab-btn" id="ft-btn-mode-sierp">📐 시어핀스키</button>
+              <button class="btn mode-tab-btn" id="ft-btn-mode-sandbox">🎨 자유 샌드박스</button>
+              <button class="btn" id="ft-btn-howto">❓ 도움말</button>
+              <button class="btn primary" id="ft-btn-reset">🔄 처음부터</button>
+              <button class="btn" id="ft-btn-home" style="background:#475569;" onclick="FractalTree.goHome()">🏠 홈으로</button>
+            </div>
+          </header>
+
+          <!-- 2. 상태 및 수학 개념 배너 -->
+          <div class="status-banner">
+            <div class="stat-item">
+              <span class="stat-label">진행 모드</span>
+              <span class="stat-val accent" id="ft-stat-mode">🌳 트리 미션 모드</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">현재 세대 (n)</span>
+              <span class="stat-val" id="ft-stat-gen">1 세대 / 최대 10 세대</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label" id="ft-branch-label">현재 끝 가지 수 (2ⁿ)</span>
+              <span class="stat-val accent" id="ft-stat-branches">2 개</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">탐구 점수</span>
+              <span class="stat-val" id="ft-stat-score">0 점</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">연속 정답(콤보)</span>
+              <span class="stat-val" style="color:#f43f5e;" id="ft-stat-combo">0 연속 🔥</span>
+            </div>
+          </div>
+
+          <!-- 3. 메인 콘텐츠 그리드 -->
+          <div class="main-grid">
+            <!-- 좌측 Canvas 렌더링 영역 -->
+            <div class="canvas-box">
+              <canvas id="ft-canvas" width="600" height="500"></canvas>
+              <div class="canvas-caption">
+                <span id="ft-formula-caption">📐 자기닮음 공식: 세대마다 2배씩 증가 (2ⁿ)</span>
+                <span style="color:#fef08a;">⚡ 세대 상한 10 (브라우저 방어 및 최적화 적용)</span>
+              </div>
+            </div>
+
+            <!-- 우측 컨트롤 및 탐구 미션 패널 -->
+            <div class="control-panel">
+              <!-- 성장 제어부 -->
+              <div>
+                <h3 class="panel-section-title"> 🌱 세대 성장 컨트롤</h3>
+                <div class="gen-actions" style="margin-top:10px;">
+                  <button class="btn success" id="ft-btn-grow" style="font-size:15px; padding:12px;">+1 세대 성장 🚀</button>
+                  <button class="btn" id="ft-btn-shrink">-1 세대 축소</button>
+                </div>
+              </div>
+
+              <!-- 각도 및 길이 비율 슬라이더 -->
+              <div>
+                <h3 class="panel-section-title"> ⚙️ 기하 파라미터 조절</h3>
+                <div class="slider-row" style="margin-top:10px;">
+                  <div class="slider-top">
+                    <span>📐 분기 각도 (θ)</span>
+                    <span style="color:#38bdf8;" id="ft-val-angle">30°</span>
+                  </div>
+                  <input type="range" id="ft-slider-angle" min="10" max="80" step="1" value="30" />
+                </div>
+                <div class="slider-row" style="margin-top:12px;">
+                  <div class="slider-top">
+                    <span>📏 길이 감소 비율 (r)</span>
+                    <span style="color:#38bdf8;" id="ft-val-ratio">0.70</span>
+                  </div>
+                  <input type="range" id="ft-slider-ratio" min="0.50" max="0.82" step="0.01" value="0.70" />
+                </div>
+              </div>
+
+              <!-- 샌드박스 전용 옵션 (자유 모드일 때만 표시) -->
+              <div id="ft-sandbox-options" style="display:none;">
+                <h3 class="panel-section-title"> 🎨 컬러 테마 선택</h3>
+                <div class="theme-picker" style="margin-top:10px;">
+                  <button class="theme-btn active" data-theme="neon">⚡ 네온 블루</button>
+                  <button class="theme-btn" data-theme="emerald">🌿 에메랄드</button>
+                  <button class="theme-btn" data-theme="sakura">🌸 봄 벚꽃</button>
+                  <button class="theme-btn" data-theme="sunset">🌅 황혼 선셋</button>
+                </div>
+              </div>
+
+              <!-- 탐구 미션 박스 (미션 모드일 때 표시) -->
+              <div id="ft-mission-section">
+                <h3 class="panel-section-title"> 🎯 수학 탐구 미션</h3>
+                <div class="mission-box">
+                  <div class="mission-badge" id="ft-mission-badge">라운드 1 / 5 (예측 미션)</div>
+                  <div class="mission-text" id="ft-mission-text">
+                    현재 1세대(끝 가지 2개)입니다. 다음 세대(2세대)로 성장할 때 끝 가지 수는 총 몇 개가 될까요?
+                  </div>
+                  <div class="quiz-options" id="ft-mission-options"></div>
+                  <button class="btn warning" id="ft-btn-hint" style="font-size:12px; margin-top:4px;">
+                    💡 가지 수 규칙 표 힌트 열람 (-5점)
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 도움말 모달 -->
+          <div class="modal-overlay" id="ft-howto-modal">
+            <div class="modal-card">
+              <h3 class="modal-title">🌳 프랙탈 트리 키우기 안내</h3>
+              <div class="modal-desc">
+                <p><strong>✨ 프랙탈(Fractal)이란?</strong><br>작은 부분을 확대했을 때 전체 나무와 똑같은 모양이 끝없이 반복되는 '자기닮음(Self-similarity)' 성질을 가진 기하학 구조입니다.</p>
+                <p><strong>🚀 기하급수적 증가 체험</strong><br>성장 버튼을 누를 때마다 각 가지 끝에서 새 가지가 2개씩 분기됩니다.<br>
+                - 1세대: 2개 ($2^1$) | 2세대: 4개 ($2^2$) | 5세대: 32개 ($2^5$)<br>
+                - 10세대가 되면 무려 1,024개($2^{10}$)의 끝 가지가 생성됩니다!</p>
+                <p><strong>📐 미션 모드 & 샌드박스</strong><br>
+                - <strong>트리/시어핀스키 미션</strong>: 세대마다 수학 퀴즈와 목표 실루엣 맞추기 미션을 해결하며 점수를 획득합니다.<br>
+                - <strong>자유 샌드박스</strong>: 각도와 감소 비율을 자유롭게 바꿔 나만의 프랙탈 나무를 창조해보세요!</p>
+              </div>
+              <button class="btn primary" id="ft-howto-close">확인 완료</button>
+            </div>
+          </div>
+
+          <!-- 가지 수 규칙 표 힌트 모달 -->
+          <div class="modal-overlay" id="ft-hint-modal">
+            <div class="modal-card">
+              <h3 class="modal-title">💡 프랙탈 분기 규칙 표 힌트</h3>
+              <div class="modal-desc" style="text-align:center;">
+                <table class="hall-table">
+                  <thead>
+                    <tr><th>세대 (n)</th><th>끝 가지 수 (2ⁿ)</th><th>총 가지 수 누적 (2ⁿ⁺¹-2)</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>1세대</td><td>2개</td><td>2개</td></tr>
+                    <tr><td>2세대</td><td>4개</td><td>6개</td></tr>
+                    <tr><td>3세대</td><td>8개</td><td>14개</td></tr>
+                    <tr><td>4세대</td><td>16개</td><td>30개</td></tr>
+                    <tr><td>5세대</td><td>32개</td><td>62개</td></tr>
+                    <tr><td>6세대</td><td>64개</td><td>126개</td></tr>
+                    <tr><td>7세대</td><td>128개</td><td>254개</td></tr>
+                    <tr><td>8세대</td><td>256개</td><td>510개</td></tr>
+                    <tr><td>9세대</td><td>512개</td><td>1,022개</td></tr>
+                    <tr><td>10세대</td><td>1,024개</td><td>2,046개</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <button class="btn primary" id="ft-hint-close">닫기 (힌트 열람됨)</button>
+            </div>
+          </div>
+
+        </div>
+      `;
+
+      this.bindEvents();
+      this.resetGame();
+    },
+
+    destroy() {
+      if (state.rafId) {
+        cancelAnimationFrame(state.rafId);
+        state.rafId = null;
+      }
+      if (this.container) {
+        this.container.innerHTML = '';
+      }
+    },
+
+    // 🌟 안전 홈 버튼 완결성 (ReferenceError 방지 및 표준 브리지 최우선 호출)
+    goHome() {
+      if (typeof timerInterval !== 'undefined' && timerInterval) {
+        clearInterval(timerInterval);
+      }
+      this.destroy();
+
+      if (window.LegacyBridge && typeof window.LegacyBridge.backHome === 'function') {
+        try { window.LegacyBridge.backHome(); return; } catch(e) {}
+      }
+      if (typeof window.renderLegacyDashboardHome === 'function') {
+        try { window.renderLegacyDashboardHome(); return; } catch(e) {}
+      }
+      if (typeof window.MathLabRenderHome === 'function') {
+        try { window.MathLabRenderHome(); return; } catch(e) {}
+      }
+
+      const mathlabRoot = document.getElementById('mathlab-root');
+      const legacyRoot = document.getElementById('legacy-root');
+      if (mathlabRoot) mathlabRoot.classList.add('hidden');
+      if (legacyRoot) legacyRoot.classList.remove('hidden');
+
+      const dashboard = document.getElementById('dashboard-screen');
+      if (dashboard) {
+        dashboard.classList.add('active');
+        dashboard.style.display = '';
+      }
+      window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+    },
+
+    resetGame() {
+      state.generation = 1;
+      state.angle = 30;
+      state.ratio = 0.70;
+      state.score = 0;
+      state.combo = 0;
+      state.round = 1;
+      state.hintUsed = false;
+
+      const angleEl = document.getElementById('ft-slider-angle');
+      if (angleEl) angleEl.value = 30;
+      const ratioEl = document.getElementById('ft-slider-ratio');
+      if (ratioEl) ratioEl.value = 0.70;
+
+      this.updateUI();
+      if (state.mode !== 'sandbox') {
+        this.setupMissionRound();
+      }
+      this.requestRender();
+    },
+
+    bindEvents() {
+      // 리셋 버튼
+      document.getElementById('ft-btn-reset')?.addEventListener('click', () => this.resetGame());
+
+      // 모드 변경 버튼
+      document.getElementById('ft-btn-mode-tree')?.addEventListener('click', () => this.changeMode('tree'));
+      document.getElementById('ft-btn-mode-sierp')?.addEventListener('click', () => this.changeMode('sierp'));
+      document.getElementById('ft-btn-mode-sandbox')?.addEventListener('click', () => this.changeMode('sandbox'));
+
+      // 도움말 모달
+      document.getElementById('ft-btn-howto')?.addEventListener('click', () => {
+        document.getElementById('ft-howto-modal')?.classList.add('active');
+      });
+      document.getElementById('ft-howto-close')?.addEventListener('click', () => {
+        document.getElementById('ft-howto-modal')?.classList.remove('active');
+      });
+
+      // 힌트 표 모달
+      document.getElementById('ft-btn-hint')?.addEventListener('click', () => {
+        if (!state.hintUsed) {
+          state.hintUsed = true;
+          state.score = Math.max(0, state.score - 5);
+          this.updateUI();
+        }
+        document.getElementById('ft-hint-modal')?.classList.add('active');
+      });
+      document.getElementById('ft-hint-close')?.addEventListener('click', () => {
+        document.getElementById('ft-hint-modal')?.classList.remove('active');
+      });
+
+      // 세대 성장/축소
+      document.getElementById('ft-btn-grow')?.addEventListener('click', () => {
+        if (state.generation < state.maxGen) {
+          state.generation++;
+          this.updateUI();
+          this.requestRender();
+        } else {
+          this.showToast('⚡ 성능 보호를 위해 최대 10세대로 제한됩니다!', true);
+        }
+      });
+      document.getElementById('ft-btn-shrink')?.addEventListener('click', () => {
+        if (state.generation > 1) {
+          state.generation--;
+          this.updateUI();
+          this.requestRender();
+        }
+      });
+
+      // 슬라이더 이벤트 (input 및 change 모두 바인딩 + rAF 렌더링)
+      ['ft-slider-angle', 'ft-slider-ratio'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+          const handler = () => {
+            state.angle = parseFloat(document.getElementById('ft-slider-angle')?.value || 30);
+            state.ratio = parseFloat(document.getElementById('ft-slider-ratio')?.value || 0.70);
+            document.getElementById('ft-val-angle').textContent = `${state.angle}°`;
+            document.getElementById('ft-val-ratio').textContent = state.ratio.toFixed(2);
+            this.requestRender();
+          };
+          el.addEventListener('input', handler);
+          el.addEventListener('change', handler);
+        }
+      });
+
+      // 샌드박스 테마 버튼
+      document.querySelectorAll('.game-fractal-tree .theme-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          document.querySelectorAll('.game-fractal-tree .theme-btn').forEach(b => b.classList.remove('active'));
+          e.target.classList.add('active');
+          state.theme = e.target.getAttribute('data-theme');
+          this.requestRender();
+        });
+      });
+    },
+
+    changeMode(mode) {
+      state.mode = mode;
+      document.querySelectorAll('.game-fractal-tree .mode-tab-btn').forEach(btn => btn.classList.remove('active'));
+      if (mode === 'tree') document.getElementById('ft-btn-mode-tree')?.classList.add('active');
+      if (mode === 'sierp') document.getElementById('ft-btn-mode-sierp')?.classList.add('active');
+      if (mode === 'sandbox') document.getElementById('ft-btn-mode-sandbox')?.classList.add('active');
+
+      const sandboxBox = document.getElementById('ft-sandbox-options');
+      const missionBox = document.getElementById('ft-mission-section');
+      const formulaCaption = document.getElementById('ft-formula-caption');
+      const branchLabel = document.getElementById('ft-branch-label');
+
+      if (mode === 'sandbox') {
+        if (sandboxBox) sandboxBox.style.display = 'block';
+        if (missionBox) missionBox.style.display = 'none';
+        if (formulaCaption) formulaCaption.textContent = '🎨 자유 샌드박스: 각도와 감소율을 조절하여 예술적인 프랙탈 생성';
+        if (branchLabel) branchLabel.textContent = '현재 끝 가지 수';
+      } else if (mode === 'sierp') {
+        if (sandboxBox) sandboxBox.style.display = 'none';
+        if (missionBox) missionBox.style.display = 'block';
+        if (formulaCaption) formulaCaption.textContent = '📐 시어핀스키 삼각형: 세대마다 3배씩 증가 (3ⁿ)';
+        if (branchLabel) branchLabel.textContent = '현재 삼각형 수 (3ⁿ)';
+      } else {
+        if (sandboxBox) sandboxBox.style.display = 'none';
+        if (missionBox) missionBox.style.display = 'block';
+        if (formulaCaption) formulaCaption.textContent = '📐 자기닮음 공식: 세대마다 2배씩 증가 (2ⁿ)';
+        if (branchLabel) branchLabel.textContent = '현재 끝 가지 수 (2ⁿ)';
+      }
+
+      this.resetGame();
+    },
+
+    updateUI() {
+      const modeText = state.mode === 'tree' ? '🌳 트리 미션 모드' : (state.mode === 'sierp' ? '📐 시어핀스키 모드' : '🎨 자유 샌드박스');
+      const modeEl = document.getElementById('ft-stat-mode');
+      if (modeEl) modeEl.textContent = modeText;
+
+      const genEl = document.getElementById('ft-stat-gen');
+      if (genEl) genEl.textContent = `${state.generation} 세대 / 최대 10 세대`;
+
+      const branchCount = state.mode === 'sierp' ? Math.pow(3, state.generation - 1) : Math.pow(2, state.generation);
+      const branchEl = document.getElementById('ft-stat-branches');
+      if (branchEl) branchEl.textContent = `${branchCount.toLocaleString()} 개`;
+
+      const scoreEl = document.getElementById('ft-stat-score');
+      if (scoreEl) scoreEl.textContent = `${state.score} 점`;
+
+      const comboEl = document.getElementById('ft-stat-combo');
+      if (comboEl) comboEl.textContent = `${state.combo} 연속 🔥`;
+
+      const angleValEl = document.getElementById('ft-val-angle');
+      if (angleValEl) angleValEl.textContent = `${state.angle}°`;
+      const ratioValEl = document.getElementById('ft-val-ratio');
+      if (ratioValEl) ratioValEl.textContent = state.ratio.toFixed(2);
+    },
+
+    setupMissionRound() {
+      state.missionSolved = false;
+      const badge = document.getElementById('ft-mission-badge');
+      const text = document.getElementById('ft-mission-text');
+      const optionsBox = document.getElementById('ft-mission-options');
+      if (!badge || !text || !optionsBox) return;
+
+      badge.textContent = `라운드 ${state.round} / ${state.maxRound} (${state.mode === 'tree' ? '트리' : '시어핀스키'} 탐구)`;
+      optionsBox.innerHTML = '';
+
+      if (state.round === 1) {
+        state.generation = 2;
+        this.updateUI();
+        const baseCount = state.mode === 'sierp' ? 3 : 4;
+        const nextCount = state.mode === 'sierp' ? 9 : 8;
+        text.textContent = `현재 2세대(${baseCount}개)입니다. 다음 세대(3세대)로 1번 더 성장하면 끝 ${state.mode==='sierp'?'삼각형':'가지'} 수는 총 몇 개가 될까요?`;
+
+        const choices = state.mode === 'sierp' ? [6, 9, 12, 27] : [6, 8, 12, 16];
+        choices.forEach(val => {
+          const btn = document.createElement('button');
+          btn.className = 'quiz-btn';
+          btn.textContent = `${val} 개`;
+          btn.onclick = () => this.checkQuizAnswer(btn, val === nextCount, nextCount);
+          optionsBox.appendChild(btn);
+        });
+      } else if (state.round === 2) {
+        text.textContent = `프랙탈 나무나 시어핀스키 삼각형에서, 일부분을 확대했을 때 전체 구조와 똑같은 모양이 끝없이 반복되는 성질을 수학적으로 무엇이라 할까요?`;
+        const choices = [
+          { text: '1. 자기닮음 (Self-similarity)', ans: true },
+          { text: '2. 피타고라스의 정리 (Pythagorean theorem)', ans: false },
+          { text: '3. 대칭 이동 (Reflectional symmetry)', ans: false },
+          { text: '4. 이차방정식의 근의 공식', ans: false }
+        ];
+        choices.forEach(item => {
+          const btn = document.createElement('button');
+          btn.className = 'quiz-btn';
+          btn.textContent = item.text;
+          btn.onclick = () => this.checkQuizAnswer(btn, item.ans, '자기닮음 (Self-similarity)');
+          optionsBox.appendChild(btn);
+        });
+      } else if (state.round === 3) {
+        state.targetAngle = state.mode === 'sierp' ? 60 : 45;
+        state.targetRatio = state.mode === 'sierp' ? 0.50 : 0.75;
+        state.generation = 5;
+        this.updateUI();
+
+        text.textContent = `🎯 [목표 실루엣 일치 미션]\n배경에 빨간색 점선으로 표시된 목표 프랙탈에 일치하도록 각도(약 ${state.targetAngle}°)와 비율(약 ${state.targetRatio})을 조절한 후 [미션 판정 확인]을 누르세요!`;
+
+        const checkBtn = document.createElement('button');
+        checkBtn.className = 'btn success';
+        checkBtn.style.cssText = 'width:100%; justify-content:center; padding:12px; font-size:15px; margin-top:6px;';
+        checkBtn.textContent = '🎯 조율 완료! 실루엣 일치 확인';
+        checkBtn.onclick = () => {
+          const diffAngle = Math.abs(state.angle - state.targetAngle);
+          const diffRatio = Math.abs(state.ratio - state.targetRatio);
+          if (diffAngle <= 5 && diffRatio <= 0.05) {
+            this.handleMissionSuccess('✨ 완벽하게 일치합니다! 프랙탈 조율 성공!');
+          } else {
+            state.combo = 0;
+            this.updateUI();
+            this.showToast(`⚠️ 오차 발생! 각도(${diffAngle}°), 비율(${diffRatio.toFixed(2)}). 더 미세 조정해보세요!`, true);
+          }
+        };
+        optionsBox.appendChild(checkBtn);
+      } else if (state.round === 4) {
+        state.generation = 4;
+        this.updateUI();
+        if (state.mode === 'tree') {
+          text.textContent = `4세대 나무에서, 1세대(2개) + 2세대(4개) + 3세대(8개) + 4세대(16개)까지 생겨난 모든 가지의 총 합계는 몇 개일까요? (공식: 2⁵ - 2)`;
+          [28, 30, 32, 62].forEach(val => {
+            const btn = document.createElement('button');
+            btn.className = 'quiz-btn';
+            btn.textContent = `${val} 개`;
+            btn.onclick = () => this.checkQuizAnswer(btn, val === 30, '30 (2 + 4 + 8 + 16)');
+            optionsBox.appendChild(btn);
+          });
+        } else {
+          text.textContent = `3단계 시어핀스키 삼각형에서, 1단계(1개) + 2단계(3개) + 3단계(9개)까지 누적된 삼각형 개수의 총 합은?`;
+          [12, 13, 27, 40].forEach(val => {
+            const btn = document.createElement('button');
+            btn.className = 'quiz-btn';
+            btn.textContent = `${val} 개`;
+            btn.onclick = () => this.checkQuizAnswer(btn, val === 13, '13 (1 + 3 + 9)');
+            optionsBox.appendChild(btn);
+          });
+        }
+      } else {
+        state.generation = 6;
+        this.updateUI();
+        text.textContent = `마지막 라운드! 현재 6세대(${state.mode==='sierp'?'243개 삼각형':'64개 가지'})입니다. 10세대 최고 성장 도달 시 끝 ${state.mode==='sierp'?'삼각형(3⁹)':'가지(2¹⁰)'} 수는 총 몇 개일까요?`;
+        const ansVal = state.mode === 'sierp' ? 19683 : 1024;
+        const choices = state.mode === 'sierp' ? [6561, 19683, 59049, 100000] : [512, 1024, 2048, 4096];
+        choices.forEach(val => {
+          const btn = document.createElement('button');
+          btn.className = 'quiz-btn';
+          btn.textContent = `${val.toLocaleString()} 개`;
+          btn.onclick = () => this.checkQuizAnswer(btn, val === ansVal, ansVal.toLocaleString());
+          optionsBox.appendChild(btn);
+        });
+      }
+    },
+
+    checkQuizAnswer(btnEl, isCorrect, correctText) {
+      if (state.missionSolved) return;
+      if (isCorrect) {
+        btnEl.classList.add('correct');
+        this.handleMissionSuccess(`🎉 정답입니다! (${correctText})`);
+      } else {
+        btnEl.classList.add('wrong');
+        state.combo = 0;
+        this.updateUI();
+        this.showToast(`⚠️ 오답입니다! 거듭제곱(${state.mode==='sierp'?'3ⁿ':'2ⁿ'}) 규칙을 생각해보세요.`, true);
+      }
+    },
+
+    handleMissionSuccess(msg) {
+      state.missionSolved = true;
+      let pts = 15;
+      if (state.combo > 0) pts += 5;
+      state.score += pts;
+      state.combo++;
+      this.updateUI();
+
+      setTimeout(() => {
+        this.showToast(`${msg} (+${pts}점)`);
+        if (state.round < state.maxRound) {
+          state.round++;
+          this.setupMissionRound();
+          this.requestRender();
+        } else {
+          setTimeout(() => this.showToast(`🏆 미션 완료! 최종 점수: ${state.score}점`), 1000);
+          try { if (typeof loadLeaderboard === 'function') loadLeaderboard(); } catch(e) {}
+          document.getElementById('ft-hall-modal')?.classList.add('active');
+        }
+      }, 300);
+    },
+
+    requestRender() {
+      if (state.rafId) cancelAnimationFrame(state.rafId);
+      state.rafId = requestAnimationFrame(() => this.drawCanvas());
+    },
+
+    drawCanvas() {
+      const canvas = document.getElementById('ft-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const w = canvas.width;
+      const h = canvas.height;
+
+      ctx.clearRect(0, 0, w, h);
+
+      ctx.strokeStyle = 'rgba(255,255,255,0.03)';
+      ctx.lineWidth = 1;
+      for (let x = 0; x <= w; x += 40) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke();
+      }
+      for (let y = 0; y <= h; y += 40) {
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
+      }
+
+      if (state.mode !== 'sandbox' && state.round === 3) {
+        ctx.save();
+        ctx.globalAlpha = 0.45;
+        if (state.mode === 'tree') {
+          this.drawRecursiveTree(ctx, w / 2, h - 30, 110, -Math.PI / 2, state.targetAngle * Math.PI / 180, state.targetRatio, state.generation, 1, '#ef4444', true);
+        } else {
+          this.drawRecursiveSierpinski(ctx, w / 2, 40, w - 80, state.generation, 1, '#ef4444', true);
+        }
+        ctx.restore();
+      }
+
+      let baseColor = '#38bdf8';
+      let leafColor = '#86efac';
+      if (state.mode === 'sandbox') {
+        if (state.theme === 'neon') { baseColor = '#38bdf8'; leafColor = '#e879f9'; }
+        if (state.theme === 'emerald') { baseColor = '#34d399'; leafColor = '#a7f3d0'; }
+        if (state.theme === 'sakura') { baseColor = '#f472b6'; leafColor = '#fbcfe8'; }
+        if (state.theme === 'sunset') { baseColor = '#fb923c'; leafColor = '#fde047'; }
+      }
+
+      ctx.save();
+      if (state.mode === 'sierp') {
+        this.drawRecursiveSierpinski(ctx, w / 2, 45, w - 90, state.generation, 1, baseColor, false);
+      } else {
+        const radAngle = state.angle * Math.PI / 180;
+        this.drawRecursiveTree(ctx, w / 2, h - 30, 125, -Math.PI / 2, radAngle, state.ratio, state.generation, 1, baseColor, false, leafColor);
+      }
+      ctx.restore();
+    },
+
+    drawRecursiveTree(ctx, x, y, length, angle, radStep, ratio, maxGen, curGen, color, isDashed = false, leafColor = '#86efac') {
+      if (curGen > maxGen) return;
+
+      const x2 = x + length * Math.cos(angle);
+      const y2 = y + length * Math.sin(angle);
+
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(x2, y2);
+
+      if (isDashed) {
+        ctx.setLineDash([5, 5]);
+        ctx.strokeStyle = color;
+        ctx.lineWidth = Math.max(1, (maxGen - curGen + 1) * 1.5);
+      } else {
+        ctx.setLineDash([]);
+        if (curGen === maxGen) {
+          ctx.strokeStyle = leafColor;
+          ctx.lineWidth = 1.8;
+        } else {
+          ctx.strokeStyle = curGen <= 2 ? '#60a5fa' : color;
+          ctx.lineWidth = Math.max(1.5, (maxGen - curGen + 1) * 1.6);
+        }
+      }
+      ctx.stroke();
+
+      if (!isDashed && curGen === maxGen && maxGen <= 7) {
+        ctx.beginPath();
+        ctx.arc(x2, y2, curGen === maxGen ? 3 : 2, 0, Math.PI * 2);
+        ctx.fillStyle = leafColor;
+        ctx.fill();
+      }
+
+      this.drawRecursiveTree(ctx, x2, y2, length * ratio, angle - radStep, radStep, ratio, maxGen, curGen + 1, color, isDashed, leafColor);
+      this.drawRecursiveTree(ctx, x2, y2, length * ratio, angle + radStep, radStep, ratio, maxGen, curGen + 1, color, isDashed, leafColor);
+    },
+
+    drawRecursiveSierpinski(ctx, topX, topY, size, maxGen, curGen, color, isDashed = false) {
+      const h = size * Math.sqrt(3) / 2;
+      const x1 = topX;
+      const y1 = topY;
+      const x2 = topX - size / 2;
+      const y2 = topY + h;
+      const x3 = topX + size / 2;
+      const y3 = topY + h;
+
+      if (curGen >= maxGen) {
+        ctx.beginPath();
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x2, y2);
+        ctx.lineTo(x3, y3);
+        ctx.closePath();
+        if (isDashed) {
+          ctx.setLineDash([4, 4]);
+          ctx.strokeStyle = color;
+          ctx.lineWidth = 2;
+          ctx.stroke();
+        } else {
+          ctx.fillStyle = curGen % 2 === 0 ? 'rgba(56, 189, 248, 0.35)' : 'rgba(134, 239, 172, 0.35)';
+          ctx.fill();
+          ctx.strokeStyle = '#38bdf8';
+          ctx.lineWidth = 1.2;
+          ctx.stroke();
+        }
+        return;
+      }
+
+      const halfSize = size / 2;
+      const halfH = h / 2;
+      this.drawRecursiveSierpinski(ctx, topX, topY, halfSize, maxGen, curGen + 1, color, isDashed);
+      this.drawRecursiveSierpinski(ctx, topX - halfSize / 2, topY + halfH, halfSize, maxGen, curGen + 1, color, isDashed);
+      this.drawRecursiveSierpinski(ctx, topX + halfSize / 2, topY + halfH, halfSize, maxGen, curGen + 1, color, isDashed);
+    }
+  };
+
+  window.FractalTree = FractalTree;
+
+  // 🌟 Gen-3 3중 자율 등록
+  function registerFractalTree() {
+    if (typeof window.MathLabGames !== 'undefined' && typeof window.MathLabGames.register === 'function') {
+      if (!window.MathLabGames.get?.('fractal-tree')) {
+        window.MathLabGames.register({
+          id: 'fractal-tree',
+          title: GAME_NAME,
+          icon: '🌳',
+          category: 'concept', // 교과 수학 개념 탐구
+          sourceType: 'new',
+          mount(container, context) { FractalTree.mount(container, context); },
+          reset() { FractalTree.resetGame(); },
+          destroy() { FractalTree.destroy(); },
+          goHome() { FractalTree.goHome(); }
+        });
+      }
+    }
+  }
+
+  registerFractalTree();
+  window.addEventListener('DOMContentLoaded', registerFractalTree);
+  setTimeout(registerFractalTree, 100);
+  setTimeout(registerFractalTree, 500);
+
+  // 🌟 범용 실행 함수 브리지 연결
+  window.launchFractalTreeGame = function() {
+    if (typeof window.MathLabGames !== 'undefined' && typeof window.MathLabGames.mount === 'function') {
+      try {
+        window.MathLabGames.mount('fractal-tree');
+        return;
+      } catch(e) {}
+    }
+    FractalTree.mount();
+  };
+})();
+</script>

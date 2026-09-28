@@ -1,0 +1,520 @@
+<style>
+.drc,.drc *{box-sizing:border-box}
+.drc{max-width:1100px;margin:0 auto;padding:16px 18px 24px;font-family:'Pretendard','Noto Sans KR',system-ui,sans-serif;background:#f8fafc;color:#0f172a;border-radius:18px;box-shadow:0 10px 30px rgba(0,0,0,0.04)}
+.drc .h{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px;background:#fff;padding:12px 18px;border-radius:14px;border:1px solid #e2e8f0}
+.drc .t{font-size:1.25rem;font-weight:900;margin:0;display:flex;align-items:center;gap:6px}
+.drc .btn{border:1px solid #cbd5e1;background:#fff;color:#1e293b;border-radius:10px;padding:9px 14px;font-weight:800;cursor:pointer;font-size:.9rem;transition:all .15s}
+.drc .btn:hover{background:#f1f5f9;border-color:#94a3b8}
+.drc .btn.p{background:#0284c7;border-color:#0284c7;color:#fff;box-shadow:0 3px 0 #0369a1}
+.drc .btn.g{background:#059669;border-color:#059669;color:#fff;box-shadow:0 3px 0 #047857}
+.drc .btn.g:active,.drc .btn.p:active{transform:translateY(2px);box-shadow:none}
+.drc .btn:disabled{opacity:.45;cursor:not-allowed;transform:none!important}
+
+/* 모드 버튼 50%:50% 가로 2열 배치 */
+.drc .mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.drc .mode-btn{padding:12px;border-radius:12px;border:2px solid #e2e8f0;background:#fff;color:#64748b;font-size:0.98rem;font-weight:800;cursor:pointer;transition:all 0.2s;text-align:center}
+.drc .mode-btn.active{background:#0ea5e9;border-color:#0ea5e9;color:#ffffff;box-shadow:0 4px 12px rgba(14,165,233,0.3)}
+
+.drc .chip{background:#fff;border:1px solid #e2e8f0;border-radius:999px;padding:6px 14px;font-size:.88rem;font-weight:800;color:#475569}
+.drc .chip b{color:#0284c7}
+.drc .bar{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0;align-items:center}
+.drc .main{display:grid;grid-template-columns:1fr 300px;gap:14px}
+@media(max-width:860px){.drc .main{grid-template-columns:1fr}}
+.drc .box{background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:14px}
+
+/* 보드 및 셀 */
+.drc .board{display:grid;gap:2px;background:#cbd5e1;padding:2px;border-radius:10px;width:min(100%,500px);aspect-ratio:1;margin:0 auto;touch-action:manipulation}
+.drc .cell{background:#f8fafc;border-radius:3px;cursor:pointer;min-height:0;transition:background-color .1s}
+.drc .cell.p1{background:#ef4444!important}
+.drc .cell.p2{background:#3b82f6!important}
+.drc .cell.pv{background:#86efac!important;outline:2px solid #16a34a;z-index:2}
+.drc .cell.bad{background:#fecaca!important;outline:2px solid #dc2626;z-index:2}
+
+/* 주사위 애니메이션 */
+.drc .dice-box{display:inline-flex;align-items:center;justify-content:center;min-width:48px;height:48px;background:#f8fafc;border:2px solid #e2e8f0;border-radius:12px;font-size:1.8rem;font-weight:900;color:#0284c7;transition:transform 0.1s}
+.drc .dice-box.rolling{animation:diceAnim 0.12s infinite alternate;color:#eab308;border-color:#eab308;scale:1.1}
+@keyframes diceAnim {
+  0% { transform: rotate(-12deg) scale(0.95); }
+  100% { transform: rotate(12deg) scale(1.1); }
+}
+
+.drc .msg{font-size:.95rem;line-height:1.5;color:#334155;min-height:2.6em;font-weight:700;background:#f8fafc;padding:10px 12px;border-radius:10px;border:1px solid #e2e8f0}
+.drc .note{background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:10px 12px;font-size:.85rem;margin-top:10px;line-height:1.5;color:#1e40af}
+.drc .cand{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.drc .cand button{padding:10px 14px;border-radius:10px;border:2px solid #cbd5e1;background:#fff;font-size:0.95rem;font-weight:900;cursor:pointer;transition:all .15s}
+.drc .cand button:hover{border-color:#0284c7;color:#0284c7}
+.drc .cand button.on{background:#0ea5e9;border-color:#0ea5e9;color:#fff;box-shadow:0 3px 8px rgba(14,165,233,0.3)}
+
+.drc .inp{width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:8px;font-size:1rem;font-weight:700}
+.drc .toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-12px);background:#0f172a;color:#fff;padding:12px 22px;border-radius:14px;font-weight:800;z-index:9600;opacity:0;pointer-events:none;transition:.25s;max-width:92vw;box-shadow:0 8px 24px rgba(0,0,0,0.2)}
+.drc .toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+.drc .toast.ok{background:#059669}.drc .toast.err{background:#dc2626}.drc .toast.info{background:#0369a1}
+
+.drc .modal{position:fixed;inset:0;background:rgba(15,23,42,.55);display:none;align-items:center;justify-content:center;z-index:9400;padding:14px;backdrop-filter:blur(4px)}
+.drc .modal.on{display:flex}
+.drc .modal .mbox{background:#fff;border-radius:18px;max-width:560px;width:100%;padding:22px;max-height:88vh;overflow:auto;box-shadow:0 20px 50px rgba(15,23,42,.3)}
+.drc .modal h3{margin:0 0 10px}
+.drc .modal p,.drc .modal li{font-size:.95rem;line-height:1.6;color:#334155}
+.drc .dots{display:flex;gap:6px;justify-content:center;margin:14px 0 4px}
+.drc .dot{width:8px;height:8px;border-radius:50%;background:#cbd5e1}.drc .dot.on{background:#0284c7;width:20px;border-radius:10px}
+.drc .g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+</style>
+
+<script>
+(function(){
+'use strict';
+var APP_ID='dice-rect-connect',APP_TITLE='주사위 직사각형 연결',ICON='🟥',BOARD='board-dice-rect-connect',LSKEY='mathlab_lb_dice_rect_connect',FORCE='dice-rect-connect-force-host';
+var GUIDE=[
+  {title:'🟥 주사위 직사각형 연결',html:'<p>주사위를 굴려 나온 수 N의 넓이를 갖는 직사각형(약수 쌍)을 보드 자유 위치에 배치하고, <b>변으로 서로 이어진 연결 영역</b>을 넓히는 게임입니다.</p>'},
+  {title:'📐 교과 연계 개념',html:'<p><b>초등~중등 · 약수와 배수 · 넓이 연산</b></p><ul><li>N = w × h (약수 조합 분해)</li><li>4방향 그래픽 연결망 영역 산정</li><li>전략적 연결 및 영토 확장</li></ul>'},
+  {title:'🎮 상세 게임 방법',html:'<ol><li><b>[🎲 주사위 굴리기]</b> 버튼을 누릅니다.</li><li>주사위 눈 N의 약수 조합 중 하나를 선택합니다.</li><li>보드 위 <b>빈 자리라면 어디든지 자유롭게 배치</b>할 수 있습니다.</li><li>단, <b>서로 변(상하좌우)으로 이어진 연결 영역의 칸 수</b>만 점수로 인정됩니다!</li></ol>'},
+  {title:'🏆 점수 산정 방식',html:'<ul><li>연결된 메인 영토 칸 수 × 10점</li><li>승리 보너스 +50점</li><li>vs AI 도전 모드 승리 시 추가 +30점</li></ul>'}
+];
+
+var S={mounted:false,host:null,mode:'ai',aiLevel:'normal',size:10,board:[],turn:1,dice:0,pair:null,hover:null,finished:false,passStreak:0,score:0,guidePage:0,pending:[],timers:[],aiLock:false,rolling:false,firstTile:{1:null, 2:null}};
+
+function $(id){return document.getElementById(id)}
+function setT(id,v){var el=$(id);if(el)el.textContent=String(v)}
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+
+var toastT=null;
+function toast(m,ty){var el=$('drc-toast');if(!el)return;el.textContent=m;el.className='toast on'+(ty?' '+ty:'');if(toastT)clearTimeout(toastT);toastT=setTimeout(function(){el.className='toast'},2200)}
+
+function levelTag(){return S.mode==='pvp'?'2인 대결':('AI-'+(S.aiLevel==='easy'?'연습':(S.aiLevel==='hard'?'도전':'보통')))}
+function clearTimers(){S.timers.forEach(function(t){clearInterval(t);clearTimeout(t)});S.timers=[];S.pending.forEach(clearTimeout);S.pending=[]}
+function later(fn,ms){var id=setTimeout(fn,ms);S.pending.push(id);return id}
+
+function emptyBoard(n){var b=[],r,c;for(r=0;r<n;r++){b[r]=[];for(c=0;c<n;c++)b[r][c]=0}return b}
+
+/* 놓인 전체 칸 수 계산 */
+function countTotal(p){
+  var n=0,r,c;
+  for(r=0;r<S.size;r++)for(c=0;c<S.size;c++)if(S.board[r][c]===p)n++;
+  return n;
+}
+
+/* 변(상하좌우)으로 서로 연결된 컴포넌트 중 가장 큰 영토(또는 첫 수 연계 영토)의 칸 수 계산 */
+function getConnectedScore(p){
+  var visited = emptyBoard(S.size);
+  var maxConnected = 0;
+  var d = [[1,0],[-1,0],[0,1],[0,-1]];
+
+  var r,c;
+  for(r=0; r<S.size; r++){
+    for(c=0; c<S.size; c++){
+      if(S.board[r][c] === p && !visited[r][c]){
+        // BFS 탐색으로 이 연결 덩어리의 크기 측정
+        var queue = [{r:r, c:c}];
+        visited[r][c] = true;
+        var currentCompSize = 0;
+
+        while(queue.length > 0){
+          var curr = queue.shift();
+          currentCompSize++;
+          for(var i=0; i<4; i++){
+            var nr = curr.r + d[i][0];
+            var nc = curr.c + d[i][1];
+            if(nr>=0 && nc>=0 && nr<S.size && nc<S.size){
+              if(S.board[nr][nc] === p && !visited[nr][nc]){
+                visited[nr][nc] = true;
+                queue.push({r:nr, c:nc});
+              }
+            }
+          }
+        }
+        if(currentCompSize > maxConnected) {
+          maxConnected = currentCompSize;
+        }
+      }
+    }
+  }
+  return maxConnected;
+}
+
+function factors(n){var a=[],w;for(w=1;w<=n;w++)if(n%w===0)a.push({w:w,h:n/w});return a}
+
+/* 자리가 있으면 어디든 자유롭게 배치 가능! (인접 제한 제거) */
+function canPlace(r0,c0,w,h,p){
+  var r,c;
+  if(r0<0||c0<0||r0+h>S.size||c0+w>S.size) return false;
+  for(r=r0;r<r0+h;r++)for(c=c0;c<c0+w;c++){
+    if(S.board[r][c]!==0) return false;
+  }
+  return true;
+}
+
+function place(r0,c0,w,h,p){
+  var r,c;
+  for(r=r0;r<r0+h;r++)for(c=c0;c<c0+w;c++)S.board[r][c]=p;
+  if(!S.firstTile[p]) S.firstTile[p] = {r:r0, c:c0};
+}
+
+function hasAny(n,p){
+  var pairs=factors(n),i,r,c;
+  for(i=0;i<pairs.length;i++){
+    var w=pairs[i].w,h=pairs[i].h;
+    for(r=0;r<S.size;r++)for(c=0;c<S.size;c++)if(canPlace(r,c,w,h,p))return true;
+  }
+  return false;
+}
+
+function openGuide(st){S.guidePage=typeof st==='number'?st:0;rg();var m=$('drc-modal');if(m)m.className='modal on'}
+function rg(){
+  var m=$('drc-modal');if(!m)return;
+  var pg=GUIDE[S.guidePage]||GUIDE[0];
+  var dots=GUIDE.map(function(_,i){return '<span class="dot'+(i===S.guidePage?' on':'')+'"></span>'}).join('');
+  var last=S.guidePage>=GUIDE.length-1;
+  m.innerHTML='<div class="mbox"><div style="font-size:.78rem;font-weight:800;color:#0284c7">📖 게임 설명 '+(S.guidePage+1)+'/'+GUIDE.length+'</div><h3>'+pg.title+'</h3><div>'+pg.html+'</div><div class="dots">'+dots+'</div><div class="g2" style="margin-top:12px"><button type="button" class="btn" id="drc-gp"'+(S.guidePage===0?' disabled':'')+'>← 이전</button><button type="button" class="btn p" id="drc-gn">'+(last?'게임 시작 🚀':'다음 →')+'</button></div><button type="button" class="btn" id="drc-gs" style="width:100%;margin-top:8px">닫기</button></div>';
+  $('drc-gp').onclick=function(){if(S.guidePage>0){S.guidePage--;rg()}};
+  $('drc-gn').onclick=function(){if(last){m.className='modal';toast('준비 완료!','ok')}else{S.guidePage++;rg()}};
+  $('drc-gs').onclick=function(){m.className='modal'}
+}
+
+function openRank(reg){
+  var m=$('drc-modal');if(!m)return;
+  var list=[];try{list=JSON.parse(localStorage.getItem(LSKEY)||'[]')}catch(e){}
+  var rows=list.slice(0,5).map(function(it,i){return '<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #e2e8f0"><span>'+(i===0?'👑 ':'')+(i+1)+'위 '+esc(it.nickname)+(it.level?' ('+esc(it.level)+')':'')+'</span><b style="color:#0284c7">'+it.score+'점</b></div>'}).join('')||'<p style="color:#64748b;text-align:center;padding:12px 0;">아직 등록된 기록이 없습니다.</p>';
+  var regH=reg?'<p><b>최종 점수: '+S.score+'점</b> · '+levelTag()+'</p><input id="drc-nick" maxlength="12" placeholder="닉네임 입력" class="inp"><button class="btn p" id="drc-save" style="width:100%;margin-top:8px">명예의 전당 등록</button>':'';
+  m.innerHTML='<div class="mbox"><h3>🏆 명예의 전당 (Top 5)</h3>'+regH+rows+'<button class="btn" id="drc-cl" style="width:100%;margin-top:10px">닫기</button></div>';
+  m.className='modal on';
+  $('drc-cl').onclick=function(){m.className='modal'};
+  var sb=$('drc-save');
+  if(sb)sb.onclick=function(){
+    var nm=((($('drc-nick')||{}).value)||'익명').trim().slice(0,12),tag=levelTag();
+    try{if(typeof window.submitRanking==='function')window.submitRanking(APP_TITLE,S.score,true,nm+'('+tag+')',BOARD)}catch(e){}
+    try{list.push({nickname:nm,level:tag,score:S.score});list.sort(function(a,b){return b.score-a.score});localStorage.setItem(LSKEY,JSON.stringify(list.slice(0,20)))}catch(e){}
+    toast('명예의 전당에 등록되었습니다!','ok');m.className='modal';loadRank();
+  }
+}
+
+function loadRank(){
+  var el=$(BOARD);if(!el)return;
+  if(typeof window.loadGameLeaderboard==='function'){try{window.loadGameLeaderboard(APP_TITLE,true,BOARD);return}catch(e){}}
+  var list=[];try{list=JSON.parse(localStorage.getItem(LSKEY)||'[]')}catch(e){}
+  el.innerHTML=list.length?list.slice(0,5).map(function(it,i){return '<div style="display:flex;justify-content:space-between;padding:8px 10px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;margin-bottom:6px"><span>'+(i===0?'👑 ':'')+(i+1)+'위 '+esc(it.nickname)+(it.level?' ('+esc(it.level)+')':'')+'</span><b style="color:#0284c7">'+it.score+'점</b></div>'}).join(''):'<p style="text-align:center;color:#94a3b8;padding:10px 0;">아직 등록된 기록이 없습니다.</p>'
+}
+
+function hud(){
+  var p1Conn = getConnectedScore(1);
+  var p2Conn = getConnectedScore(2);
+  var p1Tot = countTotal(1);
+  var p2Tot = countTotal(2);
+  
+  setT('drc-p1', p1Conn + '점 (' + p1Tot + '칸)');
+  setT('drc-p2', p2Conn + '점 (' + p2Tot + '칸)');
+  setT('drc-turn', S.turn===1?'P1 (🔴 빨강)':'P2 (🔵 파랑)');
+  setT('drc-mode', levelTag());
+}
+
+/* 보드 초기 생성 */
+function initBoardDOM(){
+  var el=$('drc-board');if(!el)return;
+  el.style.gridTemplateColumns='repeat('+S.size+',1fr)';
+  el.innerHTML='';
+  var r,c;
+  for(r=0;r<S.size;r++)for(c=0;c<S.size;c++){
+    (function(rr,cc){
+      var d=document.createElement('div');
+      d.className='cell';
+      d.id='cell-'+rr+'-'+cc;
+      d.onmouseenter=function(){
+        if(S.finished||S.aiLock||!S.pair)return;
+        S.hover={r:rr,c:cc};
+        updateBoardView();
+      };
+      d.onclick=function(){
+        if(S.finished||S.aiLock||!S.pair||!S.dice)return;
+        tryPlace(rr,cc);
+      };
+      el.appendChild(d);
+    })(r,c);
+  }
+}
+
+/* 셀 클래스만 갱신 */
+function updateBoardView(){
+  var r,c;
+  for(r=0;r<S.size;r++)for(c=0;c<S.size;c++){
+    var cell=$( 'cell-'+r+'-'+c );
+    if(!cell)continue;
+    cell.className='cell';
+    if(S.board[r][c]===1)cell.classList.add('p1');
+    if(S.board[r][c]===2)cell.classList.add('p2');
+    
+    if(S.hover&&S.pair){
+      var pr=S.hover.r,pc=S.hover.c,w=S.pair.w,h=S.pair.h;
+      if(r>=pr&&r<pr+h&&c>=pc&&c<pc+w){
+        cell.classList.add(canPlace(pr,pc,w,h,S.turn)?'pv':'bad');
+      }
+    }
+  }
+  hud();
+}
+
+function renderCands(){
+  var box=$('drc-cand');if(!box)return;
+  box.innerHTML='';if(!S.dice)return;
+  factors(S.dice).forEach(function(p){
+    var b=document.createElement('button');b.type='button';b.textContent=p.w+'×'+p.h;
+    if(S.pair&&S.pair.w===p.w&&S.pair.h===p.h)b.className='on';
+    b.onclick=function(){
+      S.pair={w:p.w,h:p.h};
+      S.hover=null;
+      renderCands();
+      updateBoardView();
+      setT('drc-msg','선택한 직사각형['+p.w+'×'+p.h+']을 보드 위 원하는 위치에 클릭해 배치하세요.');
+    };
+    box.appendChild(b);
+  });
+}
+
+/* 🎲 주사위 롤링 애니메이션 */
+function roll(){
+  if(S.finished||S.aiLock||S.rolling)return;
+  S.rolling=true;
+  var diceEl=$('drc-dice');
+  var rollBtn=$('drc-roll');
+  if(rollBtn)rollBtn.disabled=true;
+  if(diceEl)diceEl.classList.add('rolling');
+  
+  var icons=['🎲 1','🎲 2','🎲 3','🎲 4','🎲 5','🎲 6'];
+  var count=0;
+  var timer=setInterval(function(){
+    count++;
+    if(diceEl)diceEl.textContent=icons[Math.floor(Math.random()*6)];
+    if(count>10){
+      clearInterval(timer);
+      if(diceEl)diceEl.classList.remove('rolling');
+      S.rolling=false;
+      if(rollBtn)rollBtn.disabled=false;
+      
+      S.dice=1+Math.floor(Math.random()*6);
+      if(diceEl)diceEl.textContent='🎲 '+S.dice;
+      S.pair=null;S.hover=null;
+      setT('drc-msg','주사위 ['+S.dice+'] 출현! 약수 후보를 선택하세요.');
+      renderCands();
+      updateBoardView();
+      
+      if(!hasAny(S.dice,S.turn)){
+        toast('배치 가능한 빈 공간이 없습니다 ➔ 패스','info');
+        later(function(){doPass()},800);
+      }
+    }
+  }, 50);
+  S.timers.push(timer);
+}
+
+function tryPlace(r,c){
+  if(!S.pair){toast('약수 후보(가로×세로)를 먼저 고르세요.','err');return}
+  if(!canPlace(r,c,S.pair.w,S.pair.h,S.turn)){toast('배치 공간이 부족합니다! (겹침 발생)','err');return}
+  
+  place(r,c,S.pair.w,S.pair.h,S.turn);
+  if(navigator.vibrate){try{navigator.vibrate(15)}catch(e){}}
+  
+  S.passStreak=0;S.dice=0;S.pair=null;S.hover=null;
+  setT('drc-dice','—');
+  renderCands();
+  updateBoardView();
+  endTurn();
+}
+
+function doPass(){S.passStreak++;S.dice=0;S.pair=null;setT('drc-dice','—');if(S.passStreak>=2){finish();return}endTurn()}
+
+function endTurn(){
+  if(S.finished)return;
+  S.turn=S.turn===1?2:1;
+  updateBoardView();
+  if(S.mode==='ai'&&S.turn===2&&!S.finished){
+    S.aiLock=true;setT('drc-msg','🤖 AI가 수순을 계산 중입니다…');
+    later(aiMove,600);
+  }else{
+    S.aiLock=false;
+    setT('drc-msg',S.turn===1?'🔴 P1 차례: [🎲 주사위 굴리기]를 누르세요.':'🔵 P2 차례: [🎲 주사위 굴리기]를 누르세요.');
+  }
+}
+
+function aiMove(){
+  if(S.finished)return;
+  var n=1+Math.floor(Math.random()*6);S.dice=n;
+  setT('drc-dice','🎲 '+S.dice);
+  var pairs=factors(n),best=null,score=-1,i,r,c;
+  for(i=0;i<pairs.length;i++){
+    var w=pairs[i].w,h=pairs[i].h;
+    for(r=0;r<S.size;r++)for(c=0;c<S.size;c++)if(canPlace(r,c,w,h,2)){
+      var sc=w*h;
+      if(S.aiLevel==='hard')sc+=Math.max(0,5-Math.abs(r-S.size/2)-Math.abs(c-S.size/2));
+      if(S.aiLevel==='easy')sc=Math.random()*10;
+      if(sc>score){score=sc;best={r:r,c:c,w:w,h:h}}
+    }
+  }
+  if(!best){toast('AI 배치 공간 없음 ➔ 패스','info');S.aiLock=false;doPass();return}
+  place(best.r,best.c,best.w,best.h,2);
+  S.passStreak=0;S.dice=0;S.pair=null;S.aiLock=false;
+  setT('drc-msg','🤖 AI가 '+best.w+'×'+best.h+' 직사각형을 배치했습니다.');
+  setT('drc-dice','—');
+  renderCands();updateBoardView();endTurn();
+}
+
+function finish(){
+  S.finished=true;
+  var c1=getConnectedScore(1), c2=getConnectedScore(2);
+  var win=c1===c2?'무승부!':(c1>c2?'🔴 P1 승리!':'🔵 P2/AI 승리!');
+  S.score=c1*10+(c1>c2?50:0)+(S.mode==='ai'&&S.aiLevel==='hard'&&c1>c2?30:0);
+  setT('drc-msg','🏆 대결 종료! P1 연결영토 '+c1+'점 vs P2 연결영토 '+c2+'점 ➔ '+win);
+  toast(win+' (획득 점수: '+S.score+'점)','ok');openRank(true);
+}
+
+function resetRun(){
+  clearTimers();S.finished=false;S.board=emptyBoard(S.size);S.turn=1;S.dice=0;S.pair=null;S.hover=null;
+  S.passStreak=0;S.score=0;S.aiLock=false;S.rolling=false;
+  S.firstTile={1:null, 2:null};
+  setT('drc-dice','—');
+  setT('drc-msg','[🎲 주사위 굴리기] 버튼을 눌러 게임을 시작하세요.');
+  renderCands();initBoardDOM();updateBoardView();
+}
+
+function chrome(){
+  return '<div class="drc" id="drc-root">' +
+    '<div class="h">' +
+      '<h2 class="t">'+ICON+' '+APP_TITLE+'</h2>' +
+      '<div style="display:flex;gap:6px;">' +
+        '<button type="button" class="btn" id="drc-guide">📖 게임 방법</button>' +
+      '</div>' +
+    '</div>' +
+    '<div class="mode-grid">' +
+      '<button type="button" class="mode-btn active" id="drc-m-ai">👤 vs AI 대결</button>' +
+      '<button type="button" class="mode-btn" id="drc-m-pvp">👥 2인 로컬 대결</button>' +
+    '</div>' +
+    '<div class="bar" style="justify-content:space-between;">' +
+      '<div style="display:flex;gap:6px;align-items:center;">' +
+        '<span class="chip">모드: <b id="drc-mode">AI</b></span>' +
+        '<select id="drc-ai" class="inp" style="width:auto;padding:4px 8px;font-size:0.85rem;">' +
+          '<option value="easy">AI 연습</option>' +
+          '<option value="normal" selected>AI 보통</option>' +
+          '<option value="hard">AI 도전</option>' +
+        '</select>' +
+      '</div>' +
+      '<div style="display:flex;gap:6px;">' +
+        '<span class="chip">🔴 P1 점수: <b id="drc-p1">0점</b></span>' +
+        '<span class="chip">🔵 P2 점수: <b id="drc-p2">0점</b></span>' +
+      '</div>' +
+    '</div>' +
+    '<div class="main">' +
+      '<div class="box"><div class="board" id="drc-board"></div></div>' +
+      '<div>' +
+        '<div class="box">' +
+          '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">' +
+            '<span class="chip" style="font-size:0.95rem;">현재 턴: <b id="drc-turn">P1</b></span>' +
+            '<div class="dice-box" id="drc-dice">—</div>' +
+          '</div>' +
+          '<div class="msg" id="drc-msg"></div>' +
+          '<div class="bar" style="margin-top:12px;">' +
+            '<button type="button" class="btn g" id="drc-roll" style="flex:1;">🎲 주사위 굴리기</button>' +
+            '<button type="button" class="btn" id="drc-pass">패스</button>' +
+            '<button type="button" class="btn" id="drc-reset">🔄 재시작</button>' +
+          '</div>' +
+          '<div style="font-weight:800;margin-top:12px;font-size:0.92rem;">📐 직사각형 약수 후보</div>' +
+          '<div class="cand" id="drc-cand"></div>' +
+          '<div class="note">💡 <b>배치 규칙</b>: 빈 공간이면 자유롭게 놓을 수 있습니다! 단, <b>변(상하좌우)으로 이어진 영토 영역의 칸 수만 점수로 반영</b>됩니다. 나중에 떨어진 영역을 연결해보세요!</div>' +
+        '</div>' +
+      '</div>' +
+    '</div>' +
+    '<div class="box" style="margin-top:14px">' +
+      '<div style="font-weight:900;margin-bottom:8px">🏆 명예의 전당 (실시간 순위)</div>' +
+      '<div id="'+BOARD+'"></div>' +
+    '</div>' +
+    '<div class="toast" id="drc-toast"></div>' +
+    '<div class="modal" id="drc-modal"></div>' +
+  '</div>';
+}
+
+function bind(){
+  $('drc-guide').onclick=function(){openGuide(0)};
+  $('drc-roll').onclick=roll;
+  $('drc-pass').onclick=function(){if(!S.finished&&!S.aiLock)doPass()};
+  $('drc-reset').onclick=resetRun;
+  
+  $('drc-m-ai').onclick=function(){
+    S.mode='ai';
+    $('drc-m-ai').className='mode-btn active';
+    $('drc-m-pvp').className='mode-btn';
+    resetRun();
+  };
+  $('drc-m-pvp').onclick=function(){
+    S.mode='pvp';
+    $('drc-m-pvp').className='mode-btn active';
+    $('drc-m-ai').className='mode-btn';
+    resetRun();
+  };
+  $('drc-ai').onchange=function(){S.aiLevel=$('drc-ai').value;hud()}
+}
+
+function destroy(){clearTimers();S.mounted=false;if(S.host)try{S.host.innerHTML=''}catch(e){}S.host=null}
+
+function goHome(){
+  destroy();
+  if (typeof window.LegacyBridge !== 'undefined' && typeof window.LegacyBridge.backHome === 'function') {
+    window.LegacyBridge.backHome();
+  } else if (typeof window.MathLabGames !== 'undefined' && window.MathLabGames.goHome) {
+    window.MathLabGames.goHome();
+  } else {
+    window.location.reload();
+  }
+}
+
+function mount(container){
+  var host=null;
+  if(typeof container==='string'){try{host=document.querySelector(container)}catch(e){}}
+  else if(container instanceof HTMLElement)host=container;
+  if(!host&&window.MathLabUtils&&window.MathLabUtils.getMountContainer){try{host=window.MathLabUtils.getMountContainer(container)}catch(e){}}
+  if(!host||!(host instanceof HTMLElement))host=document.getElementById('mathlab-view')||document.getElementById('new-root');
+  
+  if(!host||!(host instanceof HTMLElement)||host===document.body){
+    host=document.getElementById(FORCE);
+    if(!host){host=document.createElement('div');host.id=FORCE;document.body.appendChild(host)}
+  }
+  
+  var footerEl=document.querySelector('footer,#footer,.app-footer');
+  if(footerEl&&host&&typeof host.compareDocumentPosition==='function'&&(host.compareDocumentPosition(footerEl)&Node.DOCUMENT_POSITION_PRECEDING)){
+    try{footerEl.parentNode.insertBefore(host,footerEl)}catch(e){}
+  }
+  
+  host.style.display='';host.style.visibility='visible';host.style.opacity='1';host.style.minHeight=host.style.minHeight||'60vh';
+  var parent=host.parentElement;
+  while(parent&&parent!==document.body&&parent!==document.documentElement){
+    if(parent.style&&parent.style.display==='none')parent.style.display='block';
+    if(parent.style&&parent.style.visibility==='hidden')parent.style.visibility='visible';
+    parent=parent.parentElement
+  }
+  document.querySelectorAll('header,.navbar,#app-header,.top-bar,#floating-home-btn,.floating-home').forEach(function(el){
+    if(el&&el.style&&el.style.display==='none')el.style.display=''
+  });
+  
+  S.host=host;S.mounted=true;host.innerHTML=chrome();bind();resetRun();loadRank();
+  try{if(!localStorage.getItem(LSKEY+'_seen')){localStorage.setItem(LSKEY+'_seen','1');openGuide(0)}}catch(e){openGuide(0)}
+}
+
+var API={mount:mount,resetGame:resetRun,destroy:destroy,goHome:goHome};
+
+function reg(){
+  if(typeof window.MathLabGames==='undefined'||typeof window.MathLabGames.register!=='function')return;
+  try{
+    if(window.MathLabGames.get&&window.MathLabGames.get(APP_ID))return;
+    window.MathLabGames.register({
+      id:APP_ID,title:APP_TITLE,icon:ICON,sourceType:'new',players:'1~2인',isMultiplayer:true,
+      mount:function(c,x){API.mount(c,x)},reset:function(){API.resetGame()},destroy:function(){API.destroy()},goHome:function(){API.goHome()}
+    })
+  }catch(e){console.warn(APP_ID+' reg',e)}
+}
+
+reg();window.addEventListener('DOMContentLoaded',reg);setTimeout(reg,100);setTimeout(reg,500);
+window.DiceRectConnect=API;
+window.initDiceRectConnect=function(){
+  reg();
+  try{if(window.LegacyBridge){window.LegacyBridge.hideAllLegacySections();if(window.LegacyBridge.showNewRoot)window.LegacyBridge.showNewRoot()}}catch(e){}
+  if(window.MathLabGames&&window.MathLabGames.mount){try{window.MathLabGames.mount(APP_ID);return}catch(e){}}
+  API.mount(document.getElementById('mathlab-view'))
+};
+window.launchDiceRectConnect=window.initDiceRectConnect;
+})();
+</script>

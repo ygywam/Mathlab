@@ -1,0 +1,623 @@
+<style>
+.game-dijkstra-delivery, .game-dijkstra-delivery * { box-sizing: border-box; }
+.game-dijkstra-delivery {
+  font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+  background: #f8fafc;
+  color: #0f172a;
+  min-height: 60vh;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 1060px;
+  margin: 0 auto;
+  border-radius: 18px;
+}
+.gdd-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+.gdd-title { font-size: 1.3rem; font-weight: 900; color: #0f172a; }
+.gdd-stats { display: flex; gap: 12px; flex-wrap: wrap; font-size: 0.85rem; }
+.gdd-stat { background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 4px 10px; color: #64748b; }
+.gdd-stat span { color: #0f172a; font-weight: 700; }
+.gdd-btn { padding: 7px 14px; border: 1px solid #cbd5e1; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 700; transition: all 0.15s; background: #fff; color: #1e293b; }
+.gdd-btn:hover { background: #f1f5f9; }
+.gdd-btn-primary { background: #0284c7; border-color: #0284c7; color: #fff; }
+.gdd-btn-primary:hover { background: #0369a1; }
+.gdd-btn-danger { background: #dc2626; border-color: #dc2626; color: #fff; }
+.gdd-btn-danger:hover { background: #ef4444; }
+.gdd-btn-gray { background: #f1f5f9; border-color: #cbd5e1; color: #334155; }
+.gdd-btn-gray:hover { background: #e2e8f0; }
+.gdd-btn-green { background: #059669; border-color: #059669; color: #fff; }
+.gdd-btn-green:hover { background: #047857; }
+.gdd-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.gdd-mission { background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px 14px; font-size: 0.9rem; border-left: 4px solid #0284c7; }
+.gdd-mission strong { color: #0284c7; }
+.gdd-canvas-wrap { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; }
+.gdd-canvas-wrap canvas { display: block; width: 100%; touch-action: manipulation; }
+.gdd-path-bar { background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px 14px; font-size: 0.85rem; min-height: 40px; }
+.gdd-path-label { color: #64748b; margin-bottom: 4px; font-weight: 700; }
+.gdd-path-nodes { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+.gdd-path-node { background: #0284c7; color: #fff; border-radius: 6px; padding: 3px 9px; font-weight: 700; font-size: 0.82rem; }
+.gdd-path-arrow { color: #94a3b8; }
+.gdd-path-cost { margin-top: 4px; color: #b45309; font-weight: 700; }
+.gdd-result { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px; text-align: center; display: none; }
+.gdd-result.show { display: block; }
+.gdd-result-title { font-size: 1.2rem; font-weight: 700; margin-bottom: 8px; }
+.gdd-result-detail { font-size: 0.85rem; color: #64748b; line-height: 1.7; }
+.gdd-result-score { font-size: 2rem; font-weight: 800; color: #d97706; }
+.gdd-diff-steps { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px; margin-top: 10px; font-size: 0.8rem; color: #475569; text-align: left; max-height: 120px; overflow-y: auto; }
+.gdd-hof { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px; }
+.gdd-hof-title { font-size: 1rem; font-weight: 800; color: #b45309; margin-bottom: 10px; }
+.gdd-hof-item { display: flex; justify-content: space-between; align-items: center; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 8px 12px; margin-bottom: 6px; font-size: 0.84rem; }
+.gdd-hof-name { color: #0f172a; font-weight: 700; }
+.gdd-hof-score { color: #0284c7; font-weight: 800; }
+.gdd-difficulty { display: flex; gap: 8px; flex-wrap: wrap; }
+.gdd-diff-btn { padding: 6px 14px; border: 2px solid #e2e8f0; border-radius: 8px; background: #fff; color: #64748b; cursor: pointer; font-size: 0.82rem; font-weight: 700; transition: all 0.15s; }
+.gdd-diff-btn.active { border-color: #0284c7; color: #0284c7; background: #e0f2fe; }
+.gdd-modal { display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.45); z-index: 9999; align-items: center; justify-content: center; }
+.gdd-modal.show { display: flex; }
+.gdd-modal-box { background: #fff; border-radius: 16px; padding: 28px; max-width: 380px; width: 90%; text-align: center; box-shadow: 0 18px 50px rgba(15,23,42,0.25); }
+.gdd-modal-title { font-size: 1.2rem; font-weight: 800; margin-bottom: 12px; color: #0284c7; }
+.gdd-modal-input { width: 100%; padding: 10px; border-radius: 8px; border: 2px solid #cbd5e1; background: #fff; color: #0f172a; font-size: 1rem; text-align: center; margin-bottom: 12px; outline: none; }
+.gdd-modal-input:focus { border-color: #0284c7; }
+.gdd-modal-btns { display: flex; gap: 8px; justify-content: center; }
+.gdd-guide-body { text-align: left; font-size: 0.88rem; color: #334155; line-height: 1.7; max-height: 60vh; overflow-y: auto; }
+.gdd-toast { position: fixed; top: 24px; left: 50%; transform: translateX(-50%) translateY(-16px); background: #0f172a; color: #f8fafc; padding: 11px 22px; border-radius: 12px; font-weight: 700; font-size: 0.95rem; z-index: 10500; opacity: 0; pointer-events: none; transition: opacity 0.25s, transform 0.25s; max-width: 90vw; text-align: center; }
+.gdd-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.gdd-toast.ok { background: #059669; }
+.gdd-toast.err { background: #dc2626; }
+</style>
+
+<script>
+(function () {
+'use strict';
+
+const ATITLE = '다익스트라 택배 배달';
+const ABOARD = 'board-dijkstra-delivery';
+
+function esc(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+let toastTid = null;
+function showToast(msg, type) {
+  const el = document.getElementById('gdd-toast');
+  if (!el) return;
+  el.textContent = msg;
+  el.className = 'gdd-toast show' + (type ? ' ' + type : '');
+  if (toastTid) clearTimeout(toastTid);
+  toastTid = setTimeout(() => { el.className = 'gdd-toast'; }, 2500);
+}
+
+const DijkstraDelivery = {
+  container: null, canvas: null, ctx: null,
+  state: {
+    graph: null, selectedPath: [], submitted: false, score: 0,
+    totalScore: 0, round: 0, totalRounds: 5, fuel: 3, hintUsed: false,
+    difficulty: 'normal', animStep: 0, animTimer: null, dijkSteps: [], resultVisible: false,
+  },
+
+  mount(container) {
+    let host = null;
+    if (typeof container === 'string') { try { host = document.querySelector(container); } catch (e) {} }
+    else if (container instanceof HTMLElement) host = container;
+    if (!host || !(host instanceof HTMLElement)) host = document.getElementById('mathlab-view') || document.getElementById('new-root');
+    if (!host || !(host instanceof HTMLElement) || host === document.body) {
+      let fh = document.getElementById('dijkstra-delivery-force-host');
+      if (!fh) { fh = document.createElement('div'); fh.id = 'dijkstra-delivery-force-host'; document.body.appendChild(fh); }
+      host = fh;
+    }
+    const footerEl = document.querySelector('footer, #footer, .app-footer');
+    if (footerEl && footerEl.parentNode && typeof host.compareDocumentPosition === 'function' && (host.compareDocumentPosition(footerEl) & Node.DOCUMENT_POSITION_PRECEDING)) {
+      footerEl.parentNode.insertBefore(host, footerEl);
+    }
+    host.style.display = '';
+    host.style.visibility = 'visible';
+    host.style.opacity = '1';
+    host.style.minHeight = host.style.minHeight || '60vh';
+    let parent = host.parentElement;
+    while (parent && parent !== document.body && parent !== document.documentElement) {
+      if (parent.style && parent.style.display === 'none') parent.style.display = 'block';
+      if (parent.style && parent.style.visibility === 'hidden') parent.style.visibility = 'visible';
+      parent = parent.parentElement;
+    }
+    this.container = host;
+    this.render();
+    this.initCanvas();
+    this.resetGame();
+  },
+
+  render() {
+    this.container.innerHTML = `
+      <div class="game-dijkstra-delivery" id="gdd-root">
+        <div class="gdd-header">
+          <div class="gdd-title">🚚 다익스트라 택배 배달</div>
+          <div class="gdd-stats">
+            <div class="gdd-stat">라운드 <span id="gdd-round">1/5</span></div>
+            <div class="gdd-stat">점수 <span id="gdd-score">0</span></div>
+            <div class="gdd-stat">연료 <span id="gdd-fuel">3</span></div>
+          </div>
+          <button class="gdd-btn" id="gdd-guide">📖 게임 방법</button>
+        </div>
+        <div class="gdd-difficulty">
+          <button class="gdd-diff-btn" data-diff="easy">쉬움</button>
+          <button class="gdd-diff-btn active" data-diff="normal">보통</button>
+          <button class="gdd-diff-btn" data-diff="hard">도전</button>
+        </div>
+        <div class="gdd-mission" id="gdd-mission">게임을 시작하세요!</div>
+        <div class="gdd-canvas-wrap"><canvas id="gdd-canvas"></canvas></div>
+        <div class="gdd-path-bar">
+          <div class="gdd-path-label">선택한 경로</div>
+          <div class="gdd-path-nodes" id="gdd-path-nodes"><span style="color:#94a3b8">노드를 클릭하세요</span></div>
+          <div class="gdd-path-cost" id="gdd-path-cost"></div>
+        </div>
+        <div class="gdd-controls" style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="gdd-btn gdd-btn-danger" id="gdd-undo">↩ 되돌리기</button>
+          <button class="gdd-btn gdd-btn-primary" id="gdd-hint" style="display:none">💡 힌트 (-10P)</button>
+          <button class="gdd-btn gdd-btn-green" id="gdd-submit">📦 제출</button>
+          <button class="gdd-btn gdd-btn-gray" id="gdd-home">🏠 홈</button>
+        </div>
+        <div class="gdd-result" id="gdd-result">
+          <div class="gdd-result-title" id="gdd-result-title"></div>
+          <div class="gdd-result-score" id="gdd-result-score"></div>
+          <div class="gdd-result-detail" id="gdd-result-detail"></div>
+          <div class="gdd-diff-steps" id="gdd-diff-steps"></div>
+          <div style="margin-top:12px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+            <button class="gdd-btn gdd-btn-primary" id="gdd-next">다음 라운드 ▶</button>
+            <button class="gdd-btn gdd-btn-gray" id="gdd-anim">▶ 알고리즘 재생</button>
+          </div>
+        </div>
+        <div class="gdd-hof">
+          <div class="gdd-hof-title">🏆 명예의 전당 (실시간 랭킹)</div>
+          <div id="board-dijkstra-delivery">
+            <p style="text-align:center;color:#94a3b8;padding:10px 0;margin:0">랭킹 데이터를 불러오는 중...</p>
+          </div>
+        </div>
+      </div>
+      <div class="gdd-modal" id="gdd-modal">
+        <div class="gdd-modal-box">
+          <div class="gdd-modal-title">🏆 명예의 전당 등록</div>
+          <div style="margin-bottom:10px;color:#64748b;font-size:0.9rem">최종 점수: <strong style="color:#d97706" id="gdd-modal-score"></strong></div>
+          <input class="gdd-modal-input" id="gdd-modal-nm" placeholder="닉네임 입력" maxlength="12">
+          <div class="gdd-modal-btns">
+            <button class="gdd-btn gdd-btn-green" id="gdd-modal-ok">등록</button>
+            <button class="gdd-btn gdd-btn-gray" id="gdd-modal-cancel">건너뛰기</button>
+          </div>
+        </div>
+      </div>
+      <div class="gdd-modal" id="gdd-guide-modal">
+        <div class="gdd-modal-box">
+          <div class="gdd-modal-title">📖 게임 방법</div>
+          <div class="gdd-guide-body">
+            <p><strong>목표</strong>: 물류센터(초록 노드)에서 배달지(빨강 노드)까지 도로 비용의 합이 가장 작은 경로로 배달하세요.</p>
+            <ul style="padding-left:18px;margin:8px 0">
+              <li>출발지부터 노드를 순서대로 클릭해 경로를 만듭니다. 서로 연결된 노드만 선택할 수 있습니다.</li>
+              <li>출발지와 배달지는 직접 연결되지 않으며, 최단 경로는 난이도에 따라 최소 2(쉬움)·3(보통)·4(도전) 구간을 지나갑니다.</li>
+              <li><strong>제출</strong>을 누르면 다익스트라 알고리즘이 계산한 최소 비용과 비교해 채점합니다.</li>
+              <li>최단 경로 일치 +100점, 초과 비용 1당 -5점, 힌트 사용 -10점.</li>
+              <li>최단 경로가 아니면 연료가 1 줄어들고, 연료가 0이 되면 게임이 끝납니다.</li>
+              <li><strong>▶ 알고리즘 재생</strong> 버튼으로 다익스트라의 단계별 확정 과정을 관찰할 수 있습니다.</li>
+            </ul>
+            <p><strong>수학 개념</strong>: 가중치 그래프, 최단 경로, 탐욕적 선택의 함정, 다익스트라 알고리즘의 단계적 확정 원리.</p>
+          </div>
+          <div class="gdd-modal-btns" style="margin-top:12px">
+            <button class="gdd-btn gdd-btn-primary" id="gdd-guide-close">닫기</button>
+          </div>
+        </div>
+      </div>
+      <div class="gdd-toast" id="gdd-toast"></div>`;
+  },
+
+  initCanvas() {
+    this.canvas = document.getElementById('gdd-canvas');
+    this.ctx = this.canvas ? this.canvas.getContext('2d') : null;
+    if (!this.canvas) return;
+    const wrap = this.canvas.parentElement;
+    const w = Math.min(wrap.clientWidth || 500, 700);
+    const h = Math.round(w * 0.6);
+    this.canvas.width = w; this.canvas.height = h; this.canvas.style.height = h + 'px';
+    this.canvas.addEventListener('click', e => this.onCanvasClick(e));
+    this.canvas.addEventListener('touchend', e => {
+      e.preventDefault();
+      const t = e.changedTouches[0];
+      const rect = this.canvas.getBoundingClientRect();
+      this.handleNodeClick(t.clientX - rect.left, t.clientY - rect.top);
+    }, { passive: false });
+  },
+
+  onCanvasClick(e) {
+    const rect = this.canvas.getBoundingClientRect();
+    this.handleNodeClick((e.clientX - rect.left) * (this.canvas.width / rect.width), (e.clientY - rect.top) * (this.canvas.height / rect.height));
+  },
+
+  handleNodeClick(x, y) {
+    const S = this.state; if (S.submitted || S.resultVisible || !S.graph) return;
+    const R = this.nodeRadius();
+    for (let i = 0; i < S.graph.nodes.length; i++) {
+      const n = S.graph.nodes[i];
+      if (Math.hypot(x - n.x, y - n.y) <= R + 8) { this.selectNode(i); return; }
+    }
+  },
+
+  selectNode(idx) {
+    const S = this.state; const G = S.graph; const path = S.selectedPath;
+    if (path.length === 0) { if (idx !== G.src) return; path.push(idx); }
+    else {
+      const last = path[path.length - 1];
+      if (idx === last || path.includes(idx)) return;
+      const edge = G.adj[last] ? G.adj[last].find(e => e.to === idx) : null;
+      if (!edge) return;
+      path.push(idx);
+    }
+    this.updatePathBar(); this.drawGraph();
+  },
+
+  nodeRadius() { const n = this.state.graph ? this.state.graph.nodes.length : 8; return Math.max(16, Math.min(28, 120 / n)); },
+
+  resetGame() {
+    const S = this.state;
+    S.round = 1; S.totalScore = 0; S.fuel = 3; S.submitted = false; S.selectedPath = []; S.resultVisible = false;
+    S.totalRounds = this.diffConfig().rounds;
+    this.bindEvents(); this.newRound(); this.loadHOF();
+  },
+
+  diffConfig() {
+    const d = this.state.difficulty;
+    if (d === 'easy') return { nodes: 5, rounds: 4, hint: false, minHops: 2 };
+    if (d === 'hard') return { nodes: 12, rounds: 5, hint: true, minHops: 4 };
+    return { nodes: 8, rounds: 5, hint: true, minHops: 3 };
+  },
+
+  newRound() {
+    const S = this.state; const cfg = this.diffConfig();
+    S.graph = this.generateGraph(cfg.nodes);
+    S.selectedPath = []; S.submitted = false; S.hintUsed = false; S.resultVisible = false;
+    S.dijkSteps = []; S.animStep = 0;
+    if (S.animTimer) { clearInterval(S.animTimer); S.animTimer = null; }
+    const hintBtn = document.getElementById('gdd-hint');
+    if (hintBtn) hintBtn.style.display = cfg.hint ? '' : 'none';
+    const result = document.getElementById('gdd-result');
+    if (result) result.classList.remove('show');
+    this.updateStats(); this.updateMission(); this.updatePathBar(); this.drawGraph();
+  },
+
+  generateGraph(nodeCount) {
+    // 난이도별 최소 경유 구간(minHops) 보장: 출발지-도착지 직행 간선 금지 + 최단 경로가 minHops 구간 이상이 될 때까지 재생성
+    const minHops = this.diffConfig().minHops || 2;
+    let best = null; let bestHops = -1;
+    for (let attempt = 0; attempt < 80; attempt++) {
+      const G = this.buildRandomGraph(nodeCount);
+      if (!isFinite(G.dist[G.dst])) continue;
+      if (G.adj[G.src].some(e => e.to === G.dst)) continue;
+      const hops = this.getOptimalPath(G).length - 1;
+      if (hops >= minHops) return G;
+      if (hops > bestHops) { bestHops = hops; best = G; }
+    }
+    return best || this.buildRandomGraph(nodeCount);
+  },
+
+  buildRandomGraph(nodeCount) {
+    const W = this.canvas ? this.canvas.width : 500;
+    const H = this.canvas ? this.canvas.height : 300;
+    const pad = 48; const nodes = [];
+    for (let i = 0; i < nodeCount; i++) {
+      let placed = false;
+      for (let a = 0; a < 200; a++) {
+        const x = pad + Math.random() * (W - pad * 2);
+        const y = pad + Math.random() * (H - pad * 2);
+        if (nodes.every(n => Math.hypot(n.x - x, n.y - y) > 60)) { nodes.push({ x, y, label: String.fromCharCode(65 + i) }); placed = true; break; }
+      }
+      if (!placed) nodes.push({ x: pad + (i / nodeCount) * (W - pad * 2), y: H / 2, label: String.fromCharCode(65 + i) });
+    }
+    const adj = Array.from({ length: nodeCount }, () => []);
+    const order = nodes.map((_, i) => i).sort(() => Math.random() - 0.5);
+    for (let i = 1; i < order.length; i++) {
+      const u = order[i - 1], v = order[i], w = 1 + Math.floor(Math.random() * 9);
+      adj[u].push({ to: v, weight: w }); adj[v].push({ to: u, weight: w });
+    }
+    for (let e = 0; e < Math.floor(nodeCount * 0.8); e++) {
+      const u = Math.floor(Math.random() * nodeCount);
+      const v = Math.floor(Math.random() * nodeCount);
+      const isSrcDst = (u === 0 && v === nodeCount - 1) || (u === nodeCount - 1 && v === 0);
+      if (u !== v && !isSrcDst && !adj[u].find(x => x.to === v)) {
+        const w = 1 + Math.floor(Math.random() * 9);
+        adj[u].push({ to: v, weight: w }); adj[v].push({ to: u, weight: w });
+      }
+    }
+    const src = 0, dst = nodeCount - 1;
+    const { dist, prev, steps } = this.dijkstra(nodeCount, adj, src);
+    return { nodes, adj, src, dst, dist, prev, steps };
+  },
+
+  dijkstra(n, adj, src) {
+    const dist = Array(n).fill(Infinity), prev = Array(n).fill(-1), visited = Array(n).fill(false), steps = [];
+    dist[src] = 0;
+    for (let iter = 0; iter < n; iter++) {
+      let u = -1;
+      for (let i = 0; i < n; i++) { if (!visited[i] && (u === -1 || dist[i] < dist[u])) u = i; }
+      if (u === -1 || dist[u] === Infinity) break;
+      visited[u] = true;
+      steps.push({ confirmed: u, distSnapshot: [...dist] });
+      for (const { to, weight } of adj[u]) {
+        if (!visited[to] && dist[u] + weight < dist[to]) { dist[to] = dist[u] + weight; prev[to] = u; }
+      }
+    }
+    return { dist, prev, steps };
+  },
+
+  getOptimalPath(G) {
+    const path = []; let cur = G.dst;
+    while (cur !== -1) { path.unshift(cur); cur = G.prev[cur]; }
+    return path;
+  },
+
+  pathCost(path, G) {
+    let cost = 0;
+    for (let i = 0; i < path.length - 1; i++) {
+      const e = G.adj[path[i]].find(x => x.to === path[i + 1]);
+      if (!e) return Infinity;
+      cost += e.weight;
+    }
+    return cost;
+  },
+
+  drawGraph(highlightSteps) {
+    const S = this.state; const G = S.graph;
+    if (!G || !this.ctx) return;
+    const ctx = this.ctx; const W = this.canvas.width, H = this.canvas.height;
+    ctx.clearRect(0, 0, W, H); ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, W, H);
+    const path = S.selectedPath; const R = this.nodeRadius();
+    // Pass 1: edges
+    for (let u = 0; u < G.nodes.length; u++) {
+      for (const { to, weight } of G.adj[u]) {
+        if (u >= to) continue;
+        const inPath = path.some((n, i) => i < path.length - 1 && ((path[i] === u && path[i+1] === to) || (path[i] === to && path[i+1] === u)));
+        ctx.beginPath(); ctx.moveTo(G.nodes[u].x, G.nodes[u].y); ctx.lineTo(G.nodes[to].x, G.nodes[to].y);
+        ctx.strokeStyle = inPath ? '#0284c7' : '#cbd5e1'; ctx.lineWidth = inPath ? 3 : 1.5; ctx.stroke();
+      }
+    }
+    // Pass 2: cost labels
+    for (let u = 0; u < G.nodes.length; u++) {
+      for (const { to, weight } of G.adj[u]) {
+        if (u >= to) continue;
+        const mx = (G.nodes[u].x + G.nodes[to].x) / 2, my = (G.nodes[u].y + G.nodes[to].y) / 2;
+        ctx.fillStyle = 'rgba(255,255,255,0.92)'; ctx.fillRect(mx - 11, my - 9, 22, 18);
+        ctx.fillStyle = '#b45309'; ctx.font = `bold ${Math.max(11, R * 0.55)}px sans-serif`;
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(weight, mx, my);
+      }
+    }
+    // Pass 3: nodes
+    for (let i = 0; i < G.nodes.length; i++) {
+      const n = G.nodes[i];
+      let fill = '#64748b';
+      if (i === G.src) fill = '#059669';
+      else if (i === G.dst) fill = '#dc2626';
+      else if (path.includes(i)) fill = '#0284c7';
+      if (highlightSteps && highlightSteps.includes(i)) fill = '#7c3aed';
+      ctx.beginPath(); ctx.arc(n.x, n.y, R, 0, Math.PI * 2); ctx.fillStyle = fill; ctx.fill();
+      ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2; ctx.stroke();
+      ctx.fillStyle = '#fff'; ctx.font = `bold ${Math.max(12, R * 0.6)}px sans-serif`;
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(n.label, n.x, n.y);
+    }
+  },
+
+  updateStats() {
+    const S = this.state;
+    const el = id => document.getElementById(id);
+    if (el('gdd-round')) el('gdd-round').textContent = `${S.round}/${S.totalRounds}`;
+    if (el('gdd-score')) el('gdd-score').textContent = S.totalScore;
+    if (el('gdd-fuel')) el('gdd-fuel').textContent = S.fuel;
+  },
+
+  updateMission() {
+    const G = this.state.graph; if (!G) return;
+    const el = document.getElementById('gdd-mission'); if (!el) return;
+    el.innerHTML = `<strong>${G.nodes[G.src].label}</strong>에서 <strong>${G.nodes[G.dst].label}</strong>까지 최소 비용 경로로 배달하세요!`;
+  },
+
+  updatePathBar() {
+    const S = this.state; const G = S.graph; const path = S.selectedPath;
+    const nodes = document.getElementById('gdd-path-nodes');
+    const costEl = document.getElementById('gdd-path-cost');
+    if (!nodes || !G) return;
+    if (path.length === 0) { nodes.innerHTML = '<span style="color:#64748b">출발지 노드를 클릭하세요</span>'; if (costEl) costEl.textContent = ''; return; }
+    nodes.innerHTML = path.map((n, i) => `<span class="gdd-path-node">${G.nodes[n].label}</span>${i < path.length - 1 ? '<span class="gdd-path-arrow">→</span>' : ''}`).join('');
+    const cost = this.pathCost(path, G);
+    if (costEl) costEl.textContent = `총 비용: ${cost === Infinity ? '연결 안 됨' : cost}`;
+  },
+
+  submitPath() {
+    const S = this.state; const G = S.graph;
+    if (!G || S.submitted || S.resultVisible) return;
+    const path = S.selectedPath;
+    if (path.length < 2) { showToast('⚠️ 노드를 더 선택해 경로를 완성해주세요!', 'err'); return; }
+    if (path[0] !== G.src || path[path.length - 1] !== G.dst) {
+      showToast(`⚠️ 출발지(${G.nodes[G.src].label})에서 목적지(${G.nodes[G.dst].label})까지의 경로를 만들어야 합니다!`, 'err'); return;
+    }
+    S.submitted = true; S.resultVisible = true;
+    const myCost = this.pathCost(path, G); const minCost = G.dist[G.dst];
+    const isOptimal = myCost === minCost; const excess = Math.max(0, myCost - minCost);
+    let roundScore = isOptimal ? 100 : Math.max(0, 100 - excess * 5);
+    if (S.hintUsed) roundScore = Math.max(0, roundScore - 10);
+    S.totalScore += roundScore;
+    if (!isOptimal) S.fuel = Math.max(0, S.fuel - 1);
+    this.updateStats(); this.showResult(isOptimal, myCost, minCost, roundScore); S.dijkSteps = G.steps;
+  },
+
+  showResult(isOptimal, myCost, minCost, score) {
+    const G = this.state.graph;
+    const optPathStr = this.getOptimalPath(G).map(i => G.nodes[i].label).join(' → ');
+    const result = document.getElementById('gdd-result'); if (!result) return;
+    result.classList.add('show');
+    const t = document.getElementById('gdd-result-title'); if (t) t.textContent = isOptimal ? '🎉 최단 경로!' : '📦 배달 완료';
+    const s = document.getElementById('gdd-result-score'); if (s) s.textContent = `+${score}점`;
+    const d = document.getElementById('gdd-result-detail'); if (d) d.innerHTML = `내 경로 비용: <strong>${myCost}</strong> | 최단 비용: <strong style="color:#059669">${minCost}</strong><br>최단 경로: ${optPathStr}`;
+    this.drawGraph(this.getOptimalPath(G));
+  },
+
+  playAnimation() {
+    const S = this.state; if (!S.dijkSteps.length) return;
+    S.animStep = 0; if (S.animTimer) clearInterval(S.animTimer);
+    S.animTimer = setInterval(() => {
+      if (S.animStep >= S.dijkSteps.length) { clearInterval(S.animTimer); return; }
+      const step = S.dijkSteps[S.animStep]; const G = S.graph;
+      const el = document.getElementById('gdd-diff-steps');
+      if (el) {
+        el.innerHTML += `<div>Step ${S.animStep + 1}: <strong>${G.nodes[step.confirmed].label}</strong> 확정 — [${step.distSnapshot.map((d, i) => `${G.nodes[i].label}:${d === Infinity ? '∞' : d}`).join(', ')}]</div>`;
+        el.scrollTop = el.scrollHeight;
+      }
+      this.drawGraph([step.confirmed]); S.animStep++;
+    }, 600);
+  },
+
+  showHint() {
+    const S = this.state; const G = S.graph; if (!G || S.hintUsed) return;
+    S.hintUsed = true;
+    showToast(`💡 힌트: 출발 후 첫 번째 노드는 ${G.nodes[this.getOptimalPath(G)[1]].label} 입니다. (-10P)`);
+  },
+
+  nextRound() {
+    const S = this.state;
+    if (S.round >= S.totalRounds || S.fuel <= 0) { this.gameOver(); return; }
+    S.round++; this.newRound();
+  },
+
+  gameOver() {
+    const modal = document.getElementById('gdd-modal');
+    const modalScore = document.getElementById('gdd-modal-score');
+    if (modal) modal.classList.add('show');
+    if (modalScore) modalScore.textContent = this.state.totalScore + '점';
+  },
+
+  saveHOF(nm) {
+    const score = this.state.totalScore;
+    const name = String(nm || '무명의 기사').trim().slice(0, 12) || '무명의 기사';
+    if (typeof submitRanking === 'function') {
+      try { submitRanking(ATITLE, score, true, name, ABOARD); showToast('🏆 명예의 전당에 저장했습니다!', 'ok'); }
+      catch (e) { console.warn('[DijkstraDelivery] submitRanking 오류:', e); showToast('⚠️ 서버 저장에 실패해 로컬에만 기록합니다', 'err'); }
+    } else {
+      showToast('저장 완료 (로컬 기록)', 'ok');
+    }
+    try {
+      const key = 'hof_' + ABOARD;
+      const list = JSON.parse(localStorage.getItem(key) || '[]');
+      list.push({ name: name, score: score });
+      list.sort((a, b) => b.score - a.score);
+      list.splice(5);
+      localStorage.setItem(key, JSON.stringify(list));
+    } catch (e) {}
+    const self = this;
+    setTimeout(function () { self.loadHOF(); }, 800);
+  },
+
+  loadHOF() {
+    const el = document.getElementById('board-dijkstra-delivery');
+    if (typeof loadGameLeaderboard === 'function') {
+      try { loadGameLeaderboard(ATITLE, true, ABOARD); return; } catch (e) { console.warn('[DijkstraDelivery] loadGameLeaderboard 오류:', e); }
+    }
+    this.renderHOFLocal(el);
+  },
+
+  renderHOFLocal(el) {
+    if (!el) return;
+    let list = [];
+    try { list = JSON.parse(localStorage.getItem('hof_' + ABOARD) || '[]'); } catch (e) { list = []; }
+    if (!list.length) { el.innerHTML = '<p style="text-align:center;color:#94a3b8;padding:10px 0;margin:0">아직 기록이 없습니다. 첫 번째 배달을 완료해보세요!</p>'; return; }
+    const medals = ['🥇', '🥈', '🥉', '4위', '5위'];
+    el.innerHTML = list.slice(0, 5).map((r, i) =>
+      `<div class="gdd-hof-item"><span class="gdd-hof-name">${medals[i] || (i + 1) + '위'} ${esc(r.name)}</span><span class="gdd-hof-score">${Number(r.score) || 0}점</span></div>`
+    ).join('');
+  },
+
+  goHome() {
+    if (this.state.animTimer) { clearInterval(this.state.animTimer); this.state.animTimer = null; }
+    const mv = document.getElementById('mathlab-view');
+    if (mv) { mv.style.display = 'none'; mv.innerHTML = ''; }
+    const fh = document.getElementById('dijkstra-delivery-force-host');
+    if (fh) { fh.style.display = 'none'; fh.innerHTML = ''; }
+    try {
+      
+    } catch (e) {}
+    const ag = document.querySelector('.app-grid'); const ds = document.getElementById('dashboard-screen');
+    if (ag) ag.style.display = ''; if (ds) ds.style.display = '';
+    if (typeof window.goHome === 'function') window.goHome();
+  },
+
+  bindEvents() {
+    const root = document.getElementById('gdd-root'); if (!root) return;
+    root.querySelectorAll('.gdd-diff-btn').forEach(btn => btn.addEventListener('click', () => {
+      this.state.difficulty = btn.dataset.diff;
+      root.querySelectorAll('.gdd-diff-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      this.state.round = 1; this.state.totalScore = 0; this.state.fuel = 3;
+      this.state.totalRounds = this.diffConfig().rounds;
+      this.newRound(); this.updateStats();
+    }));
+    const undo = document.getElementById('gdd-undo');
+    if (undo) undo.addEventListener('click', () => { if (!this.state.submitted) { this.state.selectedPath.pop(); this.updatePathBar(); this.drawGraph(); } });
+    const hint = document.getElementById('gdd-hint'); if (hint) hint.addEventListener('click', () => this.showHint());
+    const submit = document.getElementById('gdd-submit'); if (submit) submit.addEventListener('click', () => this.submitPath());
+    const next = document.getElementById('gdd-next'); if (next) next.addEventListener('click', () => this.nextRound());
+    const anim = document.getElementById('gdd-anim');
+    if (anim) anim.addEventListener('click', () => { document.getElementById('gdd-diff-steps').innerHTML = ''; this.playAnimation(); });
+    const home = document.getElementById('gdd-home');
+    if (home) home.addEventListener('click', () => this.goHome());
+    const guide = document.getElementById('gdd-guide');
+    if (guide) guide.addEventListener('click', () => { const m = document.getElementById('gdd-guide-modal'); if (m) m.classList.add('show'); });
+    const guideClose = document.getElementById('gdd-guide-close');
+    if (guideClose) guideClose.addEventListener('click', () => { const m = document.getElementById('gdd-guide-modal'); if (m) m.classList.remove('show'); });
+    const ok = document.getElementById('gdd-modal-ok');
+    if (ok) ok.addEventListener('click', () => {
+      const nm = (document.getElementById('gdd-modal-nm').value || '무명의 기사').trim();
+      this.saveHOF(nm); document.getElementById('gdd-modal').classList.remove('show');
+    });
+    const cancel = document.getElementById('gdd-modal-cancel');
+    if (cancel) cancel.addEventListener('click', () => document.getElementById('gdd-modal').classList.remove('show'));
+  },
+
+  destroy() {
+    if (this.state.animTimer) clearInterval(this.state.animTimer);
+    if (this.container) this.container.innerHTML = '';
+  }
+};
+
+function registerDijkstraDelivery() {
+  if (typeof window.MathLabGames === 'undefined' || typeof window.MathLabGames.register !== 'function') return;
+  try {
+    if (typeof window.MathLabGames.get === 'function' && window.MathLabGames.get('dijkstra-delivery')) return;
+    window.MathLabGames.register({
+      id: 'dijkstra-delivery',
+      title: '다익스트라 택배 배달',
+      icon: '🚚',
+      sourceType: 'new',
+      mount(container, context) { DijkstraDelivery.mount(container, context); },
+      reset() { DijkstraDelivery.resetGame(); },
+      destroy() { DijkstraDelivery.destroy(); },
+      goHome() { DijkstraDelivery.goHome(); }
+    });
+  } catch (e) { console.warn('[DijkstraDelivery] register 방어:', e); }
+}
+registerDijkstraDelivery();
+window.addEventListener('DOMContentLoaded', registerDijkstraDelivery);
+setTimeout(registerDijkstraDelivery, 100);
+setTimeout(registerDijkstraDelivery, 500);
+
+window.DijkstraDelivery = DijkstraDelivery;
+window.initDijkstraDeliveryGame = function () {
+  registerDijkstraDelivery();
+  if (window.LegacyBridge && typeof window.LegacyBridge.hideAllLegacySections === 'function') {
+    window.LegacyBridge.hideAllLegacySections();
+    if (typeof window.LegacyBridge.showNewRoot === 'function') window.LegacyBridge.showNewRoot();
+  }
+  if (typeof window.MathLabGames !== 'undefined' && typeof window.MathLabGames.mount === 'function') {
+    try { window.MathLabGames.mount('dijkstra-delivery'); return; } catch (e) {}
+  }
+  DijkstraDelivery.mount(document.getElementById('mathlab-view'));
+};
+window.launchDijkstraDeliveryGame = window.initDijkstraDeliveryGame;
+})();
+</script>

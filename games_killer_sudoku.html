@@ -1,0 +1,1406 @@
+<style>
+  /* ==========================================================================
+     Gen-3 수학 실험실 표준 스타일 - 킬러 스도쿠 (Killer Sudoku)
+     모던 슬레이트 & 다크 네이비 프리미엄 테마 (고대비 형광색 금지, 절제된 하모니)
+     ========================================================================== */
+  .game-killer-sudoku {
+    width: 100%;
+    max-width: 1060px;
+    margin: 0 auto;
+    padding: 16px;
+    background: #0f172a;
+    color: #e2e8f0;
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    border-radius: 20px;
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    position: relative;
+    box-sizing: border-box;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  .game-killer-sudoku * {
+    box-sizing: border-box;
+  }
+
+  /* 상단 헤더 바 */
+  .game-killer-sudoku .stats-bar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    background: #1e293b;
+    border: 1px solid #334155;
+    padding: 12px 18px;
+    border-radius: 14px;
+  }
+
+  .game-killer-sudoku .title-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .game-killer-sudoku .title-icon {
+    font-size: 1.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    background: rgba(14, 165, 233, 0.15);
+    border-radius: 10px;
+  }
+
+  .game-killer-sudoku .title-text {
+    font-size: 1.28rem;
+    font-weight: 800;
+    color: #f8fafc;
+    letter-spacing: -0.02em;
+  }
+
+  .game-killer-sudoku .title-badge {
+    font-size: 0.75rem;
+    font-weight: 700;
+    background: #0ea5e9;
+    color: #ffffff;
+    padding: 3px 8px;
+    border-radius: 6px;
+  }
+
+  .game-killer-sudoku .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .game-killer-sudoku .btn-header {
+    background: #334155;
+    color: #e2e8f0;
+    border: 1px solid #475569;
+    padding: 7px 13px;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+  }
+
+  .game-killer-sudoku .btn-header:hover {
+    background: #475569;
+    color: #ffffff;
+    transform: translateY(-1px);
+  }
+
+  .game-killer-sudoku .btn-header.primary {
+    background: #0ea5e9;
+    color: #ffffff;
+    border-color: #0284c7;
+  }
+
+  .game-killer-sudoku .btn-header.primary:hover {
+    background: #0284c7;
+  }
+
+  .game-killer-sudoku .btn-header.home {
+    background: rgba(244, 63, 94, 0.18);
+    color: #fda4af;
+    border-color: rgba(244, 63, 94, 0.4);
+  }
+
+  .game-killer-sudoku .btn-header.home:hover {
+    background: rgba(244, 63, 94, 0.35);
+    color: #ffffff;
+  }
+
+  /* 상태 인포 바 (난이도, 타이머, 점수, 케이지 잔여 합) */
+  .game-killer-sudoku .status-panel {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    background: rgba(30, 41, 59, 0.7);
+    border: 1px solid #334155;
+    padding: 10px 16px;
+    border-radius: 12px;
+  }
+
+  .game-killer-sudoku .mode-tabs {
+    display: flex;
+    gap: 6px;
+    background: #0f172a;
+    padding: 4px;
+    border-radius: 10px;
+    border: 1px solid #334155;
+  }
+
+  .game-killer-sudoku .mode-btn {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    padding: 6px 12px;
+    border-radius: 7px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .game-killer-sudoku .mode-btn.active {
+    background: #0ea5e9;
+    color: #ffffff;
+    box-shadow: 0 2px 6px rgba(14, 165, 233, 0.35);
+  }
+
+  .game-killer-sudoku .info-group {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .game-killer-sudoku .info-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.9rem;
+    color: #cbd5e1;
+  }
+
+  .game-killer-sudoku .info-value {
+    font-weight: 800;
+    color: #38bdf8;
+  }
+
+  .game-killer-sudoku .cage-info-badge {
+    background: rgba(245, 158, 11, 0.15);
+    border: 1px solid rgba(245, 158, 11, 0.35);
+    color: #fcd34d;
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-size: 0.84rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  /* 메인 게임 영역 (좌측 크게 보드 1fr, 우측 작고 슬림하게 컨트롤 패드 230px) */
+  .game-killer-sudoku .main-layout {
+    display: grid;
+    grid-template-columns: 1fr 230px;
+    gap: 20px;
+    align-items: start;
+  }
+
+  @media (max-width: 780px) {
+    .game-killer-sudoku .main-layout {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* 스도쿠 격자 컨테이너 (더 크게 렌더링 - max-width: 680px) */
+  .game-killer-sudoku .board-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 16px;
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 16px;
+  }
+
+  .game-killer-sudoku .sudoku-grid {
+    display: grid;
+    background: #0f172a;
+    border: 3px solid #64748b;
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+    max-width: 680px;
+    width: 100%;
+    aspect-ratio: 1;
+  }
+
+  .game-killer-sudoku .sudoku-grid.grid-6x6 {
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: repeat(6, 1fr);
+  }
+
+  .game-killer-sudoku .sudoku-grid.grid-9x9 {
+    grid-template-columns: repeat(9, 1fr);
+    grid-template-rows: repeat(9, 1fr);
+  }
+
+  /* 개별 셀 스타일 (더 크고 쾌적한 숫자) */
+  .game-killer-sudoku .cell {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.55rem;
+    cursor: pointer;
+    background: #0f172a;
+    color: #f8fafc;
+    border: 1px solid rgba(148, 163, 184, 0.15);
+    transition: background 0.15s ease, transform 0.1s ease;
+  }
+
+  @media (max-width: 500px) {
+    .game-killer-sudoku .cell {
+      font-size: 1.2rem;
+    }
+  }
+
+  /* 스도쿠 블록(박스) 굵은 경계선 */
+  .game-killer-sudoku .sudoku-grid.grid-9x9 .cell.box-right {
+    border-right: 2.5px solid #64748b;
+  }
+  .game-killer-sudoku .sudoku-grid.grid-9x9 .cell.box-bottom {
+    border-bottom: 2.5px solid #64748b;
+  }
+  .game-killer-sudoku .sudoku-grid.grid-6x6 .cell.box-right-6 {
+    border-right: 2.5px solid #64748b;
+  }
+  .game-killer-sudoku .sudoku-grid.grid-6x6 .cell.box-bottom-6 {
+    border-bottom: 2.5px solid #64748b;
+  }
+
+  /* 셀 상태별 색상 */
+  .game-killer-sudoku .cell.prefilled {
+    color: #cbd5e1;
+    font-weight: 800;
+  }
+
+  .game-killer-sudoku .cell.user-input {
+    color: #38bdf8;
+  }
+
+  .game-killer-sudoku .cell.selected {
+    background: rgba(14, 165, 233, 0.28) !important;
+    box-shadow: inset 0 0 0 2px #38bdf8;
+    z-index: 2;
+  }
+
+  .game-killer-sudoku .cell.cage-highlight {
+    background: rgba(14, 165, 233, 0.11);
+  }
+
+  .game-killer-sudoku .cell.conflict {
+    background: rgba(244, 63, 94, 0.25) !important;
+    color: #fda4af !important;
+  }
+
+  /* 케이지 점선 테두리 처리 */
+  .game-killer-sudoku .cell.cage-t { border-top: 2px dashed rgba(245, 158, 11, 0.75); }
+  .game-killer-sudoku .cell.cage-b { border-bottom: 2px dashed rgba(245, 158, 11, 0.75); }
+  .game-killer-sudoku .cell.cage-l { border-left: 2px dashed rgba(245, 158, 11, 0.75); }
+  .game-killer-sudoku .cell.cage-r { border-right: 2px dashed rgba(245, 158, 11, 0.75); }
+
+  /* 케이지 합계 숫자 뱃지 (좌상단) */
+  .game-killer-sudoku .cage-sum {
+    position: absolute;
+    top: 3px;
+    left: 4px;
+    font-size: 0.72rem;
+    font-weight: 800;
+    line-height: 1;
+    color: #fcd34d;
+    background: rgba(15, 23, 42, 0.9);
+    padding: 1px 4px;
+    border-radius: 4px;
+    pointer-events: none;
+    z-index: 3;
+  }
+
+  /* 메모(후보 숫자) 그리드 */
+  .game-killer-sudoku .memo-grid {
+    position: absolute;
+    inset: 2px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    pointer-events: none;
+  }
+
+  .game-killer-sudoku .memo-num {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.58rem;
+    font-weight: 700;
+    color: #94a3b8;
+    line-height: 1;
+  }
+
+  /* 우측 컨트롤 영역 (더 콤팩트하고 작게) */
+  .game-killer-sudoku .controls-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 230px;
+    background: #1e293b;
+    border: 1px solid #334155;
+    padding: 12px;
+    border-radius: 14px;
+  }
+
+  .game-killer-sudoku .control-label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  /* 모드 토글 (일반 / 메모) - 작게 */
+  .game-killer-sudoku .input-mode-toggle {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+
+  .game-killer-sudoku .toggle-btn {
+    background: #0f172a;
+    border: 1px solid #334155;
+    color: #cbd5e1;
+    padding: 7px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    transition: all 0.2s;
+  }
+
+  .game-killer-sudoku .toggle-btn.active {
+    background: #0ea5e9;
+    color: #ffffff;
+    border-color: #0284c7;
+    box-shadow: 0 2px 6px rgba(14, 165, 233, 0.35);
+  }
+
+  /* 숫자 버튼 패드 - 더 작게 */
+  .game-killer-sudoku .numpad {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+  }
+
+  .game-killer-sudoku .num-btn {
+    background: #334155;
+    border: 1px solid #475569;
+    color: #f8fafc;
+    font-size: 1.05rem;
+    font-weight: 800;
+    padding: 8px 0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .game-killer-sudoku .num-btn:hover {
+    background: #475569;
+    transform: translateY(-1px);
+  }
+
+  .game-killer-sudoku .num-btn:active {
+    transform: translateY(0);
+  }
+
+  .game-killer-sudoku .action-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+
+  .game-killer-sudoku .btn-action {
+    background: #0f172a;
+    border: 1px solid #334155;
+    color: #cbd5e1;
+    padding: 8px;
+    border-radius: 8px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    transition: all 0.2s;
+  }
+
+  .game-killer-sudoku .btn-action:hover {
+    background: #334155;
+    color: #ffffff;
+  }
+
+  /* 힌트 및 콤비네이션 안내 카드 바 - 작게 */
+  .game-killer-sudoku .helper-card {
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid #334155;
+    padding: 10px;
+    border-radius: 10px;
+    font-size: 0.75rem;
+    color: #cbd5e1;
+    line-height: 1.45;
+  }
+
+  /* 공통 모달 팝업 */
+  .game-killer-sudoku .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(4px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    padding: 20px;
+  }
+
+  .game-killer-sudoku .modal-backdrop.open {
+    display: flex;
+  }
+
+  .game-killer-sudoku .modal-box {
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 18px;
+    width: 100%;
+    max-width: 520px;
+    max-height: 85vh;
+    overflow-y: auto;
+    padding: 24px;
+    color: #e2e8f0;
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.6);
+  }
+
+  .game-killer-sudoku .modal-title {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: #f8fafc;
+    margin: 0 0 14px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .game-killer-sudoku .rule-list {
+    margin: 0 0 16px 0;
+    padding-left: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 0.93rem;
+    line-height: 1.55;
+    color: #cbd5e1;
+  }
+
+  .game-killer-sudoku .combo-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    font-size: 0.85rem;
+  }
+
+  .game-killer-sudoku .combo-table th,
+  .game-killer-sudoku .combo-table td {
+    border: 1px solid #334155;
+    padding: 8px 10px;
+    text-align: left;
+  }
+
+  .game-killer-sudoku .combo-table th {
+    background: #0f172a;
+    color: #38bdf8;
+  }
+
+  .game-killer-sudoku .modal-close-btn {
+    width: 100%;
+    background: #0ea5e9;
+    color: #ffffff;
+    border: none;
+    padding: 12px;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 18px;
+    transition: background 0.2s;
+  }
+
+  .game-killer-sudoku .modal-close-btn:hover {
+    background: #0284c7;
+  }
+</style>
+
+<script>
+  /* ==========================================================================
+     KillerSudoku 모듈 - Gen-3 100% 동적 마운트 & 푸터 침범 방지 자동 방어 탑재
+     ========================================================================== */
+  const KillerSudoku = (function () {
+    let currentDifficulty = 'EASY'; // EASY(6x6), NORMAL(9x9), HARD(9x9)
+    let size = 6;
+    let boxR = 2, boxC = 3;
+
+    let solutionGrid = []; // 정답 해
+    let puzzleGrid = [];   // 사용자 입력값 (0 = 빈칸)
+    let memoGrid = [];     // 각 셀별 Set<number>
+    let initialGrid = [];  // 초기 힌트 제공 셀 여부 (boolean[])
+
+    let cages = [];        // { id, sum, cells: [idx1, idx2, ...], colorIdx }
+    let cellToCage = [];   // idx -> cage instance
+
+    let selectedCellIdx = -1;
+    let inputMode = 'normal'; // 'normal' | 'memo'
+    let showRemainingHint = false;
+
+    let timerInterval = null;
+    let elapsedSeconds = 0;
+    let currentScore = 100;
+    let isCompleted = false;
+    let toastTimer = null;
+
+    const escapeHTML = (str) => {
+      if (!str) return '';
+      return String(str).replace(/[&<>"']/g, function(match) {
+        const escape = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+        return escape[match];
+      });
+    };
+
+    function showToast(msg, isError = false) {
+      let host = document.getElementById('killer-sudoku-app');
+      if (!host) return;
+      let toast = host.querySelector('#killer-toast');
+      if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'killer-toast';
+        toast.style.cssText = 'position:absolute; top:20px; left:50%; transform:translateX(-50%); padding:12px 24px; border-radius:12px; font-weight:800; font-size:1rem; z-index:99999; box-shadow:0 10px 25px rgba(0,0,0,0.5); transition:all 0.3s; text-align:center; min-width:300px; pointer-events:none; opacity:0;';
+        host.appendChild(toast);
+      }
+      toast.style.background = isError ? '#ef4444' : '#10b981';
+      toast.style.color = isError ? '#ffffff' : '#0f172a';
+      toast.textContent = msg;
+      void toast.offsetWidth;
+      toast.style.opacity = '1';
+      toast.style.top = '20px';
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.top = '0px';
+      }, 3000);
+    }
+
+    // 프리셋 고품질 시드 퍼즐 풀 (즉시 생성 및 검증된 킬러 스도쿠)
+    const SEED_PUZZLES = {
+      EASY: [
+        {
+          size: 6, boxR: 2, boxC: 3,
+          solution: [
+            1, 2, 3,  4, 5, 6,
+            4, 5, 6,  1, 2, 3,
+            2, 3, 4,  5, 6, 1,
+            5, 6, 1,  2, 3, 4,
+            3, 4, 5,  6, 1, 2,
+            6, 1, 2,  3, 4, 5
+          ],
+          cages: [
+            { cells: [0, 1], sum: 3 },
+            { cells: [2, 3], sum: 7 },
+            { cells: [4, 5], sum: 11 },
+            { cells: [6, 12], sum: 6 },
+            { cells: [7, 8], sum: 11 },
+            { cells: [9, 10, 11], sum: 6 },
+            { cells: [13, 14], sum: 7 },
+            { cells: [15, 16], sum: 11 },
+            { cells: [17, 23], sum: 5 },
+            { cells: [18, 19, 20], sum: 12 },
+            { cells: [21, 22], sum: 5 },
+            { cells: [24, 30], sum: 9 },
+            { cells: [25, 26], sum: 9 },
+            { cells: [27, 28], sum: 7 },
+            { cells: [29, 35], sum: 7 },
+            { cells: [31, 32], sum: 3 },
+            { cells: [33, 34], sum: 7 }
+          ],
+          prefilledCount: 4
+        }
+      ],
+      NORMAL: [
+        {
+          size: 9, boxR: 3, boxC: 3,
+          solution: [
+            5, 3, 4, 6, 7, 8, 9, 1, 2,
+            6, 7, 2, 1, 9, 5, 3, 4, 8,
+            1, 9, 8, 3, 4, 2, 5, 6, 7,
+            8, 5, 9, 7, 6, 1, 4, 2, 3,
+            4, 2, 6, 8, 5, 3, 7, 9, 1,
+            7, 1, 3, 9, 2, 4, 8, 5, 6,
+            9, 6, 1, 5, 3, 7, 2, 8, 4,
+            2, 8, 7, 4, 1, 9, 6, 3, 5,
+            3, 4, 5, 2, 8, 6, 1, 7, 9
+          ],
+          cages: [
+            { cells: [0, 1], sum: 8 },
+            { cells: [2, 3], sum: 10 },
+            { cells: [4, 5], sum: 15 },
+            { cells: [6, 7, 8], sum: 12 },
+            { cells: [9, 18], sum: 7 },
+            { cells: [10, 11], sum: 9 },
+            { cells: [12, 13], sum: 10 },
+            { cells: [14, 15], sum: 8 },
+            { cells: [16, 17], sum: 12 },
+            { cells: [19, 20], sum: 17 },
+            { cells: [21, 22], sum: 7 },
+            { cells: [23, 24], sum: 7 },
+            { cells: [25, 26], sum: 13 },
+            { cells: [27, 28], sum: 13 },
+            { cells: [29, 30], sum: 16 },
+            { cells: [31, 32], sum: 7 },
+            { cells: [33, 34], sum: 6 },
+            { cells: [35, 36], sum: 7 },
+            { cells: [37, 38], sum: 8 },
+            { cells: [39, 40], sum: 13 },
+            { cells: [41, 42], sum: 10 },
+            { cells: [43, 44], sum: 10 },
+            { cells: [45, 46], sum: 8 },
+            { cells: [47, 48], sum: 12 },
+            { cells: [49, 50], sum: 6 },
+            { cells: [51, 52], sum: 13 },
+            { cells: [53, 62], sum: 7 },
+            { cells: [54, 55], sum: 15 },
+            { cells: [56, 57], sum: 6 },
+            { cells: [58, 59], sum: 10 },
+            { cells: [60, 61], sum: 10 },
+            { cells: [63, 64], sum: 15 },
+            { cells: [65, 66], sum: 5 },
+            { cells: [67, 68], sum: 15 },
+            { cells: [69, 70], sum: 9 },
+            { cells: [71, 80], sum: 14 },
+            { cells: [72, 73], sum: 7 },
+            { cells: [74, 75], sum: 7 },
+            { cells: [76, 77], sum: 14 },
+            { cells: [78, 79], sum: 8 }
+          ],
+          prefilledCount: 0
+        }
+      ]
+    };
+
+    /* --------------------------------------------------------------------------
+       Gen-3 동적 마운트 (mount): #mathlab-view 내부에 UI 주입 + 푸터 침범 방지 보정
+       -------------------------------------------------------------------------- */
+    function mount(container, context) {
+      let host = null;
+      if (typeof container === 'string') host = document.querySelector(container);
+      else if (container instanceof HTMLElement) host = container;
+      if (!host) host = window.MathLabUtils?.getMountContainer ? window.MathLabUtils.getMountContainer(container) : document.getElementById('mathlab-view');
+      if (!host) host = document.getElementById('new-root') || document.getElementById('game-container');
+
+      if (!host) {
+        console.error('[KillerSudoku] 마운트할 컨테이너를 찾을 수 없습니다.');
+        return;
+      }
+
+      // 🌟 [DOM 레이아웃 자동 방어] 만약 마운트 컨테이너가 푸터보다 DOM 순서상 아래쪽에 있다면 푸터 위로 즉시 재배치
+      const footerEl = document.querySelector('footer, #footer, .app-footer') || 
+                       Array.from(document.querySelectorAll('div, p, span')).find(el => el.textContent && el.textContent.includes('2026 기록조율사'));
+      if (footerEl && host.compareDocumentPosition(footerEl) & Node.DOCUMENT_POSITION_PRECEDING) {
+        footerEl.parentNode.insertBefore(host, footerEl);
+      }
+
+      // 🌟 스킬 표준 방어막: 과거 goHome 등으로 인라인 display:none이 남아있다면 즉시 복구 (재진입 빈 화면 방지)
+      host.style.display = '';
+
+      // 동적 UI 템플릿 주입 (컨테이너 내부로 100% 마운트)
+      host.innerHTML = `
+        <div class="game-killer-sudoku" id="killer-sudoku-app">
+          <!-- 상단 헤더 바 -->
+          <div class="stats-bar">
+            <div class="title-group">
+              <div class="title-icon">➕</div>
+              <div>
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <span class="title-text">킬러 스도쿠</span>
+                  <span class="title-badge">Gen-3</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="header-actions">
+              <button class="btn-header" onclick="KillerSudoku.showGuideModal()">
+                <span>📖 사용방법</span>
+              </button>
+              <button class="btn-header" onclick="KillerSudoku.showCombosModal()">
+                <span>🔢 조합 사전</span>
+              </button>
+              <button class="btn-header" onclick="KillerSudoku.showRankingModal()">
+                <span>🏆 명예의전당</span>
+              </button>
+              <button class="btn-header primary" onclick="KillerSudoku.resetGame()">
+                <span>🔄 새 게임</span>
+              </button>
+              <button class="btn-header home" onclick="KillerSudoku.goHomeAction()">
+                <span>🏠 홈</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 상태 및 정보 바 -->
+          <div class="status-panel">
+            <div class="mode-tabs">
+              <button class="mode-btn active" id="killer-btn-easy" onclick="KillerSudoku.setDifficulty('EASY')">EASY (6×6 입문)</button>
+              <button class="mode-btn" id="killer-btn-normal" onclick="KillerSudoku.setDifficulty('NORMAL')">NORMAL (9×9 보통)</button>
+              <button class="mode-btn" id="killer-btn-hard" onclick="KillerSudoku.setDifficulty('HARD')">HARD (9×9 도전)</button>
+            </div>
+
+            <div class="info-group">
+              <div class="info-item">
+                <span>⏱️ 시간:</span>
+                <span class="info-value" id="killer-timer">00:00</span>
+              </div>
+              <div class="info-item">
+                <span>⭐ 점수:</span>
+                <span class="info-value" id="killer-score">0</span>
+              </div>
+              <div class="cage-info-badge" id="killer-cage-badge">
+                <span>🔒 선택 케이지 합: -</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 메인 보드 + 컨트롤 패널 (좌측 크게, 우측 콤팩트하게) -->
+          <div class="main-layout">
+            <div class="board-wrapper">
+              <div class="sudoku-grid grid-6x6" id="killer-board-el"></div>
+            </div>
+
+            <div class="controls-panel">
+              <div class="control-label">입력 모드</div>
+              <div class="input-mode-toggle">
+                <button class="toggle-btn active" id="killer-mode-normal-btn" onclick="KillerSudoku.setInputMode('normal')">
+                  <span>✍️ 입력</span>
+                </button>
+                <button class="toggle-btn" id="killer-mode-memo-btn" onclick="KillerSudoku.setInputMode('memo')">
+                  <span>✏️ 메모</span>
+                </button>
+              </div>
+
+              <div class="control-label" style="margin-top:2px;">숫자 키패드 (1~9)</div>
+              <div class="numpad" id="killer-numpad-el"></div>
+
+              <div class="action-row">
+                <button class="btn-action" onclick="KillerSudoku.clearSelectedCell()">
+                  <span>⌫ 지우기</span>
+                </button>
+                <button class="btn-action" onclick="KillerSudoku.toggleRemainingSumHint()">
+                  <span>💡 잔여합(-5)</span>
+                </button>
+              </div>
+
+              <div class="helper-card">
+                <b style="color:#38bdf8;">📌 규칙 요약</b><br>
+                1. 행·열·박스 중복 금지<br>
+                2. 점선 케이지 안 <b>중복 없이</b> 합 일치
+              </div>
+            </div>
+          </div>
+
+          <!-- 1. 사용방법 모달 -->
+          <div class="modal-backdrop" id="killer-guide-modal">
+            <div class="modal-box">
+              <h3 class="modal-title">📖 킬러 스도쿠 사용방법 및 수학 원리</h3>
+              <ul class="rule-list">
+                <li><b>기본 규칙 (스도쿠)</b>: 각 행, 열, 굵은 선으로 둘러싸인 박스 안에 숫자가 중복 없이 한 번씩만 들어갑니다.</li>
+                <li><b>케이지 합 규칙</b>: 점선으로 묶인 영역(케이지) 왼쪽 위의 작은 숫자는 그 영역 내 숫자들의 <b>합</b>입니다.</li>
+                <li><b>케이지 중복 금지</b>: 한 케이지 안에서는 같은 숫자를 중복해서 쓸 수 없습니다 (예: 합 4 = 1+3 가능, 2+2 불가).</li>
+                <li><b>✏️ 메모 모드</b>: 후보 숫자를 작게 메모해 논리적으로 가능한 조합을 좁혀 나갈 수 있습니다.</li>
+                <li><b>💡 잔여 합 힌트</b>: 선택한 케이지의 남은 목표 합을 계산해 줍니다 (단, 사용 시 5점 감점).</li>
+              </ul>
+              <button class="modal-close-btn" onclick="KillerSudoku.closeModals()">확인 및 게임 시작</button>
+            </div>
+          </div>
+
+          <!-- 2. 케이지 조합 사전 모달 -->
+          <div class="modal-backdrop" id="killer-combos-modal">
+            <div class="modal-box">
+              <h3 class="modal-title">🔢 필수 케이지 합 분할 조합 (유일 조합)</h3>
+              <p style="font-size:0.88rem; color:#cbd5e1; margin-bottom:8px;">
+                아래 합은 오직 단 하나의 숫자 조합으로만 분할되는 유일한 단서입니다.
+              </p>
+              <table class="combo-table">
+                <thead>
+                  <tr>
+                    <th>칸 수</th>
+                    <th>합계</th>
+                    <th>유일한 숫자 조합</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>2칸</td><td>3</td><td>1, 2</td></tr>
+                  <tr><td>2칸</td><td>4</td><td>1, 3</td></tr>
+                  <tr><td>2칸</td><td>16 (9×9)</td><td>7, 9</td></tr>
+                  <tr><td>2칸</td><td>17 (9×9)</td><td>8, 9</td></tr>
+                  <tr><td>3칸</td><td>6</td><td>1, 2, 3</td></tr>
+                  <tr><td>3칸</td><td>7</td><td>1, 2, 4</td></tr>
+                  <tr><td>3칸</td><td>23 (9×9)</td><td>6, 8, 9</td></tr>
+                  <tr><td>3칸</td><td>24 (9×9)</td><td>7, 8, 9</td></tr>
+                </tbody>
+              </table>
+              <button class="modal-close-btn" onclick="KillerSudoku.closeModals()">닫기</button>
+            </div>
+          </div>
+
+          <!-- 3. 명예의 전당 모달 -->
+          <div class="modal-backdrop" id="killer-ranking-modal">
+            <div class="modal-box">
+              <h3 class="modal-title">🏆 킬러 스도쿠 명예의 전당</h3>
+              <div id="board-killer-sudoku">
+                <p style="text-align:center; color:#94a3b8;">랭킹 데이터를 불러오는 중...</p>
+              </div>
+              <div style="margin-top:16px; display:flex; gap:8px;">
+                <input type="text" id="killer-nickname-input" placeholder="닉네임 입력" style="flex:1; padding:10px 14px; border-radius:10px; border:1px solid #334155; background:#0f172a; color:#f8fafc; font-weight:700;">
+                <button class="btn-header primary" onclick="KillerSudoku.submitRankScore()">등록</button>
+              </div>
+              <button class="modal-close-btn" onclick="KillerSudoku.closeModals()">닫기</button>
+            </div>
+          </div>
+        </div>
+      `;
+
+      window.addEventListener('keydown', onKeyDown);
+      setDifficulty('EASY');
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    }
+
+    function setDifficulty(diff) {
+      currentDifficulty = diff;
+      document.querySelectorAll('#killer-sudoku-app .mode-btn').forEach(btn => btn.classList.remove('active'));
+      const activeBtn = document.getElementById('killer-btn-' + diff.toLowerCase());
+      if (activeBtn) activeBtn.classList.add('active');
+      resetGame();
+    }
+
+    function resetGame() {
+      isCompleted = false;
+      showRemainingHint = false;
+      elapsedSeconds = 0;
+      currentScore = 100;
+      selectedCellIdx = -1;
+      startTimer();
+
+      if (currentDifficulty === 'EASY') {
+        size = 6; boxR = 2; boxC = 3;
+      } else {
+        size = 9; boxR = 3; boxC = 3;
+      }
+
+      loadOrGeneratePuzzle();
+      renderNumPad();
+      renderBoard();
+      updateStatusPanel();
+    }
+
+    // 퍼즐 생성
+    function loadOrGeneratePuzzle() {
+      const pool = SEED_PUZZLES[currentDifficulty] || SEED_PUZZLES.NORMAL;
+      const seed = pool[Math.floor(Math.random() * pool.length)];
+
+      size = seed.size;
+      boxR = seed.boxR;
+      boxC = seed.boxC;
+
+      const perm = [];
+      const digits = Array.from({ length: size }, (_, i) => i + 1);
+      for (let i = size - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [digits[i], digits[j]] = [digits[j], digits[i]];
+      }
+      for (let i = 0; i < size; i++) perm[i + 1] = digits[i];
+
+      solutionGrid = seed.solution.map(val => perm[val]);
+      puzzleGrid = Array(size * size).fill(0);
+      memoGrid = Array.from({ length: size * size }, () => new Set());
+      initialGrid = Array(size * size).fill(false);
+
+      cages = seed.cages.map((cg, idx) => {
+        const cells = [...cg.cells];
+        const sum = cells.reduce((acc, cellIdx) => acc + solutionGrid[cellIdx], 0);
+        return {
+          id: idx,
+          cells: cells,
+          sum: sum,
+          colorIdx: idx % 6
+        };
+      });
+
+      cellToCage = Array(size * size).fill(null);
+      cages.forEach(cg => {
+        cg.cells.forEach(idx => {
+          cellToCage[idx] = cg;
+        });
+      });
+
+      if (seed.prefilledCount > 0) {
+        let count = 0;
+        const indices = Array.from({ length: size * size }, (_, i) => i);
+        indices.sort(() => Math.random() - 0.5);
+        for (let idx of indices) {
+          if (count >= seed.prefilledCount) break;
+          puzzleGrid[idx] = solutionGrid[idx];
+          initialGrid[idx] = true;
+          count++;
+        }
+      }
+    }
+
+    function renderNumPad() {
+      const numpadEl = document.getElementById('killer-numpad-el');
+      if (!numpadEl) return;
+      numpadEl.innerHTML = '';
+
+      for (let n = 1; n <= size; n++) {
+        const btn = document.createElement('button');
+        btn.className = 'num-btn';
+        btn.textContent = n;
+        btn.onclick = () => inputDigit(n);
+        numpadEl.appendChild(btn);
+      }
+    }
+
+    function renderBoard() {
+      const boardEl = document.getElementById('killer-board-el');
+      if (!boardEl) return;
+
+      boardEl.className = 'sudoku-grid ' + (size === 6 ? 'grid-6x6' : 'grid-9x9');
+      boardEl.innerHTML = '';
+
+      for (let idx = 0; idx < size * size; idx++) {
+        const r = Math.floor(idx / size);
+        const c = idx % size;
+        const cg = cellToCage[idx];
+
+        const cell = document.createElement('div');
+        cell.className = 'cell';
+        cell.dataset.idx = idx;
+
+        if ((c + 1) % boxC === 0 && c < size - 1) {
+          cell.classList.add(size === 6 ? 'box-right-6' : 'box-right');
+        }
+        if ((r + 1) % boxR === 0 && r < size - 1) {
+          cell.classList.add(size === 6 ? 'box-bottom-6' : 'box-bottom');
+        }
+
+        const upIdx = r > 0 ? idx - size : -1;
+        const downIdx = r < size - 1 ? idx + size : -1;
+        const leftIdx = c > 0 ? idx - 1 : -1;
+        const rightIdx = c < size - 1 ? idx + 1 : -1;
+
+        if (upIdx === -1 || cellToCage[upIdx] !== cg) cell.classList.add('cage-t');
+        if (downIdx === -1 || cellToCage[downIdx] !== cg) cell.classList.add('cage-b');
+        if (leftIdx === -1 || cellToCage[leftIdx] !== cg) cell.classList.add('cage-l');
+        if (rightIdx === -1 || cellToCage[rightIdx] !== cg) cell.classList.add('cage-r');
+
+        const isCageTopLeft = cg && cg.cells[0] === idx;
+        if (isCageTopLeft) {
+          const badge = document.createElement('span');
+          badge.className = 'cage-sum';
+          badge.textContent = cg.sum;
+          cell.appendChild(badge);
+        }
+
+        const val = puzzleGrid[idx];
+        if (val !== 0) {
+          const span = document.createElement('span');
+          span.textContent = val;
+          cell.appendChild(span);
+          if (initialGrid[idx]) cell.classList.add('prefilled');
+          else cell.classList.add('user-input');
+        } else if (memoGrid[idx] && memoGrid[idx].size > 0) {
+          const memoDiv = document.createElement('div');
+          memoDiv.className = 'memo-grid';
+          for (let m = 1; m <= 9; m++) {
+            const mSpan = document.createElement('div');
+            mSpan.className = 'memo-num';
+            mSpan.textContent = memoGrid[idx].has(m) ? m : '';
+            memoDiv.appendChild(mSpan);
+          }
+          cell.appendChild(memoDiv);
+        }
+
+        cell.onclick = () => selectCell(idx);
+        boardEl.appendChild(cell);
+      }
+
+      updateHighlightsAndConflicts();
+    }
+
+    function selectCell(idx) {
+      selectedCellIdx = idx;
+      updateHighlightsAndConflicts();
+      updateStatusPanel();
+    }
+
+    function updateHighlightsAndConflicts() {
+      const boardEl = document.getElementById('killer-board-el');
+      if (!boardEl) return;
+      const cells = boardEl.children;
+
+      const conflicts = getConflictSet();
+
+      for (let idx = 0; idx < size * size; idx++) {
+        const cell = cells[idx];
+        if (!cell) continue;
+
+        cell.classList.remove('selected', 'cage-highlight', 'conflict');
+
+        if (idx === selectedCellIdx) {
+          cell.classList.add('selected');
+        } else if (selectedCellIdx !== -1 && cellToCage[idx] === cellToCage[selectedCellIdx]) {
+          cell.classList.add('cage-highlight');
+        }
+
+        if (conflicts.has(idx)) {
+          cell.classList.add('conflict');
+        }
+      }
+    }
+
+    function getConflictSet() {
+      const conflicts = new Set();
+
+      for (let i = 0; i < size; i++) {
+        checkGroupConflicts(conflicts, getRowIndices(i));
+        checkGroupConflicts(conflicts, getColIndices(i));
+        checkGroupConflicts(conflicts, getBoxIndices(i));
+      }
+
+      cages.forEach(cg => {
+        const values = cg.cells.map(i => puzzleGrid[i]).filter(v => v !== 0);
+        const sum = values.reduce((a, b) => a + b, 0);
+
+        const seen = new Set();
+        cg.cells.forEach(idx => {
+          const val = puzzleGrid[idx];
+          if (val !== 0) {
+            if (seen.has(val)) conflicts.add(idx);
+            seen.add(val);
+          }
+        });
+
+        const allFilled = cg.cells.every(i => puzzleGrid[i] !== 0);
+        if (sum > cg.sum || (allFilled && sum !== cg.sum)) {
+          cg.cells.forEach(idx => conflicts.add(idx));
+        }
+      });
+
+      return conflicts;
+    }
+
+    function checkGroupConflicts(conflicts, indices) {
+      const map = {};
+      indices.forEach(idx => {
+        const val = puzzleGrid[idx];
+        if (val !== 0) {
+          if (map[val] !== undefined) {
+            conflicts.add(map[val]);
+            conflicts.add(idx);
+          } else {
+            map[val] = idx;
+          }
+        }
+      });
+    }
+
+    function getRowIndices(r) {
+      return Array.from({ length: size }, (_, c) => r * size + c);
+    }
+
+    function getColIndices(c) {
+      return Array.from({ length: size }, (_, r) => r * size + c);
+    }
+
+    function getBoxIndices(boxIdx) {
+      const br = Math.floor(boxIdx / (size / boxC)) * boxR;
+      const bc = (boxIdx % (size / boxC)) * boxC;
+      const res = [];
+      for (let r = 0; r < boxR; r++) {
+        for (let c = 0; c < boxC; c++) {
+          res.push((br + r) * size + (bc + c));
+        }
+      }
+      return res;
+    }
+
+    function setInputMode(mode) {
+      inputMode = mode;
+      document.getElementById('killer-mode-normal-btn')?.classList.toggle('active', mode === 'normal');
+      document.getElementById('killer-mode-memo-btn')?.classList.toggle('active', mode === 'memo');
+    }
+
+    function inputDigit(num) {
+      if (isCompleted || selectedCellIdx === -1) return;
+      if (initialGrid[selectedCellIdx]) {
+        showToast('🔒 초기 힌트 숫자는 변경할 수 없습니다.', true);
+        return;
+      }
+
+      if (inputMode === 'normal') {
+        if (puzzleGrid[selectedCellIdx] === num) {
+          puzzleGrid[selectedCellIdx] = 0;
+        } else {
+          puzzleGrid[selectedCellIdx] = num;
+          memoGrid[selectedCellIdx].clear();
+        }
+      } else {
+        if (puzzleGrid[selectedCellIdx] !== 0) return;
+        if (memoGrid[selectedCellIdx].has(num)) memoGrid[selectedCellIdx].delete(num);
+        else memoGrid[selectedCellIdx].add(num);
+      }
+
+      renderBoard();
+      updateStatusPanel();
+      checkWinCondition();
+    }
+
+    function clearSelectedCell() {
+      if (isCompleted || selectedCellIdx === -1 || initialGrid[selectedCellIdx]) return;
+      puzzleGrid[selectedCellIdx] = 0;
+      memoGrid[selectedCellIdx].clear();
+      renderBoard();
+      updateStatusPanel();
+    }
+
+    function toggleRemainingSumHint() {
+      if (selectedCellIdx === -1) {
+        showToast('💡 먼저 잔여 합을 확인할 케이지의 칸을 선택해 주세요.');
+        return;
+      }
+      showRemainingHint = !showRemainingHint;
+      if (showRemainingHint) {
+        currentScore = Math.max(10, currentScore - 5);
+        showToast('💡 힌트 사용! 남은 합 표시가 켜집니다 (-5점)');
+      }
+      updateStatusPanel();
+    }
+
+    function updateStatusPanel() {
+      const scoreEl = document.getElementById('killer-score');
+      if (scoreEl) scoreEl.textContent = currentScore;
+
+      const badgeEl = document.getElementById('killer-cage-badge');
+      if (!badgeEl) return;
+
+      if (selectedCellIdx === -1) {
+        badgeEl.innerHTML = '<span>🔒 선택 케이지 합: -</span>';
+        return;
+      }
+
+      const cg = cellToCage[selectedCellIdx];
+      if (!cg) return;
+
+      const curSum = cg.cells.reduce((acc, idx) => acc + puzzleGrid[idx], 0);
+      const rem = cg.sum - curSum;
+
+      if (showRemainingHint) {
+        badgeEl.innerHTML = `<span>🔒 케이지 합: <b>${cg.sum}</b> | 남은 합: <b style="color:#f59e0b">${rem}</b></span>`;
+      } else {
+        badgeEl.innerHTML = `<span>🔒 선택 케이지 목표 합: <b style="color:#fcd34d">${cg.sum}</b></span>`;
+      }
+    }
+
+    function checkWinCondition() {
+      const allFilled = puzzleGrid.every(v => v !== 0);
+      if (!allFilled) return;
+
+      const conflicts = getConflictSet();
+      if (conflicts.size > 0) return;
+
+      isCompleted = true;
+      stopTimer();
+      if (typeof playSound === 'function') playSound('win');
+
+      const bonus = Math.max(0, 30 - Math.floor(elapsedSeconds / 10));
+      const finalScore = currentScore + 20 + bonus;
+
+      setTimeout(() => {
+        showToast(`🎉 킬러 스도쿠 완성!! 최종 점수: ${finalScore}점`);
+        showRankingModal();
+      }, 300);
+    }
+
+    function startTimer() {
+      stopTimer();
+      timerInterval = setInterval(() => {
+        elapsedSeconds++;
+        const min = String(Math.floor(elapsedSeconds / 60)).padStart(2, '0');
+        const sec = String(elapsedSeconds % 60).padStart(2, '0');
+        const timerEl = document.getElementById('killer-timer');
+        if (timerEl) timerEl.textContent = `${min}:${sec}`;
+      }, 1000);
+    }
+
+    function stopTimer() {
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+    }
+
+    function onKeyDown(e) {
+      const key = e.key;
+      if (key >= '1' && key <= String(size)) {
+        inputDigit(parseInt(key, 10));
+      } else if (key === 'Backspace' || key === 'Delete' || key === '0') {
+        clearSelectedCell();
+      } else if (key === 'm' || key === 'M') {
+        setInputMode(inputMode === 'normal' ? 'memo' : 'normal');
+      } else if (key.startsWith('Arrow') && selectedCellIdx !== -1) {
+        e.preventDefault();
+        let r = Math.floor(selectedCellIdx / size);
+        let c = selectedCellIdx % size;
+        if (key === 'ArrowUp') r = Math.max(0, r - 1);
+        if (key === 'ArrowDown') r = Math.min(size - 1, r + 1);
+        if (key === 'ArrowLeft') c = Math.max(0, c - 1);
+        if (key === 'ArrowRight') c = Math.min(size - 1, c + 1);
+        selectCell(r * size + c);
+      }
+    }
+
+    function showGuideModal() {
+      document.getElementById('killer-guide-modal')?.classList.add('open');
+    }
+
+    function showCombosModal() {
+      document.getElementById('killer-combos-modal')?.classList.add('open');
+    }
+
+    function showRankingModal() {
+      document.getElementById('killer-ranking-modal')?.classList.add('open');
+      if (typeof loadGameLeaderboard === 'function') {
+        loadGameLeaderboard('킬러스도쿠', true, 'board-killer-sudoku');
+      }
+    }
+
+    function closeModals() {
+      document.querySelectorAll('.game-killer-sudoku .modal-backdrop').forEach(el => el.classList.remove('open'));
+    }
+
+    function submitRankScore() {
+      const nicknameInput = document.getElementById('killer-nickname-input');
+      const nickname = nicknameInput ? nicknameInput.value.trim() : '';
+      if (!nickname) {
+        showToast('⚠️ 닉네임을 입력해 주세요.', true);
+        return;
+      }
+
+      try {
+        let list = JSON.parse(localStorage.getItem('mathlab_lb_killer_sudoku') || '[]');
+        const dateStr = new Date().toLocaleDateString('ko-KR', { month: '2-digit', day: '2-digit' });
+        list.push({ nickname, score: currentScore + 20, date: dateStr });
+        list.sort((a, b) => b.score - a.score);
+        localStorage.setItem('mathlab_lb_killer_sudoku', JSON.stringify(list.slice(0, 20)));
+      } catch (e) {}
+
+      if (typeof window.submitRanking === 'function') {
+        window.submitRanking('킬러스도쿠', currentScore + 20, true, 'killer-nickname-input', 'board-killer-sudoku');
+      } else if (typeof window.parent?.submitRanking === 'function') {
+        window.parent.submitRanking('킬러스도쿠', currentScore + 20, true, 'killer-nickname-input', 'board-killer-sudoku');
+      } else {
+        showToast('🎉 명예의 전당 등록 완료! 점수가 등록되었습니다!');
+        if (nicknameInput) nicknameInput.value = '';
+        closeModals();
+      }
+    }
+
+    // 🌟 스킬 표준 안전 홈 버튼 (기본 상/하단 홈버튼과 100% 동일 동작)
+    function goHome() {
+      stopTimer();
+      window.removeEventListener('keydown', onKeyDown);
+
+      // 1. 표준 브리지 최우선 호출 (상단 로고/우측 하단 홈버튼과 완벽 동일 동작)
+      if (window.LegacyBridge && typeof window.LegacyBridge.backHome === 'function') {
+        try { window.LegacyBridge.backHome(); return; } catch(e) {}
+      }
+      if (typeof window.renderLegacyDashboardHome === 'function') {
+        try { window.renderLegacyDashboardHome(); return; } catch(e) {}
+      }
+      if (typeof window.MathLabRenderHome === 'function') {
+        try { window.MathLabRenderHome(); return; } catch(e) {}
+      }
+
+      // 2. 브리지 부재 시 폴백: 수동 루트 전환 및 대시보드 활성화
+      const mathlabRoot = document.getElementById('mathlab-root');
+      const legacyRoot = document.getElementById('legacy-root');
+      if (mathlabRoot) mathlabRoot.classList.add('hidden');
+      if (legacyRoot) legacyRoot.classList.remove('hidden');
+
+      const dashboard = document.getElementById('dashboard-screen');
+      if (dashboard) {
+        dashboard.classList.add('active');
+        dashboard.style.display = '';
+      }
+      window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+    }
+
+    function destroy() {
+      stopTimer();
+      window.removeEventListener('keydown', onKeyDown);
+    }
+
+    return {
+      mount,
+      resetGame,
+      destroy,
+      setDifficulty,
+      setInputMode,
+      inputDigit,
+      clearSelectedCell,
+      toggleRemainingSumHint,
+      showGuideModal,
+      showCombosModal,
+      showRankingModal,
+      closeModals,
+      submitRankScore,
+      goHome,       // 🌟 표준 인터페이스 이름 등록
+      goHomeAction: goHome // 🌟 기존 HTML 버튼의 onclick 호환성 유지
+    };
+  })();
+
+  // 🌟 스킬 표준 3중 자율 등록 (스크립트 로딩 순서 무관 100% 등록 보장)
+  function registerKillerSudoku() {
+    if (typeof window.MathLabGames !== 'undefined' && typeof window.MathLabGames.register === 'function') {
+      if (!window.MathLabGames.get('killer-sudoku')) {
+        window.MathLabGames.register({
+          id: 'killer-sudoku',
+          title: '킬러 스도쿠',
+          icon: '➕',
+          sourceType: 'new',
+          mount(container, context) { KillerSudoku.mount(container, context); },
+          reset() { KillerSudoku.resetGame(); },
+          destroy() { KillerSudoku.destroy(); }
+        });
+      }
+    }
+  }
+
+  registerKillerSudoku();
+  window.addEventListener('DOMContentLoaded', registerKillerSudoku);
+  setTimeout(registerKillerSudoku, 100);
+  setTimeout(registerKillerSudoku, 500);
+</script>

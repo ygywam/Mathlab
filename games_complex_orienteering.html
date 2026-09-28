@@ -1,0 +1,1006 @@
+<!--
+  복소평면 오리엔티어링 (complex-orienteering) - Gen-3 완전분리 신규 앱
+  - 라이트(화이트) 테마 / 자율 등록 / launchMathLabGame('complex-orienteering')
+  - 순수 style + script 스니펫 (HTML 래퍼 없음), js_app.html 0줄 수정
+-->
+<style>
+.game-complex-orienteering {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 20px 16px 40px;
+  font-family: 'Pretendard', 'Noto Sans KR', 'Segoe UI', sans-serif;
+  color: #0f172a;
+  background: #f8fafc;
+  border-radius: 18px;
+}
+.game-complex-orienteering .cxo-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.game-complex-orienteering .cxo-title {
+  margin: 0;
+  font-size: 1.45rem;
+  font-weight: 900;
+  color: #0f172a;
+}
+.game-complex-orienteering .cxo-btn {
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #1e293b;
+  border-radius: 10px;
+  padding: 9px 14px;
+  font-size: 0.92rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+}
+.game-complex-orienteering .cxo-btn:hover { background: #f1f5f9; transform: translateY(-1px); }
+.game-complex-orienteering .cxo-btn.cxo-primary {
+  background: #0284c7;
+  border-color: #0284c7;
+  color: #ffffff;
+}
+.game-complex-orienteering .cxo-btn.cxo-primary:hover { background: #0369a1; }
+.game-complex-orienteering .cxo-btn.cxo-warn {
+  background: #fffbeb;
+  border-color: #fcd34d;
+  color: #b45309;
+}
+.game-complex-orienteering .cxo-mode-bar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+.game-complex-orienteering .cxo-mode-btn {
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #475569;
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-weight: 800;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+.game-complex-orienteering .cxo-mode-btn.active {
+  background: #0284c7;
+  border-color: #0284c7;
+  color: #ffffff;
+}
+.game-complex-orienteering .cxo-status {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+.game-complex-orienteering .cxo-chip {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 999px;
+  padding: 7px 14px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #475569;
+}
+.game-complex-orienteering .cxo-chip b { color: #0284c7; }
+.game-complex-orienteering .cxo-main {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+.game-complex-orienteering .cxo-panel {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+}
+.game-complex-orienteering .cxo-svg-wrap { text-align: center; }
+.game-complex-orienteering .cxo-svg-wrap svg {
+  width: 100%;
+  max-width: 460px;
+  height: auto;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+}
+.game-complex-orienteering .cxo-legend {
+  margin: 10px 0 0;
+  font-size: 0.82rem;
+  color: #64748b;
+}
+.game-complex-orienteering .cxo-mission {
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  border-radius: 12px;
+  padding: 10px 14px;
+  margin-bottom: 12px;
+  font-size: 0.92rem;
+  color: #0f172a;
+}
+.game-complex-orienteering .cxo-pos {
+  font-family: 'Consolas', monospace;
+  font-weight: 900;
+  color: #0284c7;
+}
+.game-complex-orienteering .cxo-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.game-complex-orienteering .cxo-card {
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 10px 6px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, transform 0.1s;
+}
+.game-complex-orienteering .cxo-card:hover {
+  border-color: #0284c7;
+  background: #f0f9ff;
+  transform: translateY(-2px);
+}
+.game-complex-orienteering .cxo-card .cxo-card-op {
+  display: block;
+  font-family: 'Consolas', monospace;
+  font-size: 1.05rem;
+  font-weight: 900;
+  color: #0f172a;
+}
+.game-complex-orienteering .cxo-card .cxo-card-desc {
+  display: block;
+  font-size: 0.74rem;
+  color: #64748b;
+  margin-top: 3px;
+}
+.game-complex-orienteering .cxo-card.disabled {
+  opacity: 0.45;
+  pointer-events: none;
+}
+.game-complex-orienteering .cxo-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.game-complex-orienteering .bottom-ranking-card {
+  margin-top: 18px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+}
+.game-complex-orienteering .ranking-header { margin-bottom: 10px; }
+.game-complex-orienteering .ranking-title {
+  font-size: 1.02rem;
+  font-weight: 900;
+  color: #0f172a;
+}
+.cxo-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 99999;
+  padding: 16px;
+}
+.cxo-modal {
+  background: #ffffff;
+  color: #0f172a;
+  border-radius: 16px;
+  max-width: 560px;
+  width: 100%;
+  max-height: 82vh;
+  overflow-y: auto;
+  padding: 22px;
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.25);
+}
+.cxo-modal h3 { color: #0f172a; }
+.cxo-modal p, .cxo-modal li { color: #334155; line-height: 1.6; }
+.cxo-modal code {
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 1px 6px;
+  font-family: 'Consolas', monospace;
+  color: #0284c7;
+}
+.cxo-modal input[type="text"] {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 0.95rem;
+  color: #0f172a;
+  background: #ffffff;
+}
+.cxo-modal .cxo-btn { border: 1px solid #cbd5e1; background: #ffffff; color: #1e293b; border-radius: 10px; padding: 9px 14px; font-weight: 700; cursor: pointer; }
+.cxo-modal .cxo-btn.cxo-primary { background: #0284c7; border-color: #0284c7; color: #ffffff; }
+.cxo-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 34px;
+  transform: translateX(-50%) translateY(20px);
+  background: #0f172a;
+  color: #f8fafc;
+  border-radius: 12px;
+  padding: 12px 20px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s, transform 0.25s;
+  z-index: 100000;
+  max-width: 90vw;
+  text-align: center;
+}
+.cxo-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.cxo-toast.success { background: #059669; }
+.cxo-toast.error { background: #dc2626; }
+.cxo-toast.warn { background: #b45309; }
+@media (max-width: 820px) {
+  .game-complex-orienteering .cxo-main { grid-template-columns: 1fr; }
+}
+</style>
+<script>
+/* ===== 복소평면 오리엔티어링 (complex-orienteering) : Gen-3 표준 모듈 ===== */
+(function () {
+  'use strict';
+
+  var APP_ID = 'complex-orienteering';
+  var APP_TITLE = '복소평면 오리엔티어링';
+  var BOTTOM_BOARD_ID = 'board-complex-orienteering-bottom';
+  var LS_KEY = 'mathlab_lb_complex_orienteering';
+  var TOTAL_STAGES = 5;
+  var CELL = 44;
+  var PAD = 30;
+
+  var CARDS = {
+    mi:    { label: '× i',    type: 'mul', re: 0,  im: 1,  desc: '90° 회전' },
+    mneg:  { label: '× (-1)', type: 'mul', re: -1, im: 0,  desc: '180° 회전' },
+    mnegi: { label: '× (-i)', type: 'mul', re: 0,  im: -1, desc: '-90° 회전' },
+    p1:    { label: '+ 1',    type: 'add', re: 1,  im: 0,  desc: '오른쪽 한 칸' },
+    n1:    { label: '- 1',    type: 'add', re: -1, im: 0,  desc: '왼쪽 한 칸' },
+    pi:    { label: '+ i',    type: 'add', re: 0,  im: 1,  desc: '위로 한 칸' },
+    ni:    { label: '- i',    type: 'add', re: 0,  im: -1, desc: '아래로 한 칸' }
+  };
+
+  var DIFF_RULE = {
+    easy:   { label: '쉬움',  n: 2, cards: ['mi', 'mneg', 'mnegi', 'p1', 'n1', 'pi', 'ni'], moveLimitExtra: 0, timeLimit: 0,  walls: 3 },
+    normal: { label: '보통',  n: 3, cards: ['mi', 'mnegi', 'p1', 'n1', 'pi', 'ni'],          moveLimitExtra: 4, timeLimit: 0,  walls: 7 },
+    hard:   { label: '도전',  n: 4, cards: ['mi', 'p1', 'pi'],                                moveLimitExtra: 3, timeLimit: 60, walls: 11 }
+  };
+
+  var state = {
+    mounted: false,
+    host: null,
+    difficulty: 'easy',
+    stage: 1,
+    score: 0,
+    wins: 0,
+    finished: false,
+    busy: false,
+    n: 2,
+    walls: {},
+    start: { re: 0, im: 0 },
+    goal: { re: 1, im: 1 },
+    z: { re: 0, im: 0 },
+    trail: [],
+    minSteps: 0,
+    usedMoves: 0,
+    collisions: 0,
+    moveLimit: 0,
+    stageStart: 0,
+    timerInterval: null,
+    animFrame: null
+  };
+
+  /* ---------- 공통 유틸 ---------- */
+  function byId(id) { return document.getElementById(id); }
+  function setText(id, v) { var el = byId(id); if (el) el.textContent = String(v); }
+  function escapeHTML(str) {
+    return String(str == null ? '' : str)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
+  var toastTimer = null;
+  function showToast(msg, type) {
+    var t = byId('cxo-toast');
+    if (!t) {
+      t = document.createElement('div');
+      t.id = 'cxo-toast';
+      document.body.appendChild(t);
+    }
+    t.className = 'cxo-toast' + (type ? ' ' + type : '');
+    t.textContent = msg;
+    void t.offsetWidth;
+    t.classList.add('show');
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { t.classList.remove('show'); }, 2300);
+  }
+
+  function closeModal() {
+    var ov = byId('cxo-modal-overlay');
+    if (ov && ov.parentNode) ov.parentNode.removeChild(ov);
+  }
+  function openModal(innerHTML) {
+    closeModal();
+    var ov = document.createElement('div');
+    ov.id = 'cxo-modal-overlay';
+    ov.className = 'cxo-modal-overlay';
+    ov.innerHTML = '<div class="cxo-modal">' + innerHTML + '</div>';
+    document.body.appendChild(ov);
+    ov.addEventListener('click', function (ev) { if (ev.target === ov) closeModal(); });
+  }
+
+  /* ---------- 복소수 연산 엔진 ---------- */
+  function applyCard(z, card) {
+    if (card.type === 'mul') {
+      return { re: z.re * card.re - z.im * card.im, im: z.re * card.im + z.im * card.re };
+    }
+    return { re: z.re + card.re, im: z.im + card.im };
+  }
+  function zKey(z) { return z.re + ',' + z.im; }
+  function zEq(a, b) { return a.re === b.re && a.im === b.im; }
+  function zLabel(z) {
+    var reTxt = String(z.re);
+    var imAbs = Math.abs(z.im);
+    var imCore = imAbs === 1 ? 'i' : imAbs + 'i';
+    if (z.im === 0) return reTxt;
+    if (z.re === 0) return (z.im < 0 ? '-' : '') + imCore;
+    return reTxt + (z.im < 0 ? ' - ' : ' + ') + imCore;
+  }
+  function inGrid(z, n) { return z.re >= -n && z.re <= n && z.im >= -n && z.im <= n; }
+  function isBlocked(z) { return !!state.walls[zKey(z)]; }
+
+  /* ---------- BFS 최소 경로 (해 존재 검증) ---------- */
+  function bfsMinSteps(start, goal, walls, n, cardIds) {
+    var queue = [{ z: start, d: 0 }];
+    var seen = {};
+    seen[zKey(start)] = true;
+    var head = 0;
+    while (head < queue.length) {
+      var cur = queue[head];
+      head += 1;
+      if (zEq(cur.z, goal)) return cur.d;
+      if (cur.d > 40) break;
+      for (var idx = 0; idx < cardIds.length; idx++) {
+        var next = applyCard(cur.z, CARDS[cardIds[idx]]);
+        var key = zKey(next);
+        if (!inGrid(next, n) || walls[key] || seen[key]) continue;
+        seen[key] = true;
+        queue.push({ z: next, d: cur.d + 1 });
+      }
+    }
+    return -1;
+  }
+
+  /* ---------- 미로 생성 (해 존재 보장) ---------- */
+  function randInt(min, max) { return min + Math.floor(Math.random() * (max - min + 1)); }
+  function buildMaze() {
+    var rule = DIFF_RULE[state.difficulty];
+    var n = rule.n;
+    var wallCount = rule.walls + Math.floor((state.stage - 1) / 2);
+    var attempt, walls, start, goal, minSteps;
+    for (attempt = 0; attempt < 80; attempt++) {
+      walls = {};
+      start = { re: randInt(-n, n), im: randInt(-n, n) };
+      goal = { re: randInt(-n, n), im: randInt(-n, n) };
+      if (zEq(start, goal) || (Math.abs(start.re - goal.re) + Math.abs(start.im - goal.im)) < n) continue;
+      var placed = 0;
+      var guard = 0;
+      while (placed < wallCount && guard < 300) {
+        guard += 1;
+        var w = { re: randInt(-n, n), im: randInt(-n, n) };
+        var key = zKey(w);
+        if (zEq(w, start) || zEq(w, goal) || walls[key]) continue;
+        walls[key] = true;
+        placed += 1;
+      }
+      minSteps = bfsMinSteps(start, goal, walls, n, rule.cards);
+      if (minSteps >= 3) {
+        state.n = n;
+        state.walls = walls;
+        state.start = start;
+        state.goal = goal;
+        state.minSteps = minSteps;
+        return true;
+      }
+    }
+    state.n = n;
+    state.walls = {};
+    state.start = { re: -n, im: -n };
+    state.goal = { re: n, im: n };
+    state.minSteps = bfsMinSteps(state.start, state.goal, {}, n, rule.cards);
+    return true;
+  }
+
+  /* ---------- SVG 복소평면 렌더링 ---------- */
+  function toSX(re) { return PAD + (re + state.n) * CELL; }
+  function toSY(im) { return PAD + (state.n - im) * CELL; }
+  function svgSize() { return PAD * 2 + state.n * 2 * CELL; }
+  function renderBoard() {
+    var wrap = byId('cxo-svg-wrap');
+    if (!wrap) return;
+    var n = state.n;
+    var size = svgSize();
+    var parts = [];
+    parts.push('<svg id="cxo-svg" viewBox="0 0 ' + size + ' ' + size + '" xmlns="http://www.w3.org/2000/svg">');
+    var v;
+    for (v = -n; v <= n; v++) {
+      parts.push('<line x1="' + toSX(v) + '" y1="' + toSY(-n) + '" x2="' + toSX(v) + '" y2="' + toSY(n) + '" stroke="#e2e8f0" stroke-width="1"/>');
+      parts.push('<line x1="' + toSX(-n) + '" y1="' + toSY(v) + '" x2="' + toSX(n) + '" y2="' + toSY(v) + '" stroke="#e2e8f0" stroke-width="1"/>');
+    }
+    parts.push('<line x1="' + toSX(-n) + '" y1="' + toSY(0) + '" x2="' + toSX(n) + '" y2="' + toSY(0) + '" stroke="#94a3b8" stroke-width="2"/>');
+    parts.push('<line x1="' + toSX(0) + '" y1="' + toSY(-n) + '" x2="' + toSX(0) + '" y2="' + toSY(n) + '" stroke="#94a3b8" stroke-width="2"/>');
+    parts.push('<text x="' + (toSX(n) + 4) + '" y="' + (toSY(0) + 4) + '" font-size="12" fill="#64748b">Re</text>');
+    parts.push('<text x="' + (toSX(0) + 6) + '" y="' + (toSY(n) - 6) + '" font-size="12" fill="#64748b">Im</text>');
+    for (v = -n; v <= n; v++) {
+      if (v !== 0) {
+        parts.push('<text x="' + (toSX(v) - 4) + '" y="' + (toSY(0) + 16) + '" font-size="10" fill="#94a3b8">' + v + '</text>');
+        parts.push('<text x="' + (toSX(0) - 20) + '" y="' + (toSY(v) + 4) + '" font-size="10" fill="#94a3b8">' + (Math.abs(v) === 1 ? (v < 0 ? '-i' : 'i') : v + 'i') + '</text>');
+      }
+    }
+    Object.keys(state.walls).forEach(function (key) {
+      var seg = key.split(',');
+      var wx = Number(seg[0]);
+      var wy = Number(seg[1]);
+      parts.push('<rect x="' + (toSX(wx) - CELL * 0.38) + '" y="' + (toSY(wy) - CELL * 0.38) + '" width="' + (CELL * 0.76) + '" height="' + (CELL * 0.76) + '" rx="7" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1.5"/>');
+      parts.push('<text x="' + toSX(wx) + '" y="' + (toSY(wy) + 5) + '" font-size="15" text-anchor="middle">\ud83e\udea8</text>');
+    });
+    parts.push('<polyline id="cxo-trail" points="" fill="none" stroke="#0ea5e9" stroke-width="2" stroke-dasharray="5 4" opacity="0.7"/>');
+    parts.push('<circle cx="' + toSX(state.start.re) + '" cy="' + toSY(state.start.im) + '" r="7" fill="none" stroke="#059669" stroke-width="2" stroke-dasharray="3 3"/>');
+    parts.push('<text x="' + toSX(state.goal.re) + '" y="' + (toSY(state.goal.im) + 6) + '" font-size="20" text-anchor="middle">\ud83d\udea9</text>');
+    parts.push('<circle id="cxo-ghost" cx="0" cy="0" r="9" fill="rgba(217, 119, 6, 0.25)" stroke="#d97706" stroke-width="2" stroke-dasharray="4 3" visibility="hidden"/>');
+    parts.push('<circle id="cxo-player" cx="' + toSX(state.z.re) + '" cy="' + toSY(state.z.im) + '" r="9" fill="#0284c7" stroke="#ffffff" stroke-width="2.5"/>');
+    parts.push('</svg>');
+    wrap.innerHTML = parts.join('');
+    updateTrail();
+  }
+  function updateTrail() {
+    var tr = byId('cxo-trail');
+    if (!tr) return;
+    var pts = state.trail.map(function (p) { return toSX(p.re) + ',' + toSY(p.im); }).join(' ');
+    tr.setAttribute('points', pts);
+  }
+  function movePlayerDot(re, im) {
+    var dot = byId('cxo-player');
+    if (!dot) return;
+    dot.setAttribute('cx', String(toSX(re)));
+    dot.setAttribute('cy', String(toSY(im)));
+  }
+  function showGhost(z) {
+    var g = byId('cxo-ghost');
+    if (!g) return;
+    if (z && inGrid(z, state.n)) {
+      g.setAttribute('cx', String(toSX(z.re)));
+      g.setAttribute('cy', String(toSY(z.im)));
+      g.setAttribute('visibility', 'visible');
+    } else {
+      g.setAttribute('visibility', 'hidden');
+    }
+  }
+
+  /* ---------- 이동 애니메이션 (rAF) ---------- */
+  function stopAnim() {
+    if (typeof state.animFrame !== 'undefined' && state.animFrame) {
+      cancelAnimationFrame(state.animFrame);
+      state.animFrame = null;
+    }
+  }
+  function animateMove(from, to, isRotation, done) {
+    stopAnim();
+    var dur = 420;
+    var t0 = null;
+    var r1 = Math.sqrt(from.re * from.re + from.im * from.im);
+    var a1 = Math.atan2(from.im, from.re);
+    var a2 = Math.atan2(to.im, to.re);
+    var da = a2 - a1;
+    while (da > Math.PI) da -= Math.PI * 2;
+    while (da < -Math.PI) da += Math.PI * 2;
+    function step(ts) {
+      if (!state.mounted) return;
+      if (t0 === null) t0 = ts;
+      var t = Math.min(1, (ts - t0) / dur);
+      var e = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+      var re, im;
+      if (isRotation && r1 > 0.0001) {
+        var ang = a1 + da * e;
+        re = r1 * Math.cos(ang);
+        im = r1 * Math.sin(ang);
+      } else {
+        re = from.re + (to.re - from.re) * e;
+        im = from.im + (to.im - from.im) * e;
+      }
+      movePlayerDot(re, im);
+      if (t < 1) {
+        state.animFrame = requestAnimationFrame(step);
+      } else {
+        state.animFrame = null;
+        movePlayerDot(to.re, to.im);
+        if (typeof done === 'function') done();
+      }
+    }
+    state.animFrame = requestAnimationFrame(step);
+  }
+
+  /* ---------- 상태 표시 ---------- */
+  function updateStatus() {
+    setText('cxo-stage', state.stage);
+    setText('cxo-score', state.score);
+    setText('cxo-moves', state.usedMoves);
+    var lim = byId('cxo-move-limit');
+    if (lim) lim.textContent = state.moveLimit > 0 ? ' / ' + state.moveLimit : '';
+    var posEl = byId('cxo-pos');
+    if (posEl) posEl.textContent = 'z = ' + zLabel(state.z);
+    var goalEl = byId('cxo-goal');
+    if (goalEl) goalEl.textContent = zLabel(state.goal);
+    var minEl = byId('cxo-min');
+    if (minEl) minEl.textContent = String(state.minSteps);
+  }
+
+  /* ---------- 카드 UI ---------- */
+  function renderCards() {
+    var wrap = byId('cxo-cards');
+    if (!wrap) return;
+    var rule = DIFF_RULE[state.difficulty];
+    wrap.innerHTML = rule.cards.map(function (id) {
+      var c = CARDS[id];
+      return '<button type="button" class="cxo-card" data-card="' + id + '">' +
+        '<span class="cxo-card-op">' + escapeHTML(c.label) + '</span>' +
+        '<span class="cxo-card-desc">' + escapeHTML(c.desc) + '</span></button>';
+    }).join('');
+  }
+
+  /* ---------- 스테이지 진행 ---------- */
+  function buildStage() {
+    var rule = DIFF_RULE[state.difficulty];
+    buildMaze();
+    state.z = { re: state.start.re, im: state.start.im };
+    state.trail = [{ re: state.start.re, im: state.start.im }];
+    state.usedMoves = 0;
+    state.collisions = 0;
+    state.busy = false;
+    state.moveLimit = rule.moveLimitExtra > 0 ? state.minSteps + rule.moveLimitExtra : 0;
+    state.stageStart = Date.now();
+    renderBoard();
+    renderCards();
+    updateStatus();
+  }
+  function playCard(cardId) {
+    if (state.finished || state.busy || !state.mounted) return;
+    var card = CARDS[cardId];
+    if (!card) return;
+    var next = applyCard(state.z, card);
+    showGhost(null);
+    if (!inGrid(next, state.n) || isBlocked(next)) {
+      state.collisions += 1;
+      state.score = Math.max(0, state.score - 2);
+      updateStatus();
+      showToast(isBlocked(next) ? '\ud83e\udea8 바위(벽)입니다! 이동이 취소되고 -2점 페널티.' : '⛔ 복소평면 밖으로 나갑니다! 이동 취소, -2점 페널티.', 'error');
+      return;
+    }
+    state.busy = true;
+    state.usedMoves += 1;
+    var from = { re: state.z.re, im: state.z.im };
+    state.z = next;
+    animateMove(from, next, card.type === 'mul', function () {
+      state.trail.push({ re: next.re, im: next.im });
+      updateTrail();
+      updateStatus();
+      if (zEq(state.z, state.goal)) { stageClear(); return; }
+      if (state.moveLimit > 0 && state.usedMoves >= state.moveLimit) {
+        stageFail('이동 횟수를 모두 썼습니다. 다음 스테이지로 넘어갑니다.');
+        return;
+      }
+      state.busy = false;
+    });
+  }
+  function stageClear() {
+    state.wins += 1;
+    var elapsed = Math.floor((Date.now() - state.stageStart) / 1000);
+    var gain = 20;
+    var minBonus = state.usedMoves <= state.minSteps ? 15 : 0;
+    gain += minBonus;
+    if (state.moveLimit > 0) gain += Math.max(0, state.moveLimit - state.usedMoves) * 2;
+    if (elapsed <= 20) gain += 10; else if (elapsed <= 40) gain += 5;
+    state.score += gain;
+    updateStatus();
+    showToast('\ud83d\udea9 목표 도달! +' + gain + '점' + (minBonus > 0 ? ' (최소 경로 보너스 포함!)' : ''), 'success');
+    setTimeout(nextStage, 1400);
+  }
+  function stageFail(msg) {
+    if (state.finished) return;
+    state.busy = true;
+    showToast(msg, 'error');
+    setTimeout(nextStage, 1400);
+  }
+  function nextStage() {
+    if (!state.mounted) return;
+    if (state.stage >= TOTAL_STAGES) { finishGame(); return; }
+    state.stage += 1;
+    buildStage();
+  }
+  function finishGame() {
+    state.finished = true;
+    state.busy = true;
+    stopTimer();
+    var timeChip = byId('cxo-time');
+    if (timeChip) timeChip.textContent = '-';
+    showToast('\ud83c\udfc1 모든 스테이지 종료! 최종 점수 ' + state.score + '점', 'success');
+    setTimeout(function () { if (state.mounted) showRankingModal(true); }, 900);
+  }
+
+  /* ---------- 타이머 ---------- */
+  function startTimer() {
+    stopTimer();
+    state.timerInterval = setInterval(function () {
+      if (!state.mounted || state.finished) return;
+      var el = byId('cxo-time');
+      if (!el) return;
+      var elapsed = Math.floor((Date.now() - state.stageStart) / 1000);
+      var rule = DIFF_RULE[state.difficulty];
+      if (rule.timeLimit > 0) {
+        var remain = rule.timeLimit - elapsed;
+        el.textContent = String(Math.max(0, remain));
+        if (remain <= 0 && !state.busy) {
+          stageFail('\u23f0 제한 시간 초과! 다음 스테이지로 넘어갑니다.');
+        }
+      } else {
+        el.textContent = String(elapsed);
+      }
+    }, 500);
+  }
+  function stopTimer() {
+    if (typeof state.timerInterval !== 'undefined' && state.timerInterval) {
+      clearInterval(state.timerInterval);
+      state.timerInterval = null;
+    }
+  }
+
+  /* ---------- UI 구성 ---------- */
+  function buildHTML() {
+    return '<div class="game-complex-orienteering" id="cxo-root">' +
+      '<div class="cxo-header">' +
+      '<h2 class="cxo-title">\ud83e\udded 복소평면 오리엔티어링</h2>' +
+      '<div style="display:flex; gap:8px; flex-wrap:wrap;">' +
+      '<button type="button" class="cxo-btn" id="cxo-guide-btn">\ud83d\udcd6 게임 방법</button>' +
+      '<button type="button" class="cxo-btn" id="cxo-rank-btn">\ud83c\udfc6 명예의 전당</button>' +
+      '<button type="button" class="cxo-btn" id="cxo-home-btn">\ud83c\udfe0 홈으로</button>' +
+      '</div></div>' +
+      '<div class="cxo-mode-bar" id="cxo-mode-bar">' +
+      '<button type="button" class="cxo-mode-btn" data-diff="easy">\ud83c\udf31 쉬움</button>' +
+      '<button type="button" class="cxo-mode-btn" data-diff="normal">\ud83c\udf3f 보통</button>' +
+      '<button type="button" class="cxo-mode-btn" data-diff="hard">\ud83d\udd25 도전</button>' +
+      '</div>' +
+      '<div class="cxo-status">' +
+      '<span class="cxo-chip">스테이지 <b id="cxo-stage">1</b>/' + TOTAL_STAGES + '</span>' +
+      '<span class="cxo-chip">점수 <b id="cxo-score">0</b></span>' +
+      '<span class="cxo-chip">이동 <b id="cxo-moves">0</b><span id="cxo-move-limit"></span></span>' +
+      '<span class="cxo-chip">최소 경로 <b id="cxo-min">-</b>회</span>' +
+      '<span class="cxo-chip">\u23f1 <b id="cxo-time">0</b>초</span>' +
+      '</div>' +
+      '<div class="cxo-main">' +
+      '<div class="cxo-panel cxo-svg-wrap"><div id="cxo-svg-wrap"></div>' +
+      '<p class="cxo-legend">\ud83d\udfe2 초록 점선 원: 출발점 / \ud83d\udea9 깃발: 목표 / \ud83e\udea8 바위: 벽 / \ud83d\udd35 파란 점: 현재 위치 z / 주황 점선: 카드 미리보기</p>' +
+      '</div>' +
+      '<div class="cxo-panel">' +
+      '<div class="cxo-mission">현재 위치 <span class="cxo-pos" id="cxo-pos">z = 0</span> → 목표 <span class="cxo-pos" id="cxo-goal">?</span><br>카드에 마우스를 올리면 예상 위치가 미리 보입니다. 곱셈은 <b>원점 기준 회전</b>이에요!</div>' +
+      '<p style="margin:0 0 6px; font-weight:800; color:#475569;">연산 카드</p>' +
+      '<div class="cxo-cards" id="cxo-cards"></div>' +
+      '<div class="cxo-actions">' +
+      '<button type="button" class="cxo-btn cxo-warn" id="cxo-retry-btn">\u21a9\ufe0f 스테이지 다시시작</button>' +
+      '<button type="button" class="cxo-btn" id="cxo-restart-btn">\ud83d\udd04 처음부터</button>' +
+      '</div></div></div>' +
+      '<div class="bottom-ranking-card" id="cxo-bottom-ranking-sec">' +
+      '<div class="ranking-header"><div class="ranking-title">\ud83c\udfc6 명예의 전당 (실시간 랭킹 보드)</div></div>' +
+      '<div id="' + BOTTOM_BOARD_ID + '"><p style="text-align:center; color:#64748b; padding:12px 0;">랭킹 데이터를 불러오는 중...</p></div>' +
+      '</div></div>';
+  }
+
+  /* ---------- 명예의 전당 ---------- */
+  function renderBottomLeaderboard() {
+    var bottomEl = byId(BOTTOM_BOARD_ID);
+    if (!bottomEl) return;
+    if (typeof window.loadGameLeaderboard === 'function') {
+      try { window.loadGameLeaderboard(APP_ID, true, BOTTOM_BOARD_ID); return; } catch (e) { console.warn('complex-orienteering 하단 보드 로드 방어:', e); }
+    }
+    var list = [];
+    try { list = JSON.parse(localStorage.getItem(LS_KEY) || '[]'); } catch (e) { list = []; }
+    if (!list.length) {
+      bottomEl.innerHTML = '<p style="text-align:center; color:#64748b; padding:12px 0;">아직 등록된 기록이 없습니다. 첫 번째 탐험에 도전해보세요!</p>';
+      return;
+    }
+    bottomEl.innerHTML = list.slice(0, 5).map(function (item, idx) {
+      var rankColor = idx === 0 ? '#d97706' : '#475569';
+      var rankLabel = idx === 0 ? '\ud83d\udc51 1위' : (idx + 1) + '위';
+      return '<div style="display:flex; justify-content:space-between; align-items:center; background:#f8fafc; padding:10px 14px; border-radius:10px; border:1px solid #e2e8f0; margin-bottom:6px;">' +
+        '<span style="font-weight:800; color:' + rankColor + ';">' + rankLabel + ' - ' + escapeHTML(item.nickname) + '</span>' +
+        '<span style="color:#0284c7; font-weight:900;">' + Number(item.score) + '점</span></div>';
+    }).join('');
+  }
+  function saveScore(nickname) {
+    var name = (nickname || '').trim().slice(0, 12) || '익명의 탐험가';
+    var list = [];
+    try { list = JSON.parse(localStorage.getItem(LS_KEY) || '[]'); } catch (e) { list = []; }
+    list.push({ nickname: name, score: state.score, date: new Date().toISOString().slice(0, 10) });
+    list.sort(function (a, b) { return b.score - a.score; });
+    list = list.slice(0, 20);
+    try { localStorage.setItem(LS_KEY, JSON.stringify(list)); } catch (e) {}
+    var sent = false;
+    try {
+      if (typeof window.submitRanking === 'function') {
+        window.submitRanking(APP_ID, state.score, true, name, BOTTOM_BOARD_ID);
+        sent = true;
+      }
+    } catch (e) { console.warn('complex-orienteering 랭킹 서버 전송 방어:', e); }
+    if (!sent) renderBottomLeaderboard();
+    showToast(sent ? '\ud83c\udfc6 명예의 전당에 기록을 전송했습니다!' : '\ud83d\udcbe 이 기기에 기록을 저장했습니다!', 'success');
+  }
+  function showRankingModal(withRegister) {
+    var list = [];
+    try { list = JSON.parse(localStorage.getItem(LS_KEY) || '[]'); } catch (e) { list = []; }
+    var rows = list.slice(0, 10).map(function (item, idx) {
+      return '<div style="display:flex; justify-content:space-between; padding:8px 12px; border-bottom:1px solid #e2e8f0;">' +
+        '<span style="font-weight:700; color:' + (idx === 0 ? '#d97706' : '#475569') + ';">' + (idx + 1) + '위 ' + escapeHTML(item.nickname) + '</span>' +
+        '<span style="color:#0284c7; font-weight:800;">' + Number(item.score) + '점</span></div>';
+    }).join('');
+    if (!rows) rows = '<p style="color:#64748b; text-align:center; padding:10px 0;">아직 이 기기에 저장된 기록이 없습니다.</p>';
+    var regHTML = '';
+    if (withRegister) {
+      regHTML = '<div style="background:#f0f9ff; border:1px solid #bae6fd; border-radius:12px; padding:14px; margin-bottom:14px;">' +
+        '<p style="margin:0 0 8px; font-weight:900; color:#0f172a;">\ud83c\udf89 최종 점수 <span style="color:#0284c7;">' + state.score + '점</span> (목표 도달 ' + state.wins + '/' + TOTAL_STAGES + ')</p>' +
+        '<input type="text" id="cxo-nickname" maxlength="12" placeholder="닉네임을 입력하세요 (최대 12자)">' +
+        '<button type="button" class="cxo-btn cxo-primary" id="cxo-save-btn" style="margin-top:8px; width:100%;">\ud83c\udfc6 명예의 전당 등록</button></div>';
+    }
+    openModal('<h3 style="margin:0 0 12px;">\ud83c\udfc6 명예의 전당</h3>' + regHTML +
+      '<div style="max-height:280px; overflow-y:auto;">' + rows + '</div>' +
+      '<button type="button" class="cxo-btn" id="cxo-close-modal" style="margin-top:14px; width:100%;">닫기</button>');
+    var closeBtn = byId('cxo-close-modal');
+    if (closeBtn) closeBtn.addEventListener('click', closeModal);
+    var saveBtn = byId('cxo-save-btn');
+    if (saveBtn) {
+      saveBtn.addEventListener('click', function () {
+        var input = byId('cxo-nickname');
+        saveScore(input ? input.value : '');
+        closeModal();
+        showToast('\ud83d\udd04 처음부터 버튼으로 새 탐험을 시작할 수 있어요!', '');
+      });
+    }
+  }
+  function showGuideModal() {
+    openModal('<h3 style="margin:0 0 12px;">\ud83d\udcd6 게임 방법 - 복소평면 오리엔티어링</h3>' +
+      '<p>복소평면 위의 현재 위치 <code>z</code>에 연산 카드를 적용해 \ud83d\udea9 목표 지점까지 이동하세요!</p>' +
+      '<ul>' +
+      '<li><code>× i</code> 카드: 원점 기준 <strong>90° 회전</strong> (×(-1)은 180°, ×(-i)는 -90°)</li>' +
+      '<li><code>+1, +i</code> 등 덧셈 카드: 해당 방향으로 <strong>평행이동</strong></li>' +
+      '<li>카드에 마우스를 올리면 주황 점선으로 예상 위치가 미리 보입니다</li>' +
+      '<li>\ud83e\udea8 바위나 평면 밖으로 가면 이동 취소 + 2점 페널티</li>' +
+      '<li>점수: 클리어 +20, 최소 경로 +15, 남은 이동 횟수 ×2, 시간 보너스 최대 +10</li>' +
+      '<li>난이도: \ud83c\udf31 쉬움(5×5·전체 카드·무제한) / \ud83c\udf3f 보통(7×7·카드 일부 제한·이동 제한) / \ud83d\udd25 도전(9×9·×i와 덧셈만·스테이지당 60초)</li>' +
+      '</ul>' +
+      '<p style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:10px; padding:10px 12px;">\ud83d\udcda <strong>수학 개념</strong>: 복소수 <code>z</code>에 <code>i</code>를 곱하면 원점 기준 90° 회전, 복소수 덧셈은 벡터 평행이동입니다. <code>i² = -1</code>, <code>i⁴ = 1</code>의 주기성을 경로 설계에 활용해보세요!</p>' +
+      '<button type="button" class="cxo-btn cxo-primary" id="cxo-guide-close" style="width:100%;">이해했어요!</button>');
+    var btn = byId('cxo-guide-close');
+    if (btn) btn.addEventListener('click', closeModal);
+  }
+
+  /* ---------- 이벤트 바인딩 ---------- */
+  function refreshModeBar() {
+    var bar = byId('cxo-mode-bar');
+    if (!bar) return;
+    Array.prototype.forEach.call(bar.querySelectorAll('.cxo-mode-btn'), function (btn) {
+      if (btn.getAttribute('data-diff') === state.difficulty) btn.classList.add('active');
+      else btn.classList.remove('active');
+    });
+  }
+  function bindEvents() {
+    var guideBtn = byId('cxo-guide-btn');
+    if (guideBtn) guideBtn.addEventListener('click', showGuideModal);
+    var rankBtn = byId('cxo-rank-btn');
+    if (rankBtn) rankBtn.addEventListener('click', function () { showRankingModal(state.finished && state.score > 0); });
+    var homeBtn = byId('cxo-home-btn');
+    if (homeBtn) homeBtn.addEventListener('click', goHomeSafe);
+    var retryBtn = byId('cxo-retry-btn');
+    if (retryBtn) retryBtn.addEventListener('click', function () {
+      if (state.finished) return;
+      state.z = { re: state.start.re, im: state.start.im };
+      state.trail = [{ re: state.start.re, im: state.start.im }];
+      state.usedMoves = 0;
+      state.busy = false;
+      state.stageStart = Date.now();
+      renderBoard();
+      updateStatus();
+      showToast('같은 미로를 출발점부터 다시 탐험합니다.', '');
+    });
+    var restartBtn = byId('cxo-restart-btn');
+    if (restartBtn) restartBtn.addEventListener('click', function () {
+      restartGame();
+      showToast('새 탐험을 시작합니다! 목표 깃발까지 이동해보세요.', '');
+    });
+    var bar = byId('cxo-mode-bar');
+    if (bar) {
+      bar.addEventListener('click', function (ev) {
+        var btn = ev.target && ev.target.closest ? ev.target.closest('.cxo-mode-btn') : null;
+        if (!btn) return;
+        var diff = btn.getAttribute('data-diff');
+        if (diff && diff !== state.difficulty && DIFF_RULE[diff]) {
+          state.difficulty = diff;
+          refreshModeBar();
+          restartGame();
+          showToast(DIFF_RULE[diff].label + ' 난이도로 새 탐험을 시작합니다!', '');
+        }
+      });
+    }
+    var cardsWrap = byId('cxo-cards');
+    if (cardsWrap) {
+      cardsWrap.addEventListener('click', function (ev) {
+        var btn = ev.target && ev.target.closest ? ev.target.closest('.cxo-card') : null;
+        if (btn) playCard(btn.getAttribute('data-card'));
+      });
+      cardsWrap.addEventListener('mouseover', function (ev) {
+        var btn = ev.target && ev.target.closest ? ev.target.closest('.cxo-card') : null;
+        if (!btn || state.busy || state.finished) return;
+        var card = CARDS[btn.getAttribute('data-card')];
+        if (card) showGhost(applyCard(state.z, card));
+      });
+      cardsWrap.addEventListener('mouseout', function () { showGhost(null); });
+    }
+  }
+  function restartGame() {
+    state.stage = 1;
+    state.score = 0;
+    state.wins = 0;
+    state.finished = false;
+    state.busy = false;
+    stopAnim();
+    closeModal();
+    buildStage();
+    startTimer();
+  }
+
+  /* ---------- 안전 마운트 (Gen-3 표준 템플릿 A) ---------- */
+  function mount(container, context) {
+    var host = null;
+    if (typeof container === 'string') {
+      try { host = document.querySelector(container); } catch (e) { host = null; }
+    } else if (container instanceof HTMLElement) {
+      host = container;
+    }
+    if (!host && window.MathLabUtils && typeof window.MathLabUtils.getMountContainer === 'function') {
+      try { host = window.MathLabUtils.getMountContainer(container); } catch (e) { host = null; }
+    }
+    if (!host || !(host instanceof HTMLElement)) {
+      host = document.getElementById('mathlab-view') || document.getElementById('new-root') || document.getElementById('game-container');
+    }
+    if (!host || !(host instanceof HTMLElement) || host === document.body) {
+      var createdHost = document.getElementById('complex-orienteering-force-host');
+      if (!createdHost) {
+        createdHost = document.createElement('div');
+        createdHost.id = 'complex-orienteering-force-host';
+        document.body.appendChild(createdHost);
+      }
+      host = createdHost;
+    }
+    var footerEl = document.querySelector('footer, #footer, .app-footer');
+    if (footerEl && host && typeof host.compareDocumentPosition === 'function' && (host.compareDocumentPosition(footerEl) & Node.DOCUMENT_POSITION_PRECEDING)) {
+      try { footerEl.parentNode.insertBefore(host, footerEl); } catch (e) {}
+    }
+    host.style.display = '';
+    host.style.visibility = 'visible';
+    host.style.opacity = '1';
+    var parent = host.parentElement;
+    while (parent && parent !== document.body && parent !== document.documentElement) {
+      if (parent.style && parent.style.display === 'none') parent.style.display = 'block';
+      if (parent.style && parent.style.visibility === 'hidden') parent.style.visibility = 'visible';
+      parent = parent.parentElement;
+    }
+    document.querySelectorAll('header, .navbar, #app-header, .top-bar, #floating-home-btn, .floating-home').forEach(function (el) {
+      if (el && el.style && el.style.display === 'none') el.style.display = '';
+    });
+    state.host = host;
+    state.mounted = true;
+    host.innerHTML = buildHTML();
+    bindEvents();
+    refreshModeBar();
+    restartGame();
+    renderBottomLeaderboard();
+  }
+
+  /* ---------- 정리·홈 복귀 ---------- */
+  function destroy() {
+    stopTimer();
+    stopAnim();
+    closeModal();
+    state.mounted = false;
+    if (state.host) {
+      try { state.host.innerHTML = ''; } catch (e) {}
+    }
+    state.host = null;
+  }
+  function goHomeSafe() {
+    stopTimer();
+    stopAnim();
+    closeModal();
+    destroy();
+    try {
+      
+    } catch (e) { console.warn('complex-orienteering backHome 방어:', e); }
+    var forced = document.getElementById('complex-orienteering-force-host');
+    if (forced) {
+      forced.style.display = 'none';
+      forced.innerHTML = '';
+    }
+    if (typeof window.goHome === 'function') {
+      try { window.goHome(); } catch (e) { console.warn('complex-orienteering goHome 방어:', e); }
+    }
+  }
+
+  var ComplexOrienteering = {
+    mount: mount,
+    resetGame: restartGame,
+    destroy: destroy,
+    goHome: goHomeSafe
+  };
+
+  /* ---------- 3중 자율 등록 & 상호 실행 브리지 (Gen-3 표준 템플릿 B) ---------- */
+  function registerComplexOrienteering() {
+    if (typeof window.MathLabGames !== 'undefined' && typeof window.MathLabGames.register === 'function') {
+      var exists = false;
+      try { exists = typeof window.MathLabGames.get === 'function' && !!window.MathLabGames.get(APP_ID); } catch (e) { exists = false; }
+      if (!exists) {
+        try {
+          window.MathLabGames.register({
+            id: APP_ID,
+            title: APP_TITLE,
+            icon: '\ud83e\udded',
+            sourceType: 'new',
+            players: '1인',
+            isMultiplayer: false,
+            mount: function (container, context) { ComplexOrienteering.mount(container, context); },
+            reset: function () { ComplexOrienteering.resetGame(); },
+            destroy: function () { ComplexOrienteering.destroy(); },
+            goHome: function () { ComplexOrienteering.goHome(); }
+          });
+        } catch (e) { console.warn('complex-orienteering 안전 등록 방어:', e); }
+      }
+    }
+  }
+
+  registerComplexOrienteering();
+  window.addEventListener('DOMContentLoaded', registerComplexOrienteering);
+  setTimeout(registerComplexOrienteering, 100);
+  setTimeout(registerComplexOrienteering, 500);
+
+  window.ComplexOrienteering = ComplexOrienteering;
+
+  window.initComplexOrienteeringGame = function () {
+    registerComplexOrienteering();
+    if (window.LegacyBridge && typeof window.LegacyBridge.hideAllLegacySections === 'function') {
+      window.LegacyBridge.hideAllLegacySections();
+      if (typeof window.LegacyBridge.showNewRoot === 'function') window.LegacyBridge.showNewRoot();
+    }
+    if (typeof window.MathLabGames !== 'undefined' && typeof window.MathLabGames.mount === 'function') {
+      try { window.MathLabGames.mount(APP_ID); return; } catch (e) { console.warn('complex-orienteering 범용 마운트 방어:', e); }
+    }
+    var targetEl = document.getElementById('mathlab-view') || document.getElementById('new-root');
+    ComplexOrienteering.mount(targetEl);
+  };
+
+  window.launchComplexOrienteeringGame = function () {
+    window.initComplexOrienteeringGame();
+  };
+})();
+</script>
