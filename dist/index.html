@@ -10,22 +10,22 @@
 <meta property="og:description" content="눈으로 보고 직접 조작하며 깨닫는 수학 실험실">
 <meta property="og:type" content="website">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' https://fonts.googleapis.com https://fonts.gstatic.com https://www.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://script.google.com https://script.googleusercontent.com https://generativelanguage.googleapis.com https://*.firebaseio.com https://*.firebaseapp.com; frame-ancestors 'none'; object-src 'none';">
-<!-- 기존 앱 디자인용 폰트 -->
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
 
-<!-- KaTeX: 수식 렌더링 -->
+
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
 
-<!-- Chart.js: 그래프 렌더링 -->
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<!-- html2canvas: 카드뉴스/이미지 저장 기능용 -->
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
-<!-- Firebase Realtime DB SDK -->
+
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
@@ -1460,23 +1460,23 @@
 
   <main id="mathlab-view" class="mathlab-view"></main>
 
-  <!-- 전역 모달 레이어 (새로운 앱 실행 구조) -->
-  <div id="mathlab-global-modal-overlay" class="hidden" style="position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(15, 23, 42, 0.4); z-index:999999; backdrop-filter:blur(5px); overflow-y:auto; overflow-x:hidden; display:flex; align-items:flex-start; justify-content:center; padding:40px 20px;">
+  
+  <div id="mathlab-global-modal-overlay" class="hidden" onclick="if(event.target === this){ if(typeof goHome === 'function') goHome(); else if(window.MathLabGames && typeof window.MathLabGames.destroyCurrent === 'function') window.MathLabGames.destroyCurrent(); }" style="position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(15, 23, 42, 0.45); z-index:999999; backdrop-filter:blur(5px); overflow-y:auto; overflow-x:hidden; display:flex; align-items:flex-start; justify-content:center; padding:40px 20px; box-sizing:border-box;">
     
-    <!-- 실제 모달 창 -->
-    <div id="mathlab-global-modal-window" style="position:relative; width:100%; max-width:1200px; background:#ffffff; border-radius:24px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25); min-height:80vh; display:flex; flex-direction:column; overflow:hidden;">
+    
+    <div id="mathlab-global-modal-window" onclick="event.stopPropagation();" style="position:relative; width:100%; max-width:1200px; background:#ffffff; border-radius:24px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25); min-height:80vh; display:flex; flex-direction:column; overflow:hidden;">
        
-       <!-- 모달 헤더 (닫기 버튼 포함) -->
+       
        <div style="display:flex; justify-content:flex-end; padding:15px 20px; background:#ffffff; border-bottom:1px solid #f1f5f9; position:sticky; top:0; z-index:100;">
           <button id="mathlab-global-modal-close" onclick="if(typeof goHome === 'function') goHome();" style="background:#f8fafc; border:2px solid #e2e8f0; color:#0f172a; font-size:1rem; padding:8px 16px; border-radius:12px; cursor:pointer; font-weight:bold; box-shadow:0 2px 4px rgba(0,0,0,0.05); transition:all 0.2s; display:flex; align-items:center; gap:6px;">
             <span style="font-size:1.2rem; line-height:1;">✕</span> 닫기
           </button>
        </div>
 
-       <!-- 모달 콘텐츠 영역 -->
+       
        <div id="mathlab-global-modal-content" style="flex-grow:1; position:relative; padding:0;"></div>
        
-        <!-- 모달 앱 푸터 -->
+        
        <footer style="padding:24px; text-align:center; background:var(--mathlab-panel, #f8fafc); border-top:1px solid var(--mathlab-line, #e2e8f0); color:var(--mathlab-text, #64748b); font-size:0.9rem; margin-top:auto;">
           <p>© 2026 기록조율사 (서울외고 조용희). All rights reserved. | <span onclick="window.MathLabGames.mount('privacy-policy');" style="cursor:pointer; color:var(--mathlab-primary); text-decoration:underline;">개인정보 처리방침</span> | <span onclick="window.MathLabGames.mount('terms-of-service');" style="cursor:pointer; color:var(--mathlab-primary); text-decoration:underline;">이용약관</span></p>
           <p style="margin-top: 6px; font-weight: 600;">방문자 ㆍ 오늘 <span id="visit-today-modal">1</span> ㆍ 전체 <span id="visit-total-modal">1</span></p>
@@ -1541,7 +1541,7 @@
 </script>
   <template id="tpl-home">
   <section id="dashboard-screen" class="app-home app-home-main" style="max-width:1200px; margin:0 auto; padding:0 10px 20px 10px;">
-    <!-- HERO SECTION -->
+    
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; position: sticky; top: 0; z-index: 1000; background: var(--mathlab-bg, #ffffff); padding: 10px 0; border-bottom: 1px solid var(--mathlab-line, #f1f5f9);">
       <h1 class="dash-title" style="margin-bottom:0; text-align:left; cursor:pointer; color: var(--mathlab-text);" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" title="맨 위로 가기">수학 실험실 v2.0🧪</h1>
       <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center;">
@@ -1555,7 +1555,7 @@
     </div>
     <p class="dash-subtitle" style="text-align:left; margin-bottom:30px; color: var(--mathlab-text);">눈으로 보고 직접 조작하며 깨닫는 수학</p>
 
-    <!-- SEARCH & SORT CONTROLS -->
+    
     <div id="mathlab-search-section" style="width: 100%; max-width: 1050px; margin: 16px auto 20px auto; padding: 0 16px; box-sizing: border-box;">
       <div style="background: linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.95) 100%); border: 2px solid #38bdf8; border-radius: 20px; padding: 18px 24px; box-shadow: 0 12px 30px rgba(0,0,0,0.3); backdrop-filter: blur(10px);">
         
@@ -1608,31 +1608,28 @@
       </div>
     </div>
     
-    <!-- CATEGORY TABS -->
-    <div class="category-filter" id="mathlab-category-filters" style="margin-bottom:20px; flex-wrap:wrap; display:flex; gap:10px;">
-      <button class="cat-btn active" data-cat="all">전체 보기</button>
-      <button class="cat-btn" data-cat="concept">📊 교과 수학 개념</button>
-      <button class="cat-btn" data-cat="game">🎮 수학 게임</button>
-      <button class="cat-btn" data-cat="application">💰 실생활 응용</button>
+    
+    <div id="section-quick-nav" style="display:flex; gap:12px; margin-bottom:28px; flex-wrap:wrap; justify-content:center;">
+      <button type="button" onclick="document.getElementById('sec-concept').scrollIntoView({behavior:'smooth'})" style="background:#f0f9ff; border:2px solid #0284c7; color:#0369a1; padding:10px 18px; border-radius:12px; font-weight:800; font-size:0.95rem; cursor:pointer; display:flex; align-items:center; gap:6px; box-shadow:0 2px 6px rgba(0,0,0,0.04); transition:all 0.15s;" onhover="this.style.transform='translateY(-2px)'">
+        📊 교과 수학 개념 바로가기
+      </button>
+      <button type="button" onclick="document.getElementById('sec-game').scrollIntoView({behavior:'smooth'})" style="background:#fdf2f8; border:2px solid #db2777; color:#be185d; padding:10px 18px; border-radius:12px; font-weight:800; font-size:0.95rem; cursor:pointer; display:flex; align-items:center; gap:6px; box-shadow:0 2px 6px rgba(0,0,0,0.04); transition:all 0.15s;">
+        🎮 수학 게임 바로가기
+      </button>
+      <button type="button" onclick="document.getElementById('sec-application').scrollIntoView({behavior:'smooth'})" style="background:#f0fdf4; border:2px solid #16a34a; color:#15803d; padding:10px 18px; border-radius:12px; font-weight:800; font-size:0.95rem; cursor:pointer; display:flex; align-items:center; gap:6px; box-shadow:0 2px 6px rgba(0,0,0,0.04); transition:all 0.15s;">
+        💰 실생활 응용 바로가기
+      </button>
     </div>
 
     <style>
       .search-pill-btn:hover { background: #334155 !important; transform: translateY(-2px); }
       
-      /* List View (Table-like List) */
-      .grid-container.view-mode-list { display: flex !important; flex-direction: column; gap: 8px; }
-      .grid-container.view-mode-list .app-card { width: 100%; display: grid; grid-template-columns: 50px 200px 1fr auto; align-items: center; text-align: left; padding: 10px 20px; height: auto; justify-content: start; box-sizing:border-box; }
-      .grid-container.view-mode-list .app-card .card-icon { margin: 0; font-size: 2rem; }
-      .grid-container.view-mode-list .app-card .card-title { margin: 0; font-size: 1.15rem; padding-left:15px; }
-      .grid-container.view-mode-list .app-card .card-desc { margin: 0; font-size: 0.95rem; color:#7f8c8d; }
-      .grid-container.view-mode-list .app-card .card-badges { justify-self: end; }
-      
-      /* Compact View with Tooltip */
+      /* Grid Container Styles */
       .grid-container.view-mode-compact { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)) !important; gap: 10px; justify-content:center; }
-      .grid-container.view-mode-compact .app-card { padding: 12px 6px; height: auto; justify-content: center; position:relative; transition: all 0.2s ease; }
-      .grid-container.view-mode-compact .app-card:hover { transform: translateY(-4px); box-shadow: 0 0 15px rgba(52, 152, 219, 0.5), 0 10px 20px rgba(0,0,0,0.1); border-color: #3498db; z-index: 10; }
+      .grid-container.view-mode-compact .app-card { padding: 12px 6px; height: auto; justify-content: center; position:relative; transition: all 0.2s ease; background:#fff; border:1px solid #e2e8f0; border-radius:14px; cursor:pointer; }
+      .grid-container.view-mode-compact .app-card:hover { transform: translateY(-4px); box-shadow: 0 0 15px rgba(52, 152, 219, 0.4), 0 10px 20px rgba(0,0,0,0.08); border-color: #3498db; z-index: 10; }
       .grid-container.view-mode-compact .app-card .card-icon { font-size: 2.2rem; margin-bottom: 8px; }
-      .grid-container.view-mode-compact .app-card .card-title { font-size: 0.95rem; margin: 0; font-weight:700; }
+      .grid-container.view-mode-compact .app-card .card-title { font-size: 0.95rem; margin: 0; font-weight:700; color:#0f172a; }
       .grid-container.view-mode-compact .app-card .card-desc { 
         display: none; position: absolute; bottom: 110%; left: 50%; transform: translateX(-50%); 
         width: max-content; max-width: 280px; background: rgba(255, 255, 255, 0.98); color: #0f172a; 
@@ -1643,8 +1640,38 @@
       .grid-container.view-mode-compact .app-card .card-badges { display: none; }
     </style>
 
-    <!-- APP CARDS GRID -->
-    <div id="home-app-cards" class="grid-container view-mode-compact"></div>
+    
+    <section id="sec-concept" style="margin-bottom:40px; background:#ffffff; border:1px solid #e2e8f0; border-radius:20px; padding:24px 20px; box-shadow:0 4px 15px rgba(0,0,0,0.03);">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; padding-bottom:12px; border-bottom:2px solid #e0f2fe; flex-wrap:wrap; gap:8px;">
+        <h2 style="font-size:1.35rem; font-weight:900; color:#0369a1; margin:0; display:flex; align-items:center; gap:8px;">
+          📊 교과 수학 개념 <span id="cnt-concept" style="font-size:0.85rem; background:#0284c7; color:#fff; padding:2px 10px; border-radius:999px; font-weight:800;">0</span>
+        </h2>
+        <span style="font-size:0.85rem; color:#64748b; font-weight:600;">직접 조작 기반 교과 원리 및 동적 시각화 탐구</span>
+      </div>
+      <div id="grid-concept" class="grid-container view-mode-compact"></div>
+    </section>
+
+    
+    <section id="sec-game" style="margin-bottom:40px; background:#ffffff; border:1px solid #e2e8f0; border-radius:20px; padding:24px 20px; box-shadow:0 4px 15px rgba(0,0,0,0.03);">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; padding-bottom:12px; border-bottom:2px solid #fce7f3; flex-wrap:wrap; gap:8px;">
+        <h2 style="font-size:1.35rem; font-weight:900; color:#be185d; margin:0; display:flex; align-items:center; gap:8px;">
+          🎮 수학 게임 <span id="cnt-game" style="font-size:0.85rem; background:#db2777; color:#fff; padding:2px 10px; border-radius:999px; font-weight:800;">0</span>
+        </h2>
+        <span style="font-size:0.85rem; color:#64748b; font-weight:600;">실시간 명예의 전당 랭킹 경쟁 및 감각 훈련</span>
+      </div>
+      <div id="grid-game" class="grid-container view-mode-compact"></div>
+    </section>
+
+    
+    <section id="sec-application" style="margin-bottom:40px; background:#ffffff; border:1px solid #e2e8f0; border-radius:20px; padding:24px 20px; box-shadow:0 4px 15px rgba(0,0,0,0.03);">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; padding-bottom:12px; border-bottom:2px solid #dcfce7; flex-wrap:wrap; gap:8px;">
+        <h2 style="font-size:1.35rem; font-weight:900; color:#15803d; margin:0; display:flex; align-items:center; gap:8px;">
+          💰 실생활 응용 <span id="cnt-application" style="font-size:0.85rem; background:#16a34a; color:#fff; padding:2px 10px; border-radius:999px; font-weight:800;">0</span>
+        </h2>
+        <span style="font-size:0.85rem; color:#64748b; font-weight:600;">금융, 사회, 게임이론 속 실생활 수학 시뮬레이션</span>
+      </div>
+      <div id="grid-application" class="grid-container view-mode-compact"></div>
+    </section>
 
   </section>
 </template>
@@ -3320,37 +3347,7 @@ window.openFeedbackModal = function() {
       keywords: ['야추', 'Yahtzee', '주사위', '확률', '경우의 수', '기대값']
     },
 
-    {
-      id: 'quadratic-cannon',
-      curriculumSchool: '중학교',
-      curriculumSubject: '중학수학 3학년',
-      curriculumUnit: '이차함수와 그래프',
-      title: '이차함수 포물선 대포',
-      icon: '🚀',
-      description: '이차함수의 계수를 조절해 포물선 궤적으로 목표물을 맞히는 수학 게임',
-
-      appType: 'game',
-      topApp: '수학 게임',
-      sourceType: 'new',
-      launchType: 'mathLabGame',
-      launchId: 'quadratic-cannon',
-      fileName: 'games_quadratic_cannon.html',
-      status: '스캐폴드',
-      enabled: true,
-
-      schoolLevel: ['middle', 'high'],
-      gradeBand: ['중3', '고1'],
-      curriculumArea: ['함수', '기하'],
-      unit: ['이차함수', '포물선', '그래프 변환'],
-      concepts: ['이차함수', '포물선', '꼭짓점', '평행이동', '그래프', '함수 모델링'],
-
-      classroomUse: ['전자칠판', '팀전', '탐구 활동', '개념 확인'],
-      difficulty: '보통',
-      duration: '10분',
-
-      tags: ['이차함수', '포물선', '대포', '그래프', '꼭짓점', '함수 게임'],
-      keywords: ['이차함수', '포물선', '대포', '그래프', '꼭짓점']
-    },
+    
 
     {
       id: 'abacus-master',
@@ -5577,12 +5574,7 @@ window.openFeedbackModal = function() {
                 
   
     ,{
-      id: 'boxplot-mismatch',
-      curriculumSchool: '중학교',
-      curriculumSubject: '중학교 수학',
-      curriculumUnit: '통계',
-      title: '상자수염 그림 미스매치',
-      icon: '📉',
+      📦,
       description: '상자수염 그림과 히스토그램의 분포 모양을 짝지어 매칭하며 대푯값과 산포도를 이해하는 통계 게임입니다.',
       
       appType: 'game',
@@ -5787,12 +5779,7 @@ window.openFeedbackModal = function() {
   keywords: ['prisoners dilemma', 'tit for tat', '내쉬균형', '지배전략']
 },
 {
-  id: 'random-walk-stock',
-  curriculumSchool: '고등학교',
-  curriculumSubject: '경제수학',
-  curriculumUnit: '금융수학',
-  title: '랜덤 워크 주식 시장',
-  icon: '📈',
+  💹,
   appType: 'application',
   topApp: '실생활 응용',
   sourceType: 'gen3',
@@ -5943,12 +5930,7 @@ window.openFeedbackModal = function() {
   keywords: ['synthetic division', 'polynomial', 'remainder theorem', 'factor theorem', 'factoring']
 },
 {
-  id: 'log-scale-voyage',
-  curriculumSchool: '고등학교',
-  curriculumSubject: '대수',
-  curriculumUnit: '지수함수와 로그함수 · 상용로그',
-  title: '로그 스케일과 상용로그 항해',
-  icon: '🚀',
+  🌌,
   appType: 'concept',
   topApp: '교과 수학 개념',
   sourceType: 'gen3',
@@ -6100,12 +6082,7 @@ window.openFeedbackModal = function() {
   keywords: ['그래프교점', '실근', '차함수', 'intersection-sniper']
 },
 {
-  id: 'func-limit-continuity',
-  curriculumSchool: '고등학교',
-  curriculumSubject: '미적분Ⅰ',
-  curriculumUnit: '함수의 극한과 연속 - 함수의 극한, 연속성, 미분가능성',
-  title: '함수의 극한·연속·미분 시각화',
-  icon: '📈',
+  🔄,
   appType: 'concept',
   topApp: '교과 수학 개념',
   sourceType: 'gen3',
@@ -6187,12 +6164,7 @@ window.openFeedbackModal = function() {
 
 // 3단원: 함수와 경제
 {
-  id: 'econ-func-market',
-  curriculumSchool: '고등학교',
-  curriculumSubject: '경제수학',
-  curriculumUnit: '3. 함수와 경제 - 생산·비용·수요·공급·균형·선형계획',
-  title: '함수와 경제 (생산·비용·균형·선형계획)',
-  icon: '⚖️',
+  🏭,
   appType: 'concept',
   topApp: '교과 수학 개념',
   sourceType: 'gen3',
@@ -6802,7 +6774,7 @@ const ConceptMontyApp = (function() {
         </div>
       </div>
 
-      <!-- Guide Modal -->
+      
       <div id="monty-modal-overlay">
         <div class="monty-modal-content">
           <h2>💡 몬티홀 딜레마란?</h2>
@@ -8024,7 +7996,7 @@ const ConceptLoanApp = (function() {
         </div>
       </div>
 
-      <!-- Guide Modal -->
+      
       <div id="loan-modal-overlay">
         <div class="loan-modal-content">
           <h2>💡 상환 방식 완벽 이해하기</h2>
@@ -8456,7 +8428,7 @@ const ConceptTaxElecApp = (function() {
         </div>
       </div>
 
-      <!-- Guide Modal -->
+      
       <div id="tax-modal-overlay" class="tax-elec-modal-overlay">
         <div class="tax-modal-content">
           <h2>💡 생활 속 함수 가이드</h2>
@@ -10641,9 +10613,9 @@ const ConceptAngleApp = (function() {
     h += '    <button class="home-btn" onclick="window.ConceptAngleApp.goHome()" style="margin:0;">&#127968; 대시보드</button>';
     h += '  </div>';
     h += '  <p class="highlight-msg" style="margin-bottom: 5px;">다음 삼각함수를 간단히 변환해 봅시다!</p>';
-    h += '  <!-- 2단 레이아웃 분할 -->';
+    h += '  ';
     h += '  <div class="angle-layout">';
-    h += '    <!-- 좌측: 시각화 캔버스 패널 -->';
+    h += '    ';
     h += '    <div class="visual-panel">';
     h += '      <div class="canvas-wrapper">';
     h += '        <canvas id="angle-canvas" width="400" height="400"></canvas>';
@@ -10653,7 +10625,7 @@ const ConceptAngleApp = (function() {
     h += '        ※ 단계가 진행될수록 그래프와 정보가 나타납니다.';
     h += '      </div>';
     h += '    </div>';
-    h += '    <!-- 우측: 문제 및 퀴즈 패널 -->';
+    h += '    ';
     h += '    <div class="quiz-panel">';
     h += '      <div class="problem-display" id="angle-problem">sin(&pi;/2 + &theta;)</div>';
     h += '      <div class="quiz-steps">';
@@ -11250,7 +11222,7 @@ window.ConceptAngleApp = ConceptAngleApp;
             <button class="sur-tab-btn" id="sur-tab-sin" onclick="window.SurveyConceptApp.switchMission('sin')">미션 B (사인법칙)</button>
           </div>
           
-          <!-- 미션 A: 코사인 -->
+          
           <div id="sur-mission-cos" class="sur-mission-content">
             <div class="sur-mission-scenario"><strong>📍 상황:</strong> 전망대에서 두 산봉우리 사이의 직선 거리를 구하려고 합니다.</div>
             <div class="sur-canvas-wrap"><canvas id="canvas-cos" width="600" height="300"></canvas></div>
@@ -11275,7 +11247,7 @@ window.ConceptAngleApp = ConceptAngleApp;
             </div>
           </div>
           
-          <!-- 미션 B: 사인 -->
+          
           <div id="sur-mission-sin" class="sur-mission-content hidden">
             <div class="sur-mission-scenario"><strong>📍 상황:</strong> 강 건너 랜드마크 거리를 두 관측소의 각도를 통해 구합니다.</div>
             <div class="sur-canvas-wrap"><canvas id="canvas-sin" width="600" height="300"></canvas></div>
@@ -12405,7 +12377,7 @@ window.ConceptAngleApp = ConceptAngleApp;
 </script>
 
 
-<!-- 구구단 카운트다운 (Gugudan Countdown / Multiplication Defense) - Gen-3 표준 & 전자칠판 2인용 대결 완결판 -->
+
 <style>
   /* ==========================================================================
      Gen-3 수학 실험실 표준 스타일 - 구구단 카운트다운 (Gugudan Countdown)
@@ -13127,7 +13099,7 @@ window.ConceptAngleApp = ConceptAngleApp;
 
       host.innerHTML = `
         <div class="game-gugudan-logic" id="gugudan-logic-app">
-          <!-- 상단 헤더 -->
+          
           <div class="stats-bar">
             <div class="title-group">
               <div class="title-icon">🚀</div>
@@ -13147,7 +13119,7 @@ window.ConceptAngleApp = ConceptAngleApp;
             </div>
           </div>
 
-          <!-- 모드 선택 탭 바 (1인 탐구 vs 2인 전자칠판 대결) -->
+          
           <div class="player-mode-bar">
             <button class="pmode-btn active" id="btn-gugu-pmode-1p" onclick="GugudanLogic.setPlayerMode('1p')">
               <span>👤 1인 카운트다운 모드 (생명 방어 & 명예의 전당)</span>
@@ -13157,7 +13129,7 @@ window.ConceptAngleApp = ConceptAngleApp;
             </button>
           </div>
 
-          <!-- 통계 및 단수 선택 대시보드 -->
+          
           <div class="info-dashboard">
             <div class="mode-tabs">
               <button class="tab-btn active" id="gugu-tab-basic" onclick="GugudanLogic.setTableMode('basic')">🟢 기본 구구단 (2~9단)</button>
@@ -13173,10 +13145,10 @@ window.ConceptAngleApp = ConceptAngleApp;
             </div>
           </div>
 
-          <!-- 메인 아레나 (1인용 vs 2인용 분할) -->
+          
           <div class="main-stage">
             <div class="arenas-grid" id="gugu-arenas-grid">
-              <!-- 1인용 아레나 (또는 2인 좌측 P1 아레나) -->
+              
               <div class="arena-card p1" id="gugu-arena-card-1">
                 <div class="arena-header p1-head" id="gugu-arena-head-1">
                   <span>👤 1인 방어 캔버스</span>
@@ -13186,7 +13158,7 @@ window.ConceptAngleApp = ConceptAngleApp;
                   <div class="board-grid-bg"></div>
                   <div class="board-danger-line"></div>
                 </div>
-                <!-- P1 입력 및 키패드 -->
+                
                 <div class="input-zone">
                   <div class="input-display-row">
                     <input type="text" class="input-box" id="input-val-1" placeholder="?" readonly>
@@ -13209,7 +13181,7 @@ window.ConceptAngleApp = ConceptAngleApp;
                 </div>
               </div>
 
-              <!-- 2인용 우측 P2 아레나 (2p 모드에서만 표시) -->
+              
               <div class="arena-card p2" id="gugu-arena-card-2" style="display:none;">
                 <div class="arena-header p2-head" id="gugu-arena-head-2">
                   <span>🔵 플레이어 2 (우측 방어)</span>
@@ -13219,7 +13191,7 @@ window.ConceptAngleApp = ConceptAngleApp;
                   <div class="board-grid-bg"></div>
                   <div class="board-danger-line"></div>
                 </div>
-                <!-- P2 입력 및 키패드 -->
+                
                 <div class="input-zone">
                   <div class="input-display-row">
                     <input type="text" class="input-box" id="input-val-2" placeholder="?" readonly>
@@ -13243,12 +13215,12 @@ window.ConceptAngleApp = ConceptAngleApp;
               </div>
             </div>
 
-            <!-- 피드백 바 -->
+            
             <div class="feedback-box" id="gugu-status-msg">
               💡 떨어지는 구구단 블록의 정답을 숫자 키패드나 키보드로 입력한 뒤 [🚀 발사]를 눌러 격파하세요!
             </div>
 
-            <!-- 하단 컨트롤 바 -->
+            
             <div class="footer-bar">
               <div style="font-size:0.88rem; color:#94a3b8;">
                 ⌨️ PC 팁: 엔터(Enter) 키를 누르면 즉시 발사되며, 1인용/P1은 숫자키로 입력 가능합니다.
@@ -13257,7 +13229,7 @@ window.ConceptAngleApp = ConceptAngleApp;
             </div>
           </div>
 
-          <!-- 하단 상시 명예의 전당 보드 -->
+          
           <div class="bottom-ranking-card" id="gugu-bottom-ranking-sec">
             <div class="ranking-header">
               <div class="ranking-title">🏆 구구단 카운트다운 명예의 전당 (실시간 랭킹 보드)</div>
@@ -13267,7 +13239,7 @@ window.ConceptAngleApp = ConceptAngleApp;
             </div>
           </div>
 
-          <!-- 1. 규칙 및 안내 모달 -->
+          
           <div class="modal-overlay" id="gugu-guide-modal">
             <div class="modal-box">
               <div class="modal-header">
@@ -13291,7 +13263,7 @@ window.ConceptAngleApp = ConceptAngleApp;
             </div>
           </div>
 
-          <!-- 2. 명예의 전당 등록 모달 -->
+          
           <div class="modal-overlay" id="gugu-rank-modal">
             <div class="modal-box">
               <div class="modal-header">
@@ -14507,7 +14479,7 @@ class Make24Game {
           주어진 4개의 카드를 한 번씩 사용하여 사칙연산으로 <strong>24</strong>를 만드세요!
         </p>
 
-        <!-- 게임 설정 오버레이 -->
+        
         <div id="m24-setup-screen" class="m24-setup-overlay">
           <h2 style="color:#2c3e50; margin-bottom:10px;">게임 설정</h2>
           <div style="display:flex; gap:10px; justify-content:center; margin-bottom:15px; flex-wrap:wrap;">
@@ -14993,11 +14965,7 @@ class Make24Game {
 })();
 </script>
 
-<!--
-  Gen-3 수학 실험실 수학게임 앱: 매스 워들 마스터 (wordle)
-  오로지 스타일((style))과 스크립트((script))로만 구성된 표준 템플릿
-  (턴제 시간/자리/남은 기회 누적 점수 산정, 솔로 vs AI 대결 점수 명시, 학교/학년반/닉네임 완벽 표기)
--->
+
 <style>
   /* ==========================================================================
      Gen-3 전용 스코프 스타일 (.game-wordle)
@@ -15514,7 +15482,7 @@ class Make24Game {
               <button class="mode-tab-btn" id="tab-btn-ai" data-tab="ai">🤖 AI 대결 확장판</button>
             </div>
 
-            <!-- AI 대결 옵션 설정 바 -->
+            
             <div class="config-panel" id="mw-config-panel" style="display:none;">
               <div class="config-row">
                 <span class="config-label">⚔️ 대결 룰:</span>
@@ -15536,19 +15504,19 @@ class Make24Game {
               </div>
             </div>
 
-            <!-- 턴 배너 -->
+            
             <div class="turn-banner" id="mw-turn-banner">
               <span id="mw-turn-msg">💡 숨겨진 7자리 수학 등식을 6번 기회 안에 맞혀보세요!</span>
               <span id="mw-turn-sub" style="color:#86efac; font-size:0.9rem;">매 턴 제한시간 30초 · 초록 +15점 · 노랑 +5점</span>
             </div>
 
-            <!-- 보드 및 키패드 -->
+            
             <div class="board-container" id="mw-board"></div>
             <div class="status-msg" id="mw-status">수식을 입력하고 [입력]을 누르세요.</div>
             <div class="keypad-container" id="mw-keypad"></div>
           </main>
 
-          <!-- 하단 명예의 전당 섹션 (클래식/솔로 모드 및 글로벌 시트 연동) -->
+          
           <section class="lb-section" id="mw-lb-section">
             <div class="lb-title">
               <span>🏆 명예의 전당 (학교/학년반/닉네임 · 고득점 랭킹)</span>
@@ -15559,7 +15527,7 @@ class Make24Game {
             </div>
           </section>
 
-          <!-- 탐구 안내 모달 -->
+          
           <div class="modal-overlay" id="mw-howto-modal">
             <div class="modal-card">
               <h2 class="modal-title">🔤 매스 워들 마스터 안내</h2>
@@ -15581,7 +15549,7 @@ class Make24Game {
             </div>
           </div>
 
-          <!-- 명예의 전당 Top 20 모달 -->
+          
           <div class="modal-overlay" id="mw-leaderboard-modal">
             <div class="modal-card">
               <h2 class="modal-title">🏆 매스 워들 명예의 전당 (Top 20)</h2>
@@ -15590,7 +15558,7 @@ class Make24Game {
             </div>
           </div>
 
-          <!-- 완료 축하 모달 (학교/학년반/닉네임 통합 입력) -->
+          
           <div class="modal-overlay" id="mw-complete-modal">
             <div class="modal-card">
               <div style="font-size:54px; margin-bottom:8px;" id="mw-complete-icon">🎉🟩</div>
@@ -17233,7 +17201,7 @@ class Make24Game {
             </div>
           </div>
 
-          <!-- 하단 상시 명예의 전당 보드 -->
+          
           <div class="bottom-ranking-card" id="prime-bottom-ranking-sec">
             <div class="ranking-title">🏆 명예의 전당 (실시간 랭킹 보드)</div>
             <div id="board-prime-bottom">
@@ -17241,7 +17209,7 @@ class Make24Game {
             </div>
           </div>
 
-          <!-- Guide Modal -->
+          
           <div id="prime-guide-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15,23,42,0.8); z-index:99999; justify-content:center; align-items:center; backdrop-filter:blur(4px);">
             <div style="background:#fff; width:90%; max-width:500px; border-radius:24px; padding:28px; text-align:left; color:#1e2937; box-shadow:0 20px 40px rgba(0,0,0,0.4);">
               <h3 style="margin-top:0; color:#0f172a; border-bottom:1px solid #e2e8f0; padding-bottom:12px; font-size:1.4rem;">📖 게임 방법 (소수 헌터)</h3>
@@ -17371,7 +17339,7 @@ class Make24Game {
 })();
 </script>
 
-<!-- 대칭 매칭 (Symmetry Logic) 1~2인용 통합 앱 (Gen-3) -->
+
 <style>
   .game-sym-logic {
     width: 100%;
@@ -20461,7 +20429,7 @@ window.launchDiceRectConnect=window.initDiceRectConnect;
 .pf-edu .modal-close-btn { position: absolute; top: 16px; right: 16px; width: 32px; height: 32px; border-radius: 50%; background: #f1f5f9; border: none; font-weight: 900; cursor: pointer; }
 </style>
 
-<!-- KaTeX Script -->
+
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
 
 <script>
@@ -21095,7 +21063,7 @@ window.launchPigeonholeFruit = window.initPigeonholeFruit;
 .pd-concept .modal .mbox { background: #fff; border-radius: 18px; max-width: 580px; width: 100%; padding: 22px; max-height: 88vh; overflow: auto; box-shadow: 0 20px 50px rgba(15,23,42,0.3); }
 </style>
 
-<!-- KaTeX Script -->
+
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
 
 <script>
@@ -22709,7 +22677,7 @@ const CardMaster = (function() {
     host.innerHTML = `
       <div class="game-card-master" id="cm-main-container">
         
-        <!-- Header -->
+        
         <div class="cm-header">
           <div class="cm-title">🃏 순열 조합 카드 마스터</div>
           <div class="cm-header-btns">
@@ -22718,14 +22686,14 @@ const CardMaster = (function() {
           </div>
         </div>
 
-        <!-- Intro Screen -->
+        
         <div class="cm-overlay-screen" id="cm-screen-intro">
           <h2>순열 조합 카드 마스터</h2>
           <p>주어진 상황이 순열(P)인지 조합(C)인지 판별하고 값을 계산하여 몬스터를 처치하세요!<br>연속으로 맞히면 콤보가 쌓여 공격력이 증가합니다.</p>
           <button class="cm-start-btn" id="cm-btn-start">게임 시작</button>
         </div>
 
-        <!-- Game Over Screen -->
+        
         <div class="cm-overlay-screen" id="cm-screen-gameover" style="display:none;">
           <h2 style="color:#ef4444;">게임 오버</h2>
           <p>플레이어의 체력이 모두 소진되었습니다.<br>최종 점수: <strong id="cm-final-score" style="color:#facc15; font-size:1.5rem;">0</strong> 점</p>
@@ -22735,7 +22703,7 @@ const CardMaster = (function() {
           </div>
         </div>
 
-        <!-- Play Arena -->
+        
         <div class="cm-arena" id="cm-screen-play" style="display:none;">
           
           <div class="cm-status-bar">
@@ -22797,7 +22765,7 @@ const CardMaster = (function() {
           </div>
         </div>
 
-        <!-- 🌟 하단 상시 명예의 전당 랭킹 보드 -->
+        
         <div class="bottom-ranking-card" id="board-card-master-wrapper">
           <div class="ranking-title">🏆 명예의 전당 (실시간 랭킹 보드)</div>
           <div class="cm-ranking-list" id="board-card-master">
@@ -23787,7 +23755,7 @@ const LargeNumbersBetting = (function() {
 
     host.innerHTML = 
       '<div class="game-large-numbers-betting">' +
-        '<!-- Header -->' +
+        '' +
         '<div class="app-header">' +
           '<div class="app-title">🎲 대수의 법칙 베팅 챌린지</div>' +
           '<div class="header-btns">' +
@@ -23796,13 +23764,13 @@ const LargeNumbersBetting = (function() {
             '<button class="btn btn-home" id="btn-home">🏠 홈</button>' +
           '</div>' +
         '</div>' +
-        '<!-- Mode Switcher -->' +
+        '' +
         '<div class="mode-switcher">' +
           '<div class="mode-tab active" id="tab-1p" data-mode="1p">👤 1인 연습 모드 (랭킹 등록)</div>' +
           '<div class="mode-tab" id="tab-team" data-mode="team">👥 팀 대항 / 교사용 일괄 판정</div>' +
         '</div>' +
         '<div class="main-area">' +
-          '<!-- Common Settings & Chart -->' +
+          '' +
           '<div class="control-panel">' +
             '<div class="panel-box">' +
               '<div class="panel-title">시행 도구 (사건)</div>' +
@@ -23828,7 +23796,7 @@ const LargeNumbersBetting = (function() {
               '<div class="chart-prob" id="chart-prob-text"></div>' +
             '</div>' +
           '</div>' +
-          '<!-- 1P Betting Area -->' +
+          '' +
           '<div class="panel-box" id="area-1p">' +
             '<div class="status-bar" style="margin-bottom:15px;">' +
               '<span style="font-weight:700; color:#cbd5e1;">내 자산:</span>' +
@@ -23848,7 +23816,7 @@ const LargeNumbersBetting = (function() {
               '<button class="action-btn" id="btn-run-1p" style="margin-top:10px;">베팅 확정 & 시작 🚀</button>' +
             '</div>' +
           '</div>' +
-          '<!-- Team Betting Area -->' +
+          '' +
           '<div class="panel-box" id="area-team" style="display:none;">' +
             '<div class="panel-title">팀별 베팅 현황</div>' +
             '<table class="team-table">' +
@@ -23867,7 +23835,7 @@ const LargeNumbersBetting = (function() {
             '<button class="action-btn" id="btn-run-team" style="margin-top:15px;">일괄 판정 시행 🚀</button>' +
           '</div>' +
         '</div>' +
-        '<!-- 🌟 하단 상시 명예의 전당 랭킹 보드 -->' +
+        '' +
         '<div class="bottom-ranking-card" id="board-large-numbers-betting-wrapper">' +
           '<div class="ranking-title">🏆 명예의 전당 (실시간 랭킹 보드)</div>' +
           '<div id="board-large-numbers-betting">' +
@@ -29197,7 +29165,7 @@ window.launchMathLabGame = window.launchMathLabGame || function(id) {
 };
 </script>
 
-<!-- games_factor_breaker.html · 63번 다항식 인수분해 브레이커 (Gen-3 완전분리 신규 앱 · 순수 스니펫 · 화이트 테마) -->
+
 <style>
   /* ===== 다항식 인수분해 브레이커 (factor-breaker) · 화이트 라이트 테마 ===== */
   .game-factor-breaker{box-sizing:border-box;max-width:960px;margin:0 auto;padding:18px 16px 26px;background:#f8fafc;color:#1e293b;border:1px solid #e2e8f0;border-radius:18px;box-shadow:0 12px 32px rgba(15,23,42,.08);font-family:'Segoe UI','Apple SD Gothic Neo','Noto Sans KR',sans-serif;}
@@ -29927,13 +29895,7 @@ window.launchMathLabGame = window.launchMathLabGame || function(id) {
 })();
 </script>
 
-<!-- ===================================================================
-  games_matrix_distortion.html : 행렬 변환 디스토션 (🌀)
-  - Gen-3 수학실험실 표준 (mathlab_gen3_standard 스킬 준수)
-  - 순수 (style) + (script) 스니펫 (HTML 래퍼 없음)
-  - 라이트(화이트) 테마 / 자율 등록 / launchMathLabGame('matrix-distortion')
-  - 명예의 전당: submitRanking + 하단 상시 보드(board-matrix-distortion-bottom)
-==================================================================== -->
+
 <style>
 /* ===== 행렬 변환 디스토션 - Light Theme ===== */
 .game-matrix-distortion { max-width: 980px; margin: 0 auto; padding: 18px 14px 30px; background: #f8fafc; color: #0f172a; border-radius: 18px; box-sizing: border-box; }
@@ -30726,11 +30688,7 @@ window.BoxplotMismatch=API;window.initBoxplotMismatchGame=function(){reg();if(wi
 })();
 </script>
 
-<!--
-  복소평면 오리엔티어링 (complex-orienteering) - Gen-3 완전분리 신규 앱
-  - 라이트(화이트) 테마 / 자율 등록 / launchMathLabGame('complex-orienteering')
-  - 순수 style + script 스니펫 (HTML 래퍼 없음), js_app.html 0줄 수정
--->
+
 <style>
 .game-complex-orienteering {
   max-width: 1080px;
@@ -31733,12 +31691,7 @@ window.BoxplotMismatch=API;window.initBoxplotMismatchGame=function(){reg();if(wi
 })();
 </script>
 
-<!--
-  극한값 타겟 슈팅 (limit-shooting) - Gen-3 완전분리 신규 앱
-  - 라이트(화이트) 테마 / 자율 등록 / launchMathLabGame('limit-shooting')
-  - 순수 style + script 스니펫 (HTML 래퍼 없음), js_app.html 0줄 수정
-  - 아이콘: \ud83c\udff9 (기존 🎯 중복 회피)
--->
+
 <style>
 .game-limit-shooting {
   max-width: 1080px;
@@ -32751,12 +32704,7 @@ window.BoxplotMismatch=API;window.initBoxplotMismatchGame=function(){reg();if(wi
 })();
 </script>
 
-<!--
-  수학 실험실 Gen-3 신규 앱: 미분계수 접선 슈터 (games_tangent_shooter.html)
-  - id: tangent-shooter / 아이콘: 📐 (기존 🏹는 극한값 타겟 슈팅과 중복이므로 교체)
-  - 순수 (style) + (script) 스니펫 구조 (DOCTYPE/html/head/body 래퍼 없음)
-  - 라이트(화이트) 테마 · mathlab_gen3_standard 스킬 준수
--->
+
 <style>
   .game-tangent-shooter { max-width: 1080px; margin: 0 auto; padding: 18px 14px 30px; color: #0f172a; font-family: 'Pretendard', 'Noto Sans KR', sans-serif; background: #f8fafc; border-radius: 18px; }
   .game-tangent-shooter * { box-sizing: border-box; }
@@ -33614,13 +33562,7 @@ window.BoxplotMismatch=API;window.initBoxplotMismatchGame=function(){reg();if(wi
 })();
 </script>
 
-<!--
-  수학 실험실 Gen-3 교과개념 앱: 적분 면적 탐구 (games_integral_tetris.html)
-  - id: integral-tetris / 아이콘: ⛲
-  - 유형: 교과개념 앱 (게임 아님) — 명예의 전당 없음
-  - 리만 합 신 구비교와 구분구적법 원리 자유 탐구 도구
-  - 라이트(화이트) 테마 · mathlab_gen3_standard 스킬 준수
--->
+
 <style>
   .app-integral-tetris { max-width: 1100px; margin: 0 auto; padding: 18px 14px 36px; color: #0f172a; font-family: 'Pretendard', 'Noto Sans KR', sans-serif; background: #f8fafc; border-radius: 18px; }
   .app-integral-tetris * { box-sizing: border-box; }
@@ -34147,13 +34089,7 @@ window.BoxplotMismatch=API;window.initBoxplotMismatchGame=function(){reg();if(wi
 })();
 </script>
 
-<!--
-  수학 실험실 Gen-3 실생활 응용 앱: 인생 역전 로또 시뮬레이터 (games_lotto_simulator.html)
-  - id: lotto-simulator / 아이콘: 🎰
-  - 유형: 실생활 응용 (data-category="life") — 명예의 전당 없음, 점수 없음
-  - 조합·확률·기댓값·큰 수의 법칙 자유 탐구 도구
-  - 라이트(화이트) 테마 · Gen-3 표준
--->
+
 <style>
   .app-lotto-simulator { max-width: 1120px; margin: 0 auto; padding: 18px 14px 36px; color: #0f172a; font-family: 'Pretendard', 'Noto Sans KR', sans-serif; background: #f8fafc; border-radius: 18px; }
   .app-lotto-simulator * { box-sizing: border-box; }
@@ -34577,12 +34513,7 @@ window.BoxplotMismatch=API;window.initBoxplotMismatchGame=function(){reg();if(wi
   window.launchLottoSimulatorApp=function(){window.initLottoSimulatorApp();};
 })();
 </script>
-<!--
-  수학 실험실 Gen-3 앱: 로또 번호 네트워크 (games_lotto_network.html) — 최종 버전
-  - id: lotto-network / 아이콘: 🔗 / 유형: 확률·통계 탐구 도구 (점수·명예의 전당 없음)
-  - 라이트(화이트) 테마 / 명확한 실행 버튼 / 최다 출현 TOP 10 패널 통합
-  - Force-directed 네트워크 + 번호 클릭 관계망 강조
--->
+
 <style>
 .game-lotto-network, .game-lotto-network * { box-sizing: border-box; }
 .game-lotto-network { position: relative; z-index: 10; max-width: 1120px; margin: 0 auto; font-family: 'Pretendard', 'Noto Sans KR', sans-serif; background: #f8fafc; color: #0f172a; min-height: 60vh; padding: 18px 14px 28px; display: flex; flex-direction: column; gap: 12px; border-radius: 16px; }
@@ -35624,13 +35555,7 @@ window.initDijkstraDeliveryGame = function () {
 window.launchDijkstraDeliveryGame = window.initDijkstraDeliveryGame;
 })();
 </script>
-<!--
-  수학 실험실 Gen-3 게임 앱: 마르코프 날씨 체인 도박
-  id: markov-weather-chain | 파일: games_markov_weather_chain.html
-  boardId: board-markov-weather-chain
-  submitRanking(ATITLE, score, true, nm, ABOARD)
-  loadGameLeaderboard(ATITLE, true, ABOARD)
--->
+
 <style>
 .game-markov-weather-chain{max-width:1060px;margin:0 auto;padding:18px 14px 40px;font-family:'Pretendard','Noto Sans KR',sans-serif;color:#0f172a;background:#f8fafc;border-radius:18px}
 .game-markov-weather-chain *{box-sizing:border-box}
@@ -38225,7 +38150,7 @@ if (document.readyState === 'loading') {
 }
 </script>
  
-<!-- 님 게임 (Nim Game: 21개 돌 턴제 & AI 대결) Gen-3 마이그레이션 및 XSS 방어 패치 -->
+
 <script>
 (function () {
   function cleanupNimGame(resetUi = true) {
@@ -38392,7 +38317,7 @@ if (document.readyState === 'loading') {
             <button class="nim-btn-home" id="nim-btn-home">🏠 홈으로</button>
           </div>
 
-          <!-- 모드 및 룰 설정 바 -->
+          
           <div class="config-panel">
             <div class="config-row">
               <span class="config-label">🤖 대결 모드:</span>
@@ -38412,13 +38337,13 @@ if (document.readyState === 'loading') {
             </div>
           </div>
 
-          <!-- 턴 상태 안내 -->
+          
           <div class="status-banner turn-player" id="nim-status">🙋 내가 돌을 고를 차례입니다! (1~3개 선택 후 버튼 클릭)</div>
 
-          <!-- 21개 돌 보드 -->
+          
           <div class="stones-board" id="nim-stones-board"></div>
 
-          <!-- 컨트롤 바 -->
+          
           <div class="control-box">
             <div class="take-info">현재 선택한 돌: <strong id="nim-selected-count">0</strong>개 / (남은 돌: <span id="nim-rem-count">21</span>개)</div>
             <div class="btn-row">
@@ -38427,12 +38352,12 @@ if (document.readyState === 'loading') {
             </div>
           </div>
 
-          <!-- 기록 로그 -->
+          
           <div class="log-box" id="nim-log-box">
             <div class="log-item" style="text-align: center; color: #94a3b8;">게임 진행 기록이 여기에 표시됩니다.</div>
           </div>
 
-          <!-- 명예의 전당 보드 -->
+          
           <div class="bottom-ranking-card">
             <div class="ranking-title">🏆 명예의 전당 (누적 승수 순위)</div>
             <div id="board-nim-bottom"><p style="text-align:center; color:#94a3b8; padding:12px 0;">랭킹 데이터를 불러오는 중...</p></div>
@@ -39037,7 +38962,7 @@ if (document.readyState === 'loading') {
       if (!this.container) return;
       this.container.innerHTML = `
         <div class="game-sequence-racing">
-          <!-- 가이드 모달 -->
+          
           <div id="sr-guide-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9999; justify-content:center; align-items:center;">
             <div style="background:#fff; width:90%; max-width:500px; border-radius:16px; padding:24px; box-shadow:0 10px 25px rgba(0,0,0,0.2);">
               <h3 style="margin-top:0; color:#1e293b; border-bottom:1px solid #e2e8f0; padding-bottom:12px;">📖 수열 규칙 레이싱 방법</h3>
@@ -39379,7 +39304,7 @@ if (document.readyState === 'loading') {
       const html = `
         <div class="game-sequence-pop">
           
-          <!-- 모달 오버레이 구조 -->
+          
           <div id="sp-guide-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9999; justify-content:center; align-items:center;">
             <div style="background:#fff; width:90%; max-width:500px; border-radius:16px; padding:24px; box-shadow:0 10px 25px rgba(0,0,0,0.2);">
               <h3 style="margin-top:0; color:#1e293b; border-bottom:1px solid #e2e8f0; padding-bottom:12px;">📖 수열크러시 게임 방법</h3>
@@ -39903,7 +39828,7 @@ if (document.readyState === 'loading') {
     const gameMeta = {
     id: 'sequence-pop',
     title: '수열크러시',
-    icon: '💥',
+    icon: '🎈',
     description: '등차수열 규칙을 찾아 숫자를 연결하고 터뜨리는 액션 퍼즐',
     appType: 'game',
     topApp: '수학 게임',
@@ -40824,7 +40749,7 @@ prepareCanvas(force) {
   window.MathLabGames.register({
     id: 'quadratic-cannon',
     title: '이차함수 포물선 대포',
-    icon: '☄️',
+    icon: '🚀',
     sourceType: 'new',
 
     mount(container, context) {
@@ -41029,7 +40954,7 @@ prepareCanvas(force) {
           </div>
           
           
-          <!-- Guide Modal -->
+          
           <div id="qf-guide-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:99999; justify-content:center; align-items:center;">
             <div style="background:#fff; width:90%; max-width:500px; border-radius:16px; padding:24px; box-shadow:0 10px 25px rgba(0,0,0,0.2); text-align:left; color:#1e293b;">
               <h3 style="margin-top:0; color:#1e293b; border-bottom:1px solid #e2e8f0; padding-bottom:12px;">📖 게임 방법 (이차함수 포트리스)</h3>
@@ -43546,7 +43471,7 @@ prepareCanvas(force) {
           <div class="monty-grid">
             <section class="monty-card">
               ${!this.gameStarted ? `
-                <!-- Start Overlay -->
+                
                 <div style="position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.95); z-index:10; display:flex; flex-direction:column; justify-content:center; align-items:center; border-radius:18px; padding:20px; text-align:center;">
                   <h3 style="font-size:1.6rem; margin-bottom:10px; color:#5b21b6;">게임 설정</h3>
                   <p style="color:#64748b; margin-bottom:20px;">라운드 수와 모드를 선택하고 게임을 시작하세요.</p>
@@ -43668,7 +43593,7 @@ prepareCanvas(force) {
                 </tbody>
               </table>
 
-              <!-- 명예의 전당 보드 -->
+              
               <div style="margin-top:20px; background:#1e293b; padding:16px; border-radius:16px; border:1px solid #334155;">
                 <div style="color:#facc15; font-weight:bold; font-size:1.1rem; margin-bottom:10px; text-align:center;">🏆 명예의 전당</div>
                 <div id="board-monty-bottom"><p style="text-align:center; color:#94a3b8; padding:12px 0;">랭킹 데이터를 불러오는 중...</p></div>
@@ -47386,7 +47311,7 @@ renderBoard(){const board=this.container.querySelector('#grid-slitherlink');if(!
 bindEvents(){const root=this.container.querySelector('.game-slitherlink');if(!root)return;root.querySelectorAll('[data-edge-id]').forEach(btn=>btn.addEventListener('click',()=>{if(this.solved||this.gameOver)return;const id=btn.getAttribute('data-edge-id');if(this.selectedEdges.has(id))this.selectedEdges.delete(id);else this.selectedEdges.add(id);btn.classList.toggle('is-selected',this.selectedEdges.has(id));this.updateStats();this.setMessage('선택한 선을 기준으로 루프를 완성하세요.','')}));root.querySelectorAll('[data-sl-difficulty]').forEach(b=>b.addEventListener('click',()=>this.setDifficulty(b.getAttribute('data-sl-difficulty'))));root.querySelector('[data-sl-action="check"]')?.addEventListener('click',()=>this.checkAnswer());root.querySelector('[data-sl-action="clear"]')?.addEventListener('click',()=>this.clearEdges());root.querySelector('[data-sl-action="next"]')?.addEventListener('click',()=>this.nextPuzzle());root.querySelector('[data-sl-action="hint"]')?.addEventListener('click',()=>this.showHint());root.querySelector('[data-sl-action="solution"]')?.addEventListener('click',()=>this.showSolution());root.querySelector('[data-sl-action="restart"]')?.addEventListener('click',()=>{this.reset();this.render()});root.querySelector('[data-sl-action="home"]')?.addEventListener('click',()=>window.MathLabUtils?.goHome?window.MathLabUtils.goHome():(window.LegacyBridge&&window.LegacyBridge.backHome?window.LegacyBridge.backHome():location.reload()));},
 clearEdges(){if(this.solved||this.gameOver)return;this.selectedEdges=new Set();this.renderBoard();this.bindEvents();this.updateStats();this.setMessage('선을 모두 지웠습니다. 다시 루프를 만들어 보세요.','')},showHint(){if(!this.hintUnlocked){this.setMessage('힌트는 생명이 1개 차감된 뒤부터 확인할 수 있습니다.','fail');return}this.setMessage(`힌트: ${this.puzzle.title}`,'')},showSolution(){if(!this.hintUnlocked&&!this.gameOver){this.setMessage('정답 보기는 생명이 1개 차감된 뒤부터 사용할 수 있습니다.','fail');return}this.selectedEdges=new Set(this.puzzle.solutionEdges);this.renderBoard();this.bindEvents();this.updateStats();this.setMessage('정답 예시를 표시했습니다. 이 상태에서 정답 확인을 누르면 성공 판정됩니다.','')},updateStats(){const s=this.container.querySelector('[data-sl-score]'),l=this.container.querySelector('[data-sl-lives]'),e=this.container.querySelector('[data-sl-edge-count]');if(s)s.textContent=String(this.score);if(l)l.textContent=String(this.lives);if(e)e.textContent=String(this.selectedEdges.size)},setMessage(text,type){const m=this.container.querySelector('[data-sl-message]');if(!m)return;m.textContent=text;m.classList.remove('success','fail');if(type)m.classList.add(type)},
 checkAnswer(){if(this.gameOver){this.setMessage('게임이 종료되었습니다. 다시 시작을 눌러 새 게임을 시작하세요.','fail');return}if(this.solved){this.setMessage('이미 성공한 퍼즐입니다. 다음 문제를 눌러 계속 진행하세요.','success');return}const c=this.checkClues();if(!c.ok){this.handleFail(c.message);return}const l=this.checkSingleLoop();if(!l.ok){this.handleFail(l.message);return}this.handleSuccess()},checkClues(){const size=this.puzzle.size;for(let r=0;r<size;r++)for(let c=0;c<size;c++){const clue=this.puzzle.clues[r][c];if(clue==null)continue;const n=countCell(size,this.selectedEdges,r,c);if(n!==clue)return{ok:false,message:`힌트 조건이 맞지 않습니다.\n${r+1}행 ${c+1}열 숫자 ${clue} 주변의 선택된 선은 현재 ${n}개입니다.`}}return{ok:true}},checkSingleLoop(){if(this.selectedEdges.size===0)return{ok:false,message:'선이 하나도 선택되지 않았습니다.'};if(!loopOK(Array.from(this.selectedEdges)))return{ok:false,message:'선이 하나의 단일 닫힌 루프가 아닙니다. 열린 경로, 가지친 선, 분리된 루프가 없는지 확인하세요.'};return{ok:true}},handleSuccess(){this.solved=true;const gained=(this.puzzle.size===5?160:100)+this.lives*20+(this.puzzle.generated?30:0);this.score+=gained;this.updateStats();this.setMessage(`성공입니다!\n이번 문제 점수 ${gained}점을 획득했습니다.\n다음 문제를 눌러 계속 진행하세요.`,'success')},handleFail(message){this.lives=Math.max(0,this.lives-1);this.hintUnlocked=true;this.updateStats();if(this.lives<=0){this.endGame(message);return}this.render();this.setMessage(`${message}\n\n생명 1개가 차감되었습니다. 이제 힌트와 정답 보기를 사용할 수 있습니다. 남은 생명: ${this.lives}`,'fail')},endGame(reason){this.gameOver=true;this.solved=true;this.hintUnlocked=true;this.render();this.setMessage(`${reason}\n\n게임 종료입니다.\n최종 점수: ${this.score}점\n명예의 전당에 최종 점수를 등록합니다.`,'fail');this.saveLeaderboard()},saveLeaderboard(){try{if(this.score<=0)return;if(typeof window.submitRanking!=='function'){console.info('[Slitherlink] submitRanking 함수를 찾을 수 없어 점수 등록을 건너뜁니다.');return}const name=prompt('명예의 전당에 등록할 닉네임을 입력하세요.');if(!name||!name.trim()){this.setMessage(`게임 종료입니다.\n최종 점수 ${this.score}점입니다.\n닉네임을 입력하지 않아 명예의 전당 등록은 건너뛰었습니다.`,'fail');return}window.submitRanking('슬리더링크',this.score,true,{value:name,trim:function(){return name.trim()}},'board-slitherlink');if(typeof window.loadGameLeaderboard==='function')window.loadGameLeaderboard('슬리더링크',true,'board-slitherlink')}catch(e){console.error('[Slitherlink] 명예의 전당 저장 중 오류:',e)}},loadLeaderboard(){try{if(typeof window.loadGameLeaderboard==='function'){window.loadGameLeaderboard('슬리더링크',true,'board-slitherlink');return}const b=this.container.querySelector('#board-slitherlink');if(b)b.innerHTML='<p>명예의 전당 함수를 찾을 수 없습니다.</p>'}catch(e){console.error('[Slitherlink] 명예의 전당 로딩 오류:',e)}}};
-window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.MathLabGames.register!=='function'){console.error('[Slitherlink] MathLabGames.register를 찾을 수 없습니다. index.html include 순서를 확인하세요.');return}window.MathLabGames.register({id:'slitherlink',title:'슬리더링크',icon:'🔗',sourceType:'new',mount(c,x){SlitherlinkGame.mount(c,x)},reset(){SlitherlinkGame.reset();SlitherlinkGame.render()},destroy(){SlitherlinkGame.destroy()}});window.launchSlitherlinkGame=function(){if(!window.MathLabGames){alert('MathLabGames를 찾을 수 없습니다. games_slitherlink include 위치를 확인하세요.');return}if(window.LegacyBridge){window.LegacyBridge.hideAllLegacySections();window.LegacyBridge.showNewRoot()}try{window.MathLabGames.mount('slitherlink')}catch(e){console.error('슬리더링크 실행 오류:',e);alert('슬리더링크 실행 중 오류가 발생했습니다.'+'\n\n실제 오류: '+(e&&e.message?e.message:e))}};
+window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.MathLabGames.register!=='function'){console.error('[Slitherlink] MathLabGames.register를 찾을 수 없습니다. index.html include 순서를 확인하세요.');return}window.MathLabGames.register({id:'slitherlink',title:'슬리더링크',icon: '🔁',sourceType:'new',mount(c,x){SlitherlinkGame.mount(c,x)},reset(){SlitherlinkGame.reset();SlitherlinkGame.render()},destroy(){SlitherlinkGame.destroy()}});window.launchSlitherlinkGame=function(){if(!window.MathLabGames){alert('MathLabGames를 찾을 수 없습니다. games_slitherlink include 위치를 확인하세요.');return}if(window.LegacyBridge){window.LegacyBridge.hideAllLegacySections();window.LegacyBridge.showNewRoot()}try{window.MathLabGames.mount('slitherlink')}catch(e){console.error('슬리더링크 실행 오류:',e);alert('슬리더링크 실행 중 오류가 발생했습니다.'+'\n\n실제 오류: '+(e&&e.message?e.message:e))}};
 })();
 </script>
 
@@ -48067,7 +47992,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
 })();
 </script>
 
-<!-- 생일 패러독스 확률 실험실 (Birthday Paradox) 홈 버튼 & 랭킹 시트 연동 완결판 -->
+
 <style>
   .game-birthday-paradox {
     width: 100%;
@@ -48495,7 +48420,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
               <div class="card" style="padding:16px;">
                 <h3 style="margin-top:0; font-size:1rem; color:#475569; margin-bottom:12px; text-align:center;">🔧 탐구 제어</h3>
                 <button class="btn-secondary" style="width:100%; margin-bottom:10px; padding:12px; font-weight:800;" id="bp-btn-reset">🔄 다시 시작</button>
-                <!-- 🚨 [패치 완료] 홈으로 버튼 안전 연동 -->
+                
                 <button class="btn-secondary" style="width:100%; padding:12px; background:#9333ea; color:#ffffff;" id="bp-btn-home">🏠 홈으로</button>
               </div>
             </div>
@@ -48706,7 +48631,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
   };
 })();
 </script>
-<!-- 테셀레이션 타일러 (Tessellation Tiler) 홈 버튼 & 랭킹 시트 연동 완결판 -->
+
 <style>
   .game-tessellation-tiler {
     width: 100%;
@@ -49213,7 +49138,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
               
               <div class="card" style="padding:16px;">
                 <button class="btn-secondary" style="width:100%; margin-bottom:12px; padding:12px;" id="tt-btn-reset">🔄 다시 시작</button>
-                <!-- 🚨 [패치 완료] 홈으로 버튼 안전 연동 -->
+                
                 <button class="btn-secondary" style="width:100%; padding:12px; background:#4f46e5; color:#ffffff;" id="tt-btn-home">🏠 홈으로</button>
               </div>
             </div>
@@ -49689,7 +49614,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
   const KenKenGame = {
     id: 'kenken',
     title: '켄켄 퍼즐 마스터',
-    icon: '🔢',
+    icon: '🔲',
     category: 'game',
     
     container: null,
@@ -50087,7 +50012,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
 
 })();
 </script>
-<!-- 2D 루빅스 펼치기 (2D Rubiks) 모드 선택 탭 & 순백색 고대비 타이틀 완결판 -->
+
 <style>
   .game-rubiks-2d {
     width: 100%;
@@ -50784,7 +50709,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
       const is3x3 = this.state.size === 3;
       let html = `
         <div class="game-rubiks-2d">
-          <!-- 🌟 [시인성 1000% 방어막] 글로벌 어두운 스타일을 완전히 이기는 순백색 헤더 -->
+          
           <div class="rb-top-bar">
             <div class="rb-title">
               <h1>${this.icon} ${this.title}</h1>
@@ -50793,7 +50718,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
             <button class="btn-manual" id="rb-btn-manual">📖 게임 방법</button>
           </div>
 
-          <!-- 🌟 [신설] 3×3 초급 모드 vs 4×4 마스터 모드 선택 탭 -->
+          
           <div class="mission-tabs">
             <button class="tab-btn ${is3x3 ? 'active' : ''}" id="rb-tab-3x3">🟢 3×3 초급 모드</button>
             <button class="tab-btn ${!is3x3 ? 'active' : ''}" id="rb-tab-4x4">🔵 4×4 마스터 모드</button>
@@ -50810,7 +50735,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
           </div>
           
           <div class="rb-play-area">
-            <!-- 🌟 [겹침 완벽 해결] 상단 독립 패널로 배치된 목표 패턴 -->
+            
             <div class="rb-target-box">
               <div class="rb-target-title">🎯 목표 패턴 (Stage ${this.state.stage})</div>
               <div class="rb-target-grid" style="grid-template-columns: repeat(${this.state.size}, 1fr);">
@@ -50835,7 +50760,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
             </div>
           </div>
 
-          <!-- Strategy Manual Modal -->
+          
           <div class="rb-modal-overlay" id="rb-manual-modal">
             <div class="rb-modal">
               <h3>📖 2D 루빅스 펼치기 게임 방법</h3>
@@ -51038,7 +50963,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
   setTimeout(registerRubiks2DGame, 500);
 })();
 </script>
-<!-- 분수 피자 타이쿤 (Fraction Pizza Tycoon) 홈 버튼 & 랭킹 시트 연동 완결판 -->
+
 <style>
 .game-fraction-pizza-tycoon {
   width: 100%;
@@ -51795,7 +51720,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
           <div class="btn-group">
             <button class="btn btn-hint" data-action="hint">💡 힌트</button>
             <button class="btn btn-serve" data-action="serve" disabled>🍕 서빙하기</button>
-            <!-- 🚨 [패치 완료] 홈으로 버튼 추가 -->
+            
             <button class="btn btn-home" data-action="home">🏠 홈으로</button>
           </div>
         `;
@@ -52153,7 +52078,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
   };
 })();
 </script>
-<!-- 약수 배수 체인 (Factor Multiple Chain) 신규 수학 게임 (홈 버튼 & 랭킹 시트 저장 & 로드 ID 일치 완벽 패치) -->
+
 <script>
 (function () {
   
@@ -52558,7 +52483,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
         </style>
 
         <div class="game-factor-multiple-chain">
-          <!-- 헤더 영역 (고유 아이콘 ⛓️ 적용) -->
+          
           <div class="chain-header">
             <div class="title-row">
               <span class="title-icon">⛓️</span>
@@ -52576,14 +52501,14 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
             </div>
           </div>
 
-          <!-- 난이도 선택 탭 -->
+          
           <div class="diff-tabs">
             <button class="diff-btn active" data-diff="easy">🌱 쉬움 (1~30 • 시간 무제한)</button>
             <button class="diff-btn" data-diff="normal">🔥 보통 (1~60 • 60초)</button>
             <button class="diff-btn" data-diff="hard">👑 어려움 (1~100 • 45초)</button>
           </div>
 
-          <!-- 메인 2단 그리드 -->
+          
           <div class="main-grid">
             <div class="play-area">
               <div class="current-chain-box">
@@ -52607,7 +52532,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
             <div class="side-panel">
               <div class="side-box">
                 <h3 class="side-title">👑 명예의 전당 Top 5</h3>
-                <!-- 🚨 [패치 완료] 랭킹 로드 함수가 정확히 찾을 수 있도록 ID를 board-factor-multiple-chain으로 일치! -->
+                
                 <div class="rank-list" id="board-factor-multiple-chain">
                   <div style="text-align:center; color:#94a3b8; padding: 12px 0;">랭킹 로딩 중...</div>
                 </div>
@@ -52955,7 +52880,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
             </div>
             
             <div style="padding:24px; color:#334155; line-height:1.65; font-size:15px;">
-              <!-- 1. 게임 방법 및 생존 규칙 -->
+              
               <div style="margin-bottom:24px;">
                 <h3 style="margin:0 0 10px; font-size:17px; font-weight:900; color:#1e293b; border-left:4px solid #16a34a; padding-left:10px;">💡 1. 기본 규칙 & 라운드 생존 시스템</h3>
                 <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:14px; padding:16px;">
@@ -52968,7 +52893,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
                 </div>
               </div>
 
-              <!-- 2. 수학적 게임 원리 -->
+              
               <div style="margin-bottom:24px;">
                 <h3 style="margin:0 0 10px; font-size:17px; font-weight:900; color:#3b82f6; border-left:4px solid #3b82f6; padding-left:10px;">📐 2. 수학적 게임 원리 (약수·배수와 소수)</h3>
                 <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:14px; padding:16px;">
@@ -52979,7 +52904,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
                 </div>
               </div>
 
-              <!-- 3. 명예의 전당 고수 전략 -->
+              
               <div style="margin-bottom:12px;">
                 <h3 style="margin:0 0 10px; font-size:17px; font-weight:900; color:#f59e0b; border-left:4px solid #f59e0b; padding-left:10px;">🏆 3. 고수들을 위한 실전 TOP 4 핵심 전략</h3>
                 <div style="background:#fffbeb; border:1px solid #fde68a; border-radius:14px; padding:16px;">
@@ -53115,7 +53040,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
   const gameMeta = {
     id: 'factor-multiple-chain',
     title: '약수 배수 체인',
-    icon: '🔗',
+    icon: '⛓️',
     category: 'game',
     sourceType: 'new',
     mount(container, context) {
@@ -53171,7 +53096,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
   };
 })();
 </script>
-<!-- 정수 탈출 (Zero Trip) 홈 버튼 & 랭킹 시트 연동 완결판 -->
+
 <script>
 (function () {
   const ZeroTripGame = {
@@ -53603,17 +53528,17 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
             </div>
           </div>
 
-          <!-- 난이도 선택 탭 -->
+          
           <div class="diff-tabs">
             <button class="diff-btn active" data-diff="easy">🌱 쉬움 (4x4 • -5~+5 • 생명제)</button>
             <button class="diff-btn" data-diff="normal">🔥 보통 (5x5 • -9~+9 • 60초)</button>
             <button class="diff-btn" data-diff="hard">👑 어려움 (6x6 • -12~+12 • 50초)</button>
           </div>
 
-          <!-- 메인 2단 그리드 -->
+          
           <div class="main-grid">
             <div class="play-area">
-              <!-- 실시간 수직선 게이지 -->
+              
               <div class="gauge-box">
                 <div class="gauge-label">
                   <span>🎯 목표: 출구 도달 시 합 0</span>
@@ -53630,18 +53555,18 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
                 </div>
               </div>
 
-              <!-- 상태 메시지 -->
+              
               <div class="status-banner" id="zt-status">시작 발판(🏁)에 서 있습니다! 인접한 발판을 밟아 합을 0으로 맞추세요.</div>
 
-              <!-- 발판 격자 보드 -->
+              
               <div class="grid-board" id="zt-grid-board"></div>
 
-              <!-- 하단 액션 버튼 -->
+              
               <div class="action-row">
                 <button class="btn-action btn-undo" id="zt-btn-undo">↩️ 한 칸 취소</button>
                 <button class="btn-action btn-hint" id="zt-btn-hint">💡 힌트 (-30점)</button>
                 <button class="btn-action btn-restart" id="zt-btn-restart">🔄 판 다시하기</button>
-                <!-- 🚨 [패치 완료] 홈으로 버튼 안전 연동 -->
+                
                 <button class="btn-action btn-home" id="zt-btn-home">🏠 홈으로</button>
               </div>
             </div>
@@ -53649,7 +53574,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
             <div class="side-panel">
               <div class="side-box">
                 <h3 class="side-title">👑 명예의 전당 Top 5</h3>
-                <!-- 🚨 [패치 완료] 시스템 공식 랭킹 함수가 정확히 찾을 수 있도록 ID를 board-zero-trip으로 일치! -->
+                
                 <div class="rank-list" id="board-zero-trip">
                   <div style="text-align:center; color:#94a3b8; padding: 12px 0;">랭킹 로딩 중...</div>
                 </div>
@@ -54190,7 +54115,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
   };
 })();
 </script>
-<!-- 에라토스테네스의 체 정화 (Eratosthenes' Sieve Purification) 홈 버튼 & 랭킹 시트 연동 완결판 -->
+
 <script>
 (function () {
   function escapeHTML(str) { return String(str || '').replace(/[&<>'"]/g, s => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[s])); }
@@ -54596,14 +54521,14 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
             </div>
           </div>
 
-          <!-- 난이도 탭 -->
+          
           <div class="diff-tabs">
             <button class="diff-btn" data-diff="easy">🌱 쉬움 (1~50 • 생명 3개)</button>
             <button class="diff-btn active" data-diff="normal">🔥 보통 (1~100 • 생명 3개)</button>
             <button class="diff-btn" data-diff="hard">👑 도전 (1~100 • 90초 타이머)</button>
           </div>
 
-          <!-- 단계 진행 바 -->
+          
           <div class="step-progress">
             <span class="step-pill active" id="sp-0">1단계: [1] 제거</span> ➡
             <span class="step-pill" id="sp-1">2단계: 2의 배수</span> ➡
@@ -54613,15 +54538,15 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
             <span class="step-pill" id="sp-5">✨ 소수 정화 완료!</span>
           </div>
 
-          <!-- 메인 2단 그리드 -->
+          
           <div class="main-grid">
             <div class="play-area">
               <div class="status-banner" id="es-status">소수도 합성수도 아닌 숫자 '1'을 클릭하여 가장 먼저 제거하세요!</div>
 
-              <!-- 숫자 격자 보드 -->
+              
               <div class="grid-board" id="es-grid-board"></div>
 
-              <!-- 하단 액션 버튼 -->
+              
               <div class="action-row">
                 <button class="btn-action btn-check" id="es-btn-check">✅ 단계 완료 검사 (+50점)</button>
                 <button class="btn-action btn-hint" id="es-btn-hint">💡 힌트 보기 (-10점)</button>
@@ -54633,7 +54558,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
             <div class="side-panel">
               <div class="side-box">
                 <h3 class="side-title">👑 명예의 전당 Top 5</h3>
-                <!-- 🚨 [패치 완료] 시스템 공식 랭킹 함수가 정확히 찾을 수 있도록 ID를 board-eratosthenes-sieve로 일치! -->
+                
                 <div class="rank-list" id="board-eratosthenes-sieve">
                   <div style="text-align:center; color:#94a3b8; padding: 12px 0;">랭킹 로딩 중...</div>
                 </div>
@@ -55077,7 +55002,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
   };
 })();
 </script>
-<!-- 텐 메이커 (Make 10) 신규 수학 게임 (자체 닉네임 모달 & 구글 시트 랭킹 연동 완벽 보장 패치) -->
+
 <script>
 (function () {
   const Make10Game = {
@@ -56148,7 +56073,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
 })();
 </script>
 
-<!-- 12번 크기 비교 저울 배틀 (Comparison Scale Battle) 승자 판정 & 홈 버튼 & 실시간 랭킹 시트 연동 완결판 -->
+
 <script>
 (function () {
   function escapeHTML(str) { return String(str || '').replace(/[&<>'"]/g, s => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[s])); }
@@ -56293,14 +56218,14 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
               <div class="action-row">
                 <button class="btn-action btn-hint" id="cs-btn-hint">💡 동치 표현 힌트 보기 (-5점)</button>
                 <button class="btn-action btn-restart" id="cs-btn-restart">🔄 새 게임 시작</button>
-                <!-- 🚨 [패치 완료] 홈으로 버튼 추가! -->
+                
                 <button class="btn-action btn-home" id="cs-btn-home">🏠 홈으로</button>
               </div>
             </div>
             <div class="side-panel">
               <div class="side-box">
                 <h3 class="side-title">👑 명예의 전당 Top 5</h3>
-                <!-- 🚨 [패치 완료] 시스템 공식 랭킹 함수가 정확히 찾을 수 있도록 ID를 board-comparison-scale-battle로 일치! -->
+                
                 <div class="rank-list" id="board-comparison-scale-battle"><div style="text-align:center; color:#94a3b8; padding: 12px 0;">랭킹 로딩 중...</div></div>
               </div>
               <div class="side-box" style="text-align:center; background:#f8fafc; border:2px solid #cbd5e1; padding:18px 14px;">
@@ -56649,7 +56574,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
   };
 })();
 </script>
-<!-- 🃏 升级 (Sheng Ji) • 拖拉机 : 승자 판정 3대 공식 & 실시간 1위 파워 중계 & 홈 버튼 & 랭킹 시트 연동 완결판 -->
+
 <script>
 (function () {
   const TractorGame = {
@@ -56818,7 +56743,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
             </div>
             
             <div class="side-panel">
-              <!-- 📖 [승자 판정 3대 공식 요약 패널] -->
+              
               <div class="panel-box" style="border: 2px solid #f59e0b; background: #fffbeb;">
                 <h3 class="panel-title" style="color: #92400e; margin-bottom: 8px;"><span>⚖️ 승자 판정 3대 공식</span><span style="font-size:11px; background:#f59e0b; color:#ffffff; padding:2px 8px; border-radius:10px;">필독</span></h3>
                 <ul class="rule-list" style="color: #78350f;">
@@ -56828,7 +56753,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
                 </ul>
               </div>
 
-              <!-- 🏆 [획득 점수 카드 실시간 공개 영역] -->
+              
               <div class="panel-box">
                 <h3 class="panel-title"><span>🏆 획득한 점수 카드 목록</span><span style="font-size:11px; color:#be123c; background:#ffe4e6; padding:2px 8px; border-radius:10px;">실시간 합계</span></h3>
                 <div class="trophy-box">
@@ -56852,14 +56777,14 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
                 <div class="btn-row">
                   <button class="btn-action btn-hint" id="tr-btn-hint">💡 힌트 (-5점)</button>
                   <button class="btn-action btn-restart" id="tr-btn-restart">🔄 새 게임</button>
-                  <!-- 🚨 [패치 완료] 홈으로 버튼 추가! -->
+                  
                   <button class="btn-action btn-home" id="tr-btn-home">🏠 홈으로</button>
                 </div>
               </div>
 
               <div class="panel-box">
                 <h3 class="panel-title">👑 명예의 전당 Top 5</h3>
-                <!-- 🚨 [패치 완료] 시스템 공식 랭킹 함수가 정확히 찾을 수 있도록 ID를 board-tractor-shengji로 일치! -->
+                
                 <div class="rank-list" id="board-tractor-shengji"><div style="text-align:center; color:#94a3b8; padding:8px 0; font-size:13px;">랭킹 로딩 중...</div></div>
               </div>
             </div>
@@ -57285,7 +57210,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
 
   if (typeof window.MathLabGames !== 'undefined' && typeof window.MathLabGames.register === 'function') {
     window.MathLabGames.register({
-      id: 'tractor-shengji', title: '升级 (Sheng Ji) • 拖拉机', icon: '🃏', sourceType: 'new',
+      id: 'tractor-shengji', title: '升级 (Sheng Ji) • 拖拉机', icon: '🚜', sourceType: 'new',
       mount(container, context) { TractorGame.mount(container, context); },
       reset() { TractorGame.resetGame(); },
       destroy() { TractorGame.destroy(); }
@@ -57306,7 +57231,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
   };
 })();
 </script>
-<!-- 🧸 레디셋고 짝꿍 매치 : 1~4인 카테고리 매칭 & 스피드 1등 보너스 & 엉뚱 AI 대결 완결판 (랭킹 박스 ID 불일치 완벽 패치) -->
+
 <script>
 (function () {
   const ReadySetMatchGame = {
@@ -57447,7 +57372,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
 
         <div class="game-ready-match">
           
-          <!-- 가이드 모달 -->
+          
           <div id="rm-guide-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9999; justify-content:center; align-items:center;">
             <div style="background:#fff; width:90%; max-width:500px; border-radius:16px; padding:24px; box-shadow:0 10px 25px rgba(0,0,0,0.2); text-align:left;">
               <h3 style="margin-top:0; color:#1e293b; border-bottom:1px solid #e2e8f0; padding-bottom:12px;">📖 게임 방법 (레디셋고 짝꿍 매치)</h3>
@@ -57505,7 +57430,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
           
           <div class="rank-box">
             <h3 class="rank-title">👑 레디셋고 짝꿍 매치 명예의 전당 Top 5</h3>
-            <!-- 🚨 [패치 완료] 시스템 공식 랭킹 함수가 찾을 수 있도록 ID를 board-ready-set-match로 일치! -->
+            
             <div class="rank-list" id="board-ready-set-match"><div style="text-align:center; color:#94a3b8; padding:8px 0; font-size:13px;">랭킹 로딩 중...</div></div>
           </div>
         </div>
@@ -57866,7 +57791,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
   }
 })();
 </script>
-<!-- 🪙 가짜 동전 찾기 : Gen-3 표준 이진 탐색 추론 & UI 글자 잘림 & 랭킹 시트 연동 완결판 -->
+
 <script>
 (function () {
   const FakeCoinDetective = {
@@ -58008,7 +57933,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
               </label>
               <button class="btn-start" id="btn-restart-game">🔄 새 퍼즐 시작</button>
               <button class="btn-guide" id="btn-show-guide">📖 게임 방법 보기</button>
-              <!-- 🚨 [패치 완료] 홈으로 버튼 추가! -->
+              
               <button class="btn-home" id="btn-fake-home">🏠 홈으로</button>
             </div>
           </div>
@@ -58074,7 +57999,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
 
               <div class="panel-box">
                 <h3 class="panel-title">👑 명예의 전당 Top 5</h3>
-                <!-- 🚨 [패치 완료] 시스템 공식 랭킹 함수가 정확히 찾을 수 있도록 ID를 board-fake-coin-detective로 일치! -->
+                
                 <div class="rank-list" id="board-fake-coin-detective"><div style="text-align:center; color:#94a3b8; padding:8px 0; font-size:13px;">랭킹 로딩 중...</div></div>
               </div>
             </div>
@@ -58482,7 +58407,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
   const gameMeta = {
     id: 'fake-coin-detective',
     title: '가짜 동전 찾기',
-    icon: '🪙',
+    icon: '🕵️‍♂️',
     category: 'game',
     sourceType: 'new',
     mount(container, context) {
@@ -58538,7 +58463,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
   };
 })();
 </script>
-<!-- 절댓값 수직선 러너 (Absolute Value Runner) Gen-3 표준 완결판 -->
+
 <style>
   .game-absolute-value-runner {
     width: 100%;
@@ -59482,7 +59407,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
   };
 })();
 </script>
-<!-- 거스름돈 타이쿤 (Change Tycoon) Gen-3 표준 완결판 -->
+
 <style>
   .game-change-tycoon {
     width: 100%;
@@ -60517,7 +60442,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
   };
 })();
 </script>
-<!-- 로마 숫자 퍼즐 (Roman Numeral Puzzle) Gen-3 표준 완결판 -->
+
 <style>
   .game-roman-puzzle {
     width: 100%;
@@ -61532,7 +61457,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
   };
 })();
 </script>
-<!-- 연산자 블라인드 스나이퍼 (Operator Blind Sniper) Gen-3 표준 완결판 -->
+
 <style>
   .game-operator-sniper {
     width: 100%;
@@ -62579,7 +62504,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
   };
 })();
 </script>
-<!-- 마방진 챌린지 (Magic Square Challenge) Gen-3 표준 완결판 -->
+
 <style>
   .game-magic-square {
     width: 100%;
@@ -64413,7 +64338,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
       // 동적 UI 템플릿 주입 (컨테이너 내부로 100% 마운트)
       host.innerHTML = `
         <div class="game-killer-sudoku" id="killer-sudoku-app">
-          <!-- 상단 헤더 바 -->
+          
           <div class="stats-bar">
             <div class="title-group">
               <div class="title-icon">➕</div>
@@ -64444,7 +64369,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
             </div>
           </div>
 
-          <!-- 상태 및 정보 바 -->
+          
           <div class="status-panel">
             <div class="mode-tabs">
               <button class="mode-btn active" id="killer-btn-easy" onclick="KillerSudoku.setDifficulty('EASY')">EASY (6×6 입문)</button>
@@ -64467,7 +64392,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
             </div>
           </div>
 
-          <!-- 메인 보드 + 컨트롤 패널 (좌측 크게, 우측 콤팩트하게) -->
+          
           <div class="main-layout">
             <div class="board-wrapper">
               <div class="sudoku-grid grid-6x6" id="killer-board-el"></div>
@@ -64504,7 +64429,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
             </div>
           </div>
 
-          <!-- 1. 사용방법 모달 -->
+          
           <div class="modal-backdrop" id="killer-guide-modal">
             <div class="modal-box">
               <h3 class="modal-title">📖 킬러 스도쿠 사용방법 및 수학 원리</h3>
@@ -64519,7 +64444,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
             </div>
           </div>
 
-          <!-- 2. 케이지 조합 사전 모달 -->
+          
           <div class="modal-backdrop" id="killer-combos-modal">
             <div class="modal-box">
               <h3 class="modal-title">🔢 필수 케이지 합 분할 조합 (유일 조합)</h3>
@@ -64549,7 +64474,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
             </div>
           </div>
 
-          <!-- 3. 명예의 전당 모달 -->
+          
           <div class="modal-backdrop" id="killer-ranking-modal">
             <div class="modal-box">
               <h3 class="modal-title">🏆 킬러 스도쿠 명예의 전당</h3>
@@ -65087,7 +65012,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
   setTimeout(registerKillerSudoku, 100);
   setTimeout(registerKillerSudoku, 500);
 </script>
-<!-- 각도기 포격전 (Angle Artillery) Gen-3 표준 완결판 - 고대비 디자인 & 호도법 도전 모드 & 명예의 전당 완비 -->
+
 <style>
   .game-angle-artillery {
     width: 100%;
@@ -65706,7 +65631,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
                 <p style="margin:0; font-size:14.5px; line-height:1.6; font-weight:800; color:#ffffff;">화면 좌측 포대에서 발사 각도(°)를 설정하여, 중앙의 장애물(언덕/성벽)을 넘겨 우측의 타겟을 정확히 맞추세요!</p>
               </div>
 
-              <!-- 💡 2번 항목: 수식을 KaTeX 전용 span 태그로 보호하여 부드럽고 정확하게 변환 -->
+              
               <div style="background:#0f172a; border:2px solid #60a5fa; padding:18px; border-radius:16px;">
                 <h3 style="margin:0 0 10px; font-size:17px; color:#38bdf8 !important; font-weight:900;">✨ 2. 각도기 읽기 및 발사 조작</h3>
                 <ul style="margin:0; padding-left:20px; font-size:14px; line-height:1.7; font-weight:800; color:#ffffff;">
@@ -65716,7 +65641,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
                 </ul>
               </div>
 
-              <!-- 💡 3번 항목: 파이 및 분수 표기를 정통 LaTeX 문법으로 분리 렌더링 -->
+              
               <div style="background:#271c14; border-left:6px solid #f59e0b; padding:18px; border-radius:14px; border: 1px solid #d97706;">
                 <h3 style="margin:0 0 8px; font-size:17px; color:#fef08a !important; font-weight:900;">🔥 3. 도전 모드 (호도법 π 표기)</h3>
                 <p style="margin:0; font-size:14px; line-height:1.6; font-weight:800; color:#ffffff;">
@@ -65855,10 +65780,10 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
       const by = y0 - barrelLen * Math.sin(barrelRad);
       
       const cannonHtml = `
-        <!-- 바퀴 및 포대 바닥 -->
+        
         <circle cx="${x0}" cy="${y0 + 4}" r="22" fill="#334155" stroke="#60a5fa" stroke-width="3" />
         <circle cx="${x0}" cy="${y0 + 4}" r="8" fill="#94a3b8" />
-        <!-- 회전 포신 -->
+        
         <line x1="${x0}" y1="${y0}" x2="${bx}" y2="${by}" stroke="#ef4444" stroke-width="14" stroke-linecap="round" />
         <line x1="${x0}" y1="${y0}" x2="${bx}" y2="${by}" stroke="#fca5a5" stroke-width="6" stroke-linecap="round" />
       `;
@@ -65905,7 +65830,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
             <stop offset="100%" stop-color="#1e293b" />
           </linearGradient>
         </defs>
-        <!-- 지면선 -->
+        
         <line x1="0" y1="365" x2="640" y2="365" stroke="#60a5fa" stroke-width="4" />
         <rect x="0" y="367" width="640" height="53" fill="#0f172a" />
         <text x="320" y="395" font-size="14" font-weight="900" fill="#64748b" text-anchor="middle">📍 사격장 지면 (0m)</text>
@@ -66182,11 +66107,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
 })();
 </script>
 
-<!--
-  Gen-3 수학 실험실 교과수학 개념 앱: 닮음비 크기 조정기 (similarity-scaler)
-  오로지 스타일((style))과 스크립트((script))로만 구성된 표준 템플릿
-  (푸터 밖 밀림 방지 마운트 로직, LegacyBridge 홈버튼 연동, 5대 감사 기준 완벽 준수)
--->
+
 <style>
   /* ==========================================================================
      Gen-3 전용 스코프 스타일 (.game-similarity-scaler)
@@ -66905,7 +66826,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
             </div>
           </main>
 
-          <!-- 탐구 안내 모달 -->
+          
           <div class="modal-overlay" id="ss-howto-modal">
             <div class="modal-card">
               <h2 class="modal-title">📏 닮음비 크기 조정기 탐구 안내</h2>
@@ -66925,7 +66846,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
             </div>
           </div>
 
-          <!-- 완료 축하 모달 (명예의 전당 없음) -->
+          
           <div class="modal-overlay" id="ss-complete-modal">
             <div class="modal-card">
               <div style="font-size:48px; margin-bottom:10px;">🎉📏</div>
@@ -69362,12 +69283,12 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
             </div>
 
             <div class="workspace">
-              <!-- 좌측: 퍼즐 격자 보드 -->
+              
               <div class="board-card">
                 <div class="grid-board grid-6" id="sd-grid"></div>
               </div>
 
-              <!-- 우측: 숫자 패드 및 기능 조작 -->
+              
               <div class="control-card">
                 <div class="panel-title">
                   <span>🔢 숫자 패드 및 논리 보조</span>
@@ -69390,7 +69311,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
             </div>
           </main>
 
-          <!-- 게임 방법 설명서 모달 -->
+          
           <div class="modal-overlay" id="sd-howto-modal">
             <div class="modal-card">
               <h2 class="modal-title">9️⃣ 스도쿠 클래식 규칙 & 개념</h2>
@@ -69409,7 +69330,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
             </div>
           </div>
 
-          <!-- 명예의 전당 모달 -->
+          
           <div class="modal-overlay" id="sd-hall-modal">
             <div class="modal-card">
               <h2 class="modal-title">🏆 명예의 전당 (Top 10)</h2>
@@ -70603,14 +70524,14 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
                 <button class="mode-btn" id="nn-btn-solve-line" style="border-color:#f59e0b; color:#fef08a;">💡 겹침 힌트 풀이 (-5점)</button>
               </div>
 
-              <!-- 직교 정렬 노노그램 퍼즐 4분할 테이블 -->
+              
               <div class="puzzle-card">
                 <div id="nn-puzzle-wrap"></div>
               </div>
             </div>
           </main>
 
-          <!-- 게임 방법 설명서 모달 -->
+          
           <div class="modal-overlay" id="nn-howto-modal">
             <div class="modal-card">
               <h2 class="modal-title">🖼️ 노노그램(네모네모) 방법</h2>
@@ -70629,7 +70550,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
             </div>
           </div>
 
-          <!-- 명예의 전당 모달 -->
+          
           <div class="modal-overlay" id="nn-hall-modal">
             <div class="modal-card">
               <h2 class="modal-title">🏆 명예의 전당 (Top 10)</h2>
@@ -70795,10 +70716,10 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
 
       let html = `
         <div class="nono-table" style="grid-template-columns: 85px auto;">
-          <!-- 1. 좌상단 상태 블록 -->
+          
           <div class="top-left-blank">${size}×${size}<br>NO-NO</div>
 
-          <!-- 2. 상단 열 힌트 영역 -->
+          
           <div class="col-hints-wrap" style="grid-template-columns: repeat(${size}, 1fr);">
       `;
 
@@ -71011,7 +70932,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
   };
 })();
 </script>
-<!-- 위상 링 풀기 (Topology Rings / Untangle Graph) - Gen-3 시간제한 보너스 & 전자칠판 2인용 대결 완결판 -->
+
 <style>
   /* ==========================================================================
      Gen-3 수학 실험실 표준 스타일 - 위상 링 풀기 (Topology Rings)
@@ -71699,7 +71620,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
 
       host.innerHTML = `
         <div class="game-topology-rings" id="topology-rings-app">
-          <!-- 상단 헤더 -->
+          
           <div class="stats-bar">
             <div class="title-group">
               <div class="title-icon">🪢</div>
@@ -71719,7 +71640,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
             </div>
           </div>
 
-          <!-- 모드 선택 탭 바 (1인 탐구 vs 2인 전자칠판 대결) -->
+          
           <div class="player-mode-bar">
             <button class="pmode-btn active" id="btn-pmode-1p" onclick="TopologyRings.setPlayerMode('1p')">
               <span>👤 1인 탐구 모드 (도전 & 명예의 전당)</span>
@@ -71729,7 +71650,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
             </button>
           </div>
 
-          <!-- 통계 및 난이도 선택 바 -->
+          
           <div class="info-dashboard">
             <div class="mode-tabs">
               <button class="tab-btn active" id="topo-tab-easy" onclick="TopologyRings.handleTabClick('easy')">🟢 쉬움 (60초 / 7노드)</button>
@@ -71755,10 +71676,10 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
             </div>
           </div>
 
-          <!-- 메인 SVG 캔버스 & 퀴즈 레이아웃 -->
+          
           <div class="main-stage">
             <div class="arenas-grid" id="topo-arenas-grid">
-              <!-- 1인용 아레나 (또는 2인 좌측 P1 아레나) -->
+              
               <div class="arena-card p1" id="arena-card-1">
                 <div class="arena-header p1-head" id="arena-head-1">
                   <span>👤 1인 탐구 캔버스</span>
@@ -71773,7 +71694,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
                 </div>
               </div>
 
-              <!-- 2인용 우측 P2 아레나 (2p 모드에서만 표시) -->
+              
               <div class="arena-card p2" id="arena-card-2" style="display:none;">
                 <div class="arena-header p2-head" id="arena-head-2">
                   <span>🔵 플레이어 2 (우측 대결)</span>
@@ -71789,12 +71710,12 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
               </div>
             </div>
 
-            <!-- 피드백 바 -->
+            
             <div class="feedback-box" id="topo-status-msg">
               💡 점(노드)을 드래그하여 서로 교차하는 붉은 선들을 모두 풀어보세요! (시간 내 클리어 시 초당 보너스 10점!)
             </div>
 
-            <!-- 하단 컨트롤 바 -->
+            
             <div class="footer-bar">
               <div class="footer-buttons">
                 <button class="btn-action hint" onclick="TopologyRings.useHint()"><span>💡 얽힌 중심 힌트</span></button>
@@ -71806,7 +71727,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
             </div>
           </div>
 
-          <!-- 하단 상시 명예의 전당 보드 (1p 모드에서만 표시) -->
+          
           <div class="bottom-ranking-card" id="bottom-ranking-sec">
             <div class="ranking-header">
               <div class="ranking-title">🏆 위상 링 풀기 명예의 전당 (실시간 랭킹 보드)</div>
@@ -71817,7 +71738,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
             </div>
           </div>
 
-          <!-- 1. 규칙 및 안내 모달 -->
+          
           <div class="modal-overlay" id="topo-guide-modal">
             <div class="modal-box">
               <div class="modal-header">
@@ -71846,7 +71767,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
             </div>
           </div>
 
-          <!-- 2. 명예의 전당 등록 모달 -->
+          
           <div class="modal-overlay" id="topo-rank-modal">
             <div class="modal-box">
               <div class="modal-header">
@@ -73312,7 +73233,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
             </div>
           </div>
 
-          <!-- 플로팅 해설 토스트 팝업 모달 -->
+          
           <div class="floating-commentary" id="net-floating-commentary">
             <div class="commentary-header" id="commentary-title">🎉 정답입니다!</div>
             <div class="commentary-body" id="commentary-text">해설 내용이 여기에 출력됩니다.</div>
@@ -74538,12 +74459,12 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
             </div>
           </div>
 
-          <!-- 막힘 안내 배너 -->
+          
           <div class="toast-banner" id="kt-deadend-toast">
             <span>⚠️ 이동할 수 있는 칸이 없습니다! <b>[↩️ 한 수 되돌리기]</b> 버튼을 눌러 다른 경로를 시도해 보세요.</span>
           </div>
 
-          <!-- 가이드 모달 -->
+          
           <div class="modal-backdrop" id="kt-guide-modal">
             <div class="modal-box">
               <h3 class="modal-title">📖 나이트 투어 수학 원리 & 해밀턴 경로</h3>
@@ -74560,7 +74481,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
             </div>
           </div>
 
-          <!-- 명예의 전당 모달 -->
+          
           <div class="modal-backdrop" id="kt-ranking-modal">
             <div class="modal-box">
               <h3 class="modal-title">🏆 나이트 투어 명예의 전당 (Top 5)</h3>
@@ -75704,7 +75625,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
               </div>
             </div>
           </div>
-          <!-- 가이드 모달 -->
+          
           <div class="modal-backdrop" id="ak-guide-modal">
             <div class="modal-box">
               <h3 class="modal-title">📖 아카리 (Light Up) 수학 원리 & 게임방법</h3>
@@ -75721,7 +75642,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
               <button class="modal-close-btn" onclick="Akari.closeModals()">확인 및 퍼즐 도전</button>
             </div>
           </div>
-          <!-- 명예의 전당 모달 -->
+          
           <div class="modal-backdrop" id="ak-ranking-modal">
             <div class="modal-box">
               <h3 class="modal-title">🏆 아카리 명예의 전당 (Top 5)</h3>
@@ -76201,7 +76122,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
         window.MathLabGames.register({
           id: 'akari',
           title: '아카리 (전구 켜기)',
-          icon: '💡',
+          icon: '🍉',
           sourceType: 'new',
           mount(container, context) { Akari.mount(container, context); },
           reset() { Akari.resetGame(); },
@@ -76890,7 +76811,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
             <div class="side-panel">
               <div class="panel-title">⚡ 퍼즐 제어 및 탐구 툴</div>
 
-              <!-- 홀짝성 탐구 미션 퀴즈 패널 -->
+              
               <div class="quiz-box" id="sf-quiz-panel">
                 <div class="quiz-title">🔍 [홀짝성 탐구 미션] 가해성 판별</div>
                 <div class="quiz-desc">
@@ -76926,7 +76847,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
             </div>
           </div>
 
-          <!-- 가이드 모달 -->
+          
           <div class="modal-backdrop" id="sf-guide-modal">
             <div class="modal-box">
               <h3 class="modal-title">📖 15-슬라이딩 퍼즐 수학 원리 & 게임방법</h3>
@@ -76981,7 +76902,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
             </div>
           </div>
 
-          <!-- 역전 수 분석 모달 -->
+          
           <div class="modal-backdrop" id="sf-inversion-modal">
             <div class="modal-box">
               <h3 class="modal-title">📊 현재 판 배치 역전 수 & 홀짝성 분석 결과</h3>
@@ -76990,7 +76911,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
             </div>
           </div>
 
-          <!-- 명예의 전당 모달 -->
+          
           <div class="modal-backdrop" id="sf-ranking-modal">
             <div class="modal-box">
               <h3 class="modal-title">🏆 15-슬라이딩 퍼즐 명예의 전당 (Top 5)</h3>
@@ -78679,7 +78600,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
                 </button>
               </div>
 
-              <!-- 3색/4색 판별 퀴즈 패널 -->
+              
               <div class="quiz-box" id="fcm-quiz-panel">
                 <div class="quiz-title">🔍 [채색수 탐구 미션] 최소 색 판별</div>
                 <div class="quiz-desc" id="fcm-quiz-desc">
@@ -78724,7 +78645,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
             </div>
           </div>
 
-          <!-- 가이드 모달 -->
+          
           <div class="modal-backdrop" id="fcm-guide-modal">
             <div class="modal-box">
               <h3 class="modal-title">📖 사색정리(Four Color Theorem) 원리 & 게임방법</h3>
@@ -78743,7 +78664,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
             </div>
           </div>
 
-          <!-- 명예의 전당 모달 -->
+          
           <div class="modal-backdrop" id="fcm-ranking-modal">
             <div class="modal-box">
               <h3 class="modal-title">🏆 4색 정리 맵 컬러링 명예의 전당 (Top 5)</h3>
@@ -79898,7 +79819,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
 
       target.innerHTML = `
         <div id="eight-queens-app" class="game-eight-queens">
-          <!-- 상단 헤더 바 -->
+          
           <div class="stats-bar">
             <div class="title-group">
               <div class="title-icon">♛</div>
@@ -79927,7 +79848,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
             </div>
           </div>
 
-          <!-- 조작 및 모드 선택 패널 (2줄 균등 분할) -->
+          
           <div class="control-panel">
             <div class="mode-tabs-wrapper">
               <div class="mode-tabs">
@@ -79966,7 +79887,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
             </div>
           </div>
 
-          <!-- 자동 시연 (Demo) 조작 바 -->
+          
           <div id="eq-demo-controls" class="demo-controls">
             <div class="demo-row">
               <span style="font-weight: 800; color: #c4b5fd; font-size: 0.9rem;">🤖 백트래킹 알고리즘 탐색 관찰 모드 (점수 미저장)</span>
@@ -79987,7 +79908,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
             </div>
           </div>
 
-          <!-- 메인 보드 및 사이드 정보창 -->
+          
           <div class="main-content">
             <div class="board-container">
               <div id="eq-chess-grid" class="chess-grid"></div>
@@ -80010,7 +79931,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
             </div>
           </div>
 
-          <!-- 규칙 설명 모달 -->
+          
           <div id="eq-guide-modal" class="modal-backdrop">
             <div class="modal-content">
               <h3 class="modal-title">♛ 8-Queens 챌린지 규칙 안내</h3>
@@ -80026,7 +79947,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
             </div>
           </div>
 
-          <!-- 발견 해 컬렉션 모달 -->
+          
           <div id="eq-solutions-modal" class="modal-backdrop">
             <div class="modal-content" style="max-width: 680px;">
               <h3 class="modal-title">🏆 발견한 해 컬렉션 (<span id="eq-modal-sol-count">0</span> / <span id="eq-modal-max-count">2</span>개)</h3>
@@ -80041,7 +79962,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
             </div>
           </div>
 
-          <!-- 명예의 전당 모달 -->
+          
           <div id="eq-ranking-modal" class="modal-backdrop">
             <div class="modal-content">
               <h3 class="modal-title">👑 명예의 전당 (8-Queens 챌린지)</h3>
@@ -80695,7 +80616,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
   setTimeout(registerEightQueens, 100);
   setTimeout(registerEightQueens, 500);
 </script>
-<!-- 과일 2048 드롭 (Fruit Drop 2048) - 실시간 동시 듀얼 대결 & 12단계 왕관 완결판 스니펫 -->
+
 <style>
   .game-fruit-drop-2048 {
     width: 100%;
@@ -81209,7 +81130,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
 
       host.innerHTML = `
         <div class="game-fruit-drop-2048" id="fruit-drop-app">
-          <!-- 상단 헤더 바 -->
+          
           <div class="stats-bar">
             <div class="title-group">
               <div class="title-icon">🍉</div>
@@ -81237,7 +81158,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
             </div>
           </div>
 
-          <!-- 상태 인포 바 & 모드 선택 탭 -->
+          
           <div class="status-panel">
             <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
               <div class="mode-tabs">
@@ -81271,7 +81192,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
             </div>
           </div>
 
-          <!-- 🌟 2인 동시 듀얼 대결 상단 상태 바 -->
+          
           <div class="dual-status-bar" id="fd-dual-status-bar">
             <div class="dual-player-tag p1">
               <span>🟦 P1 (파랑) 점수: <strong id="fd-dual-p1-score">0</strong></span>
@@ -81284,7 +81205,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
             </div>
           </div>
 
-          <!-- 1. 싱글 & 한상자 턴제 레이아웃 -->
+          
           <div class="single-layout" id="fd-single-layout">
             <div class="board-wrapper">
               <div class="canvas-container" id="fd-canvas-wrap">
@@ -81318,9 +81239,9 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
             </div>
           </div>
 
-          <!-- 🌟 2. 2인 동시 듀얼 분할 캔버스 레이아웃 (P1 왼쪽 vs P2 오른쪽) -->
+          
           <div class="dual-layout" id="fd-dual-layout">
-            <!-- P1 파랑 경기장 -->
+            
             <div class="dual-box-card p1-card">
               <div class="dual-header-info">
                 <span style="color:#60a5fa;">🟦 P1 파랑 경기장 (A/D/S 키)</span>
@@ -81336,7 +81257,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
               </div>
             </div>
 
-            <!-- P2 주황 경기장 -->
+            
             <div class="dual-box-card p2-card">
               <div class="dual-header-info">
                 <span style="color:#fb923c;">🟧 P2 주황 경기장 (←/→/↓ 키)</span>
@@ -81353,7 +81274,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
             </div>
           </div>
 
-          <!-- 1. 규칙 및 원리 안내 모달 -->
+          
           <div class="modal-backdrop" id="fd-guide-modal">
             <div class="modal-box">
               <h3 class="modal-title">📖 과일 2048 드롭 규칙 및 2인 듀얼 안내</h3>
@@ -81367,7 +81288,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
             </div>
           </div>
 
-          <!-- 2. 명예의 전당 모달 -->
+          
           <div class="modal-backdrop" id="fd-ranking-modal">
             <div class="modal-box">
               <h3 class="modal-title" id="fd-ranking-modal-title">🏆 과일 2048 드롭 명예의 전당</h3>
@@ -83472,12 +83393,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
 })();
 </script>
 
-<!--
-  Gen-3 수학 실험실 신규 앱: 프랙탈 트리 키우기 (fractal-tree)
-  100개 원본 게임 목록 37번 기반
-  자기닮음(프랙탈) 및 기하급수적 증가(2^n, 3^n) 체감 샌드박스 + 탐구 미션 시스템
-  (Gen-3 표준 동적 마운트 템플릿, 5대 감사 기준 완벽 준수)
--->
+
 <style>
   /* Gen-3 전용 스코프 스타일 (.game-fractal-tree) - 눈이 편안한 모던 다크 네이비/슬레이트 테마 */
   .game-fractal-tree {
@@ -84022,7 +83938,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
       // 🌟 Gen-3 표준 동적 DOM 렌더링
       target.innerHTML = `
         <div class="game-fractal-tree" id="fractal-tree-root">
-          <!-- 1. 한 줄 반응형 헤더 -->
+          
           <header class="app-header">
             <div class="title-area">
               <h1 class="app-title">🌳 프랙탈 트리 키우기</h1>
@@ -84038,7 +83954,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
             </div>
           </header>
 
-          <!-- 2. 상태 및 수학 개념 배너 -->
+          
           <div class="status-banner">
             <div class="stat-item">
               <span class="stat-label">진행 모드</span>
@@ -84062,9 +83978,9 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
             </div>
           </div>
 
-          <!-- 3. 메인 콘텐츠 그리드 -->
+          
           <div class="main-grid">
-            <!-- 좌측 Canvas 렌더링 영역 -->
+            
             <div class="canvas-box">
               <canvas id="ft-canvas" width="600" height="500"></canvas>
               <div class="canvas-caption">
@@ -84073,9 +83989,9 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
               </div>
             </div>
 
-            <!-- 우측 컨트롤 및 탐구 미션 패널 -->
+            
             <div class="control-panel">
-              <!-- 성장 제어부 -->
+              
               <div>
                 <h3 class="panel-section-title"> 🌱 세대 성장 컨트롤</h3>
                 <div class="gen-actions" style="margin-top:10px;">
@@ -84084,7 +84000,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
                 </div>
               </div>
 
-              <!-- 각도 및 길이 비율 슬라이더 -->
+              
               <div>
                 <h3 class="panel-section-title"> ⚙️ 기하 파라미터 조절</h3>
                 <div class="slider-row" style="margin-top:10px;">
@@ -84103,7 +84019,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
                 </div>
               </div>
 
-              <!-- 샌드박스 전용 옵션 (자유 모드일 때만 표시) -->
+              
               <div id="ft-sandbox-options" style="display:none;">
                 <h3 class="panel-section-title"> 🎨 컬러 테마 선택</h3>
                 <div class="theme-picker" style="margin-top:10px;">
@@ -84114,7 +84030,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
                 </div>
               </div>
 
-              <!-- 탐구 미션 박스 (미션 모드일 때 표시) -->
+              
               <div id="ft-mission-section">
                 <h3 class="panel-section-title"> 🎯 수학 탐구 미션</h3>
                 <div class="mission-box">
@@ -84131,7 +84047,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
             </div>
           </div>
 
-          <!-- 도움말 모달 -->
+          
           <div class="modal-overlay" id="ft-howto-modal">
             <div class="modal-card">
               <h3 class="modal-title">🌳 프랙탈 트리 키우기 안내</h3>
@@ -84148,7 +84064,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
             </div>
           </div>
 
-          <!-- 가지 수 규칙 표 힌트 모달 -->
+          
           <div class="modal-overlay" id="ft-hint-modal">
             <div class="modal-card">
               <h3 class="modal-title">💡 프랙탈 분기 규칙 표 힌트</h3>
@@ -84678,11 +84594,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
 })();
 </script>
 
-<!--
-  Gen-3 수학 실험실 수학게임 앱: 벡터 레이싱 (vector-racing)
-  오로지 스타일((style))과 스크립트((script))로만 구성된 표준 템플릿
-  (푸터 밖 밀림 방지 마운트 로직, LegacyBridge 홈버튼 연동, 독립 명예의 전당 모달, 5대 감사 기준 완벽 준수)
--->
+
 <style>
   /* ==========================================================================
      Gen-3 전용 스코프 스타일 (.game-vector-racing)
@@ -85387,7 +85299,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
             </div>
           </main>
 
-          <!-- 탐구 안내 모달 (독립) -->
+          
           <div class="modal-overlay" id="vr-howto-modal">
             <div class="modal-card">
               <h2 class="modal-title">🏎️ 벡터 레이싱 안내</h2>
@@ -85406,7 +85318,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
             </div>
           </div>
 
-          <!-- 명예의 전당 전용 모달 -->
+          
           <div class="modal-overlay" id="vr-leaderboard-modal">
             <div class="modal-card">
               <h2 class="modal-title">🏆 벡터 레이싱 명예의 전당 (Top 20)</h2>
@@ -85415,7 +85327,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
             </div>
           </div>
 
-          <!-- 완주 축하 & 점수 저장 모달 -->
+          
           <div class="modal-overlay" id="vr-complete-modal">
             <div class="modal-card">
               <div style="font-size:52px; margin-bottom:8px;">🏆🏎️</div>
@@ -86027,11 +85939,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
   };
 })();
 </script>
-<!--
-  Gen-3 수학 실험실 수학게임 앱: 삼각형의 중심 조준경 (triangle-centers)
-  오로지 스타일((style))과 스크립트((script))로만 구성된 표준 템플릿
-  (애니메이션 버튼 100% 즉시 재생, 스마트 카메라 & 조준경 동기화, 난이도별 차등 고득점 배점 시스템)
--->
+
 <style>
   /* ==========================================================================
      Gen-3 전용 스코프 스타일 (.game-triangle-centers)
@@ -86716,7 +86624,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
             </div>
           </main>
 
-          <!-- 탐구 안내 독립 모달 -->
+          
           <div class="modal-overlay" id="tc-howto-modal">
             <div class="modal-card">
               <h2 class="modal-title">🔺 삼각형의 오심 조준경 안내</h2>
@@ -86738,7 +86646,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
             </div>
           </div>
 
-          <!-- 명예의 전당 랭킹 모달 -->
+          
           <div class="modal-overlay" id="tc-leaderboard-modal">
             <div class="modal-card">
               <h2 class="modal-title">🏆 삼각형의 중심 조준경 명예의 전당 (Top 20)</h2>
@@ -86747,7 +86655,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
             </div>
           </div>
 
-          <!-- 완료 축하 모달 -->
+          
           <div class="modal-overlay" id="tc-complete-modal">
             <div class="modal-card">
               <div style="font-size:52px; margin-bottom:8px;">🏆🔺</div>
@@ -87563,11 +87471,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
   };
 })();
 </script>
-<!--
-  Gen-3 수학 실험실 수학게임 앱: 삼각측량 GPS 탐정 (triangulation-gps)
-  오로지 스타일((style))과 스크립트((script))로만 구성된 표준 템플릿
-  (스마트 좌표 지도 렌더링, 실시간 기지국 반경 조절 원, 두 원 교점 힌트, 난이도별 오차 및 차등 배점 완벽 구현)
--->
+
 <style>
   /* ==========================================================================
      Gen-3 전용 스코프 스타일 (.game-triangulation-gps)
@@ -88267,7 +88171,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
             </div>
           </main>
 
-          <!-- 탐구 안내 독립 모달 -->
+          
           <div class="modal-overlay" id="tg-howto-modal">
             <div class="modal-card">
               <h2 class="modal-title">📡 삼각측량 GPS 탐정 안내</h2>
@@ -88287,7 +88191,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
             </div>
           </div>
 
-          <!-- 명예의 전당 모달 -->
+          
           <div class="modal-overlay" id="tg-leaderboard-modal">
             <div class="modal-card">
               <h2 class="modal-title">🏆 삼각측량 GPS 탐정 명예의 전당 (Top 20)</h2>
@@ -88296,7 +88200,7 @@ window.SlitherlinkGame=SlitherlinkGame;if(!window.MathLabGames||typeof window.Ma
             </div>
           </div>
 
-          <!-- 완료 축하 모달 -->
+          
           <div class="modal-overlay" id="tg-complete-modal">
             <div class="modal-card">
               <div style="font-size:52px; margin-bottom:8px;">🏆📡</div>
@@ -88950,7 +88854,7 @@ setTimeout(registerTriangulationGps, 500);
   };
 })();
 </script>
-<!-- 피타고라스 블록 퍼즐 (Pythagoras Block Puzzle) 검정 배경 변 배치 & 노란 박스 완결판 -->
+
 <style>
   .game-pythagoras-blocks {
     width: 100%;
@@ -89520,7 +89424,7 @@ setTimeout(registerTriangulationGps, 500);
               ${this.renderSVG()}
             </div>
 
-            <!-- 🌟 그림 바로 아래 노란 질문 상자 (100% 정상 렌더링) -->
+            
             <div class="pb-question-box">
               <div class="pb-question-title">${this.formatMathText(prob.questionTitle)}</div>
               <div class="pb-question-desc">${this.formatMathText(prob.questionDesc)}</div>
@@ -89557,7 +89461,7 @@ setTimeout(registerTriangulationGps, 500);
             </div>
           </div>
 
-          <!-- 원리 설명 모달 -->
+          
           <div class="pb-modal-overlay" id="pb-manual-modal">
             <div class="pb-modal">
               <h3>📖 피타고라스 블록 퍼즐 원리 및 조작법</h3>
@@ -89646,30 +89550,30 @@ setTimeout(registerTriangulationGps, 500);
             </pattern>
           </defs>
 
-          <!-- 1. a^2 정사각형 (내부 중심) -->
+          
           <rect id="pb-sq-a" x="${sqA_x}" y="${sqA_y}" width="${wA}" height="${wA}" fill="url(#gridA)" rx="3"/>
           <text x="${sqA_x + wA/2}" y="${sqA_y + wA/2 + fontSqA * 0.35}" fill="${showA ? 'white' : '#facc15'}" font-weight="900" font-size="${fontSqA}" text-anchor="middle" style="filter: drop-shadow(0 1px 3px rgba(0,0,0,0.8));">${labelSqA}</text>
 
-          <!-- 2. b^2 정사각형 (내부 중심) -->
+          
           <rect id="pb-sq-b" x="${sqB_x}" y="${sqB_y}" width="${wB}" height="${wB}" fill="url(#gridB)" rx="3"/>
           <text x="${sqB_x + wB/2}" y="${sqB_y + wB/2 + fontSqB * 0.35}" fill="${showB ? 'white' : '#facc15'}" font-weight="900" font-size="${fontSqB}" text-anchor="middle" style="filter: drop-shadow(0 1px 3px rgba(0,0,0,0.8));">${labelSqB}</text>
 
-          <!-- 3. c^2 정사각형 (내부 중심) -->
+          
           <g id="pb-sq-c-group" transform="translate(${P3.x}, ${P3.y}) rotate(${angleDeg})">
             <rect id="pb-sq-c" x="0" y="${-wC}" width="${wC}" height="${wC}" fill="url(#gridC)" stroke="#10b981" stroke-width="3" stroke-dasharray="6,6" rx="3"/>
             <text x="${wC/2}" y="${-wC/2 + fontSqC * 0.35}" fill="${showC ? '#34d399' : '#facc15'}" font-weight="900" font-size="${fontSqC}" text-anchor="middle" transform="rotate(${-angleDeg}, ${wC/2}, ${-wC/2 + fontSqC * 0.35})" style="filter: drop-shadow(0 1px 3px rgba(0,0,0,0.8));">${labelSqC}</text>
-            <!-- 🌟 변의 길이 c: 초록 정사각형 우측 상단 바깥 검정 배경 영역 -->
+            
             <text x="${wC/2}" y="${-wC - 16}" fill="${showC ? '#34d399' : '#facc15'}" font-weight="900" font-size="16" text-anchor="middle" transform="rotate(${-angleDeg}, ${wC/2}, ${-wC - 16})" style="filter: drop-shadow(0 1px 3px rgba(0,0,0,0.9));">${labelC}</text>
           </g>
 
-          <!-- 4. 중앙 직각삼각형 -->
+          
           <polygon points="${P1.x},${P1.y} ${P2.x},${P2.y} ${P3.x},${P3.y}" fill="#facc15" stroke="#ca8a04" stroke-width="3" opacity="0.95"/>
           <polyline points="${P1.x},${P1.y - 14} ${P1.x + 14},${P1.y - 14} ${P1.x + 14},${P1.y}" fill="none" stroke="#713f12" stroke-width="2.5"/>
 
-          <!-- 🌟 5. 변의 길이 a와 b: 각 정사각형 바깥쪽 검정 배경에 독립 배치 -->
-          <!-- a 변 길이: 빨간 정사각형 왼쪽 바깥 검정 배경 -->
+          
+          
           <text x="${posA_x}" y="${posA_y}" fill="${showA ? '#fca5a5' : '#facc15'}" font-weight="900" font-size="16" text-anchor="end" style="filter: drop-shadow(0 1px 3px rgba(0,0,0,0.9));">${labelA}</text>
-          <!-- b 변 길이: 파란 정사각형 아래쪽 바깥 검정 배경 -->
+          
           <text x="${posB_x}" y="${posB_y}" fill="${showB ? '#93c5fd' : '#facc15'}" font-weight="900" font-size="16" text-anchor="middle" style="filter: drop-shadow(0 1px 3px rgba(0,0,0,0.9));">${labelB}</text>
         </svg>
       `;
@@ -89956,7 +89860,7 @@ setTimeout(registerTriangulationGps, 500);
   setTimeout(registerPythagorasBlocks, 500);
 })();
 </script>
-<!-- 가쿠로 (Kakuro) 런 합산 무결점 & 명예의 전당 자동 복귀 완결판 스니펫 -->
+
 <style>
   .game-kakuro {
     width: 100%;
@@ -90462,7 +90366,7 @@ setTimeout(registerTriangulationGps, 500);
             ${mode === '도전' ? `<div class="kk-timer-box">⏳ 남은 시간: <strong id="kk-timer" style="color:#ef4444;">10:00</strong></div>` : ''}
           </div>
 
-          <!-- 🌟 스마트 런 정보 카드 컨테이너 -->
+          
           <div class="kk-run-info-container" id="kk-run-info-container">
             <div style="background:#1e293b; border:1px dashed #475569; border-radius:12px; padding:12px; color:#cbd5e1; font-weight:700; font-size:0.95rem; text-align:center;">
               👆 빈 칸을 선택하면 <strong style="color:#38bdf8;">우상단 파란색 가로 합</strong>과 <strong style="color:#facc15;">좌하단 노란색 세로 합</strong> 진행률을 안내합니다!
@@ -90498,7 +90402,7 @@ setTimeout(registerTriangulationGps, 500);
             <div id="kk-leaderboard-container"><p style="color:#64748b; font-size:0.9rem; text-align:center;">로딩 중...</p></div>
           </div>
 
-          <!-- 조합 참고 카드 모달 -->
+          
           <div class="kk-modal-overlay" id="kk-cheat-modal">
             <div class="kk-modal">
               <h3>💡 가쿠로 조합 참고 카드 (치트 시트)</h3>
@@ -90511,7 +90415,7 @@ setTimeout(registerTriangulationGps, 500);
             </div>
           </div>
 
-          <!-- 규칙 설명 모달 -->
+          
           <div class="kk-modal-overlay" id="kk-manual-modal">
             <div class="kk-modal">
               <h3>📖 가쿠로 (Kakuro) 퍼즐 규칙</h3>
@@ -90851,7 +90755,7 @@ setTimeout(registerTriangulationGps, 500);
         </div>
         ` : ''}
 
-        <!-- 🌟 명예의 전당 등록 후 또는 즉시 게임 보드로 복귀할 수 있는 닫기 버튼 추가 -->
+        
         <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
           <button class="btn-primary" id="kk-restart-btn">🔄 새 퍼즐 도전</button>
           <button class="btn-primary" id="kk-close-overlay-btn" style="background:#64748b;">✖ 창 닫기 (완성된 보드 보기)</button>
@@ -90979,7 +90883,7 @@ setTimeout(registerTriangulationGps, 500);
   setTimeout(registerKakuro, 500);
 })();
 </script>
-<!-- 넓이 땅따먹기 (Area Conquest) 스마트 툴 잠금(Lock) & AI 대전 & 명예의 전당 완결판 -->
+
 <style>
   .game-area-conquest {
     width: 100%;
@@ -92043,7 +91947,7 @@ setTimeout(registerTriangulationGps, 500);
   };
 })();
 </script>
-<!-- 원주율(π) 타이핑 러너 (Pi Typing Runner) - 명예의 전당 & 실시간 랭킹 보드 완결판 -->
+
 <style>
   .game-pi-runner {
     width: 100%;
@@ -92559,7 +92463,7 @@ setTimeout(registerTriangulationGps, 500);
       // 🌟 innerHTML 내 백틱 오류 완벽 수정 (`🟢 연습` -> [🟢 연습 모드])
       host.innerHTML = `
         <div class="game-pi-runner" id="pi-runner-app">
-          <!-- 상단 헤더 바 (조기 정산 & 명예의 전당 버튼 추가) -->
+          
           <div class="stats-bar">
             <div class="title-group">
               <div class="title-icon">🥧</div>
@@ -92590,7 +92494,7 @@ setTimeout(registerTriangulationGps, 500);
             </div>
           </div>
 
-          <!-- 상태 인포 바 -->
+          
           <div class="status-panel">
             <div class="mode-tabs">
               <button class="mode-btn active" id="pr-btn-practice" onclick="PiRunner.setMode('PRACTICE')">🟢 연습 (힌트 노출)</button>
@@ -92618,12 +92522,12 @@ setTimeout(registerTriangulationGps, 500);
             </div>
           </div>
 
-          <!-- 2D 캔버스 러너 트랙 -->
+          
           <div class="canvas-container">
             <canvas id="pi-track-canvas" width="1000" height="180"></canvas>
           </div>
 
-          <!-- 타이핑 디스플레이 보드 -->
+          
           <div class="display-board">
             <span class="display-label">🎯 원주율 다음 자릿수를 숫자패드(또는 키보드)로 입력하세요</span>
             <div class="pi-stream" id="pr-pi-stream">
@@ -92633,14 +92537,14 @@ setTimeout(registerTriangulationGps, 500);
             <div class="feedback-banner" id="pr-feedback" style="color:#38bdf8;">✨ 준비 완료! 첫 숫자 '1'을 눌러 질주를 시작하세요!</div>
           </div>
 
-          <!-- 하단 0~9 키패드 -->
+          
           <div class="keypad-grid">
             ${[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => `
               <button class="num-btn" onclick="PiRunner.inputDigit(${n})">${n}</button>
             `).join('')}
           </div>
 
-          <!-- 🌟 하단 상시 노출 명예의 전당 보드 영역 -->
+          
           <div class="bottom-ranking-card">
             <div class="ranking-header">
               <div class="ranking-title">🏆 원주율 타이핑 러너 명예의 전당 (실시간 랭킹 보드)</div>
@@ -92653,7 +92557,7 @@ setTimeout(registerTriangulationGps, 500);
             </div>
           </div>
 
-          <!-- 1. 규칙 안내 모달 (백틱 에러 원천 차단) -->
+          
           <div class="modal-backdrop" id="pr-guide-modal">
             <div class="modal-box">
               <h3 class="modal-title">📖 원주율(π) 타이핑 러너 안내</h3>
@@ -92668,7 +92572,7 @@ setTimeout(registerTriangulationGps, 500);
             </div>
           </div>
 
-          <!-- 2. 명예의 전당 등록 팝업 모달 -->
+          
           <div class="modal-backdrop" id="pr-ranking-modal">
             <div class="modal-box">
               <h3 class="modal-title" id="pr-ranking-modal-title">🏆 원주율 타이핑 러너 명예의 전당</h3>
@@ -93263,7 +93167,7 @@ reg();window.addEventListener('DOMContentLoaded',reg);setTimeout(reg,100);setTim
 window.ScatterRGuesser=API;window.initScatterRGuesserGame=function(){reg();if(window.MathLabGames&&window.MathLabGames.mount){try{window.MathLabGames.mount(APP_ID);return}catch(e){}}API.mount(document.getElementById('mathlab-view'))};window.launchScatterRGuesserGame=window.initScatterRGuesserGame;
 })();
 </script>
-<!-- 삼각비 높이 탐정 (Trigonometry Height Detective) - Gen-3 무결점 명예의 전당 완결판 -->
+
 <style>
   .game-trig-detective {
     width: 100%;
@@ -93799,7 +93703,7 @@ window.ScatterRGuesser=API;window.initScatterRGuesserGame=function(){reg();if(wi
 
       host.innerHTML = `
         <div class="game-trig-detective" id="trig-detective-app">
-          <!-- 상단 헤더 -->
+          
           <div class="td-header">
             <div class="title-group">
               <div class="title-icon">🕵️</div>
@@ -93821,7 +93725,7 @@ window.ScatterRGuesser=API;window.initScatterRGuesserGame=function(){reg();if(wi
             </div>
           </div>
 
-          <!-- 상태 바 -->
+          
           <div class="td-status-bar">
             <div class="mode-tabs">
               <button class="mode-btn active" id="td-btn-easy" onclick="TrigDetective.setMode('EASY')">🟢 쉬움 (정수 출제/눈높이 0m)</button>
@@ -93838,7 +93742,7 @@ window.ScatterRGuesser=API;window.initScatterRGuesserGame=function(){reg();if(wi
             </div>
           </div>
 
-          <!-- 메인 레이아웃 -->
+          
           <div class="scene-layout">
             <div class="case-panel">
               <div>
@@ -93863,13 +93767,13 @@ window.ScatterRGuesser=API;window.initScatterRGuesserGame=function(){reg();if(wi
               </div>
             </div>
 
-            <!-- 오른쪽: SVG 도시 실루엣 측량 장면 -->
+            
             <div class="svg-panel">
               <svg class="city-svg" id="td-svg-canvas" viewBox="0 0 500 360"></svg>
             </div>
           </div>
 
-          <!-- 하단 상시 노출 명예의 전당 보드 영역 -->
+          
           <div class="bottom-ranking-card">
             <div class="ranking-header">
               <div class="ranking-title">🏆 삼각비 높이 탐정 명예의 전당 (실시간 랭킹 보드)</div>
@@ -93880,7 +93784,7 @@ window.ScatterRGuesser=API;window.initScatterRGuesserGame=function(){reg();if(wi
             </div>
           </div>
 
-          <!-- 1. 규칙 안내 모달 -->
+          
           <div class="modal-backdrop" id="td-guide-modal">
             <div class="modal-box">
               <h3 class="modal-title">📖 삼각비 높이 탐정 규칙 안내</h3>
@@ -93895,7 +93799,7 @@ window.ScatterRGuesser=API;window.initScatterRGuesserGame=function(){reg();if(wi
             </div>
           </div>
 
-          <!-- 2. 삼각비 표 모달 -->
+          
           <div class="modal-backdrop" id="td-table-modal">
             <div class="modal-box">
               <h3 class="modal-title">📊 0° ~ 90° 삼각비 간추린 표 (소수 셋째 자리)</h3>
@@ -93910,7 +93814,7 @@ window.ScatterRGuesser=API;window.initScatterRGuesserGame=function(){reg();if(wi
             </div>
           </div>
 
-          <!-- 3. 명예의 전당 등록 팝업 모달 -->
+          
           <div class="modal-backdrop" id="td-ranking-modal">
             <div class="modal-box">
               <h3 class="modal-title" id="td-ranking-modal-title">🏆 삼각비 높이 탐정 명예의 전당</h3>
@@ -94417,7 +94321,7 @@ window.ScatterRGuesser=API;window.initScatterRGuesserGame=function(){reg();if(wi
     TrigDetective.mount();
   };
 </script> 
-<!-- 아인슈타인 로직 퍼즐 (Einstein Logic Puzzle) - Gen-3 연속 점수 누적 & 자동 승급 완결판 -->
+
 <style>
   .game-einstein-logic {
     width: 100%;
@@ -95060,7 +94964,7 @@ window.ScatterRGuesser=API;window.initScatterRGuesserGame=function(){reg();if(wi
 
       host.innerHTML = `
         <div class="game-einstein-logic" id="einstein-logic-app">
-          <!-- 상단 헤더 -->
+          
           <div class="el-header">
             <div class="title-group">
               <div class="title-icon">🧠</div>
@@ -95082,7 +94986,7 @@ window.ScatterRGuesser=API;window.initScatterRGuesserGame=function(){reg();if(wi
             </div>
           </div>
 
-          <!-- 상태 바 -->
+          
           <div class="el-status-bar">
             <div class="mode-tabs">
               <button class="mode-btn active" id="el-btn-easy" onclick="EinsteinLogic.handleTabClick('EASY')">🟢 쉬움 (3×3)</button>
@@ -95098,7 +95002,7 @@ window.ScatterRGuesser=API;window.initScatterRGuesserGame=function(){reg();if(wi
             </div>
           </div>
 
-          <!-- 메인 레이아웃 -->
+          
           <div class="puzzle-layout">
             <div class="hints-panel">
               <div class="hints-title">
@@ -95114,10 +95018,10 @@ window.ScatterRGuesser=API;window.initScatterRGuesserGame=function(){reg();if(wi
             </div>
           </div>
 
-          <!-- 피드백 바 -->
+          
           <div class="feedback-box" id="el-feedback">💡 힌트를 읽고 그리드 칸을 클릭하여 [O 확정] / [X 불가] 논리를 채워보세요! 연속 클리어 시 자동 승급됩니다.</div>
 
-          <!-- 하단 상시 노출 명예의 전당 보드 영역 -->
+          
           <div class="bottom-ranking-card">
             <div class="ranking-header">
               <div class="ranking-title">🏆 아인슈타인 로직 퍼즐 명예의 전당 (실시간 랭킹 보드)</div>
@@ -95128,7 +95032,7 @@ window.ScatterRGuesser=API;window.initScatterRGuesserGame=function(){reg();if(wi
             </div>
           </div>
 
-          <!-- 1. 규칙 안내 모달 -->
+          
           <div class="modal-backdrop" id="el-guide-modal">
             <div class="modal-box">
               <h3 class="modal-title">📖 아인슈타인 로직 퍼즐 규칙</h3>
@@ -95142,7 +95046,7 @@ window.ScatterRGuesser=API;window.initScatterRGuesserGame=function(){reg();if(wi
             </div>
           </div>
 
-          <!-- 2. 명예의 전당 등록 모달 -->
+          
           <div class="modal-backdrop" id="el-ranking-modal">
             <div class="modal-box">
               <h3 class="modal-title" id="el-ranking-modal-title">🏆 아인슈타인 로직 퍼즐 명예의 전당</h3>
@@ -95674,7 +95578,7 @@ window.ScatterRGuesser=API;window.initScatterRGuesserGame=function(){reg();if(wi
     EinsteinLogic.mount();
   };
 </script> 
-<!-- 하노이의 탑 챌린지 (Hanoi Tower Challenge) - Gen-3 연속 누적 & 재귀 시연 완결판 -->
+
 <style>
   .game-hanoi-tower {
     width: 100%;
@@ -96215,7 +96119,7 @@ window.ScatterRGuesser=API;window.initScatterRGuesserGame=function(){reg();if(wi
       // 🌟 백틱 에러 차단: 문자열 내부에 백틱 사용 금지
       host.innerHTML = `
         <div class="game-hanoi-tower" id="hanoi-tower-app">
-          <!-- 상단 헤더 -->
+          
           <div class="ht-header">
             <div class="title-group">
               <div class="title-icon">🗼</div>
@@ -96237,7 +96141,7 @@ window.ScatterRGuesser=API;window.initScatterRGuesserGame=function(){reg();if(wi
             </div>
           </div>
 
-          <!-- 상태 바 -->
+          
           <div class="ht-status-bar">
             <div class="mode-tabs">
               <button class="mode-btn active" id="ht-btn-easy" onclick="HanoiTower.handleTabClick('EASY')">🟢 쉬움 (3개)</button>
@@ -96254,7 +96158,7 @@ window.ScatterRGuesser=API;window.initScatterRGuesserGame=function(){reg();if(wi
             </div>
           </div>
 
-          <!-- 기둥 3개 메인 스테이지 -->
+          
           <div class="tower-stage">
             <div class="pegs-container" id="ht-pegs-container"></div>
             
@@ -96266,7 +96170,7 @@ window.ScatterRGuesser=API;window.initScatterRGuesserGame=function(){reg();if(wi
             </div>
           </div>
 
-          <!-- 하단 상시 명예의 전당 보드 -->
+          
           <div class="bottom-ranking-card">
             <div class="ranking-header">
               <div class="ranking-title">🏆 하노이의 탑 명예의 전당 (실시간 랭킹 보드)</div>
@@ -96277,7 +96181,7 @@ window.ScatterRGuesser=API;window.initScatterRGuesserGame=function(){reg();if(wi
             </div>
           </div>
 
-          <!-- 1. 규칙 및 등비수열 표 모달 -->
+          
           <div class="modal-backdrop" id="ht-guide-modal">
             <div class="modal-box">
               <h3 class="modal-title">📖 하노이의 탑 규칙 및 2ⁿ-1 등비수열</h3>
@@ -96297,7 +96201,7 @@ window.ScatterRGuesser=API;window.initScatterRGuesserGame=function(){reg();if(wi
             </div>
           </div>
 
-          <!-- 2. 명예의 전당 등록 모달 -->
+          
           <div class="modal-backdrop" id="ht-ranking-modal">
             <div class="modal-box">
               <h3 class="modal-title" id="ht-ranking-modal-title">🏆 하노이의 탑 명예의 전당</h3>
@@ -96810,7 +96714,7 @@ window.ScatterRGuesser=API;window.initScatterRGuesserGame=function(){reg();if(wi
     HanoiTower.mount();
   };
 </script>    
-<!-- 다리 놓기 (Bridges / Hashiwokakero) - Gen-3 그래프 차수 & 연결성 연속 누적 완결판 -->
+
 <style>
   .game-bridges {
     width: 100%;
@@ -97420,7 +97324,7 @@ window.ScatterRGuesser=API;window.initScatterRGuesserGame=function(){reg();if(wi
 
       host.innerHTML = `
         <div class="game-bridges" id="bridges-app">
-          <!-- 상단 헤더 -->
+          
           <div class="bg-header">
             <div class="title-group">
               <div class="title-icon">🌉</div>
@@ -97442,7 +97346,7 @@ window.ScatterRGuesser=API;window.initScatterRGuesserGame=function(){reg();if(wi
             </div>
           </div>
 
-          <!-- 상태 바 -->
+          
           <div class="bg-status-bar">
             <div class="mode-tabs">
               <button class="mode-btn active" id="bg-btn-easy" onclick="Bridges.handleTabClick('EASY')">🟢 쉬움 (10선+생성)</button>
@@ -97459,7 +97363,7 @@ window.ScatterRGuesser=API;window.initScatterRGuesserGame=function(){reg();if(wi
             </div>
           </div>
 
-          <!-- 메인 SVG 스테이지 & 관찰 퀴즈 -->
+          
           <div class="main-stage">
             <div class="svg-wrapper">
               <svg class="bridges-svg" id="bg-svg-canvas" viewBox="0 0 500 440"></svg>
@@ -97474,10 +97378,10 @@ window.ScatterRGuesser=API;window.initScatterRGuesserGame=function(){reg();if(wi
             </div>
           </div>
 
-          <!-- 피드백 바 -->
+          
           <div class="feedback-box" id="bg-feedback">💡 두 섬 사이의 선(통로)을 누르거나 두 섬을 드래그하여 다리를 0→1→2겹 순환 연결하세요. 교차 없이 모든 섬을 하나로 연결해야 합니다!</div>
 
-          <!-- 하단 상시 명예의 전당 보드 -->
+          
           <div class="bottom-ranking-card">
             <div class="ranking-header">
               <div class="ranking-title">🏆 다리 놓기 (Bridges) 명예의 전당 (실시간 랭킹 보드)</div>
@@ -97488,7 +97392,7 @@ window.ScatterRGuesser=API;window.initScatterRGuesserGame=function(){reg();if(wi
             </div>
           </div>
 
-          <!-- 1. 규칙 안내 모달 -->
+          
           <div class="modal-backdrop" id="bg-guide-modal">
             <div class="modal-box">
               <h3 class="modal-title">📖 다리 놓기 (하시와카케로) 규칙 및 그래프 이론</h3>
@@ -97504,7 +97408,7 @@ window.ScatterRGuesser=API;window.initScatterRGuesserGame=function(){reg();if(wi
             </div>
           </div>
 
-          <!-- 2. 명예의 전당 등록 모달 -->
+          
           <div class="modal-backdrop" id="bg-ranking-modal">
             <div class="modal-box">
               <h3 class="modal-title" id="bg-ranking-modal-title">🏆 다리 놓기 명예의 전당</h3>
@@ -98149,15 +98053,13 @@ window.ScatterRGuesser=API;window.initScatterRGuesserGame=function(){reg();if(wi
     Bridges.mount();
   };
 </script>        
-<!-- 구버전 호환 섹션 (기존 대시보드 인덱스 파일과의 호환용) -->
+
 <style>
   #game-polyhedron-maze { display: none; }
 </style>
 <div id="game-polyhedron-maze"></div>
 
-<!-- ==========================================================================
-     [앱 38] 다면체 면 타기 미로 (Polyhedron 3D Topology Maze) - Gen-3 완결판
-     ========================================================================== -->
+
 <style>
   /* ==========================================================================
      Gen-3 수학 실험실 표준 스타일 - 다면체 면 타기 미로
@@ -98919,7 +98821,7 @@ window.ScatterRGuesser=API;window.initScatterRGuesserGame=function(){reg();if(wi
 
     host.innerHTML = `
       <div class="game-polyhedron-maze" id="polyhedron-maze-app">
-        <!-- 1. 상단 타이틀 바 & 가이드 팝업 버튼 -->
+        
         <div class="poly-header">
           <div class="poly-title-wrap">
             <div class="poly-badge">🎲</div>
@@ -98936,7 +98838,7 @@ window.ScatterRGuesser=API;window.initScatterRGuesserGame=function(){reg();if(wi
           </div>
         </div>
 
-        <!-- 2. 컨트롤 바 (1인 탐험 표기 & 🌟 쉬움 active로 초기화) -->
+        
         <div class="poly-control-bar">
           <div class="mode-info-tag">👤 1인 3D 정다면체 자율 탐험 모드</div>
           <div class="diff-tabs">
@@ -98946,10 +98848,10 @@ window.ScatterRGuesser=API;window.initScatterRGuesserGame=function(){reg();if(wi
           </div>
         </div>
 
-        <!-- 3. 다면체 선택 칩 바 -->
+        
         <div class="poly-selector-bar" id="poly-chip-bar"></div>
 
-        <!-- 4. 메인 아레나 컨테이너 -->
+        
         <div class="poly-arena-container">
           <div class="player-stage" id="stage-p1">
             <div class="stage-status-bar">
@@ -98978,7 +98880,7 @@ window.ScatterRGuesser=API;window.initScatterRGuesserGame=function(){reg();if(wi
           </div>
         </div>
 
-        <!-- 5. 가이드 팝업 모달 -->
+        
         <div class="modal-overlay" id="poly-guide-modal">
           <div class="modal-card">
             <div class="modal-header">
@@ -99006,7 +98908,7 @@ window.ScatterRGuesser=API;window.initScatterRGuesserGame=function(){reg();if(wi
           </div>
         </div>
 
-        <!-- 6. 클리어 퀴즈 모달 -->
+        
         <div class="modal-overlay" id="poly-quiz-modal">
           <div class="modal-card">
             <div class="modal-header">
@@ -99017,7 +98919,7 @@ window.ScatterRGuesser=API;window.initScatterRGuesserGame=function(){reg();if(wi
           </div>
         </div>
 
-        <!-- 7. 단계 클리어 및 다음 진행 모달 -->
+        
         <div class="modal-overlay" id="stage-transition-modal">
           <div class="modal-card">
             <div class="modal-header">
@@ -99031,7 +98933,7 @@ window.ScatterRGuesser=API;window.initScatterRGuesserGame=function(){reg();if(wi
           </div>
         </div>
 
-        <!-- 🌟 8. 예쁜 명예의 전당 닉네임 입력 팝업 모달 (prompt 대체) -->
+        
         <div class="modal-overlay" id="poly-ranking-modal">
           <div class="modal-card" style="max-width: 480px;">
             <div class="modal-header">
@@ -99053,7 +98955,7 @@ window.ScatterRGuesser=API;window.initScatterRGuesserGame=function(){reg();if(wi
           </div>
         </div>
 
-        <!-- 9. 하단 상시 명예의 전당 랭킹 보드 -->
+        
         <div class="bottom-ranking-card" id="poly-bottom-ranking-sec">
           <div class="ranking-header">
             <div class="ranking-title">🏆 다면체 면 타기 미로 명예의 전당 (실시간 랭킹 보드)</div>
@@ -99869,10 +99771,7 @@ window.ScatterRGuesser=API;window.initScatterRGuesserGame=function(){reg();if(wi
   window.launchPolyhedronMazeGame = (container) => PolyhedronMaze.mount(container);
 })();
 </script>
-<!-- ==========================================================================
-     [앱 57] 펜토미노 블록 맞추기 (Pentomino Grid Puzzle) - Gen-3 완결판 (1인 전용)
-     정확한 평면 분할 정답 지도(Solution Grid) 및 반응형 레이아웃 적용
-     ========================================================================== -->
+
 <style>
   /* ==========================================================================
      Gen-3 수학 실험실 표준 스타일 - 펜토미노 블록 맞추기
@@ -100631,7 +100530,7 @@ window.ScatterRGuesser=API;window.initScatterRGuesserGame=function(){reg();if(wi
 
     host.innerHTML = `
       <div class="game-pentomino" id="pentomino-app">
-        <!-- 1. 상단 바 & 버튼 영역 -->
+        
         <div class="pento-header">
           <div class="pento-title-wrap">
             <div class="pento-badge">🧩</div>
@@ -100648,7 +100547,7 @@ window.ScatterRGuesser=API;window.initScatterRGuesserGame=function(){reg();if(wi
           </div>
         </div>
 
-        <!-- 2. 컨트롤 바 (1인 모드 표기 & 난이도 탭) -->
+        
         <div class="pento-control-bar">
           <div class="mode-info-tag">👤 1인 펜토미노 평면 분할 탐구 모드</div>
           <div class="diff-tabs">
@@ -100658,7 +100557,7 @@ window.ScatterRGuesser=API;window.initScatterRGuesserGame=function(){reg();if(wi
           </div>
         </div>
 
-        <!-- 3. 스테이지 상태 지표 -->
+        
         <div class="stage-status-bar">
           <div style="font-weight:800; color:#f8fafc; display:flex; align-items:center; gap:8px;">
             📍 <span id="stage-title-text">스테이지 1</span>
@@ -100671,9 +100570,9 @@ window.ScatterRGuesser=API;window.initScatterRGuesserGame=function(){reg();if(wi
           </div>
         </div>
 
-        <!-- 4. 메인 아레나 (반응형 레이아웃 보강) -->
+        
         <div class="pento-main-arena">
-          <!-- 좌측 패널: 선택된 블록 변환 & 하단 팔레트 -->
+          
           <div class="pento-sidebar">
             <div class="sidebar-title">
               <span>🎯 선택된 블록 모양 & 변환</span>
@@ -100693,7 +100592,7 @@ window.ScatterRGuesser=API;window.initScatterRGuesserGame=function(){reg();if(wi
             <div class="palette-grid" id="palette-grid-box"></div>
           </div>
 
-          <!-- 우측 패널: 격자 보드 (스크롤 래퍼로 화면 이탈 완벽 방지) -->
+          
           <div class="board-container">
             <div class="pento-toast" id="pento-main-toast">✨ 블록이 배치되었습니다!</div>
             <p id="stage-hint-desc" style="color:#cbd5e1; font-size:0.92rem; margin-top:0; margin-bottom:10px; text-align:center; font-weight:700;">안내 메시지</p>
@@ -100708,7 +100607,7 @@ window.ScatterRGuesser=API;window.initScatterRGuesserGame=function(){reg();if(wi
           </div>
         </div>
 
-        <!-- 5. 가이드 플로어 팝업 모달 (alert/prompt 완전 금지) -->
+        
         <div class="modal-overlay" id="pento-guide-modal">
           <div class="modal-card">
             <div class="modal-header">
@@ -100736,7 +100635,7 @@ window.ScatterRGuesser=API;window.initScatterRGuesserGame=function(){reg();if(wi
           </div>
         </div>
 
-        <!-- 🌟 6. 명예의 전당 등재 팝업 모달 (prompt 원천 금지) -->
+        
         <div class="modal-overlay" id="pento-ranking-modal">
           <div class="modal-card" style="max-width: 480px;">
             <div class="modal-header">
@@ -100758,7 +100657,7 @@ window.ScatterRGuesser=API;window.initScatterRGuesserGame=function(){reg();if(wi
           </div>
         </div>
 
-        <!-- 7. 하단 상시 명예의 전당 보드 -->
+        
         <div class="bottom-ranking-card" id="pento-bottom-ranking-sec">
           <div class="ranking-header">
             <div class="ranking-title">🏆 펜토미노 평면 분할 명예의 전당 (실시간 랭킹 보드)</div>
@@ -102736,7 +102635,7 @@ window.launchNewtonRaphson = window.initNewtonRaphson;
 .rw-app .modal .mbox { background: #fff; border-radius: 18px; max-width: 580px; width: 100%; padding: 22px; max-height: 88vh; overflow: auto; box-shadow: 0 20px 50px rgba(15,23,42,0.3); }
 </style>
 
-<!-- KaTeX Script -->
+
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
 
 <script>
@@ -104737,7 +104636,7 @@ window.launchRandomWalkStock = window.initRandomWalkStock;
 .mp-app .dot.on { background: #0284c7; width: 22px; border-radius: 10px; }
 </style>
 
-<!-- KaTeX Script -->
+
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
 
 <script>
@@ -105557,7 +105456,7 @@ window.launchMatchingPennies = window.initMatchingPennies;
 .bb-app .dot.on { background: #0284c7; width: 22px; border-radius: 10px; }
 </style>
 
-<!-- KaTeX Script -->
+
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
 
 <script>
@@ -106363,7 +106262,7 @@ window.launchBayesBagDetectiveGame = window.initBayesBagDetectiveGame;
 .cg-app .dot.on { background: #7c3aed; width: 22px; border-radius: 10px; }
 </style>
 
-<!-- KaTeX Script -->
+
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
 
 <script>
@@ -107143,7 +107042,7 @@ window.launchChaosGameGasketGame = window.initChaosGameGasketGame;
 .ds-app .dot.on { background: #0284c7; width: 22px; border-radius: 10px; }
 </style>
 
-<!-- KaTeX Script -->
+
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
 
 <script>
@@ -107993,7 +107892,7 @@ window.launchDataCenterSpy = window.initDataCenterSpy;
 .sd-app .dot.on { background: #0284c7; width: 22px; border-radius: 10px; }
 </style>
 
-<!-- KaTeX Script -->
+
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
 
 <script>
@@ -108892,7 +108791,7 @@ window.launchSyntheticDivision = window.initSyntheticDivision;
 .lsv-app .dot.on { background: #0284c7; width: 22px; border-radius: 10px; }
 </style>
 
-<!-- KaTeX Script -->
+
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
 
 <script>
@@ -109627,7 +109526,7 @@ window.launchLogScaleVoyage = window.initLogScaleVoyage;
 .ez-app .dot.on { background: #dc2626; width: 22px; border-radius: 10px; }
 </style>
 
-<!-- KaTeX Script -->
+
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
 
 <script>
@@ -110633,7 +110532,7 @@ window.launchExponentialZombiesGame = window.initExponentialZombies;
 .ae-concept .dot.on { background: #0284c7; width: 22px; border-radius: 10px; }
 </style>
 
-<!-- KaTeX Script -->
+
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
 
 <script>
@@ -111501,7 +111400,7 @@ window.launchAsymptoteEscape = window.initAsymptoteEscape;
 .ss-app .dot.on { background: #0284c7; width: 22px; border-radius: 10px; }
 </style>
 
-<!-- KaTeX Script -->
+
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
 
 <script>
@@ -112368,7 +112267,7 @@ window.launchSineSurfing = window.initSineSurfing;
 .il-app .dot.on { background: #0284c7; width: 22px; border-radius: 10px; }
 </style>
 
-<!-- KaTeX Script -->
+
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
 
 <script>
@@ -113477,7 +113376,7 @@ window.launchImplicitLaser = window.initImplicitLaser;
 .ca2-app .dot.on { background: #0284c7; width: 22px; border-radius: 10px; }
 </style>
 
-<!-- KaTeX Script -->
+
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
 
 <script>
@@ -114422,7 +114321,7 @@ window.launchCubicAnatomy2 = window.initCubicAnatomy2;
 .ts-concept .dot.on { background: #0284c7; width: 22px; border-radius: 10px; }
 </style>
 
-<!-- KaTeX Script -->
+
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
 
 <script>
@@ -115462,7 +115361,7 @@ window.launchTaylorSeries = window.initTaylorSeries;
 .is-concept .dot.on { background: #0284c7; width: 22px; border-radius: 10px; }
 </style>
 
-<!-- KaTeX Script -->
+
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
 
 <script>
@@ -116444,7 +116343,7 @@ window.launchIntersectionSniper = window.initIntersectionSniper;
 .ec-concept .dot.on { background: #0284c7; width: 22px; border-radius: 10px; }
 </style>
 
-<!-- KaTeX Script -->
+
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
 
 <script>
@@ -118490,7 +118389,7 @@ window.launchExtremaCoaster = window.initExtremaCoaster;
       // 순수 스니펫 DOM 주입
       host.innerHTML = `
         <div class="game-func-limit-continuity" id="flc-container">
-          <!-- 1. 헤더 -->
+          
           <div class="flc-header">
             <div class="flc-title-box">
               <h2>📈 함수의 극한 · 연속 · 미분가능성 시각화</h2>
@@ -118502,10 +118401,10 @@ window.launchExtremaCoaster = window.initExtremaCoaster;
             </div>
           </div>
 
-          <!-- 2. 메인 3단 레이아웃 -->
+          
           <div class="flc-main-layout">
             
-            <!-- 좌측: 수식 입력, 템플릿, 키보드, 프리셋 -->
+            
             <div class="flc-card">
               <div class="flc-card-header">
                 <span>✏️ 함수 입력 & 프리셋</span>
@@ -118524,7 +118423,7 @@ window.launchExtremaCoaster = window.initExtremaCoaster;
                   <button class="flc-btn-tpl" id="flcTplHole">⭕ 점 분리 함수</button>
                 </div>
 
-                <!-- 가상 키보드 -->
+                
                 <div class="flc-virtual-kb" id="flcVirtualKb" style="display:none;">
                   <div class="flc-kb-row">
                     <button class="flc-kb-btn op" data-insert="x">x</button>
@@ -118568,7 +118467,7 @@ window.launchExtremaCoaster = window.initExtremaCoaster;
                   </div>
                 </div>
 
-                <!-- 프리셋 탭 -->
+                
                 <div class="flc-tabs">
                   <button class="flc-tab-btn active" data-cat="all">전체</button>
                   <button class="flc-tab-btn" data-cat="poly">다항/첨점</button>
@@ -118612,7 +118511,7 @@ window.launchExtremaCoaster = window.initExtremaCoaster;
               </div>
             </div>
 
-            <!-- 중앙: 캔버스 좌표평면 & 슬라이더 -->
+            
             <div class="flc-card">
               <div class="flc-card-header">
                 <span>📊 인터랙티브 그래프 좌표평면</span>
@@ -118647,13 +118546,13 @@ window.launchExtremaCoaster = window.initExtremaCoaster;
               </div>
             </div>
 
-            <!-- 우측: 3단계 종합 판정 대시보드 -->
+            
             <div class="flc-card flc-panel-dashboard">
               <div class="flc-card-header">
                 <span>🔍 개념 단계별 종합 판정 대시보드</span>
               </div>
               <div class="flc-card-body">
-                <!-- 1단계: 극한 -->
+                
                 <div class="flc-judge-box">
                   <div class="flc-judge-header">
                     <span class="flc-judge-title" id="flcTitleLimit"></span>
@@ -118674,7 +118573,7 @@ window.launchExtremaCoaster = window.initExtremaCoaster;
                   <div class="flc-calc-explain" id="flcExplainLimit"></div>
                 </div>
 
-                <!-- 2단계: 연속 -->
+                
                 <div class="flc-judge-box">
                   <div class="flc-judge-header">
                     <span class="flc-judge-title" id="flcTitleCont"></span>
@@ -118691,7 +118590,7 @@ window.launchExtremaCoaster = window.initExtremaCoaster;
                   <div class="flc-calc-explain" id="flcExplainCont"></div>
                 </div>
 
-                <!-- 3단계: 미분가능성 -->
+                
                 <div class="flc-judge-box">
                   <div class="flc-judge-header">
                     <span class="flc-judge-title" id="flcTitleDiff"></span>
@@ -118716,7 +118615,7 @@ window.launchExtremaCoaster = window.initExtremaCoaster;
 
           </div>
 
-          <!-- 3. 수식 작성 안내 모달 -->
+          
           <div class="flc-modal-overlay" id="flcGuideModal">
             <div class="flc-modal-card">
               <div class="flc-modal-head">
@@ -118786,7 +118685,7 @@ window.launchExtremaCoaster = window.initExtremaCoaster;
             </div>
           </div>
 
-          <!-- 4. 토스트 알림창 -->
+          
           <div class="flc-toast" id="flc-toast-box"></div>
         </div>
       `;
@@ -119574,7 +119473,7 @@ window.launchExtremaCoaster = window.initExtremaCoaster;
 
       host.innerHTML = `
         <div class="game-econ-math-life" id="eml-container">
-          <!-- 1. 상단 헤더 -->
+          
           <div class="eml-header">
             <div class="eml-title-box">
               <h2>📊 수와 생활 경제 (지표 · 환율 · 세금)</h2>
@@ -119585,7 +119484,7 @@ window.launchExtremaCoaster = window.initExtremaCoaster;
             </div>
           </div>
 
-          <!-- 2. 네비게이션 탭 -->
+          
           <div class="eml-nav-tabs">
             <button class="eml-tab-btn active" data-tab="indicator">📈 1. 경제지표</button>
             <button class="eml-tab-btn" data-tab="fx">💱 2. 환율</button>
@@ -119594,9 +119493,9 @@ window.launchExtremaCoaster = window.initExtremaCoaster;
             <button class="eml-tab-btn" data-tab="summary">💡 5. 공식 요약</button>
           </div>
 
-          <!-- 3. 탭별 컨텐츠 패널 -->
+          
 
-          <!-- TAB 1 : 경제지표 -->
+          
           <div class="eml-tab-panel active" id="eml-tab-indicator">
             <div class="eml-grid-2col">
               <div class="eml-card">
@@ -119743,7 +119642,7 @@ window.launchExtremaCoaster = window.initExtremaCoaster;
             </div>
           </div>
 
-          <!-- TAB 2 : 환율 -->
+          
           <div class="eml-tab-panel" id="eml-tab-fx">
             <div class="eml-grid-2col">
               <div class="eml-card">
@@ -119847,7 +119746,7 @@ window.launchExtremaCoaster = window.initExtremaCoaster;
             </div>
           </div>
 
-          <!-- TAB 3 : 세금 -->
+          
           <div class="eml-tab-panel" id="eml-tab-tax">
             <div class="eml-grid-2col">
               <div class="eml-card">
@@ -119961,7 +119860,7 @@ window.launchExtremaCoaster = window.initExtremaCoaster;
             </div>
           </div>
 
-          <!-- TAB 4 : 주요 문제와 풀이 -->
+          
           <div class="eml-tab-panel" id="eml-tab-exam">
             <div style="background:#f1f5f9; padding:12px 16px; border-radius:10px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
               <span style="font-weight:700; color:var(--eml-primary);">📚 1단원 주요 문제와 풀이 (1~16번 전체 수록)</span>
@@ -119973,7 +119872,7 @@ window.launchExtremaCoaster = window.initExtremaCoaster;
             <div id="eml-problem-list-container" style="display:flex; flex-direction:column; gap:12px;"></div>
           </div>
 
-          <!-- TAB 5 : 공식 요약 -->
+          
           <div class="eml-tab-panel" id="eml-tab-summary">
             <div class="eml-grid-2col">
               <div class="eml-card">
@@ -120400,7 +120299,7 @@ window.launchExtremaCoaster = window.initExtremaCoaster;
           var appObj = {
             id: 'econ-math-life',
             title: '수와 생활 경제 (지표·환율·세금)',
-            icon: '📊',
+            icon: '💱',
             sourceType: 'new',
             category: 'concept',
             curriculumSchool: '고등학교',
@@ -120443,7 +120342,7 @@ window.launchExtremaCoaster = window.initExtremaCoaster;
 
 })();
 </script>
-<!-- KaTeX 필수 스타일 및 스크립트 (독립 브라우저 실행 및 수학실험실 공통 보장) -->
+
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
@@ -120943,7 +120842,7 @@ window.launchExtremaCoaster = window.initExtremaCoaster;
 
       host.innerHTML = `
         <div class="game-econ-seq-finance" id="esf-container">
-          <!-- 1. 상단 헤더 -->
+          
           <div class="esf-header">
             <div class="esf-title-box">
               <h2>📊 수열과 금융 (원리합계 · 현재가치 · 연금)</h2>
@@ -120954,7 +120853,7 @@ window.launchExtremaCoaster = window.initExtremaCoaster;
             </div>
           </div>
 
-          <!-- 2. 네비게이션 탭 -->
+          
           <div class="esf-nav-tabs">
             <button class="esf-tab-btn active" data-tab="growth">📈 1. 단리·복리·연속복리</button>
             <button class="esf-tab-btn" data-tab="annuity">💰 2. 적립금(미래가치)</button>
@@ -120963,9 +120862,9 @@ window.launchExtremaCoaster = window.initExtremaCoaster;
             <button class="esf-tab-btn" data-tab="summary">💡 5. 공식 요약</button>
           </div>
 
-          <!-- 3. 탭별 컨텐츠 패널 -->
+          
 
-          <!-- TAB 1 : 단리 · 복리 · 연속복리 -->
+          
           <div class="esf-tab-panel active" id="esf-tab-growth">
             <div class="esf-grid-2col">
               <div class="esf-card">
@@ -121073,7 +120972,7 @@ window.launchExtremaCoaster = window.initExtremaCoaster;
             </div>
           </div>
 
-          <!-- TAB 2 : 적립금(미래가치) -->
+          
           <div class="esf-tab-panel" id="esf-tab-annuity">
             <div class="esf-grid-2col">
               <div class="esf-card">
@@ -121169,7 +121068,7 @@ window.launchExtremaCoaster = window.initExtremaCoaster;
             </div>
           </div>
 
-          <!-- TAB 3 : 현재가치 · 연금 · 상환 -->
+          
           <div class="esf-tab-panel" id="esf-tab-pv">
             <div class="esf-grid-2col">
               <div class="esf-card">
@@ -121272,7 +121171,7 @@ window.launchExtremaCoaster = window.initExtremaCoaster;
             </div>
           </div>
 
-          <!-- TAB 4 : 주요 문제와 풀이 -->
+          
           <div class="esf-tab-panel" id="esf-tab-exam">
             <div style="background:#f1f5f9; padding:12px 16px; border-radius:10px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
               <span style="font-weight:700; color:var(--esf-primary);">📚 2단원 주요 문제와 풀이 (1~16번 전체 수록)</span>
@@ -121284,7 +121183,7 @@ window.launchExtremaCoaster = window.initExtremaCoaster;
             <div id="esf-problem-list-container" style="display:flex; flex-direction:column; gap:12px;"></div>
           </div>
 
-          <!-- TAB 5 : 공식 요약 -->
+          
           <div class="esf-tab-panel" id="esf-tab-summary">
             <div class="esf-grid-2col">
               <div class="esf-card">
@@ -121743,7 +121642,7 @@ window.launchExtremaCoaster = window.initExtremaCoaster;
           var appObj = {
             id: 'econ-seq-finance',
             title: '수열과 금융 (원리합계·현재가치·연금)',
-            icon: '📈',
+            icon: '🏦',
             sourceType: 'new',
             category: 'concept',
             curriculumSchool: '고등학교',
@@ -121798,7 +121697,7 @@ window.launchExtremaCoaster = window.initExtremaCoaster;
 })();
 </script>
 
-<!-- KaTeX 필수 스타일 및 스크립트 (독립 브라우저 실행 및 수학실험실 공통 보장) -->
+
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
@@ -122293,7 +122192,7 @@ window.launchExtremaCoaster = window.initExtremaCoaster;
 
       host.innerHTML = `
         <div class="game-econ-func-market" id="efm-container">
-          <!-- 1. 상단 헤더 -->
+          
           <div class="efm-header">
             <div class="efm-title-box">
               <h2>📈 함수와 경제 (생산·비용·균형·선형계획)</h2>
@@ -122304,7 +122203,7 @@ window.launchExtremaCoaster = window.initExtremaCoaster;
             </div>
           </div>
 
-          <!-- 2. 네비게이션 탭 -->
+          
           <div class="efm-nav-tabs">
             <button class="efm-tab-btn active" data-tab="cost">📊 1. 생산·비용·이윤·손익분기</button>
             <button class="efm-tab-btn" data-tab="market">⚖️ 2. 수요·공급 & 시장 균형</button>
@@ -122313,9 +122212,9 @@ window.launchExtremaCoaster = window.initExtremaCoaster;
             <button class="efm-tab-btn" data-tab="summary">💡 5. 공식 요약</button>
           </div>
 
-          <!-- 3. 탭별 컨텐츠 패널 -->
+          
 
-          <!-- TAB 1 : 생산 · 비용 · 이윤 · 손익분기 -->
+          
           <div class="efm-tab-panel active" id="efm-tab-cost">
             <div class="efm-grid-2col">
               <div class="efm-card">
@@ -122418,7 +122317,7 @@ window.launchExtremaCoaster = window.initExtremaCoaster;
             </div>
           </div>
 
-          <!-- TAB 2 : 수요 · 공급 & 시장 균형 -->
+          
           <div class="efm-tab-panel" id="efm-tab-market">
             <div class="efm-grid-2col">
               <div class="efm-card">
@@ -122521,7 +122420,7 @@ window.launchExtremaCoaster = window.initExtremaCoaster;
             </div>
           </div>
 
-          <!-- TAB 3 : 부등식 영역 & 선형계획 -->
+          
           <div class="efm-tab-panel" id="efm-tab-opt">
             <div class="efm-grid-2col">
               <div class="efm-card">
@@ -122596,7 +122495,7 @@ window.launchExtremaCoaster = window.initExtremaCoaster;
             </div>
           </div>
 
-          <!-- TAB 4 : 주요 문제와 풀이 -->
+          
           <div class="efm-tab-panel" id="efm-tab-exam">
             <div style="background:#f1f5f9; padding:12px 16px; border-radius:10px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
               <span style="font-weight:700; color:var(--efm-primary);">📚 3단원 주요 문제와 풀이 (1~10번 전체 수록)</span>
@@ -122608,7 +122507,7 @@ window.launchExtremaCoaster = window.initExtremaCoaster;
             <div id="efm-problem-list-container" style="display:flex; flex-direction:column; gap:12px;"></div>
           </div>
 
-          <!-- TAB 5 : 공식 요약 -->
+          
           <div class="efm-tab-panel" id="efm-tab-summary">
             <div class="efm-grid-2col">
               <div class="efm-card">
@@ -123262,7 +123161,7 @@ window.launchExtremaCoaster = window.initExtremaCoaster;
 })();
 </script>
 
-<!-- KaTeX 필수 스타일 및 스크립트 (독립 브라우저 실행 및 수학실험실 공통 보장) -->
+
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
@@ -123759,7 +123658,7 @@ window.launchExtremaCoaster = window.initExtremaCoaster;
 
       host.innerHTML = `
         <div class="game-econ-calc-opt" id="eco-container">
-          <!-- 1. 상단 헤더 -->
+          
           <div class="eco-header">
             <div class="eco-title-box">
               <h2>📈 미분과 경제 (한계개념 · 이윤극대화 · 탄력성 · 최적생산)</h2>
@@ -123770,7 +123669,7 @@ window.launchExtremaCoaster = window.initExtremaCoaster;
             </div>
           </div>
 
-          <!-- 2. 네비게이션 탭 -->
+          
           <div class="eco-nav-tabs">
             <button class="eco-tab-btn active" data-tab="deriv">📈 1. 미분 기초 & 한계 개념</button>
             <button class="eco-tab-btn" data-tab="profit">🎯 2. 이윤 극대화 (MR=MC)</button>
@@ -123779,9 +123678,9 @@ window.launchExtremaCoaster = window.initExtremaCoaster;
             <button class="eco-tab-btn" data-tab="summary">💡 5. 공식 요약</button>
           </div>
 
-          <!-- 3. 탭별 컨텐츠 패널 -->
+          
 
-          <!-- TAB 1 : 미분 기초 & 한계 개념 -->
+          
           <div class="eco-tab-panel active" id="eco-tab-deriv">
             <div class="eco-grid-2col">
               <div class="eco-card">
@@ -123863,7 +123762,7 @@ window.launchExtremaCoaster = window.initExtremaCoaster;
             </div>
           </div>
 
-          <!-- TAB 2 : 이윤 극대화 -->
+          
           <div class="eco-tab-panel" id="eco-tab-profit">
             <div class="eco-grid-2col">
               <div class="eco-card">
@@ -123957,7 +123856,7 @@ window.launchExtremaCoaster = window.initExtremaCoaster;
             </div>
           </div>
 
-          <!-- TAB 3 : 수요의 가격탄력성 -->
+          
           <div class="eco-tab-panel" id="eco-tab-elas">
             <div class="eco-grid-2col">
               <div class="eco-card">
@@ -124050,7 +123949,7 @@ window.launchExtremaCoaster = window.initExtremaCoaster;
             </div>
           </div>
 
-          <!-- TAB 4 : 주요 문제와 풀이 -->
+          
           <div class="eco-tab-panel" id="eco-tab-exam">
             <div style="background:#f1f5f9; padding:12px 16px; border-radius:10px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
               <span style="font-weight:700; color:var(--eco-primary);">📚 4단원 주요 문제와 풀이 (1~12번 전체 수록)</span>
@@ -124062,7 +123961,7 @@ window.launchExtremaCoaster = window.initExtremaCoaster;
             <div id="eco-problem-list-container" style="display:flex; flex-direction:column; gap:12px;"></div>
           </div>
 
-          <!-- TAB 5 : 공식 요약 -->
+          
           <div class="eco-tab-panel" id="eco-tab-summary">
             <div class="eco-grid-2col">
               <div class="eco-card">
@@ -124628,7 +124527,7 @@ window.launchExtremaCoaster = window.initExtremaCoaster;
           var appObj = {
             id: 'econ-calc-opt',
             title: '미분과 경제 (한계·이윤극대화·탄력성)',
-            icon: '📈',
+            icon: '🎯',
             sourceType: 'new',
             category: 'concept',
             curriculumSchool: '고등학교',
@@ -124795,16 +124694,16 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  function renderAppCards() {
-    const grid = document.getElementById('home-app-cards');
+    function renderAppCards() {
+    const gridConcept = document.getElementById('grid-concept');
+    const gridGame = document.getElementById('grid-game');
+    const gridApp = document.getElementById('grid-application');
     const statusEl = document.getElementById('mathlab-search-status');
-    if (!grid) return;
+
+    if (!gridConcept || !gridGame || !gridApp) return;
 
     let apps = window.MathLabMetadata ? [...window.MathLabMetadata] : [];
-
-    if (currentState.category !== 'all') {
-      apps = apps.filter(app => app.appType === currentState.category);
-    }
+    apps = apps.filter(app => app && app.appType !== 'admin' && app.enabled !== false);
 
     if (currentState.search) {
       let qRaw = currentState.search;
@@ -124865,56 +124764,89 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     });
 
-    if (!apps.length) {
-      grid.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding:40px; color:#94a3b8; font-size:1.1rem;">조건에 맞는 앱이 없습니다. 😢</div>`;
-      return;
-    }
-
-    grid.innerHTML = apps.map(app => {
-      const modeBadges = [];
-      if (app.playModes) {
-        if (app.playModes.includes('simultaneousVersus') || app.playModes.includes('turnVersus')) modeBadges.push('👥 대결');
-        if (app.playModes.includes('classroom') || app.playModes.includes('team')) modeBadges.push('🏫 교실');
+    const buildCardsHtml = (list) => {
+      if (!list.length) {
+        return `<div style="grid-column: 1/-1; text-align:center; padding:24px; color:#94a3b8; font-size:0.95rem;">조건에 맞는 앱이 없습니다. 😢</div>`;
       }
-
-      const badgeHtml = modeBadges.length ? `<div class="card-badges" style="margin-top:10px; font-size:0.75rem; display:flex; gap:6px; flex-wrap:wrap;">` + modeBadges.map(b => `<span style="background:#e74c3c; color:#fff; padding:3px 6px; border-radius:6px; font-weight:bold;">${b}</span>`).join('') + `</div>` : '';
-
-      const multiBadge = app.multiplayer ? `<br><span style="font-size:0.7rem; background:#e74c3c; color:#fff; padding:3px 6px; border-radius:6px; vertical-align:middle; margin-top:5px; display:inline-block;">👥 ${app.multiplayer}</span>` : '';
-
-            const tooltipHTML = `[${app.curriculumSchool || '전연령'} - ${app.curriculumSubject || '창의수학'} - ${app.curriculumUnit || '일반'}]<br><span style="font-weight:400; font-size:0.8rem; margin-top:4px; display:inline-block; color:#475569;">${app.description || ''}</span>`;
-      return `
-        <button class="app-card" data-launch-type="${app.launchType}" data-launch-id="${app.launchId}">
-          <div class="card-icon">${app.icon || '📌'}</div>
-          <h3 class="card-title">${app.title}${multiBadge}</h3>
-          <p class="card-desc">${tooltipHTML}</p>
-          ${badgeHtml}
-        </button>
-      `;
-    }).join('');
-
-    const cards = grid.querySelectorAll('.app-card');
-    cards.forEach(card => {
-      card.addEventListener('click', () => {
-        const lType = card.getAttribute('data-launch-type');
-        const lId = card.getAttribute('data-launch-id');
-
-        if (lType === 'mathLabGame' && window.MathLabGames) {
-          window.MathLabGames.mount(lId);
-        } else if (lType === 'openApp' && typeof window.openApp === 'function') {
-          window.openApp(lId);
-        } else if (lType === 'concept' && window.MathLabConcepts) {
-          window.MathLabConcepts.mount(lId);
-        } else if (lType === 'application' && window.MathLabApplications) {
-          window.MathLabApplications.mount(lId);
-        } else if (lType === 'tutor' && window.MathLabTutor) {
-          window.MathLabTutor.mount(lId);
-        } else if (lType === 'function' && typeof window[lId] === 'function') {
-          window[lId]();
-        } else {
-          alert('해당 앱을 실행할 수 없습니다.');
+      return list.map(app => {
+        const modeBadges = [];
+        if (app.playModes) {
+          if (app.playModes.includes('simultaneousVersus') || app.playModes.includes('turnVersus')) modeBadges.push('👥 대결');
+          if (app.playModes.includes('classroom') || app.playModes.includes('team')) modeBadges.push('🏫 교실');
         }
+
+        const badgeHtml = modeBadges.length ? `<div class="card-badges" style="margin-top:10px; font-size:0.75rem; display:flex; gap:6px; flex-wrap:wrap;">` + modeBadges.map(b => `<span style="background:#e74c3c; color:#fff; padding:3px 6px; border-radius:6px; font-weight:bold;">${b}</span>`).join('') + `</div>` : '';
+
+        const multiBadge = app.multiplayer ? `<br><span style="font-size:0.7rem; background:#e74c3c; color:#fff; padding:3px 6px; border-radius:6px; vertical-align:middle; margin-top:5px; display:inline-block;">👥 ${app.multiplayer}</span>` : '';
+
+        const tooltipHTML = `[${app.curriculumSchool || '전연령'} - ${app.curriculumSubject || '창의수학'} - ${app.curriculumUnit || '일반'}]<br><span style="font-weight:400; font-size:0.8rem; margin-top:4px; display:inline-block; color:#475569;">${app.description || ''}</span>`;
+
+        return `
+          <button class="app-card" data-launch-type="${app.launchType}" data-launch-id="${app.launchId}">
+            <div class="card-icon">${app.icon || '📌'}</div>
+            <h3 class="card-title">${app.title}${multiBadge}</h3>
+            <p class="card-desc">${tooltipHTML}</p>
+            ${badgeHtml}
+          </button>
+        `;
+      }).join('');
+    };
+
+    const conceptApps = apps.filter(app => app.appType === 'concept' || app.appType === 'math');
+    const gameApps = apps.filter(app => app.appType === 'game');
+    const appApps = apps.filter(app => app.appType === 'application' || app.appType === 'life');
+
+    gridConcept.innerHTML = buildCardsHtml(conceptApps);
+    gridGame.innerHTML = buildCardsHtml(gameApps);
+    gridApp.innerHTML = buildCardsHtml(appApps);
+
+    const cntConcept = document.getElementById('cnt-concept');
+    const cntGame = document.getElementById('cnt-game');
+    const cntApp = document.getElementById('cnt-application');
+
+    if (cntConcept) cntConcept.textContent = conceptApps.length;
+    if (cntGame) cntGame.textContent = gameApps.length;
+    if (cntApp) cntApp.textContent = appApps.length;
+
+    const secConcept = document.getElementById('sec-concept');
+    const secGame = document.getElementById('sec-game');
+    const secApp = document.getElementById('sec-application');
+
+    if (secConcept) secConcept.style.display = (currentState.search && !conceptApps.length) ? 'none' : 'block';
+    if (secGame) secGame.style.display = (currentState.search && !gameApps.length) ? 'none' : 'block';
+    if (secApp) secApp.style.display = (currentState.search && !appApps.length) ? 'none' : 'block';
+
+    const bindClickToCards = (container) => {
+      if (!container) return;
+      const cards = container.querySelectorAll('.app-card');
+      cards.forEach(card => {
+        card.addEventListener('click', () => {
+          const lType = card.getAttribute('data-launch-type');
+          const lId = card.getAttribute('data-launch-id');
+
+          if (lType === 'mathLabGame' && window.MathLabGames) {
+            window.MathLabGames.mount(lId);
+          } else if (lType === 'openApp' && typeof window.openApp === 'function') {
+            window.openApp(lId);
+          } else if (lType === 'concept' && window.MathLabConcepts) {
+            window.MathLabConcepts.mount(lId);
+          } else if (lType === 'application' && window.MathLabApplications) {
+            window.MathLabApplications.mount(lId);
+          } else if (lType === 'function' && typeof window[lId] === 'function') {
+            window[lId]();
+          } else {
+            if (window.MathLabGames && typeof window.MathLabGames.mount === 'function') {
+              try { window.MathLabGames.mount(lId); return; } catch(e){}
+            }
+            alert('해당 앱을 실행할 수 없습니다.');
+          }
+        });
       });
-    });
+    };
+
+    bindClickToCards(gridConcept);
+    bindClickToCards(gridGame);
+    bindClickToCards(gridApp);
   }
 
   if (logo) {

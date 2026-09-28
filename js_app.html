@@ -110,16 +110,16 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  function renderAppCards() {
-    const grid = document.getElementById('home-app-cards');
+    function renderAppCards() {
+    const gridConcept = document.getElementById('grid-concept');
+    const gridGame = document.getElementById('grid-game');
+    const gridApp = document.getElementById('grid-application');
     const statusEl = document.getElementById('mathlab-search-status');
-    if (!grid) return;
+
+    if (!gridConcept || !gridGame || !gridApp) return;
 
     let apps = window.MathLabMetadata ? [...window.MathLabMetadata] : [];
-
-    if (currentState.category !== 'all') {
-      apps = apps.filter(app => app.appType === currentState.category);
-    }
+    apps = apps.filter(app => app && app.appType !== 'admin' && app.enabled !== false);
 
     if (currentState.search) {
       let qRaw = currentState.search;
@@ -180,56 +180,89 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     });
 
-    if (!apps.length) {
-      grid.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding:40px; color:#94a3b8; font-size:1.1rem;">조건에 맞는 앱이 없습니다. 😢</div>`;
-      return;
-    }
-
-    grid.innerHTML = apps.map(app => {
-      const modeBadges = [];
-      if (app.playModes) {
-        if (app.playModes.includes('simultaneousVersus') || app.playModes.includes('turnVersus')) modeBadges.push('👥 대결');
-        if (app.playModes.includes('classroom') || app.playModes.includes('team')) modeBadges.push('🏫 교실');
+    const buildCardsHtml = (list) => {
+      if (!list.length) {
+        return `<div style="grid-column: 1/-1; text-align:center; padding:24px; color:#94a3b8; font-size:0.95rem;">조건에 맞는 앱이 없습니다. 😢</div>`;
       }
-
-      const badgeHtml = modeBadges.length ? `<div class="card-badges" style="margin-top:10px; font-size:0.75rem; display:flex; gap:6px; flex-wrap:wrap;">` + modeBadges.map(b => `<span style="background:#e74c3c; color:#fff; padding:3px 6px; border-radius:6px; font-weight:bold;">${b}</span>`).join('') + `</div>` : '';
-
-      const multiBadge = app.multiplayer ? `<br><span style="font-size:0.7rem; background:#e74c3c; color:#fff; padding:3px 6px; border-radius:6px; vertical-align:middle; margin-top:5px; display:inline-block;">👥 ${app.multiplayer}</span>` : '';
-
-            const tooltipHTML = `[${app.curriculumSchool || '전연령'} - ${app.curriculumSubject || '창의수학'} - ${app.curriculumUnit || '일반'}]<br><span style="font-weight:400; font-size:0.8rem; margin-top:4px; display:inline-block; color:#475569;">${app.description || ''}</span>`;
-      return `
-        <button class="app-card" data-launch-type="${app.launchType}" data-launch-id="${app.launchId}">
-          <div class="card-icon">${app.icon || '📌'}</div>
-          <h3 class="card-title">${app.title}${multiBadge}</h3>
-          <p class="card-desc">${tooltipHTML}</p>
-          ${badgeHtml}
-        </button>
-      `;
-    }).join('');
-
-    const cards = grid.querySelectorAll('.app-card');
-    cards.forEach(card => {
-      card.addEventListener('click', () => {
-        const lType = card.getAttribute('data-launch-type');
-        const lId = card.getAttribute('data-launch-id');
-
-        if (lType === 'mathLabGame' && window.MathLabGames) {
-          window.MathLabGames.mount(lId);
-        } else if (lType === 'openApp' && typeof window.openApp === 'function') {
-          window.openApp(lId);
-        } else if (lType === 'concept' && window.MathLabConcepts) {
-          window.MathLabConcepts.mount(lId);
-        } else if (lType === 'application' && window.MathLabApplications) {
-          window.MathLabApplications.mount(lId);
-        } else if (lType === 'tutor' && window.MathLabTutor) {
-          window.MathLabTutor.mount(lId);
-        } else if (lType === 'function' && typeof window[lId] === 'function') {
-          window[lId]();
-        } else {
-          alert('해당 앱을 실행할 수 없습니다.');
+      return list.map(app => {
+        const modeBadges = [];
+        if (app.playModes) {
+          if (app.playModes.includes('simultaneousVersus') || app.playModes.includes('turnVersus')) modeBadges.push('👥 대결');
+          if (app.playModes.includes('classroom') || app.playModes.includes('team')) modeBadges.push('🏫 교실');
         }
+
+        const badgeHtml = modeBadges.length ? `<div class="card-badges" style="margin-top:10px; font-size:0.75rem; display:flex; gap:6px; flex-wrap:wrap;">` + modeBadges.map(b => `<span style="background:#e74c3c; color:#fff; padding:3px 6px; border-radius:6px; font-weight:bold;">${b}</span>`).join('') + `</div>` : '';
+
+        const multiBadge = app.multiplayer ? `<br><span style="font-size:0.7rem; background:#e74c3c; color:#fff; padding:3px 6px; border-radius:6px; vertical-align:middle; margin-top:5px; display:inline-block;">👥 ${app.multiplayer}</span>` : '';
+
+        const tooltipHTML = `[${app.curriculumSchool || '전연령'} - ${app.curriculumSubject || '창의수학'} - ${app.curriculumUnit || '일반'}]<br><span style="font-weight:400; font-size:0.8rem; margin-top:4px; display:inline-block; color:#475569;">${app.description || ''}</span>`;
+
+        return `
+          <button class="app-card" data-launch-type="${app.launchType}" data-launch-id="${app.launchId}">
+            <div class="card-icon">${app.icon || '📌'}</div>
+            <h3 class="card-title">${app.title}${multiBadge}</h3>
+            <p class="card-desc">${tooltipHTML}</p>
+            ${badgeHtml}
+          </button>
+        `;
+      }).join('');
+    };
+
+    const conceptApps = apps.filter(app => app.appType === 'concept' || app.appType === 'math');
+    const gameApps = apps.filter(app => app.appType === 'game');
+    const appApps = apps.filter(app => app.appType === 'application' || app.appType === 'life');
+
+    gridConcept.innerHTML = buildCardsHtml(conceptApps);
+    gridGame.innerHTML = buildCardsHtml(gameApps);
+    gridApp.innerHTML = buildCardsHtml(appApps);
+
+    const cntConcept = document.getElementById('cnt-concept');
+    const cntGame = document.getElementById('cnt-game');
+    const cntApp = document.getElementById('cnt-application');
+
+    if (cntConcept) cntConcept.textContent = conceptApps.length;
+    if (cntGame) cntGame.textContent = gameApps.length;
+    if (cntApp) cntApp.textContent = appApps.length;
+
+    const secConcept = document.getElementById('sec-concept');
+    const secGame = document.getElementById('sec-game');
+    const secApp = document.getElementById('sec-application');
+
+    if (secConcept) secConcept.style.display = (currentState.search && !conceptApps.length) ? 'none' : 'block';
+    if (secGame) secGame.style.display = (currentState.search && !gameApps.length) ? 'none' : 'block';
+    if (secApp) secApp.style.display = (currentState.search && !appApps.length) ? 'none' : 'block';
+
+    const bindClickToCards = (container) => {
+      if (!container) return;
+      const cards = container.querySelectorAll('.app-card');
+      cards.forEach(card => {
+        card.addEventListener('click', () => {
+          const lType = card.getAttribute('data-launch-type');
+          const lId = card.getAttribute('data-launch-id');
+
+          if (lType === 'mathLabGame' && window.MathLabGames) {
+            window.MathLabGames.mount(lId);
+          } else if (lType === 'openApp' && typeof window.openApp === 'function') {
+            window.openApp(lId);
+          } else if (lType === 'concept' && window.MathLabConcepts) {
+            window.MathLabConcepts.mount(lId);
+          } else if (lType === 'application' && window.MathLabApplications) {
+            window.MathLabApplications.mount(lId);
+          } else if (lType === 'function' && typeof window[lId] === 'function') {
+            window[lId]();
+          } else {
+            if (window.MathLabGames && typeof window.MathLabGames.mount === 'function') {
+              try { window.MathLabGames.mount(lId); return; } catch(e){}
+            }
+            alert('해당 앱을 실행할 수 없습니다.');
+          }
+        });
       });
-    });
+    };
+
+    bindClickToCards(gridConcept);
+    bindClickToCards(gridGame);
+    bindClickToCards(gridApp);
   }
 
   if (logo) {

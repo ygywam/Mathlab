@@ -23,7 +23,7 @@ function resolveInclude(content, currentFilePath, visitedStack = new Set(), dept
     // Self-include or circular include defense
     if (visitedStack.has(targetPath)) {
       console.log(`[SKIP] Preventing circular include of ${targetFilename} inside ${path.basename(currentFilePath)}`);
-      return `<!-- Skipped self/circular include: ${targetFilename} -->`;
+      return '';
     }
 
     if (fs.existsSync(targetPath)) {
@@ -37,7 +37,7 @@ function resolveInclude(content, currentFilePath, visitedStack = new Set(), dept
     } else {
       console.warn(`[WARN] Included file not found: ${targetFilename}`);
       missingFiles.push(targetFilename);
-      return `<!-- Missing include: ${targetFilename} -->`;
+      return '';
     }
   });
 }
@@ -55,7 +55,10 @@ function build() {
 
   const entryContent = fs.readFileSync(ENTRY_FILE, 'utf8');
   const initialStack = new Set([ENTRY_FILE]);
-  const bundledHtml = resolveInclude(entryContent, ENTRY_FILE, initialStack);
+  let bundledHtml = resolveInclude(entryContent, ENTRY_FILE, initialStack);
+
+  // Strip all HTML comment blocks (<!-- ... -->) to eliminate stray comment leaks
+  bundledHtml = bundledHtml.replace(/<!--[\s\S]*?-->/g, '');
 
   fs.writeFileSync(OUTPUT_FILE, bundledHtml, 'utf8');
 

@@ -2,11 +2,11 @@
 
   <main id="mathlab-view" class="mathlab-view"></main>
 
-  <!-- 전역 모달 레이어 (새로운 앱 실행 구조) -->
-  <div id="mathlab-global-modal-overlay" class="hidden" style="position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(15, 23, 42, 0.4); z-index:999999; backdrop-filter:blur(5px); overflow-y:auto; overflow-x:hidden; display:flex; align-items:flex-start; justify-content:center; padding:40px 20px;">
+  <!-- 전역 모달 레이어 (새로운 앱 실행 구조: 바깥 영역 클릭 시 메인 대시보드로 복귀) -->
+  <div id="mathlab-global-modal-overlay" class="hidden" onclick="if(event.target === this){ if(typeof goHome === 'function') goHome(); else if(window.MathLabGames && typeof window.MathLabGames.destroyCurrent === 'function') window.MathLabGames.destroyCurrent(); }" style="position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(15, 23, 42, 0.45); z-index:999999; backdrop-filter:blur(5px); overflow-y:auto; overflow-x:hidden; display:flex; align-items:flex-start; justify-content:center; padding:40px 20px; box-sizing:border-box;">
     
     <!-- 실제 모달 창 -->
-    <div id="mathlab-global-modal-window" style="position:relative; width:100%; max-width:1200px; background:#ffffff; border-radius:24px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25); min-height:80vh; display:flex; flex-direction:column; overflow:hidden;">
+    <div id="mathlab-global-modal-window" onclick="event.stopPropagation();" style="position:relative; width:100%; max-width:1200px; background:#ffffff; border-radius:24px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25); min-height:80vh; display:flex; flex-direction:column; overflow:hidden;">
        
        <!-- 모달 헤더 (닫기 버튼 포함) -->
        <div style="display:flex; justify-content:flex-end; padding:15px 20px; background:#ffffff; border-bottom:1px solid #f1f5f9; position:sticky; top:0; z-index:100;">

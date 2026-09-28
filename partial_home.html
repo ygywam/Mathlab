@@ -67,31 +67,28 @@
       </div>
     </div>
     
-    <!-- CATEGORY TABS -->
-    <div class="category-filter" id="mathlab-category-filters" style="margin-bottom:20px; flex-wrap:wrap; display:flex; gap:10px;">
-      <button class="cat-btn active" data-cat="all">전체 보기</button>
-      <button class="cat-btn" data-cat="concept">📊 교과 수학 개념</button>
-      <button class="cat-btn" data-cat="game">🎮 수학 게임</button>
-      <button class="cat-btn" data-cat="application">💰 실생활 응용</button>
+    <!-- QUICK SECTION JUMP BUTTONS -->
+    <div id="section-quick-nav" style="display:flex; gap:12px; margin-bottom:28px; flex-wrap:wrap; justify-content:center;">
+      <button type="button" onclick="document.getElementById('sec-concept').scrollIntoView({behavior:'smooth'})" style="background:#f0f9ff; border:2px solid #0284c7; color:#0369a1; padding:10px 18px; border-radius:12px; font-weight:800; font-size:0.95rem; cursor:pointer; display:flex; align-items:center; gap:6px; box-shadow:0 2px 6px rgba(0,0,0,0.04); transition:all 0.15s;" onhover="this.style.transform='translateY(-2px)'">
+        📊 교과 수학 개념 바로가기
+      </button>
+      <button type="button" onclick="document.getElementById('sec-game').scrollIntoView({behavior:'smooth'})" style="background:#fdf2f8; border:2px solid #db2777; color:#be185d; padding:10px 18px; border-radius:12px; font-weight:800; font-size:0.95rem; cursor:pointer; display:flex; align-items:center; gap:6px; box-shadow:0 2px 6px rgba(0,0,0,0.04); transition:all 0.15s;">
+        🎮 수학 게임 바로가기
+      </button>
+      <button type="button" onclick="document.getElementById('sec-application').scrollIntoView({behavior:'smooth'})" style="background:#f0fdf4; border:2px solid #16a34a; color:#15803d; padding:10px 18px; border-radius:12px; font-weight:800; font-size:0.95rem; cursor:pointer; display:flex; align-items:center; gap:6px; box-shadow:0 2px 6px rgba(0,0,0,0.04); transition:all 0.15s;">
+        💰 실생활 응용 바로가기
+      </button>
     </div>
 
     <style>
       .search-pill-btn:hover { background: #334155 !important; transform: translateY(-2px); }
       
-      /* List View (Table-like List) */
-      .grid-container.view-mode-list { display: flex !important; flex-direction: column; gap: 8px; }
-      .grid-container.view-mode-list .app-card { width: 100%; display: grid; grid-template-columns: 50px 200px 1fr auto; align-items: center; text-align: left; padding: 10px 20px; height: auto; justify-content: start; box-sizing:border-box; }
-      .grid-container.view-mode-list .app-card .card-icon { margin: 0; font-size: 2rem; }
-      .grid-container.view-mode-list .app-card .card-title { margin: 0; font-size: 1.15rem; padding-left:15px; }
-      .grid-container.view-mode-list .app-card .card-desc { margin: 0; font-size: 0.95rem; color:#7f8c8d; }
-      .grid-container.view-mode-list .app-card .card-badges { justify-self: end; }
-      
-      /* Compact View with Tooltip */
+      /* Grid Container Styles */
       .grid-container.view-mode-compact { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)) !important; gap: 10px; justify-content:center; }
-      .grid-container.view-mode-compact .app-card { padding: 12px 6px; height: auto; justify-content: center; position:relative; transition: all 0.2s ease; }
-      .grid-container.view-mode-compact .app-card:hover { transform: translateY(-4px); box-shadow: 0 0 15px rgba(52, 152, 219, 0.5), 0 10px 20px rgba(0,0,0,0.1); border-color: #3498db; z-index: 10; }
+      .grid-container.view-mode-compact .app-card { padding: 12px 6px; height: auto; justify-content: center; position:relative; transition: all 0.2s ease; background:#fff; border:1px solid #e2e8f0; border-radius:14px; cursor:pointer; }
+      .grid-container.view-mode-compact .app-card:hover { transform: translateY(-4px); box-shadow: 0 0 15px rgba(52, 152, 219, 0.4), 0 10px 20px rgba(0,0,0,0.08); border-color: #3498db; z-index: 10; }
       .grid-container.view-mode-compact .app-card .card-icon { font-size: 2.2rem; margin-bottom: 8px; }
-      .grid-container.view-mode-compact .app-card .card-title { font-size: 0.95rem; margin: 0; font-weight:700; }
+      .grid-container.view-mode-compact .app-card .card-title { font-size: 0.95rem; margin: 0; font-weight:700; color:#0f172a; }
       .grid-container.view-mode-compact .app-card .card-desc { 
         display: none; position: absolute; bottom: 110%; left: 50%; transform: translateX(-50%); 
         width: max-content; max-width: 280px; background: rgba(255, 255, 255, 0.98); color: #0f172a; 
@@ -102,8 +99,38 @@
       .grid-container.view-mode-compact .app-card .card-badges { display: none; }
     </style>
 
-    <!-- APP CARDS GRID -->
-    <div id="home-app-cards" class="grid-container view-mode-compact"></div>
+    <!-- SECTION 1: 교과 수학 개념 -->
+    <section id="sec-concept" style="margin-bottom:40px; background:#ffffff; border:1px solid #e2e8f0; border-radius:20px; padding:24px 20px; box-shadow:0 4px 15px rgba(0,0,0,0.03);">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; padding-bottom:12px; border-bottom:2px solid #e0f2fe; flex-wrap:wrap; gap:8px;">
+        <h2 style="font-size:1.35rem; font-weight:900; color:#0369a1; margin:0; display:flex; align-items:center; gap:8px;">
+          📊 교과 수학 개념 <span id="cnt-concept" style="font-size:0.85rem; background:#0284c7; color:#fff; padding:2px 10px; border-radius:999px; font-weight:800;">0</span>
+        </h2>
+        <span style="font-size:0.85rem; color:#64748b; font-weight:600;">직접 조작 기반 교과 원리 및 동적 시각화 탐구</span>
+      </div>
+      <div id="grid-concept" class="grid-container view-mode-compact"></div>
+    </section>
+
+    <!-- SECTION 2: 수학 게임 -->
+    <section id="sec-game" style="margin-bottom:40px; background:#ffffff; border:1px solid #e2e8f0; border-radius:20px; padding:24px 20px; box-shadow:0 4px 15px rgba(0,0,0,0.03);">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; padding-bottom:12px; border-bottom:2px solid #fce7f3; flex-wrap:wrap; gap:8px;">
+        <h2 style="font-size:1.35rem; font-weight:900; color:#be185d; margin:0; display:flex; align-items:center; gap:8px;">
+          🎮 수학 게임 <span id="cnt-game" style="font-size:0.85rem; background:#db2777; color:#fff; padding:2px 10px; border-radius:999px; font-weight:800;">0</span>
+        </h2>
+        <span style="font-size:0.85rem; color:#64748b; font-weight:600;">실시간 명예의 전당 랭킹 경쟁 및 감각 훈련</span>
+      </div>
+      <div id="grid-game" class="grid-container view-mode-compact"></div>
+    </section>
+
+    <!-- SECTION 3: 실생활 응용 -->
+    <section id="sec-application" style="margin-bottom:40px; background:#ffffff; border:1px solid #e2e8f0; border-radius:20px; padding:24px 20px; box-shadow:0 4px 15px rgba(0,0,0,0.03);">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; padding-bottom:12px; border-bottom:2px solid #dcfce7; flex-wrap:wrap; gap:8px;">
+        <h2 style="font-size:1.35rem; font-weight:900; color:#15803d; margin:0; display:flex; align-items:center; gap:8px;">
+          💰 실생활 응용 <span id="cnt-application" style="font-size:0.85rem; background:#16a34a; color:#fff; padding:2px 10px; border-radius:999px; font-weight:800;">0</span>
+        </h2>
+        <span style="font-size:0.85rem; color:#64748b; font-weight:600;">금융, 사회, 게임이론 속 실생활 수학 시뮬레이션</span>
+      </div>
+      <div id="grid-application" class="grid-container view-mode-compact"></div>
+    </section>
 
   </section>
 </template>
