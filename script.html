@@ -646,36 +646,24 @@ function renderLeaderboard(rows, boardId) {
 }
 
 function submitRanking(gameName, score, isDesc, inputId, boardId) {
-    const sheetId = getLeaderboardSheetId();
-    const meta = getLeaderboardMeta();
-
-    // 🌟 [추가된 핵심 로직] 학교급, 학교이름, 학년반 중 하나라도 비어있다면 팝업 띄우고 중단!
-    if (!meta.schoolLevel || !meta.schoolName || !meta.className) {
-      showToast("🏆 명예의 전당 등록을 위해 학교 정보를 먼저 입력해주세요!", true);
-      showRequiredSchoolModal(gameName, score, isDesc, inputId, boardId);
-      return;
-    }
-
     let nickname = "";
     if (typeof inputId === 'object' && inputId.value) { nickname = inputId.value.trim(); } 
     else if (typeof inputId === 'string' && document.getElementById(inputId)) { nickname = document.getElementById(inputId).value.trim(); } 
     else if (typeof inputId === 'string') { nickname = inputId.trim(); }
 
-    const leaderboardMode = localStorage.getItem('math_lab_leaderboard_storage_mode') || 'default';
-    if(leaderboardMode === 'personal' && !sheetId) {
-      showToast("개인/학급 랭킹을 사용하려면 설정에서 Google Spreadsheet ID를 입력해 주세요.", true);
-      return;
-    }
     if(!nickname) { showToast("닉네임을 입력해 주세요!", true); return; }
-    showToast("순위를 시트에 기록 중입니다...");
-    google.script.run
-      .withSuccessHandler(res => {
-        if(res.success) { 
-          showToast(`🎉 등록 완료! 전체 ${res.total}명 중 [ ${res.rank}등 ] 입니다!`); 
-          if(typeof inputId === 'string' && document.getElementById(inputId)) document.getElementById(inputId).value = ''; 
-          loadGameLeaderboard(gameName, isDesc, boardId); 
-        } else { showToast("기록 실패: " + res.error, true); }
-      }).saveGameScore(sheetId, gameName, nickname, score, isDesc, meta);
+    showToast("점수를 기록 중입니다...");
+
+    if (window.MathLabFirebase && typeof window.MathLabFirebase.submitScore === 'function') {
+      window.MathLabFirebase.submitScore(gameName, nickname, score);
+    }
+    
+    showToast(`🎉 명예의 전당 등록 완료! (${nickname}: ${score}점)`);
+    if(typeof inputId === 'string' && document.getElementById(inputId)) document.getElementById(inputId).value = ''; 
+    
+    if (typeof loadGameLeaderboard === 'function') {
+      loadGameLeaderboard(gameName, isDesc, boardId); 
+    }
 }
 
 // 🌟 학교 정보 필수 입력 강제 모달 팝업
