@@ -108,4 +108,152 @@ window.MathLabCleanup = {
     frameIds.forEach((frameId) => cancelAnimationFrame(frameId));
   }
 };
+
+/* =========================================================
+   🔥 Firebase Realtime DB Global Platform Engine
+   - 100% 독립된 글로벌 실시간 방문자 카운터 (오늘/전체)
+   - 100% 독립된 글로벌 명예의 전당 (구글 시트 0% 의존)
+   ========================================================= */
+window.MathLabFirebase = (function() {
+  const firebaseConfig = {
+    apiKey: "AIzaSyAt1jZhv7DlxRsKiMPBX0YNAl2iN7P8qFY",
+    authDomain: "recordtuner.firebaseapp.com",
+    databaseURL: "https://recordtuner-default-rtdb.firebaseio.com",
+    projectId: "recordtuner",
+    storageBucket: "recordtuner.firebasestorage.app",
+    messagingSenderId: "918774534064",
+    appId: "1:918774534064:web:612f4b8d79be3762931075",
+    measurementId: "G-8KMS0DXTWJ"
+  };
+
+  let db = null;
+
+  function init() {
+    if (typeof firebase !== 'undefined' && !firebase.apps.length) {
+      try {
+        firebase.initializeApp(firebaseConfig);
+        db = firebase.database();
+        initVisitorCounter();
+      } catch (e) {
+        console.warn('[MathLabFirebase] Init error:', e);
+      }
+    }
+  }
+
+  function getDb() {
+    if (!db && typeof firebase !== 'undefined' && firebase.apps.length) {
+      db = firebase.database();
+    }
+    return db;
+  }
+
+  function initVisitorCounter() {
+    const _db = getDb();
+    if (!_db) return;
+
+    const today = new Date().toISOString().slice(0, 10);
+    const hasVisited = sessionStorage.getItem('ml_v3_visited');
+
+    if (!hasVisited) {
+      sessionStorage.setItem('ml_v3_visited', 'true');
+      _db.ref('visitors/total').transaction(val => (val || 0) + 1);
+      _db.ref('visitors/daily/' + today).transaction(val => (val || 0) + 1);
+    }
+
+    _db.ref('visitors/total').on('value', snap => {
+      const val = snap.val() || 1;
+      document.querySelectorAll('#visit-total-modal, #visit-total-main').forEach(el => el && (el.innerText = val));
+    });
+
+    _db.ref('visitors/daily/' + today).on('value', snap => {
+      const val = snap.val() || 1;
+      document.querySelectorAll('#visit-today-modal, #visit-today-main').forEach(el => el && (el.innerText = val));
+    });
+  }
+
+  function escapeHTML(str) {
+    return String(str || '').replace(/[&<>"']/g, match => {
+      const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+      return map[match];
+    });
+  }
+
+  function submitScore(appId, nickname, score) {
+    const _db = getDb();
+    const safeNick = (nickname || '익명탐험가').trim().slice(0, 15);
+    const numScore = Number(score) || 0;
+    const cleanAppId = (appId || 'general').replace(/[^a-zA-Z0-9_-]/g, '');
+
+    // 로컬 스토리지 폴백 보존
+    try {
+      let localList = JSON.parse(localStorage.getItem('mathlab_lb_' + cleanAppId) || '[]');
+      localList.push({ nickname: safeNick, score: numScore, date: new Date().toISOString() });
+      localList.sort((a, b) => b.score - a.score);
+      localStorage.setItem('mathlab_lb_' + cleanAppId, JSON.stringify(localList.slice(0, 50)));
+    } catch(e) {}
+
+    if (_db) {
+      _db.ref('leaderboards/' + cleanAppId).push({
+        nickname: safeNick,
+        score: numScore,
+        date: new Date().toISOString(),
+        timestamp: firebase.database.ServerValue.TIMESTAMP
+      });
+    }
+  }
+
+  function loadLeaderboard(appId, containerId) {
+    const el = typeof containerId === 'string' ? document.getElementById(containerId) : containerId;
+    if (!el) return;
+
+    const cleanAppId = (appId || 'general').replace(/[^a-zA-Z0-9_-]/g, '');
+    const _db = getDb();
+
+    if (_db) {
+      _db.ref('leaderboards/' + cleanAppId).orderByChild('score').limitToLast(10).on('value', snap => {
+        const data = snap.val();
+        let list = [];
+        if (data) {
+          Object.values(data).forEach(item => list.push(item));
+          list.sort((a, b) => b.score - a.score);
+        }
+        renderBoard(el, list);
+      });
+    } else {
+      let list = JSON.parse(localStorage.getItem('mathlab_lb_' + cleanAppId) || '[]');
+      renderBoard(el, list.slice(0, 10));
+    }
+  }
+
+  function renderBoard(el, list) {
+    if (!list || list.length === 0) {
+      el.innerHTML = '<p style="text-align:center; color:#94a3b8; padding:12px 0; font-size:0.9rem;">아직 등록된 기록이 없습니다. 첫 번째 도전을 완료해보세요!</p>';
+      return;
+    }
+    el.innerHTML = list.slice(0, 5).map((item, idx) => `
+      <div style="display:flex; justify-content:space-between; align-items:center; background:#ffffff; padding:10px 14px; border-radius:10px; border:1px solid #e2e8f0; margin-bottom:6px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+        <span style="font-weight:800; color:${idx === 0 ? '#d97706' : '#475569'};">${idx === 0 ? '👑 1위' : `${idx + 1}위`} - ${escapeHTML(item.nickname)}</span>
+        <span style="color:#2563eb; font-weight:900;">${item.score}점</span>
+      </div>
+    `).join('');
+  }
+
+  return { init, submitScore, loadLeaderboard };
+})();
+
+// 글로벌 호환용 대치 함수
+window.saveGameScore = function(sheetId, gameName, nickname, score) {
+  window.MathLabFirebase.submitScore(gameName, nickname, score);
+};
+
+window.loadGameLeaderboard = function(gameName, isHigherBetter, containerId) {
+  window.MathLabFirebase.loadLeaderboard(gameName, containerId);
+};
+
+// 즉시 실행 및 스크립트 로드 타이밍 대응
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => window.MathLabFirebase.init());
+} else {
+  window.MathLabFirebase.init();
+}
 </script>

@@ -9,7 +9,7 @@
 <meta property="og:title" content="수학 실험실">
 <meta property="og:description" content="눈으로 보고 직접 조작하며 깨닫는 수학 실험실">
 <meta property="og:type" content="website">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' https://fonts.googleapis.com https://fonts.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://script.google.com https://script.googleusercontent.com https://generativelanguage.googleapis.com; frame-ancestors 'none'; object-src 'none';">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' https://fonts.googleapis.com https://fonts.gstatic.com https://www.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://script.google.com https://script.googleusercontent.com https://generativelanguage.googleapis.com https://*.firebaseio.com https://*.firebaseapp.com; frame-ancestors 'none'; object-src 'none';">
 <!-- 기존 앱 디자인용 폰트 -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
@@ -24,6 +24,10 @@
 
 <!-- html2canvas: 카드뉴스/이미지 저장 기능용 -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<!-- Firebase Realtime DB SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
   <style>
   /* 상단 요소들을 감싸는 부모 컨테이너용 클래스 추가 */
@@ -21836,116 +21840,41 @@ const AdminSettingsModule = (function() {
       <div class="app-settings-container">
         <div class="app-settings-header">
           <h1>⚙️ 환경 설정</h1>
-          <p>AI 과외 기능과 랭킹 시스템 구동에 필요한 기본 설정을 관리합니다.</p>
+          <p>AI 튜터(과외) 기능 이용을 위한 Gemini API Key를 관리합니다.</p>
         </div>
 
         <div class="settings-section">
-          <h2>🤖 AI 및 데이터베이스 연결</h2>
+          <h2>🤖 AI 튜터 연결 설정</h2>
           <div class="settings-field">
-            <label for="set-api-key">1. Gemini API Key (AI 튜터 필수)</label>
-            <input type="password" id="set-api-key" class="settings-input" placeholder="AI 키를 입력하세요">
-          </div>
-          <div class="settings-field">
-            <label for="set-sheet-id">2. Google Spreadsheet ID (기록 저장소)</label>
-            <input type="text" id="set-sheet-id" class="settings-input" placeholder="구글 시트 ID를 입력하세요">
+            <label for="set-api-key">Gemini API Key (Google AI Studio)</label>
+            <input type="password" id="set-api-key" class="settings-input" placeholder="AI-Key를 입력하세요 (예: AIzaSy...)">
+            <p style="font-size:0.85rem; color:#64748b; margin-top:8px; line-height:1.5;">
+              🔒 <strong>보안 안내:</strong> 입력하신 API Key는 외부 서버로 전송되지 않으며, 사용자 본인의 브라우저(localStorage)에 안전하게 암호화되어 보관됩니다.
+            </p>
           </div>
         </div>
 
-        <div class="settings-section">
-          <h2>🏆 명예의 전당 저장 위치</h2>
-          <div class="settings-radio-group">
-            <label class="settings-radio-label">
-              <input type="radio" name="set-lb-mode" value="default" id="set-lb-default">
-              <div class="settings-radio-text">
-                <strong>전체 랭킹 사용하기</strong>
-                <span>기본 연결 시트에 저장되어 전체 사용자와 경쟁합니다.</span>
-              </div>
-            </label>
-            <label class="settings-radio-label">
-              <input type="radio" name="set-lb-mode" value="personal" id="set-lb-personal">
-              <div class="settings-radio-text">
-                <strong>개인/학급 랭킹 사용하기</strong>
-                <span>위 2번에 입력한 개인 Google Spreadsheet 안에만 점수가 저장됩니다.</span>
-              </div>
-            </label>
-          </div>
-        </div>
-
-        <div class="settings-section">
-          <h2>🏫 학교 정보 기본값</h2>
-          <div class="settings-field">
-            <label for="set-school-level">3. 학교급</label>
-            <select id="set-school-level" class="settings-input">
-              <option value="">학교급을 선택하세요</option>
-              <option value="elementary">초등학교</option>
-              <option value="middle">중학교</option>
-              <option value="high">고등학교</option>
-            </select>
-          </div>
-          <div class="settings-field">
-            <label for="set-school-name">4. 학교명</label>
-            <input type="text" id="set-school-name" class="settings-input" placeholder="예: 한국초, 대한중, 미래고">
-          </div>
-          <div class="settings-field">
-            <label for="set-class-name">5. 학년/반 또는 그룹명</label>
-            <input type="text" id="set-class-name" class="settings-input" placeholder="예: 5-2, 2학년 3반, 수학동아리">
-          </div>
-        </div>
-
-        <button type="button" class="settings-btn-save" id="btn-save-settings">💾 환경설정 저장하기</button>
-        <button type="button" class="settings-btn-secondary" onclick="if(typeof generateDedicatedLink === 'function') generateDedicatedLink(); else alert('개발자 도구에서 확인해주세요.');">🔗 학생 배포용 전용 링크 복사</button>
+        <button type="button" class="settings-btn-save" id="btn-save-settings">💾 설정 저장하기</button>
       </div>
     `;
   }
 
   function loadValues() {
-    const apiKey = localStorage.getItem('math_lab_api_key') || '';
-    const sheetId = localStorage.getItem('math_lab_sheet_id') || '';
-    const schoolLevel = localStorage.getItem('math_lab_school_level') || '';
-    const schoolName = localStorage.getItem('math_lab_school_name') || '';
-    const className = localStorage.getItem('math_lab_class_name') || '';
-    const lbMode = localStorage.getItem('math_lab_leaderboard_storage_mode') || 'default';
-
-    document.getElementById('set-api-key').value = apiKey;
-    document.getElementById('set-sheet-id').value = sheetId;
-    document.getElementById('set-school-level').value = schoolLevel;
-    document.getElementById('set-school-name').value = schoolName;
-    document.getElementById('set-class-name').value = className;
-
-    if (lbMode === 'personal') {
-      document.getElementById('set-lb-personal').checked = true;
-    } else {
-      document.getElementById('set-lb-default').checked = true;
-    }
+    const apiKey = localStorage.getItem('math_lab_api_key') || localStorage.getItem('gemini_api_key') || '';
+    const input = document.getElementById('set-api-key');
+    if (input) input.value = apiKey;
   }
 
   function saveValues() {
-    const apiKey = document.getElementById('set-api-key').value.trim();
-    const sheetId = document.getElementById('set-sheet-id').value.trim();
-    const schoolLevel = document.getElementById('set-school-level').value;
-    const schoolName = document.getElementById('set-school-name').value.trim();
-    const className = document.getElementById('set-class-name').value.trim();
-    const lbPersonal = document.getElementById('set-lb-personal').checked;
-    
-    const lbMode = lbPersonal ? 'personal' : 'default';
-
-    if (lbMode === 'personal' && !sheetId) {
-      if(typeof showToast === 'function') showToast("⚠️ 개인/학급 랭킹을 선택하려면 Google Spreadsheet ID가 필요합니다.", true);
-      return;
-    }
-
+    const apiKey = (document.getElementById('set-api-key')?.value || '').trim();
     localStorage.setItem('math_lab_api_key', apiKey);
-    localStorage.setItem('math_lab_sheet_id', sheetId);
-    localStorage.setItem('math_lab_school_level', schoolLevel);
-    localStorage.setItem('math_lab_school_name', schoolName);
-    localStorage.setItem('math_lab_class_name', className);
-    localStorage.setItem('math_lab_leaderboard_storage_mode', lbMode);
+    localStorage.setItem('gemini_api_key', apiKey);
 
     if (typeof showToast === 'function') {
-      if (!apiKey || !sheetId) {
-        showToast("🏫 학교 정보가 저장되었습니다. (AI 기능은 API Key 입력 시 활성화)");
+      if (!apiKey) {
+        showToast("ℹ️ API Key가 비어있습니다.");
       } else {
-        showToast("✨ 환경 설정이 성공적으로 저장되었습니다!");
+        showToast("✨ Gemini API Key가 성공적으로 저장되었습니다!");
       }
     }
 
@@ -34647,7 +34576,6 @@ window.BoxplotMismatch=API;window.initBoxplotMismatchGame=function(){reg();if(wi
   - id: tangent-shooter / 아이콘: 📐 (기존 🏹는 극한값 타겟 슈팅과 중복이므로 교체)
   - 순수 (style) + (script) 스니펫 구조 (DOCTYPE/html/head/body 래퍼 없음)
   - 라이트(화이트) 테마 · mathlab_gen3_standard 스킬 준수
-  - index.html에는 <!-- Skipped self/circular include: games_tangent_shooter.html --> 1줄만 추가
 -->
 <style>
   .game-tangent-shooter { max-width: 1080px; margin: 0 auto; padding: 18px 14px 30px; color: #0f172a; font-family: 'Pretendard', 'Noto Sans KR', sans-serif; background: #f8fafc; border-radius: 18px; }
@@ -35512,7 +35440,6 @@ window.BoxplotMismatch=API;window.initBoxplotMismatchGame=function(){reg();if(wi
   - 유형: 교과개념 앱 (게임 아님) — 명예의 전당 없음
   - 리만 합 신 구비교와 구분구적법 원리 자유 탐구 도구
   - 라이트(화이트) 테마 · mathlab_gen3_standard 스킬 준수
-  - index.html에는 <!-- Skipped self/circular include: games_integral_tetris.html --> 1줄만 추가
 -->
 <style>
   .app-integral-tetris { max-width: 1100px; margin: 0 auto; padding: 18px 14px 36px; color: #0f172a; font-family: 'Pretendard', 'Noto Sans KR', sans-serif; background: #f8fafc; border-radius: 18px; }
@@ -36046,7 +35973,6 @@ window.BoxplotMismatch=API;window.initBoxplotMismatchGame=function(){reg();if(wi
   - 유형: 실생활 응용 (data-category="life") — 명예의 전당 없음, 점수 없음
   - 조합·확률·기댓값·큰 수의 법칙 자유 탐구 도구
   - 라이트(화이트) 테마 · Gen-3 표준
-  - index.html에는 <!-- Skipped self/circular include: games_lotto_simulator.html --> 1줄만 추가
 -->
 <style>
   .app-lotto-simulator { max-width: 1120px; margin: 0 auto; padding: 18px 14px 36px; color: #0f172a; font-family: 'Pretendard', 'Noto Sans KR', sans-serif; background: #f8fafc; border-radius: 18px; }
@@ -36476,8 +36402,6 @@ window.BoxplotMismatch=API;window.initBoxplotMismatchGame=function(){reg();if(wi
   - id: lotto-network / 아이콘: 🔗 / 유형: 확률·통계 탐구 도구 (점수·명예의 전당 없음)
   - 라이트(화이트) 테마 / 명확한 실행 버튼 / 최다 출현 TOP 10 패널 통합
   - Force-directed 네트워크 + 번호 클릭 관계망 강조
-  - index.html에는 <!-- Skipped self/circular include: games_lotto_network.html --> 1줄만 추가
-  - js_app.html 수정 없음: launchMathLabGame('lotto-network') 범용 실행
 -->
 <style>
 .game-lotto-network, .game-lotto-network * { box-sizing: border-box; }
@@ -39971,6 +39895,154 @@ window.MathLabCleanup = {
     frameIds.forEach((frameId) => cancelAnimationFrame(frameId));
   }
 };
+
+/* =========================================================
+   🔥 Firebase Realtime DB Global Platform Engine
+   - 100% 독립된 글로벌 실시간 방문자 카운터 (오늘/전체)
+   - 100% 독립된 글로벌 명예의 전당 (구글 시트 0% 의존)
+   ========================================================= */
+window.MathLabFirebase = (function() {
+  const firebaseConfig = {
+    apiKey: "AIzaSyAt1jZhv7DlxRsKiMPBX0YNAl2iN7P8qFY",
+    authDomain: "recordtuner.firebaseapp.com",
+    databaseURL: "https://recordtuner-default-rtdb.firebaseio.com",
+    projectId: "recordtuner",
+    storageBucket: "recordtuner.firebasestorage.app",
+    messagingSenderId: "918774534064",
+    appId: "1:918774534064:web:612f4b8d79be3762931075",
+    measurementId: "G-8KMS0DXTWJ"
+  };
+
+  let db = null;
+
+  function init() {
+    if (typeof firebase !== 'undefined' && !firebase.apps.length) {
+      try {
+        firebase.initializeApp(firebaseConfig);
+        db = firebase.database();
+        initVisitorCounter();
+      } catch (e) {
+        console.warn('[MathLabFirebase] Init error:', e);
+      }
+    }
+  }
+
+  function getDb() {
+    if (!db && typeof firebase !== 'undefined' && firebase.apps.length) {
+      db = firebase.database();
+    }
+    return db;
+  }
+
+  function initVisitorCounter() {
+    const _db = getDb();
+    if (!_db) return;
+
+    const today = new Date().toISOString().slice(0, 10);
+    const hasVisited = sessionStorage.getItem('ml_v3_visited');
+
+    if (!hasVisited) {
+      sessionStorage.setItem('ml_v3_visited', 'true');
+      _db.ref('visitors/total').transaction(val => (val || 0) + 1);
+      _db.ref('visitors/daily/' + today).transaction(val => (val || 0) + 1);
+    }
+
+    _db.ref('visitors/total').on('value', snap => {
+      const val = snap.val() || 1;
+      document.querySelectorAll('#visit-total-modal, #visit-total-main').forEach(el => el && (el.innerText = val));
+    });
+
+    _db.ref('visitors/daily/' + today).on('value', snap => {
+      const val = snap.val() || 1;
+      document.querySelectorAll('#visit-today-modal, #visit-today-main').forEach(el => el && (el.innerText = val));
+    });
+  }
+
+  function escapeHTML(str) {
+    return String(str || '').replace(/[&<>"']/g, match => {
+      const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+      return map[match];
+    });
+  }
+
+  function submitScore(appId, nickname, score) {
+    const _db = getDb();
+    const safeNick = (nickname || '익명탐험가').trim().slice(0, 15);
+    const numScore = Number(score) || 0;
+    const cleanAppId = (appId || 'general').replace(/[^a-zA-Z0-9_-]/g, '');
+
+    // 로컬 스토리지 폴백 보존
+    try {
+      let localList = JSON.parse(localStorage.getItem('mathlab_lb_' + cleanAppId) || '[]');
+      localList.push({ nickname: safeNick, score: numScore, date: new Date().toISOString() });
+      localList.sort((a, b) => b.score - a.score);
+      localStorage.setItem('mathlab_lb_' + cleanAppId, JSON.stringify(localList.slice(0, 50)));
+    } catch(e) {}
+
+    if (_db) {
+      _db.ref('leaderboards/' + cleanAppId).push({
+        nickname: safeNick,
+        score: numScore,
+        date: new Date().toISOString(),
+        timestamp: firebase.database.ServerValue.TIMESTAMP
+      });
+    }
+  }
+
+  function loadLeaderboard(appId, containerId) {
+    const el = typeof containerId === 'string' ? document.getElementById(containerId) : containerId;
+    if (!el) return;
+
+    const cleanAppId = (appId || 'general').replace(/[^a-zA-Z0-9_-]/g, '');
+    const _db = getDb();
+
+    if (_db) {
+      _db.ref('leaderboards/' + cleanAppId).orderByChild('score').limitToLast(10).on('value', snap => {
+        const data = snap.val();
+        let list = [];
+        if (data) {
+          Object.values(data).forEach(item => list.push(item));
+          list.sort((a, b) => b.score - a.score);
+        }
+        renderBoard(el, list);
+      });
+    } else {
+      let list = JSON.parse(localStorage.getItem('mathlab_lb_' + cleanAppId) || '[]');
+      renderBoard(el, list.slice(0, 10));
+    }
+  }
+
+  function renderBoard(el, list) {
+    if (!list || list.length === 0) {
+      el.innerHTML = '<p style="text-align:center; color:#94a3b8; padding:12px 0; font-size:0.9rem;">아직 등록된 기록이 없습니다. 첫 번째 도전을 완료해보세요!</p>';
+      return;
+    }
+    el.innerHTML = list.slice(0, 5).map((item, idx) => `
+      <div style="display:flex; justify-content:space-between; align-items:center; background:#ffffff; padding:10px 14px; border-radius:10px; border:1px solid #e2e8f0; margin-bottom:6px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+        <span style="font-weight:800; color:${idx === 0 ? '#d97706' : '#475569'};">${idx === 0 ? '👑 1위' : `${idx + 1}위`} - ${escapeHTML(item.nickname)}</span>
+        <span style="color:#2563eb; font-weight:900;">${item.score}점</span>
+      </div>
+    `).join('');
+  }
+
+  return { init, submitScore, loadLeaderboard };
+})();
+
+// 글로벌 호환용 대치 함수
+window.saveGameScore = function(sheetId, gameName, nickname, score) {
+  window.MathLabFirebase.submitScore(gameName, nickname, score);
+};
+
+window.loadGameLeaderboard = function(gameName, isHigherBetter, containerId) {
+  window.MathLabFirebase.loadLeaderboard(gameName, containerId);
+};
+
+// 즉시 실행 및 스크립트 로드 타이밍 대응
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => window.MathLabFirebase.init());
+} else {
+  window.MathLabFirebase.init();
+}
 </script>
  
 <!-- 님 게임 (Nim Game: 21개 돌 턴제 & AI 대결) Gen-3 마이그레이션 및 XSS 방어 패치 -->

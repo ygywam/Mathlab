@@ -189,116 +189,41 @@ const AdminSettingsModule = (function() {
       <div class="app-settings-container">
         <div class="app-settings-header">
           <h1>⚙️ 환경 설정</h1>
-          <p>AI 과외 기능과 랭킹 시스템 구동에 필요한 기본 설정을 관리합니다.</p>
+          <p>AI 튜터(과외) 기능 이용을 위한 Gemini API Key를 관리합니다.</p>
         </div>
 
         <div class="settings-section">
-          <h2>🤖 AI 및 데이터베이스 연결</h2>
+          <h2>🤖 AI 튜터 연결 설정</h2>
           <div class="settings-field">
-            <label for="set-api-key">1. Gemini API Key (AI 튜터 필수)</label>
-            <input type="password" id="set-api-key" class="settings-input" placeholder="AI 키를 입력하세요">
-          </div>
-          <div class="settings-field">
-            <label for="set-sheet-id">2. Google Spreadsheet ID (기록 저장소)</label>
-            <input type="text" id="set-sheet-id" class="settings-input" placeholder="구글 시트 ID를 입력하세요">
+            <label for="set-api-key">Gemini API Key (Google AI Studio)</label>
+            <input type="password" id="set-api-key" class="settings-input" placeholder="AI-Key를 입력하세요 (예: AIzaSy...)">
+            <p style="font-size:0.85rem; color:#64748b; margin-top:8px; line-height:1.5;">
+              🔒 <strong>보안 안내:</strong> 입력하신 API Key는 외부 서버로 전송되지 않으며, 사용자 본인의 브라우저(localStorage)에 안전하게 암호화되어 보관됩니다.
+            </p>
           </div>
         </div>
 
-        <div class="settings-section">
-          <h2>🏆 명예의 전당 저장 위치</h2>
-          <div class="settings-radio-group">
-            <label class="settings-radio-label">
-              <input type="radio" name="set-lb-mode" value="default" id="set-lb-default">
-              <div class="settings-radio-text">
-                <strong>전체 랭킹 사용하기</strong>
-                <span>기본 연결 시트에 저장되어 전체 사용자와 경쟁합니다.</span>
-              </div>
-            </label>
-            <label class="settings-radio-label">
-              <input type="radio" name="set-lb-mode" value="personal" id="set-lb-personal">
-              <div class="settings-radio-text">
-                <strong>개인/학급 랭킹 사용하기</strong>
-                <span>위 2번에 입력한 개인 Google Spreadsheet 안에만 점수가 저장됩니다.</span>
-              </div>
-            </label>
-          </div>
-        </div>
-
-        <div class="settings-section">
-          <h2>🏫 학교 정보 기본값</h2>
-          <div class="settings-field">
-            <label for="set-school-level">3. 학교급</label>
-            <select id="set-school-level" class="settings-input">
-              <option value="">학교급을 선택하세요</option>
-              <option value="elementary">초등학교</option>
-              <option value="middle">중학교</option>
-              <option value="high">고등학교</option>
-            </select>
-          </div>
-          <div class="settings-field">
-            <label for="set-school-name">4. 학교명</label>
-            <input type="text" id="set-school-name" class="settings-input" placeholder="예: 한국초, 대한중, 미래고">
-          </div>
-          <div class="settings-field">
-            <label for="set-class-name">5. 학년/반 또는 그룹명</label>
-            <input type="text" id="set-class-name" class="settings-input" placeholder="예: 5-2, 2학년 3반, 수학동아리">
-          </div>
-        </div>
-
-        <button type="button" class="settings-btn-save" id="btn-save-settings">💾 환경설정 저장하기</button>
-        <button type="button" class="settings-btn-secondary" onclick="if(typeof generateDedicatedLink === 'function') generateDedicatedLink(); else alert('개발자 도구에서 확인해주세요.');">🔗 학생 배포용 전용 링크 복사</button>
+        <button type="button" class="settings-btn-save" id="btn-save-settings">💾 설정 저장하기</button>
       </div>
     `;
   }
 
   function loadValues() {
-    const apiKey = localStorage.getItem('math_lab_api_key') || '';
-    const sheetId = localStorage.getItem('math_lab_sheet_id') || '';
-    const schoolLevel = localStorage.getItem('math_lab_school_level') || '';
-    const schoolName = localStorage.getItem('math_lab_school_name') || '';
-    const className = localStorage.getItem('math_lab_class_name') || '';
-    const lbMode = localStorage.getItem('math_lab_leaderboard_storage_mode') || 'default';
-
-    document.getElementById('set-api-key').value = apiKey;
-    document.getElementById('set-sheet-id').value = sheetId;
-    document.getElementById('set-school-level').value = schoolLevel;
-    document.getElementById('set-school-name').value = schoolName;
-    document.getElementById('set-class-name').value = className;
-
-    if (lbMode === 'personal') {
-      document.getElementById('set-lb-personal').checked = true;
-    } else {
-      document.getElementById('set-lb-default').checked = true;
-    }
+    const apiKey = localStorage.getItem('math_lab_api_key') || localStorage.getItem('gemini_api_key') || '';
+    const input = document.getElementById('set-api-key');
+    if (input) input.value = apiKey;
   }
 
   function saveValues() {
-    const apiKey = document.getElementById('set-api-key').value.trim();
-    const sheetId = document.getElementById('set-sheet-id').value.trim();
-    const schoolLevel = document.getElementById('set-school-level').value;
-    const schoolName = document.getElementById('set-school-name').value.trim();
-    const className = document.getElementById('set-class-name').value.trim();
-    const lbPersonal = document.getElementById('set-lb-personal').checked;
-    
-    const lbMode = lbPersonal ? 'personal' : 'default';
-
-    if (lbMode === 'personal' && !sheetId) {
-      if(typeof showToast === 'function') showToast("⚠️ 개인/학급 랭킹을 선택하려면 Google Spreadsheet ID가 필요합니다.", true);
-      return;
-    }
-
+    const apiKey = (document.getElementById('set-api-key')?.value || '').trim();
     localStorage.setItem('math_lab_api_key', apiKey);
-    localStorage.setItem('math_lab_sheet_id', sheetId);
-    localStorage.setItem('math_lab_school_level', schoolLevel);
-    localStorage.setItem('math_lab_school_name', schoolName);
-    localStorage.setItem('math_lab_class_name', className);
-    localStorage.setItem('math_lab_leaderboard_storage_mode', lbMode);
+    localStorage.setItem('gemini_api_key', apiKey);
 
     if (typeof showToast === 'function') {
-      if (!apiKey || !sheetId) {
-        showToast("🏫 학교 정보가 저장되었습니다. (AI 기능은 API Key 입력 시 활성화)");
+      if (!apiKey) {
+        showToast("ℹ️ API Key가 비어있습니다.");
       } else {
-        showToast("✨ 환경 설정이 성공적으로 저장되었습니다!");
+        showToast("✨ Gemini API Key가 성공적으로 저장되었습니다!");
       }
     }
 
