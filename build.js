@@ -9,7 +9,7 @@ const OUTPUT_FILE = path.join(DIST_DIR, 'index.html');
 let includedCount = 0;
 const missingFiles = [];
 
-function resolveInclude(content, currentFilePath, depth = 0) {
+function resolveInclude(content, currentFilePath, visitedStack = new Set(), depth = 0) {
   if (depth > 10) return content;
 
   return content.replace(/<\?!=\s*include\(['"]([^'"]+)['"]\);\s*\?>/g, (match, rawFilename) => {
@@ -20,10 +20,20 @@ function resolveInclude(content, currentFilePath, depth = 0) {
 
     const targetPath = path.join(ROOT_DIR, targetFilename);
 
+    // Self-include or circular include defense
+    if (visitedStack.has(targetPath)) {
+      console.log(`[SKIP] Preventing circular include of ${targetFilename} inside ${path.basename(currentFilePath)}`);
+      return `<!-- Skipped self/circular include: ${targetFilename} -->`;
+    }
+
     if (fs.existsSync(targetPath)) {
       includedCount++;
       const subContent = fs.readFileSync(targetPath, 'utf8');
-      return resolveInclude(subContent, targetPath, depth + 1);
+      
+      const newStack = new Set(visitedStack);
+      newStack.add(targetPath);
+      
+      return resolveInclude(subContent, targetPath, newStack, depth + 1);
     } else {
       console.warn(`[WARN] Included file not found: ${targetFilename}`);
       missingFiles.push(targetFilename);
@@ -44,7 +54,8 @@ function build() {
   }
 
   const entryContent = fs.readFileSync(ENTRY_FILE, 'utf8');
-  const bundledHtml = resolveInclude(entryContent, ENTRY_FILE);
+  const initialStack = new Set([ENTRY_FILE]);
+  const bundledHtml = resolveInclude(entryContent, ENTRY_FILE, initialStack);
 
   fs.writeFileSync(OUTPUT_FILE, bundledHtml, 'utf8');
 

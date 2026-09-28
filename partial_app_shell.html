@@ -62,8 +62,22 @@
           .getAndIncrementVisitorCount();
       }
     } else {
-      // 로컬 파일로 열었거나 오프라인 모드일 때 (에러 방지용)
-      updateCounterUI({total: '통계', today: '서버전용'});
+      // Vercel / 오프라인 / 정적 웹 환경용 로컬스토리지 카운터 폴백
+      try {
+        const today = new Date().toISOString().slice(0, 10);
+        let total = parseInt(localStorage.getItem('ml_v_total') || '128');
+        let todayVisits = parseInt(localStorage.getItem('ml_v_today_' + today) || '5');
+        if (!sessionStorage.getItem('ml_v_session')) {
+          total++;
+          todayVisits++;
+          localStorage.setItem('ml_v_total', total);
+          localStorage.setItem('ml_v_today_' + today, todayVisits);
+          sessionStorage.setItem('ml_v_session', 'true');
+        }
+        updateCounterUI({ total: total, today: todayVisits });
+      } catch (e) {
+        updateCounterUI({ total: '1', today: '1' });
+      }
     }
   })();
 </script>
