@@ -1,0 +1,848 @@
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;700;800;900&display=swap');
+@import url('https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css');
+
+.ss-app, .ss-app * { box-sizing: border-box; }
+.ss-app {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 20px 22px 28px;
+  font-family: 'Pretendard', system-ui, sans-serif;
+  background: #f8fafc;
+  color: #0f172a;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+}
+
+/* Header */
+.ss-app .h {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  background: #ffffff;
+  padding: 16px 22px;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+  margin-bottom: 16px;
+}
+.ss-app .t {
+  font-size: 1.35rem;
+  font-weight: 900;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #0284c7;
+}
+.ss-app .sub-title {
+  font-size: 0.88rem;
+  color: #64748b;
+  font-weight: 700;
+}
+
+/* Nav Tabs */
+.ss-app .nav-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  background: #ffffff;
+  padding: 6px;
+  border-radius: 14px;
+  border: 1px solid #e2e8f0;
+}
+.ss-app .tab-btn {
+  flex: 1;
+  padding: 12px 14px;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.98rem;
+  font-weight: 800;
+  cursor: pointer;
+  background: transparent;
+  color: #64748b;
+  transition: all 0.2s;
+  text-align: center;
+}
+.ss-app .tab-btn.active {
+  background: #0ea5e9;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(14,165,233,0.25);
+}
+
+/* Card & Layout */
+.ss-app .card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+.ss-app .card-title {
+  font-size: 1.15rem;
+  font-weight: 900;
+  color: #0f172a;
+  margin-top: 0;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 2px solid #f1f5f9;
+  padding-bottom: 10px;
+}
+
+.ss-app .grid-2 {
+  display: grid;
+  grid-template-columns: 1.35fr 1fr;
+  gap: 16px;
+}
+@media(max-width: 860px) {
+  .ss-app .grid-2 { grid-template-columns: 1fr; }
+}
+
+/* Canvas Styling */
+.ss-app canvas {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 14px;
+  background: #0c4a6e;
+  box-shadow: inset 0 2px 8px rgba(0,0,0,0.5);
+}
+
+.ss-app .slider-item {
+  margin-bottom: 14px;
+}
+.ss-app .slider-label {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 800;
+  color: #334155;
+  font-size: 0.95rem;
+  margin-bottom: 6px;
+}
+
+.ss-app .slider {
+  width: 100%;
+  accent-color: #0284c7;
+  height: 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* Equal 50%:50% Grid Buttons Container */
+.ss-app .btn-grid-50 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  width: 100%;
+  margin-top: 10px;
+}
+
+/* Buttons & Inputs */
+.ss-app .btn {
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #1e293b;
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-weight: 800;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+.ss-app .btn:hover { background: #f1f5f9; }
+.ss-app .btn.p { background: #0284c7; border-color: #0284c7; color: #ffffff; box-shadow: 0 3px 0 #0369a1; }
+.ss-app .btn.g { background: #059669; border-color: #059669; color: #ffffff; box-shadow: 0 3px 0 #047857; }
+
+.ss-app .inp {
+  width: 100%;
+  display: block;
+  padding: 12px 14px;
+  border: 2px solid #cbd5e1;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 800;
+  outline: none;
+  background: #ffffff;
+  margin-bottom: 10px;
+}
+
+/* Math Display Box */
+.ss-app .math-block {
+  background: #ffffff;
+  padding: 12px 18px;
+  border-radius: 12px;
+  display: block;
+  border: 1px solid #bae6fd;
+  margin: 10px 0;
+  font-size: 1.05rem;
+  overflow-x: auto;
+}
+
+/* Slide Modal */
+.ss-app .modal { position: fixed; inset: 0; background: rgba(15,23,42,0.55); display: none; align-items: center; justify-content: center; z-index: 9400; padding: 14px; backdrop-filter: blur(4px); }
+.ss-app .modal.on { display: flex; }
+.ss-app .modal .mbox { background: #fff; border-radius: 18px; max-width: 600px; width: 100%; padding: 24px; max-height: 88vh; overflow: auto; box-shadow: 0 20px 50px rgba(15,23,42,0.3); }
+.ss-app .dots { display: flex; gap: 6px; justify-content: center; margin: 16px 0 8px; }
+.ss-app .dot { width: 8px; height: 8px; border-radius: 50%; background: #cbd5e1; transition: all 0.2s; }
+.ss-app .dot.on { background: #0284c7; width: 22px; border-radius: 10px; }
+</style>
+
+<!-- KaTeX Script -->
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+
+<script>
+(function(){
+'use strict';
+var APP_ID = 'sine-surfing';
+var APP_TITLE = '사인파 서핑과 삼각함수의 그래프';
+var ICON = '🏄';
+var FORCE = 'sine-surfing-force-host';
+
+var CW = 700, CH = 320;
+
+// Slide Guide Content
+var SLIDE_GUIDE = [
+  {
+    title: '🏄 삼각함수 사인파(Sine Wave)란?',
+    html: '<p>해변의 파도나 소리 음파처럼 규칙적으로 오르내리는 파동 현상은 <b>사인함수의 그래프</b>로 수학적으로 표현됩니다.</p>' +
+          '<ul>' +
+          '  <li><b>기본 수식:</b> <span class="math-tex" data-tex="y = A \\sin(\\omega t + \\phi) + d"></span></li>' +
+          '  <li><b>진폭 <span class="math-tex" data-tex="A"></span>:</b> 파도의 높이 (최댓값과 최솟값의 범위)</li>' +
+          '  <li><b>각주파수 <span class="math-tex" data-tex="\\omega"></span>:</b> 파도의 촘촘한 정도 (주기와 역수 관계)</li>' +
+          '</ul>'
+  },
+  {
+    title: '📐 진폭과 주기의 수학적 관계',
+    html: '<p>삼각함수 <span class="math-tex" data-tex="y = A \\sin(\\omega x)"></span>에서:</p>' +
+          '<ul>' +
+          '  <li><b>최댓값 / 최솟값:</b> <span class="math-tex" data-tex="y_{\\max} = |A|"></span>, <span class="math-tex" data-tex="y_{\\min} = -|A|"></span></li>' +
+          '  <li><b>주기 (<span class="math-tex" data-tex="T"></span>):</b> 파도가 한 번 완전히 진동하는 데 걸리는 길이</li>' +
+          '</ul>' +
+          '<div style="background:#f0f9ff; padding:12px; border-radius:10px; text-align:center;"><span class="math-tex" data-display="true" data-tex="T = \\frac{2\\pi}{\\omega}"></span></div>'
+  },
+  {
+    title: '🌊 목표 파도 매칭과 삼각함수의 합치',
+    html: '<p>목표 삼각함수 파도(점선)에 서퍼가 탄 나의 삼각함수 파도(실선)의 <b>진폭 <span class="math-tex" data-tex="A"></span></b>와 <b>각주파수 <span class="math-tex" data-tex="\\omega"></span></b>를 일치시킵니다.</p>' +
+          '<p>두 파형이 정확히 일치할 때 파도의 위상 에너지가 공명하여 서퍼가 파도 정상에서 라이딩을 완수하게 됩니다.</p>'
+  },
+  {
+    title: '🧩 실생활 전자기파, 음파 및 파동 현상',
+    html: '<p>• <b>소리의 고음과 저음:</b> 각주파수 <span class="math-tex" data-tex="\\omega"></span>가 높을수록 진동수가 높아져 고음 소리가 납니다.</p>' +
+          '<p>• <b>전자기파 & 교류 전압:</b> 220V 가정용 교류 전원도 <span class="math-tex" data-tex="60\\text{ Hz}"></span> 의 삼각함수 사인파형 형태를 띱니다.</p>'
+  }
+];
+
+var S = {
+  host: null,
+  activeTab: 'sim',
+  diff: 'normal',
+  running: false,
+  raf: null,
+  t: 0,
+  A: 1.20,
+  w: 1.50,
+  tA: 1.50,
+  tw: 2.00,
+  tol: 0.22,
+  matchPct: 0,
+  guidePage: 0
+};
+
+function $(id) { return document.getElementById(id); }
+
+function renderMath(latex, container, displayMode) {
+  if (typeof katex !== 'undefined' && container) {
+    try {
+      katex.render(latex, container, { throwOnError: false, displayMode: !!displayMode });
+      return;
+    } catch(e){}
+  }
+  if (container) container.textContent = latex;
+}
+
+function updateMathElements() {
+  document.querySelectorAll('.math-tex').forEach(function(el) {
+    var tex = el.getAttribute('data-tex');
+    var isDisplay = el.getAttribute('data-display') === 'true';
+    if (tex) renderMath(tex, el, isDisplay);
+  });
+}
+
+function calcMatchScore() {
+  var dA = Math.abs(S.A - S.tA) / Math.max(0.4, S.tA);
+  var dw = Math.abs(S.w - S.tw) / Math.max(0.4, S.tw);
+  var err = (dA + dw) / 2;
+  return Math.max(0, 1 - err / S.tol);
+}
+
+var SineSurfingApp = {
+  mount: function(container) {
+    var host = null;
+    if (typeof container === 'string') { try { host = document.querySelector(container); } catch(e){} }
+    else if (container instanceof HTMLElement) host = container;
+    if (!host && window.MathLabUtils && window.MathLabUtils.getMountContainer) {
+      try { host = window.MathLabUtils.getMountContainer(container); } catch(e){}
+    }
+    if (!host || !(host instanceof HTMLElement)) host = document.getElementById('mathlab-view') || document.getElementById('new-root');
+    
+    if (!host || !(host instanceof HTMLElement) || host === document.body) {
+      host = document.getElementById(FORCE);
+      if (!host) { host = document.createElement('div'); host.id = FORCE; document.body.appendChild(host); }
+    }
+    
+    var footerEl = document.querySelector('footer,#footer,.app-footer');
+    if (footerEl && host && typeof host.compareDocumentPosition === 'function' && (footerEl.compareDocumentPosition(host) & Node.DOCUMENT_POSITION_PRECEDING)) {
+      try { footerEl.parentNode.insertBefore(host, footerEl); } catch(e){}
+    }
+    
+    host.style.display = ''; host.style.visibility = 'visible'; host.style.opacity = '1';
+    S.host = host;
+    host.innerHTML = this.renderChrome();
+    this.bindEvents();
+    this.newTarget();
+    updateMathElements();
+  },
+
+  renderChrome: function() {
+    var h = '';
+    h += '<div class="ss-app" id="ss-app-root">';
+    
+    /* Header */
+    h += '  <div class="h">';
+    h += '    <div>';
+    h += '      <h2 class="t">' + ICON + ' ' + APP_TITLE + '</h2>';
+    h += '      <div class="sub-title">삼각함수의 진폭, 각주파수, 주기 그래프 탐구 모듈</div>';
+    h += '    </div>';
+    h += '    <button type="button" class="btn" id="btn-open-guide">📖 슬라이드 탐구 개요</button>';
+    h += '  </div>';
+
+    /* Navigation Tabs */
+    h += '  <div class="nav-tabs">';
+    h += '    <button type="button" class="tab-btn active" data-tab="sim">1. 🔬 삼각함수 파도 서핑 시뮬레이터</button>';
+    h += '    <button type="button" class="tab-btn" data-tab="math">2. 📐 삼각함수 그래프 & 주기 수식</button>';
+    h += '    <button type="button" class="tab-btn" data-tab="prob">3. 🧩 실전 삼각함수 탐구 문제 (4선)</button>';
+    h += '  </div>';
+
+    /* TAB 1: Simulator */
+    h += '  <div id="tab-sec-sim">';
+    h += '    <div class="card">';
+    h += '      <div class="card-title">🏄 캔버스 파도 서핑 파형 일치 시뮬레이션</div>';
+
+    h += '      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:12px;">';
+    h += '        <div style="font-weight:800; color:#475569;">난이도 선택:</div>';
+    h += '        <div style="display:flex; gap:6px;">';
+    h += '          <button type="button" class="btn" id="btn-diff-easy">쉬움</button>';
+    h += '          <button type="button" class="btn p" id="btn-diff-norm">보통</button>';
+    h += '          <button type="button" class="btn" id="btn-diff-hard">도전</button>';
+    h += '        </div>';
+    h += '      </div>';
+
+    h += '      <div class="grid-2">';
+    h += '        <div>';
+    
+    /* Canvas */
+    h += '          <canvas id="ss-cv" width="' + CW + '" height="' + CH + '"></canvas>';
+    
+    h += '          <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:12px; margin-top:10px;">';
+    h += '            <div id="lbl-sim-status" style="font-weight:800; font-size:0.95rem; color:#334155;">목표 파도(점선)에 맞춰 진폭 A 와 각주파수 ω를 조절하세요.</div>';
+    h += '          </div>';
+
+    /* Equal 50%:50% Grid Buttons Container */
+    h += '          <div class="btn-grid-50">';
+    h += '            <button type="button" class="btn g" id="btn-start-anim">▶ 서핑 애니메이션 시작</button>';
+    h += '            <button type="button" class="btn" id="btn-new-target">🔄 목표 파도 재설정</button>';
+    h += '          </div>';
+    h += '        </div>';
+
+    /* Sliders & Math Controls Box */
+    h += '        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:14px; padding:16px;">';
+    h += '          <div style="font-weight:900; font-size:1.05rem; color:#0f172a; margin-bottom:12px;">⚙️ 삼각함수 계수 조절 (0.01 단위)</div>';
+
+    h += '          <div class="slider-item">';
+    h += '            <div class="slider-label">';
+    h += '              <span>진폭 (A): <b id="lbl-val-A" style="color:#0284c7;">1.20</b></span>';
+    h += '              <span style="color:#64748b;">(목표: <b id="lbl-target-A">1.50</b>)</span>';
+    h += '            </div>';
+    h += '            <input type="range" id="rng-val-A" class="slider" min="0.40" max="2.60" step="0.01" value="1.20">';
+    h += '          </div>';
+
+    h += '          <div class="slider-item">';
+    h += '            <div class="slider-label">';
+    h += '              <span>각주파수 (ω): <b id="lbl-val-w" style="color:#059669;">1.50</b></span>';
+    h += '              <span style="color:#64748b;">(목표: <b id="lbl-target-w">2.00</b>)</span>';
+    h += '            </div>';
+    h += '            <input type="range" id="rng-val-w" class="slider" min="0.50" max="3.20" step="0.01" value="1.50">';
+    h += '          </div>';
+
+    h += '          <div style="background:#ffffff; border:1px solid #cbd5e1; border-radius:12px; padding:12px; margin-bottom:12px;">';
+    h += '            <div style="font-weight:800; font-size:0.9rem; color:#334155; margin-bottom:4px;">📊 내 수식: <span class="math-tex" id="lbl-math-my-eq" data-tex="y = 1.20 \\sin(1.50 t)"></span></div>';
+    h += '            <div style="font-weight:800; font-size:0.9rem; color:#0284c7;">🎯 파도 일치도: <b id="lbl-match-pct" style="font-size:1.1rem;">0%</b></div>';
+    h += '          </div>';
+
+    h += '          <div style="background:#ffffff; border:1px solid #cbd5e1; border-radius:12px; padding:12px; font-size:0.88rem; line-height:1.65; color:#475569;">';
+    h += '            💡 <b>개념 힌트:</b><br>';
+    h += '            • <b>진폭 <span class="math-tex" data-tex="A"></span>:</b> 파도의 상하 최고 높이 조절<br>';
+    h += '            • <b>주기 <span class="math-tex" data-tex="T = \\frac{2\\pi}{\\omega}"></span>:</b> <span class="math-tex" data-tex="\\omega"></span> 가 커질수록 파도가 촘촘해집니다.';
+    h += '          </div>';
+    h += '        </div>';
+    h += '      </div>';
+
+    h += '    </div>';
+    h += '  </div>';
+
+    /* TAB 2: Math Model & Clean LaTeX */
+    h += '  <div id="tab-sec-math" style="display:none;">';
+    h += '    <div class="card">';
+    h += '      <div class="card-title">📐 삼각함수 그래프의 변환 수식 구조</div>';
+
+    h += '      <div style="line-height:1.7; color:#334155; margin-bottom:16px;">';
+    h += '        사인함수 그래프는 기본적인 주기성(Periodicity)과 대칭성을 가지며, 진폭과 주파수 계수에 따라 확대·축소됩니다.';
+    h += '      </div>';
+
+    h += '      <div style="background:#f0f9ff; border:1px solid #bae6fd; border-radius:14px; padding:16px; margin-bottom:14px; line-height:1.7;">';
+    h += '        <div style="font-weight:900; font-size:1.05rem; color:#0369a1; margin-bottom:6px;">1. 삼각함수의 일반형 공식</div>';
+    h += '        <div class="math-block"><span class="math-tex" data-display="true" data-tex="y = A \\sin(\\omega x + \\phi) + d"></span></div>';
+    h += '        <p>• <b>최댓값 / 최솟값:</b> <span class="math-tex" data-tex="y_{\\max} = |A| + d"></span>, <span class="math-tex" data-tex="y_{\\min} = -|A| + d"></span><br>';
+    h += '        • <b>기본 주기:</b> <span class="math-tex" data-tex="T = \\frac{2\\pi}{|\\omega|}"></span></p>';
+    h += '      </div>';
+
+    h += '      <div style="background:#fefce8; border:1px solid #fde047; border-radius:14px; padding:16px; margin-bottom:14px; line-height:1.7;">';
+    h += '        <div style="font-weight:900; font-size:1.05rem; color:#854d0e; margin-bottom:6px;">2. 주파수와 주기 계산 예시</div>';
+    h += '        <p><span class="math-tex" data-tex="y = 3 \\sin(2x)"></span> 의 진폭과 주기를 구하면:</p>';
+    h += '        <div class="math-block"><span class="math-tex" data-display="true" data-tex="\\text{진폭 } A = 3, \\quad \\text{주기 } T = \\frac{2\\pi}{2} = \\pi"></span></div>';
+    h += '        <p>즉, <span class="math-tex" data-tex="x"></span>가 <span class="math-tex" data-tex="0"></span>에서 <span class="math-tex" data-tex="\\pi"></span>까지 지날 때 파도가 1회 완전 진동합니다.</p>';
+    h += '      </div>';
+
+    /* Non-squished Quiz Controls */
+    h += '      <div style="background:#ffffff; border:1px solid #cbd5e1; border-radius:14px; padding:18px; margin-top:16px;">';
+    h += '        <div style="font-weight:900; color:#0284c7; margin-bottom:8px; font-size:1.05rem;">🧠 개념 확인 퀴즈</div>';
+    h += '        <div style="font-size:0.95rem; font-weight:800; color:#0f172a; margin-bottom:12px;">Q. <span class="math-tex" data-tex="y = 4 \\sin(3x)"></span> 함수 그래프의 진폭 <span class="math-tex" data-tex="A"></span>의 값은 얼마일까요?</div>';
+    h += '        <input type="text" id="inp-quiz-ans" class="inp" placeholder="예: 4 키보드로 입력">';
+    h += '        <button type="button" class="btn p" id="btn-submit-quiz" style="width:100%; padding:12px; font-size:1rem;">퀴즈 제출</button>';
+    h += '        <div id="lbl-quiz-msg" style="margin-top:10px; font-weight:800; font-size:0.92rem;"></div>';
+    h += '      </div>';
+
+    h += '    </div>';
+    h += '  </div>';
+
+    /* TAB 3: Problem Solving */
+    h += '  <div id="tab-sec-prob" style="display:none;">';
+    h += '    <div class="card">';
+    h += '      <div class="card-title">🧩 실전 삼각함수 그래프 탐구 문제 (4선)</div>';
+
+    var probs = [
+      {
+        title: "Q1. 삼각함수의 최댓값과 최솟값",
+        q: "함수 <span class=\"math-tex\" data-tex=\"y = -2 \\cos(4x) + 3\"></span> 의 최댓값과 최솟값의 합은 얼마일까요?",
+        sol: "<b>[수학적 계산]</b><br>• 최댓값: <span class=\"math-tex\" data-tex=\"y_{\\max} = |-2| + 3 = 5\"></span><br>• 최솟값: <span class=\"math-tex\" data-tex=\"y_{\\min} = -|-2| + 3 = 1\"></span><br>• 최댓값과 최솟값의 합: <span class=\"math-tex\" data-tex=\"5 + 1 = 6\"></span>"
+      },
+      {
+        title: "Q2. 조석 간만의 차(해수면 높이)와 삼각함수",
+        q: "해수면 높이 수식이 <span class=\"math-tex\" data-tex=\"h(t) = 3 \\sin\\left(\\frac{\\pi}{6} t\\right) + 5\"></span> (m) 일 때, 물이 가장 높게 차오르는 만조 때의 높이와 주기는?",
+        sol: "<b>[수학적 해설]</b><br>• 만조 때 높이: <span class=\"math-tex\" data-tex=\"3 + 5 = 8\\text{ m}\"></span><br>• 주기: <span class=\"math-tex\" data-tex=\"T = \\frac{2\\pi}{\\pi / 6} = 12\\text{시간}\"></span> (12시간 마다 만조 반복)"
+      },
+      {
+        title: "Q3. 음파 주파수와 옥타브 관계",
+        q: "소리의 주파수 <span class=\"math-tex\" data-tex=\"f\"></span>가 2배가 되면 삼각함수 그래프의 주기 <span class=\"math-tex\" data-tex=\"T\"></span>는 어떻게 변할까요?",
+        sol: "<b>[수학적 분석]</b><br>• <span class=\"math-tex\" data-tex=\"T = 1/f\"></span> 이므로 주파수가 2배가 되면 주기는 <b><span class=\"math-tex\" data-tex=\"1/2\"></span> 로 절반</b>으로 줄어들며 1옥타브 높은 소리가 납니다."
+      },
+      {
+        title: "Q4. 삼각함수의 평행이동과 대칭",
+        q: "<span class=\"math-tex\" data-tex=\"y = \\sin(x)\"></span> 그래프를 x축 방향으로 <span class=\"math-tex\" data-tex=\"\\pi/2\"></span> 만큼 평행이동하면 어떤 함수 그래프와 완벽히 일치하나요?",
+        sol: "<b>[정답: y = cos(x) 그래프]</b><br>• 삼각함수 변환 공식에 의해 <span class=\"math-tex\" data-tex=\"\\sin\\left(x + \\frac{\\pi}{2}\\right) = \\cos(x)\"></span> 가 성립합니다."
+      }
+    ];
+
+    probs.forEach(function(item, idx) {
+      h += '<div style="background:#ffffff; border:1px solid #e2e8f0; border-radius:14px; padding:16px; margin-bottom:14px;">';
+      h += '  <div style="font-weight:900; font-size:1.05rem; color:#0284c7; margin-bottom:6px;">' + item.title + '</div>';
+      h += '  <div style="line-height:1.6; color:#334155; margin-bottom:10px;">' + item.q + '</div>';
+      h += '  <button type="button" class="btn p btn-show-sol" data-idx="' + idx + '">💡 수학적 해설 보기</button>';
+      h += '  <div id="sol-' + idx + '" style="display:none; background:#f8fafc; border:1px solid #cbd5e1; border-radius:12px; padding:14px; margin-top:10px; font-size:0.92rem; line-height:1.65;">' + item.sol + '</div>';
+      h += '</div>';
+    });
+
+    h += '  </div>';
+    h += '  </div>';
+
+    /* Slide Modal */
+    h += '<div class="modal" id="ss-modal">';
+    h += '  <div class="mbox" id="ss-modal-box"></div>';
+    h += '</div>';
+
+    h += '</div>';
+    return h;
+  },
+
+  bindEvents: function() {
+    var _this = this;
+    var root = S.host.querySelector('#ss-app-root');
+
+    /* Tabs */
+    root.querySelectorAll('.tab-btn').forEach(function(btn) {
+      btn.onclick = function() {
+        root.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
+        this.classList.add('active');
+        S.activeTab = this.getAttribute('data-tab');
+
+        root.querySelector('#tab-sec-sim').style.display = (S.activeTab === 'sim') ? 'block' : 'none';
+        root.querySelector('#tab-sec-math').style.display = (S.activeTab === 'math') ? 'block' : 'none';
+        root.querySelector('#tab-sec-prob').style.display = (S.activeTab === 'prob') ? 'block' : 'none';
+
+        updateMathElements();
+      };
+    });
+
+    /* Difficulty Buttons */
+    root.querySelector('#btn-diff-easy').onclick = function() {
+      S.diff = 'easy';
+      this.className = 'btn p';
+      root.querySelector('#btn-diff-norm').className = 'btn';
+      root.querySelector('#btn-diff-hard').className = 'btn';
+      _this.newTarget();
+    };
+    root.querySelector('#btn-diff-norm').onclick = function() {
+      S.diff = 'normal';
+      this.className = 'btn p';
+      root.querySelector('#btn-diff-easy').className = 'btn';
+      root.querySelector('#btn-diff-hard').className = 'btn';
+      _this.newTarget();
+    };
+    root.querySelector('#btn-diff-hard').onclick = function() {
+      S.diff = 'hard';
+      this.className = 'btn p';
+      root.querySelector('#btn-diff-easy').className = 'btn';
+      root.querySelector('#btn-diff-norm').className = 'btn';
+      _this.newTarget();
+    };
+
+    /* Slider Inputs (Fine 0.01 step precision + Wheel event) */
+    var rngA = root.querySelector('#rng-val-A');
+    var rngW = root.querySelector('#rng-val-w');
+
+    function updateAVal(val) {
+      S.A = Math.round(parseFloat(val) * 100) / 100;
+      rngA.value = S.A.toFixed(2);
+      _this.updateHUD();
+      if (!S.running) _this.drawCanvas();
+    }
+
+    function updateWVal(val) {
+      S.w = Math.round(parseFloat(val) * 100) / 100;
+      rngW.value = S.w.toFixed(2);
+      _this.updateHUD();
+      if (!S.running) _this.drawCanvas();
+    }
+
+    rngA.oninput = function() { updateAVal(this.value); };
+    rngW.oninput = function() { updateWVal(this.value); };
+
+    /* Mouse Wheel Control for Sliders */
+    rngA.onwheel = function(e) {
+      e.preventDefault();
+      var delta = e.deltaY < 0 ? 0.01 : -0.01;
+      var nVal = Math.min(2.60, Math.max(0.40, S.A + delta));
+      updateAVal(nVal);
+    };
+
+    rngW.onwheel = function(e) {
+      e.preventDefault();
+      var delta = e.deltaY < 0 ? 0.01 : -0.01;
+      var nVal = Math.min(3.20, Math.max(0.50, S.w + delta));
+      updateWVal(nVal);
+    };
+
+    /* Actions */
+    root.querySelector('#btn-start-anim').onclick = function() { _this.startAnim(); };
+    root.querySelector('#btn-new-target').onclick = function() { _this.newTarget(); };
+
+    /* Quiz */
+    root.querySelector('#btn-submit-quiz').onclick = function() {
+      var val = (root.querySelector('#inp-quiz-ans').value || '').trim();
+      var msgEl = root.querySelector('#lbl-quiz-msg');
+      if (val === '4') {
+        msgEl.innerHTML = '✅ <b>정답입니다!</b> y = 4 sin(3x) 의 최고 높이 진폭 A 는 4 입니다.';
+        msgEl.style.color = '#059669';
+      } else {
+        msgEl.innerHTML = '❌ 오답입니다. (힌트: sin 함수 앞 계수인 4 입니다)';
+        msgEl.style.color = '#ef4444';
+      }
+    };
+
+    /* Solutions Toggle */
+    root.querySelectorAll('.btn-show-sol').forEach(function(btn) {
+      btn.onclick = function() {
+        var idx = this.getAttribute('data-idx');
+        var solEl = root.querySelector('#sol-' + idx);
+        if (solEl) {
+          var isShown = solEl.style.display === 'block';
+          solEl.style.display = isShown ? 'none' : 'block';
+          this.textContent = isShown ? '💡 수학적 해설 보기' : '🙈 해설 닫기';
+          updateMathElements();
+        }
+      };
+    });
+
+    /* Modal Open & Render Slide */
+    root.querySelector('#btn-open-guide').onclick = function() {
+      S.guidePage = 0;
+      _this.renderSlideGuide();
+      root.querySelector('#ss-modal').classList.add('on');
+    };
+  },
+
+  newTarget: function() {
+    this.stopAnim();
+    if (S.diff === 'easy') {
+      S.tA = Math.round((0.80 + Math.random() * 1.20) * 100) / 100;
+      S.tw = Math.round(S.w * 100) / 100;
+      S.tol = 0.32;
+    } else if (S.diff === 'hard') {
+      S.tA = Math.round((0.70 + Math.random() * 1.80) * 100) / 100;
+      S.tw = Math.round((0.90 + Math.random() * 2.40) * 100) / 100;
+      S.tol = 0.14;
+    } else {
+      S.tA = Math.round((0.80 + Math.random() * 1.60) * 100) / 100;
+      S.tw = Math.round((1.00 + Math.random() * 2.00) * 100) / 100;
+      S.tol = 0.22;
+    }
+
+    var root = S.host.querySelector('#ss-app-root');
+    if (root) {
+      root.querySelector('#lbl-target-A').textContent = S.tA.toFixed(2);
+      root.querySelector('#lbl-target-w').textContent = S.tw.toFixed(2);
+      root.querySelector('#lbl-sim-status').innerHTML = '목표 파도(점선)에 맞춰 진폭 A 와 각주파수 ω를 조절하세요.';
+    }
+
+    this.updateHUD();
+    this.drawCanvas();
+  },
+
+  updateHUD: function() {
+    var root = S.host.querySelector('#ss-app-root');
+    if (!root) return;
+
+    var match = calcMatchScore();
+    S.matchPct = Math.round(match * 100);
+
+    root.querySelector('#lbl-val-A').textContent = S.A.toFixed(2);
+    root.querySelector('#lbl-val-w').textContent = S.w.toFixed(2);
+    root.querySelector('#lbl-match-pct').textContent = S.matchPct + '%';
+
+    var texStr = 'y = ' + S.A.toFixed(2) + ' \\sin(' + S.w.toFixed(2) + ' t)';
+    var mathEl = root.querySelector('#lbl-math-my-eq');
+    if (mathEl) {
+      mathEl.setAttribute('data-tex', texStr);
+      renderMath(texStr, mathEl, false);
+    }
+  },
+
+  drawCanvas: function() {
+    var root = S.host.querySelector('#ss-app-root');
+    if (!root) return;
+    var cv = root.querySelector('#ss-cv');
+    if (!cv) return;
+    var ctx = cv.getContext('2d');
+
+    ctx.clearRect(0, 0, CW, CH);
+    var grd = ctx.createLinearGradient(0, 0, 0, CH);
+    grd.addColorStop(0, '#0c4a6e');
+    grd.addColorStop(1, '#082f49');
+    ctx.fillStyle = grd;
+    ctx.fillRect(0, 0, CW, CH);
+
+    var mid = CH * 0.55;
+    var ampScale = CH * 0.28;
+
+    function getWaveY(ampVal, freqVal, xPos) {
+      return mid - Math.sin((xPos / CW) * Math.PI * 4 * freqVal + S.t * freqVal) * ampVal * ampScale;
+    }
+
+    // Target Wave (Dashed Line)
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.45)';
+    ctx.setLineDash([6, 6]);
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    for (var x = 0; x <= CW; x += 4) {
+      var ty = getWaveY(S.tA / 2.5, S.tw, x);
+      if (x === 0) ctx.moveTo(x, ty);
+      else ctx.lineTo(x, ty);
+    }
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Current Wave (Solid Line)
+    ctx.strokeStyle = (S.matchPct >= 85) ? '#34d399' : '#38bdf8';
+    ctx.lineWidth = 3.5;
+    ctx.beginPath();
+    for (var x2 = 0; x2 <= CW; x2 += 3) {
+      var my = getWaveY(S.A / 2.5, S.w, x2);
+      if (x2 === 0) ctx.moveTo(x2, my);
+      else ctx.lineTo(x2, my);
+    }
+    ctx.stroke();
+
+    // Surfer Icon Riding Target Wave
+    var surferX = CW * 0.3;
+    var surferY = getWaveY(S.A / 2.5, S.w, surferX);
+    ctx.font = '32px serif';
+    ctx.fillText('🏄', surferX - 16, surferY - 10);
+
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+    ctx.font = 'bold 12px Pretendard';
+    ctx.fillText('실선: 내 파도 (A=' + S.A.toFixed(2) + ', ω=' + S.w.toFixed(2) + ')  /  점선: 목표 파도', 14, 24);
+  },
+
+  startAnim: function() {
+    var _this = this;
+    S.running = true;
+    if (S.raf) cancelAnimationFrame(S.raf);
+
+    function loop() {
+      if (!S.running) return;
+      S.t += 0.04;
+      _this.drawCanvas();
+
+      if (S.matchPct >= 90) {
+        var root = S.host.querySelector('#ss-app-root');
+        if (root) {
+          root.querySelector('#lbl-sim-status').innerHTML = '🎉 <b>파도 완전 합치 완수!</b> 서퍼가 삼각함수 파도 정상 라이딩에 성공했습니다!';
+        }
+      }
+
+      S.raf = requestAnimationFrame(loop);
+    }
+
+    S.raf = requestAnimationFrame(loop);
+  },
+
+  stopAnim: function() {
+    S.running = false;
+    if (S.raf) cancelAnimationFrame(S.raf);
+  },
+
+  renderSlideGuide: function() {
+    var _this = this;
+    var root = S.host.querySelector('#ss-app-root');
+    var mBox = root.querySelector('#ss-modal-box');
+    if (!mBox) return;
+
+    var pg = SLIDE_GUIDE[S.guidePage] || SLIDE_GUIDE[0];
+    var dots = SLIDE_GUIDE.map(function(_, i) {
+      return '<span class="dot' + (i === S.guidePage ? ' on' : '') + '"></span>';
+    }).join('');
+    var isLast = S.guidePage >= SLIDE_GUIDE.length - 1;
+
+    var h = '';
+    h += '<div style="font-size:.8rem; font-weight:800; color:#0284c7; margin-bottom:4px;">온보딩 슬라이드 탐구 ' + (S.guidePage + 1) + ' / ' + SLIDE_GUIDE.length + '</div>';
+    h += '<h3 style="margin:0 0 12px; color:#0f172a; font-weight:900;">' + pg.title + '</h3>';
+    h += '<div style="line-height:1.65; color:#334155; font-size:0.95rem;">' + pg.html + '</div>';
+    h += '<div class="dots">' + dots + '</div>';
+
+    h += '<div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:16px;">';
+    h += '  <button type="button" class="btn" id="btn-slide-prev"' + (S.guidePage === 0 ? ' disabled' : '') + '>← 이전</button>';
+    h += '  <button type="button" class="btn p" id="btn-slide-next">' + (isLast ? '탐구 시작하기 🚀' : '다음 →') + '</button>';
+    h += '</div>';
+
+    mBox.innerHTML = h;
+    updateMathElements();
+
+    var prevBtn = mBox.querySelector('#btn-slide-prev');
+    var nextBtn = mBox.querySelector('#btn-slide-next');
+
+    if (prevBtn) {
+      prevBtn.onclick = function() {
+        if (S.guidePage > 0) {
+          S.guidePage--;
+          _this.renderSlideGuide();
+        }
+      };
+    }
+    if (nextBtn) {
+      nextBtn.onclick = function() {
+        if (isLast) {
+          root.querySelector('#ss-modal').classList.remove('on');
+        } else {
+          S.guidePage++;
+          _this.renderSlideGuide();
+        }
+      };
+    }
+  },
+
+  destroy: function() {
+    this.stopAnim();
+    if (S.host) S.host.innerHTML = '';
+    S.host = null;
+  }
+};
+
+function goHome() {
+  if (S.host) S.host.innerHTML = '';
+  if (typeof window.LegacyBridge !== 'undefined' && typeof window.LegacyBridge.backHome === 'function') {
+    window.LegacyBridge.backHome();
+  } else if (typeof window.MathLabGames !== 'undefined' && window.MathLabGames.goHome) {
+    window.MathLabGames.goHome();
+  } else {
+    window.location.reload();
+  }
+}
+
+function reg() {
+  if (typeof window.MathLabGames === 'undefined' || typeof window.MathLabGames.register !== 'function') return;
+  try {
+    if (window.MathLabGames.get && window.MathLabGames.get(APP_ID)) return;
+    window.MathLabGames.register({
+      id: APP_ID,
+      title: APP_TITLE,
+      icon: ICON,
+      sourceType: 'new',
+      players: '1인',
+      isMultiplayer: false,
+      mount: function(c, x) { SineSurfingApp.mount(c, x); },
+      reset: function() { SineSurfingApp.newTarget(); },
+      destroy: function() { SineSurfingApp.destroy(); },
+      goHome: function() { goHome(); }
+    });
+  } catch (e) {
+    console.warn(APP_ID + ' reg', e);
+  }
+}
+
+reg();
+window.addEventListener('DOMContentLoaded', reg);
+setTimeout(reg, 100);
+setTimeout(reg, 500);
+
+window.SineSurfing = {
+  mount: function(c) { SineSurfingApp.mount(c); },
+  resetGame: function() { SineSurfingApp.newTarget(); },
+  destroy: function() { SineSurfingApp.destroy(); },
+  goHome: goHome
+};
+
+window.initSineSurfing = function() {
+  reg();
+  try {
+    if (window.LegacyBridge) {
+      window.LegacyBridge.hideAllLegacySections();
+      if (window.LegacyBridge.showNewRoot) window.LegacyBridge.showNewRoot();
+    }
+  } catch (e) {}
+  if (window.MathLabGames && window.MathLabGames.mount) {
+    try { window.MathLabGames.mount(APP_ID); return; } catch (e) {}
+  }
+  SineSurfingApp.mount(document.getElementById('mathlab-view'));
+};
+
+window.launchSineSurfing = window.initSineSurfing;
+})();
+</script>

@@ -1,0 +1,655 @@
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;700;800;900&display=swap');
+@import url('https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css');
+
+.pf-edu, .pf-edu * { box-sizing: border-box; }
+.pf-edu {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 20px 22px 28px;
+  font-family: 'Pretendard', system-ui, sans-serif;
+  background: #f8fafc;
+  color: #0f172a;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+}
+
+/* Header */
+.pf-edu .h {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  background: #ffffff;
+  padding: 16px 22px;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+  margin-bottom: 16px;
+}
+.pf-edu .t {
+  font-size: 1.35rem;
+  font-weight: 900;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #0284c7;
+}
+.pf-edu .sub-title {
+  font-size: 0.88rem;
+  color: #64748b;
+  font-weight: 700;
+}
+
+/* Nav Tabs */
+.pf-edu .nav-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  background: #ffffff;
+  padding: 6px;
+  border-radius: 14px;
+  border: 1px solid #e2e8f0;
+}
+.pf-edu .tab-btn {
+  flex: 1;
+  padding: 12px 14px;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.98rem;
+  font-weight: 800;
+  cursor: pointer;
+  background: transparent;
+  color: #64748b;
+  transition: all 0.2s;
+  text-align: center;
+}
+.pf-edu .tab-btn.active {
+  background: #0ea5e9;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(14,165,233,0.25);
+}
+
+/* Card & Box */
+.pf-edu .card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.01);
+}
+.pf-edu .card-title {
+  font-size: 1.15rem;
+  font-weight: 900;
+  color: #0f172a;
+  margin-top: 0;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 2px solid #f1f5f9;
+  padding-bottom: 10px;
+}
+
+/* Buttons & Inputs */
+.pf-edu .btn {
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #1e293b;
+  border-radius: 10px;
+  padding: 10px 16px;
+  font-weight: 800;
+  cursor: pointer;
+  font-size: 0.92rem;
+  transition: all 0.15s;
+}
+.pf-edu .btn:hover { background: #f1f5f9; border-color: #94a3b8; }
+.pf-edu .btn.p { background: #0284c7; border-color: #0284c7; color: #fff; box-shadow: 0 3px 0 #0369a1; }
+.pf-edu .btn.g { background: #059669; border-color: #059669; color: #fff; box-shadow: 0 3px 0 #047857; }
+.pf-edu .btn.p:active, .pf-edu .btn.g:active { transform: translateY(2px); box-shadow: none; }
+
+/* Control Row */
+.pf-edu .control-group {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+  background: #f8fafc;
+  padding: 14px 18px;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  margin-bottom: 16px;
+}
+.pf-edu .control-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 800;
+  font-size: 0.95rem;
+}
+.pf-edu .num-input {
+  width: 70px;
+  padding: 6px 10px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 800;
+  text-align: center;
+  outline: none;
+}
+
+/* Boxes & Holes */
+.pf-edu .boxes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 12px;
+  margin-top: 14px;
+}
+.pf-edu .hole {
+  min-height: 120px;
+  border: 2px dashed #cbd5e1;
+  border-radius: 14px;
+  padding: 12px;
+  text-align: center;
+  cursor: pointer;
+  background: #ffffff;
+  transition: all 0.2s;
+}
+.pf-edu .hole:hover { border-color: #0284c7; background: #f0f9ff; transform: translateY(-2px); }
+.pf-edu .hole.hot { border-color: #ef4444; background: #fef2f2; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.15); }
+.pf-edu .fruits-display { font-size: 1.4rem; line-height: 1.4; min-height: 2.4em; word-break: break-all; margin-top: 6px; }
+
+/* Formula Cards */
+.pf-edu .math-card {
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 14px;
+  line-height: 1.7;
+}
+.pf-edu .math-latex {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #0369a1;
+  background: #ffffff;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid #e0f2fe;
+  display: inline-block;
+  margin: 6px 0;
+}
+
+/* Problem Cards */
+.pf-edu .prob-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 18px;
+  margin-bottom: 16px;
+  transition: border-color 0.2s;
+}
+.pf-edu .prob-card:hover { border-color: #0ea5e9; }
+.pf-edu .prob-badge {
+  display: inline-block;
+  background: #e0f2fe;
+  color: #0369a1;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-weight: 800;
+  font-size: 0.85rem;
+  margin-bottom: 8px;
+}
+.pf-edu .prob-question {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1.6;
+  margin-bottom: 12px;
+}
+.pf-edu .prob-solution {
+  display: none;
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  padding: 14px;
+  margin-top: 12px;
+  font-size: 0.95rem;
+  line-height: 1.65;
+  color: #334155;
+}
+.pf-edu .prob-solution.show { display: block; }
+
+/* Modal */
+.pf-edu .modal { position: fixed; inset: 0; background: rgba(15,23,42,0.55); display: none; align-items: center; justify-content: center; z-index: 9400; padding: 14px; backdrop-filter: blur(4px); }
+.pf-edu .modal.on { display: flex; }
+.pf-edu .modal .mbox { background: #fff; border-radius: 18px; max-width: 580px; width: 100%; padding: 22px; max-height: 88vh; overflow: auto; box-shadow: 0 20px 50px rgba(15,23,42,0.3); }
+.pf-edu .modal-close-btn { position: absolute; top: 16px; right: 16px; width: 32px; height: 32px; border-radius: 50%; background: #f1f5f9; border: none; font-weight: 900; cursor: pointer; }
+</style>
+
+<!-- KaTeX Script -->
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+
+<script>
+(function(){
+'use strict';
+var APP_ID = 'pigeonhole-fruit';
+var APP_TITLE = '비둘기집 원리 (Pigeonhole Principle)';
+var ICON = '🍎';
+var FORCE = 'pigeonhole-fruit-force-host';
+
+var EMO = ['🍎','🍊','🍋','🍇','🍓','🍒','🥝','🍑'];
+
+var S = {
+  host: null,
+  activeTab: 'sim', // 'sim', 'math', 'prob'
+  n: 4, // 박스 개수
+  fruits: 5, // 총 과일 개수
+  left: 5,
+  bins: [0, 0, 0, 0],
+  guidePage: 0
+};
+
+function $(id) { return document.getElementById(id); }
+
+function renderMath(latex, container) {
+  if (typeof katex !== 'undefined' && container) {
+    try {
+      katex.render(latex, container, { throwOnError: false });
+      return;
+    } catch(e){}
+  }
+  if (container) container.textContent = latex;
+}
+
+function updateMathElements() {
+  document.querySelectorAll('.math-tex').forEach(function(el) {
+    var tex = el.getAttribute('data-tex');
+    if (tex) renderMath(tex, el);
+  });
+}
+
+var AbacusEduApp = {
+  mount: function(container) {
+    var host = null;
+    if (typeof container === 'string') { try { host = document.querySelector(container); } catch(e){} }
+    else if (container instanceof HTMLElement) host = container;
+    if (!host && window.MathLabUtils && window.MathLabUtils.getMountContainer) {
+      try { host = window.MathLabUtils.getMountContainer(container); } catch(e){}
+    }
+    if (!host || !(host instanceof HTMLElement)) host = document.getElementById('mathlab-view') || document.getElementById('new-root');
+    
+    if (!host || !(host instanceof HTMLElement) || host === document.body) {
+      host = document.getElementById(FORCE);
+      if (!host) { host = document.createElement('div'); host.id = FORCE; document.body.appendChild(host); }
+    }
+    
+    var footerEl = document.querySelector('footer,#footer,.app-footer');
+    if (footerEl && host && typeof host.compareDocumentPosition === 'function' && (host.compareDocumentPosition(footerEl) & Node.DOCUMENT_POSITION_PRECEDING)) {
+      try { footerEl.parentNode.insertBefore(host, footerEl); } catch(e){}
+    }
+    
+    host.style.display = ''; host.style.visibility = 'visible'; host.style.opacity = '1';
+    
+    S.host = host;
+    host.innerHTML = this.renderChrome();
+    this.bindEvents();
+    this.resetSim();
+    updateMathElements();
+  },
+
+  renderChrome: function() {
+    var h = '';
+    h += '<div class="pf-edu" id="pf-edu-root">';
+    h += '  <div class="h">';
+    h += '    <div>';
+    h += '      <h2 class="t">' + ICON + ' ' + APP_TITLE + '</h2>';
+    h += '      <div class="sub-title">수학적 논리 추론 및 귀류법·조합론 탐구 학습 모듈</div>';
+    h += '    </div>';
+    h += '    <button type="button" class="btn" id="pf-btn-guide">📖 교과 개요</button>';
+    h += '  </div>';
+
+    /* Navigation Tabs */
+    h += '  <div class="nav-tabs">';
+    h += '    <button type="button" class="tab-btn active" data-tab="sim">1. 💡 시뮬레이터 & 최악 배치</button>';
+    h += '    <button type="button" class="tab-btn" data-tab="math">2. 📐 수학적 정증 & 수식 (LaTeX)</button>';
+    h += '    <button type="button" class="tab-btn" data-tab="prob">3. 🧩 실전 응용 문제 (5선)</button>';
+    h += '  </div>';
+
+    /* TAB 1: Simulator */
+    h += '  <div id="tab-sec-sim">';
+    h += '    <div class="card">';
+    h += '      <div class="card-title">🍎 과일 - 박스 분배 실험실</div>';
+    h += '      <div class="control-group">';
+    h += '        <div class="control-item">';
+    h += '          <span>박스 개수 (<span class="math-tex" data-tex="n"></span>):</span>';
+    h += '          <input type="number" id="inp-n" class="num-input" min="2" max="10" value="' + S.n + '">';
+    h += '        </div>';
+    h += '        <div class="control-item">';
+    h += '          <span>과일 개수 (<span class="math-tex" data-tex="S"></span>):</span>';
+    h += '          <input type="number" id="inp-fruits" class="num-input" min="1" max="30" value="' + S.fruits + '">';
+    h += '        </div>';
+    h += '        <button type="button" class="btn p" id="btn-apply-sim">조건 적용</button>';
+    h += '        <button type="button" class="btn g" id="btn-worst-sim">⚖ 최악(골고루) 배치 시뮬레이션</button>';
+    h += '      </div>';
+
+    h += '      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">';
+    h += '        <span style="font-weight:800; color:#475569;">남은 과일: <b id="lbl-left" style="color:#0284c7;">' + S.left + '</b>개</span>';
+    h += '        <button type="button" class="btn" id="btn-reset-sim">🔄 과일 회수</button>';
+    h += '      </div>';
+
+    h += '      <div class="boxes-grid" id="boxes-container"></div>';
+
+    h += '      <div class="math-card" style="margin-top:16px;">';
+    h += '        <div style="font-weight:900; color:#0369a1; margin-bottom:6px;">📊 라이브 데이터 분석</div>';
+    h += '        <div>• 평균 과일 수: <span class="math-tex" data-tex="\\mu = \\frac{S}{n}"></span> = <b id="lbl-avg">0</b>개</div>';
+    h += '        <div>• 보장되는 최소 최대 개수: <span class="math-tex" data-tex="k = \\lceil \\frac{S}{n} \\rceil"></span> = <b id="lbl-ceil">0</b>개</div>';
+    h += '        <div id="lbl-analysis-msg" style="margin-top:6px; font-weight:800; color:#0f172a;"></div>';
+    h += '      </div>';
+    h += '    </div>';
+    h += '  </div>';
+
+    /* TAB 2: Mathematical Proof & Formulas */
+    h += '  <div id="tab-sec-math" style="display:none;">';
+    h += '    <div class="card">';
+    h += '      <div class="card-title">📐 비둘기집 원리의 수학적 정의 및 증명</div>';
+    
+    h += '      <div class="math-card">';
+    h += '        <div style="font-weight:900; font-size:1.05rem; color:#0369a1;">1. 기본 정리 (Basic Form)</div>';
+    h += '        <p><span class="math-tex" data-tex="n"></span>개의 비둘기집에 <span class="math-tex" data-tex="n+1"></span>마리 이상의 비둘기가 들어간다면, 적어도 하나의 비둘기집에는 <b>2마리 이상</b>의 비둘기가 들어있다.</p>';
+    h += '        <div class="math-latex"><span class="math-tex" data-tex="S > n \\implies \\exists \\text{ box containing } \\ge 2 \\text{ items}"></span></div>';
+    h += '      </div>';
+
+    h += '      <div class="math-card">';
+    h += '        <div style="font-weight:900; font-size:1.05rem; color:#0369a1;">2. 일반화 정리 (Generalized Form)</div>';
+    h += '        <p><span class="math-tex" data-tex="S"></span>개의 물건을 <span class="math-tex" data-tex="n"></span>개의 상자에 나누어 넣을 때, 적어도 하나의 상자에는 <b>다음 값 이상의 물건</b>이 들어간다:</p>';
+    h += '        <div class="math-latex"><span class="math-tex" data-tex="k = \\left\\lceil \\frac{S}{n} \\right\\rceil"></span></div>';
+    h += '        <p style="margin-top:8px;">반대로, 한 상자에 적어도 <span class="math-tex" data-tex="k"></span>개의 물건이 들어감을 <b>100% 보장</b>하기 위한 최소 물건의 개수 <span class="math-tex" data-tex="S_{\\min}"></span>은 다음과 같다:</p>';
+    h += '        <div class="math-latex"><span class="math-tex" data-tex="S_{\\min} = n(k - 1) + 1"></span></div>';
+    h += '      </div>';
+
+    h += '      <div class="math-card" style="background:#fefce8; border-color:#fde047;">';
+    h += '        <div style="font-weight:900; font-size:1.05rem; color:#854d0e;">3. 귀류법(Proof by Contradiction)에 의한 증명</div>';
+    h += '        <p><b>[명제]</b> <span class="math-tex" data-tex="S"></span>개의 물건을 <span class="math-tex" data-tex="n"></span>개의 상자에 넣을 때, 모든 상자에 들어간 물건의 개수가 <span class="math-tex" data-tex="k-1"></span>개 이하라고 가정하자.</p>';
+    h += '        <p>그러면 상자에 들어간 총 물건의 개수의 합 <span class="math-tex" data-tex="S_{total}"></span>은 다음과 같다:</p>';
+    h += '        <div class="math-latex" style="color:#854d0e;"><span class="math-tex" data-tex="S_{total} \\le n \\times (k - 1)"></span></div>';
+    h += '        <p>그러나 실제 물건의 개수는 <span class="math-tex" data-tex="S \\ge n(k-1)+1"></span> 이므로 <span class="math-tex" data-tex="S_{total} < S"></span> 가 되어 모순(Contradiction)이 발생한다.</p>';
+    h += '        <p>따라서 <b>적어도 하나의 상자에는 <span class="math-tex" data-tex="k"></span>개 이상의 물건이 존재해야 함</b>이 증명된다. <span class="math-tex" data-tex="\\blacksquare"></span></p>';
+    h += '      </div>';
+    h += '    </div>';
+    h += '  </div>';
+
+    /* TAB 3: Advanced Applied Problems */
+    h += '  <div id="tab-sec-prob" style="display:none;">';
+    h += '    <div class="card">';
+    h += '      <div class="card-title">🧩 실전 심화 응용 문제 (경시대회 및 수학적 추론)</div>';
+
+    var problems = [
+      {
+        id: 1,
+        tag: "생일과 달력 원리",
+        title: "문제 1: 13명의 학생 중 같은 달에 태어난 학생",
+        q: "13명의 학생이 한 교실에 모여 있을 때, 이들 중 태어난 달(Month)이 같은 학생이 적어도 2명 이상 존재함을 비둘기집 원리로 설명하시오.",
+        sol: "<b>[풀이 및 해설]</b><br>• <b>상자(n):</b> 1년의 12개 달 (n = 12)<br>• <b>비둘기(S):</b> 학생 13명 (S = 13)<br>13 > 12 이므로, 비둘기집 원리에 의해 13명의 학생 중 적어도 2명은 반드시 같은 달에 태어났습니다. (\\lceil 13/12 \\rceil = 2)"
+      },
+      {
+        id: 2,
+        tag: "기하학 응용",
+        title: "문제 2: 정삼각형 내부의 5개의 점",
+        q: "한 변의 길이가 2인 정삼각형 내부에 임의로 5개의 점을 찍을 때, 거리가 1 이하인 두 점이 적어도 한 쌍 존재함을 증명하시오.",
+        sol: "<b>[풀이 및 해설]</b><br>• 정삼각형의 각 변의 중점을 이어 <b>한 변의 길이가 1인 소형 정삼각형 4개</b>로 분할합니다. (상자 n = 4)<br>• 찍은 점은 총 5개입니다. (비둘기 S = 5)<br>• 5 > 4 이므로, 비둘기집 원리에 의해 4개의 소형 정삼각형 중 적어도 하나에는 2개 이상의 점이 포함됩니다.<br>• 한 변의 길이가 1인 정삼각형 내부의 두 점 사이의 거리는 최대 1이므로, <b>거리가 1 이하인 두 점이 반드시 존재</b>합니다."
+      },
+      {
+        id: 3,
+        tag: "정수론 응용",
+        title: "문제 3: 합이 11이 되는 자연수 쌍",
+        q: "집합 {1, 2, 3, 4, 5, 6, 7, 8, 9, 10} 에서 서로 다른 6개의 수를 임의로 선택할 때, 두 수의 합이 11이 되는 쌍이 적어도 하나 존재함을 증명하시오.",
+        sol: "<b>[풀이 및 해설]</b><br>• 합이 11이 되는 숫자 쌍으로 상자를 만듭니다:<br>  {1, 10}, {2, 9}, {3, 8}, {4, 7}, {5, 6} ➔ 총 5개의 상자 (n = 5)<br>• 선택하는 수의 개수 S = 6<br>• 6 > 5 이므로 비둘기집 원리에 의해 5개의 쌍 상자 중 적어도 하나에서는 <b>두 숫자가 모두 선택</b>됩니다.<br>• 따라서 합이 11이 되는 두 수의 쌍이 반드시 존재합니다."
+      },
+      {
+        id: 4,
+        tag: "조합 선택 응용",
+        title: "문제 4: 서랍 속의 양말 짝 맞추기",
+        q: "검은색 양말 10짝과 흰색 양말 10짝이 어두운 서랍 속에 섞여 있다. 불을 켜지 않고 양말을 꺼낼 때, 같은 색 양말 한 켤레(2짝)를 반드시 얻기 위해 꺼내야 하는 최소 양말 짝 수는?",
+        sol: "<b>[풀이 및 해설]</b><br>• <b>상자(n):</b> 양말의 색상 2가지 (검은색, 흰색) ➔ n = 2<br>• <b>목표(k):</b> 같은 색 2짝 ➔ k = 2<br>• 공식 S_{min} = n(k-1) + 1 = 2 × (2 - 1) + 1 = <b>3짝</b><br>• 처음 2짝이 서로 다른 색(검1, 흰1)이 나오는 것이 최악의 상태이며, 3번째 양말을 뽑는 순간 반드시 검은색 또는 흰색 중 하나와 짝이 이루어집니다."
+      },
+      {
+        id: 5,
+        tag: "그래프론 (램지 이론)",
+        title: "문제 5: 6명의 모임과 친분 관계 (Ramsey R(3,3)=6)",
+        q: "6명이 모인 모임에서는 '서로 모두 아는 3명'이 존재하거나 '서로 모두 모르는 3명'이 적어도 한 그룹은 반드시 존재함을 비둘기집 원리로 설명하시오.",
+        sol: "<b>[풀이 및 해설]</b><br>• 한 사람 A를 기준으로 나머지 5명을 두 그룹(아는 사람 그룹, 모르는 사람 그룹)으로 분할합니다. (상자 n = 2)<br>• 5명 > 2 이므로 비둘기집 원리에 의해 A와 [아는 사람 3명 이상] 또는 [모르는 사람 3명 이상]이 존재합니다. (\\lceil 5/2 \\rceil = 3)<br>• 만약 A와 아는 3명(B, C, D)이 있다면, 이들 중 두 사람이 서로 아는 순간 그 두 사람과 A는 '모두 아는 3명'이 됩니다. 만약 B, C, D 3명이 모두 서로 모른다면 '모두 모르는 3명'이 완성됩니다.<br>• 따라서 6명의 모임에서는 어느 경우든 조건이 100% 성립합니다."
+      }
+    ];
+
+    problems.forEach(function(p) {
+      h += '<div class="prob-card">';
+      h += '  <span class="prob-badge">' + p.tag + '</span>';
+      h += '  <div class="prob-question">' + p.title + '</div>';
+      h += '  <div style="line-height:1.6; color:#334155; margin-bottom:10px;">' + p.q + '</div>';
+      h += '  <button type="button" class="btn p btn-show-sol" data-id="' + p.id + '">💡 정답 및 해설 보기</button>';
+      h += '  <div class="prob-solution" id="sol-' + p.id + '">' + p.sol + '</div>';
+      h += '</div>';
+    });
+
+    h += '  </div>';
+    h += '  </div>';
+
+    /* Modal Guide */
+    h += '<div class="modal" id="pf-modal">';
+    h += '  <div class="mbox" style="position:relative;">';
+    h += '    <button type="button" class="modal-close-btn" id="modal-close-x">✕</button>';
+    h += '    <h3 style="color:#0284c7; font-weight:900;">🎓 비둘기집 원리 교과 학습 모듈</h3>';
+    h += '    <p>본 학습 앱은 <b>비둘기집 원리(Pigeonhole Principle)</b>의 직관적 시뮬레이션부터 귀류법 증명, 그리고 경시대회 스타일의 고난도 응용 문제까지 단계별로 습득하도록 설계되었습니다.</p>';
+    h += '    <ul style="line-height:1.7;">';
+    h += '      <li><b>1단계:</b> 과일과 상자를 직접 조작하며 [최악 균등 배치] 시 올림 함수 <span class="math-tex" data-tex="\\lceil S/n \\rceil"></span>의 적용을 확인합니다.</li>';
+    h += '      <li><b>2단계:</b> LaTeX 수식으로 정리된 일반화 정리와 귀류법 증명 과정을 완벽히 이해합니다.</li>';
+    h += '      <li><b>3단계:</b> 생일 문제, 기하학 분할, 램지 이론 등 고난도 실전 문제를 해설과 함께 풀어봅니다.</li>';
+    h += '    </ul>';
+    h += '    <button type="button" class="btn p" id="modal-close-btn" style="width:100%; margin-top:14px; padding:12px;">학습 시작하기</button>';
+    h += '  </div>';
+    h += '</div>';
+
+    h += '</div>';
+    return h;
+  },
+
+  bindEvents: function() {
+    var _this = this;
+    var root = S.host.querySelector('#pf-edu-root');
+
+    /* Tabs */
+    root.querySelectorAll('.tab-btn').forEach(function(btn) {
+      btn.onclick = function() {
+        root.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
+        this.classList.add('active');
+        S.activeTab = this.getAttribute('data-tab');
+
+        root.querySelector('#tab-sec-sim').style.display = (S.activeTab === 'sim') ? 'block' : 'none';
+        root.querySelector('#tab-sec-math').style.display = (S.activeTab === 'math') ? 'block' : 'none';
+        root.querySelector('#tab-sec-prob').style.display = (S.activeTab === 'prob') ? 'block' : 'none';
+        
+        updateMathElements();
+      };
+    });
+
+    /* Sim Controls */
+    root.querySelector('#btn-apply-sim').onclick = function() {
+      var nVal = parseInt(root.querySelector('#inp-n').value) || 4;
+      var fVal = parseInt(root.querySelector('#inp-fruits').value) || 5;
+      S.n = Math.max(2, Math.min(10, nVal));
+      S.fruits = Math.max(1, Math.min(40, fVal));
+      _this.resetSim();
+    };
+
+    root.querySelector('#btn-worst-sim').onclick = function() {
+      _this.runWorstSim();
+    };
+
+    root.querySelector('#btn-reset-sim').onclick = function() {
+      _this.resetSim();
+    };
+
+    /* Guide Modal */
+    root.querySelector('#pf-btn-guide').onclick = function() {
+      root.querySelector('#pf-modal').classList.add('on');
+      updateMathElements();
+    };
+    root.querySelector('#modal-close-x').onclick = function() { root.querySelector('#pf-modal').classList.remove('on'); };
+    root.querySelector('#modal-close-btn').onclick = function() { root.querySelector('#pf-modal').classList.remove('on'); };
+
+    /* Problem Solutions */
+    root.querySelectorAll('.btn-show-sol').forEach(function(btn) {
+      btn.onclick = function() {
+        var pid = this.getAttribute('data-id');
+        var solEl = root.querySelector('#sol-' + pid);
+        if(solEl) {
+          solEl.classList.toggle('show');
+          this.textContent = solEl.classList.contains('show') ? '🙈 해설 닫기' : '💡 정답 및 해설 보기';
+          updateMathElements();
+        }
+      };
+    });
+  },
+
+  resetSim: function() {
+    S.bins = [];
+    for(var i=0; i<S.n; i++) S.bins.push(0);
+    S.left = S.fruits;
+    this.renderSimUI();
+  },
+
+  runWorstSim: function() {
+    // Fill evenly as much as possible
+    S.bins = [];
+    for(var i=0; i<S.n; i++) S.bins.push(0);
+    S.left = S.fruits;
+
+    var idx = 0;
+    while(S.left > 0) {
+      S.bins[idx]++;
+      S.left--;
+      idx = (idx + 1) % S.n;
+    }
+    this.renderSimUI();
+  },
+
+  putFruit: function(binIdx) {
+    if(S.left <= 0) return;
+    S.bins[binIdx]++;
+    S.left--;
+    this.renderSimUI();
+  },
+
+  renderSimUI: function() {
+    var _this = this;
+    var root = S.host.querySelector('#pf-edu-root');
+    var container = root.querySelector('#boxes-container');
+    container.innerHTML = '';
+
+    var ceilVal = Math.ceil(S.fruits / S.n);
+    var avgVal = (S.fruits / S.n).toFixed(2);
+
+    S.bins.forEach(function(count, idx) {
+      var d = document.createElement('div');
+      d.className = 'hole' + (count >= ceilVal && ceilVal > 1 ? ' hot' : '');
+      var fruitStr = '';
+      for(var f=0; f<count; f++) fruitStr += EMO[f % EMO.length];
+      d.innerHTML = '<div style="font-weight:900; font-size:0.85rem; color:#475569;">박스 ' + (idx + 1) + '</div>' +
+                    '<div class="fruits-display">' + (fruitStr || '·') + '</div>' +
+                    '<div style="font-size:0.88rem; font-weight:800; color:#0284c7; margin-top:4px;">' + count + '개 담김</div>';
+      d.onclick = function() { _this.putFruit(idx); };
+      container.appendChild(d);
+    });
+
+    root.querySelector('#lbl-left').textContent = S.left;
+    root.querySelector('#lbl-avg').textContent = avgVal;
+    root.querySelector('#lbl-ceil').textContent = ceilVal;
+
+    var hasCeil = S.bins.some(function(c){ return c >= ceilVal; });
+    var msgEl = root.querySelector('#lbl-analysis-msg');
+    
+    if(S.left === 0) {
+      if(hasCeil) {
+        msgEl.innerHTML = '✅ <b>원리 성립 확정!</b> 모든 과일을 배치한 결과, 적어도 하나의 박스에 <b>' + ceilVal + '개 이상</b>의 과일이 담겼습니다.';
+        msgEl.style.color = '#059669';
+      } else {
+        msgEl.innerHTML = '⏳ 아직 모든 과일이 배치되지 않았습니다.';
+        msgEl.style.color = '#475569';
+      }
+    } else {
+      msgEl.innerHTML = '👉 남은 과일(' + S.left + '개)을 박스에 넣어보거나 [⚖ 최악 배치 시뮬레이션]을 눌러보세요.';
+      msgEl.style.color = '#0284c7';
+    }
+  },
+
+  destroy: function() {
+    if(S.host) S.host.innerHTML = '';
+    S.host = null;
+  }
+};
+
+function goHome() {
+  if(S.host) S.host.innerHTML = '';
+  if (typeof window.LegacyBridge !== 'undefined' && typeof window.LegacyBridge.backHome === 'function') {
+    window.LegacyBridge.backHome();
+  } else if (typeof window.MathLabGames !== 'undefined' && window.MathLabGames.goHome) {
+    window.MathLabGames.goHome();
+  } else {
+    window.location.reload();
+  }
+}
+
+function reg() {
+  if (typeof window.MathLabGames === 'undefined' || typeof window.MathLabGames.register !== 'function') return;
+  try {
+    if (window.MathLabGames.get && window.MathLabGames.get(APP_ID)) return;
+    window.MathLabGames.register({
+      id: APP_ID,
+      title: APP_TITLE,
+      icon: ICON,
+      sourceType: 'new',
+      players: '1인',
+      isMultiplayer: false,
+      mount: function(c, x) { AbacusEduApp.mount(c, x); },
+      reset: function() { AbacusEduApp.resetSim(); },
+      destroy: function() { AbacusEduApp.destroy(); },
+      goHome: function() { goHome(); }
+    });
+  } catch (e) {
+    console.warn(APP_ID + ' reg', e);
+  }
+}
+
+reg();
+window.addEventListener('DOMContentLoaded', reg);
+setTimeout(reg, 100);
+setTimeout(reg, 500);
+
+window.PigeonholeFruit = {
+  mount: function(c) { AbacusEduApp.mount(c); },
+  resetGame: function() { AbacusEduApp.resetSim(); },
+  destroy: function() { AbacusEduApp.destroy(); },
+  goHome: goHome
+};
+
+window.initPigeonholeFruit = function() {
+  reg();
+  try {
+    if (window.LegacyBridge) {
+      window.LegacyBridge.hideAllLegacySections();
+      if (window.LegacyBridge.showNewRoot) window.LegacyBridge.showNewRoot();
+    }
+  } catch (e) {}
+  if (window.MathLabGames && window.MathLabGames.mount) {
+    try { window.MathLabGames.mount(APP_ID); return; } catch (e) {}
+  }
+  AbacusEduApp.mount(document.getElementById('mathlab-view'));
+};
+
+window.launchPigeonholeFruit = window.initPigeonholeFruit;
+})();
+</script>

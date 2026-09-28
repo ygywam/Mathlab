@@ -1,0 +1,107 @@
+<style>
+.game-scatter-r-guesser,.game-scatter-r-guesser *{box-sizing:border-box}
+.game-scatter-r-guesser{max-width:1000px;margin:0 auto;padding:16px;font-family:'Pretendard','Noto Sans KR',sans-serif;background:#f8fafc;color:#0f172a;border-radius:16px}
+.srg-h{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+.srg-t{font-size:1.35rem;font-weight:900;margin:0}
+.srg-btn{border:1px solid #cbd5e1;background:#fff;color:#1e293b;border-radius:10px;padding:8px 12px;font-weight:700;cursor:pointer}
+.srg-btn:hover{background:#f1f5f9}
+.srg-btn.p{background:#0284c7;border-color:#0284c7;color:#fff}
+.srg-btn.g{background:#059669;border-color:#059669;color:#fff}
+.srg-chip{background:#fff;border:1px solid #e2e8f0;border-radius:999px;padding:5px 12px;font-size:.88rem;font-weight:700;color:#475569}
+.srg-chip b{color:#0284c7}
+.srg-bar{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+.srg-diff{flex:1;min-width:90px;padding:8px;border-radius:10px;border:1px solid #cbd5e1;background:#fff;font-weight:800;cursor:pointer}
+.srg-diff.on{background:#e0f2fe;border-color:#0284c7;color:#0369a1}
+.srg-main{display:grid;grid-template-columns:1.2fr 1fr;gap:12px}
+@media(max-width:820px){.srg-main{grid-template-columns:1fr}}
+.srg-box{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:12px}
+.srg-box canvas{width:100%;display:block;border-radius:8px;background:#fff}
+.srg-opts{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:8px 0}
+.srg-opt{padding:10px 6px;border-radius:10px;border:1px solid #cbd5e1;background:#f8fafc;font-weight:800;cursor:pointer}
+.srg-opt.on{background:#fef3c7;border-color:#d97706;color:#b45309}
+.srg-slider{width:100%;accent-color:#0284c7;touch-action:none;user-select:none}
+.srg-msg{font-size:.92rem;line-height:1.55;color:#334155;min-height:3.2em}
+.srg-note{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:10px;font-size:.88rem;margin-top:8px}
+.srg-rank{margin-top:12px}
+.srg-toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-12px);background:#0f172a;color:#fff;padding:10px 18px;border-radius:12px;font-weight:700;z-index:9500;opacity:0;pointer-events:none;transition:.25s}
+.srg-toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+.srg-toast.ok{background:#059669}.srg-toast.err{background:#dc2626}
+.srg-modal{position:fixed;inset:0;background:rgba(15,23,42,.45);display:none;align-items:center;justify-content:center;z-index:9000;padding:16px}
+.srg-modal.on{display:flex}
+.srg-modal .box{background:#fff;border-radius:14px;max-width:480px;width:100%;padding:18px;max-height:80vh;overflow:auto}
+.srg-slider-wrap{position:relative;width:100%;overflow:hidden;border-radius:12px;background:#f1f5f9;border:1px solid #e2e8f0;margin:12px 0}
+.srg-slides{display:flex;transition:transform 0.3s ease-in-out}
+.srg-slide{min-width:100%;padding:16px;box-sizing:border-box}
+.srg-slide h4{margin:0 0 10px 0;color:#0284c7;font-size:1.15rem;font-weight:900}
+.srg-slide p{margin:0 0 8px 0;font-size:0.95rem;line-height:1.6;color:#334155}
+.srg-slide ul{margin:0;padding-left:20px;color:#334155;font-size:0.95rem;line-height:1.6}
+.srg-slide li{margin-bottom:6px}
+.srg-slide .hl{background:#e0f2fe;padding:2px 4px;border-radius:4px;font-weight:700;color:#0369a1}
+.srg-nav{display:flex;justify-content:space-between;align-items:center;padding:10px 0 0 0}
+.srg-dots{display:flex;gap:6px}
+.srg-dot{width:8px;height:8px;border-radius:50%;background:#cbd5e1;cursor:pointer;transition:0.2s}
+.srg-dot.on{background:#0284c7;transform:scale(1.2)}
+.srg-navbtn{background:#e2e8f0;border:none;border-radius:6px;padding:6px 14px;font-weight:800;cursor:pointer;color:#475569;transition:0.2s}
+.srg-navbtn:hover{background:#cbd5e1}
+</style>
+<script>
+(function(){
+'use strict';
+var APP_ID='scatter-r-guesser', APP_TITLE='산점도 상관계수 추측기', BOARD='board-scatter-r-guesser';
+var CW=640, CH=420, TOTAL=6;
+var state={mounted:false,host:null,diff:'normal',round:1,score:0,combo:0,finished:false,points:[],trueR:0,guess:0,mode:'band',hintUsed:false,showLine:false,timer:null,timeLeft:0,pending:[]};
+var BANDS=[-1,-0.7,-0.3,0,0.3,0.7,1];
+function byId(id){return document.getElementById(id)}
+function setText(id,v){var el=byId(id);if(el)el.textContent=String(v)}
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+var toastT=null;
+function toast(m,t){var el=byId('srg-toast');if(!el)return;el.textContent=m;el.className='srg-toast on'+(t?' '+t:'');if(toastT)clearTimeout(toastT);toastT=setTimeout(function(){el.className='srg-toast'},2200)}
+function randn(){var u=0,v=0;while(!u)u=Math.random();while(!v)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)}
+function corr(pts){var n=pts.length,sx=0,sy=0,sxx=0,syy=0,sxy=0,i;for(i=0;i<n;i++){sx+=pts[i].x;sy+=pts[i].y;sxx+=pts[i].x*pts[i].x;syy+=pts[i].y*pts[i].y;sxy+=pts[i].x*pts[i].y}var dx=sxx-sx*sx/n,dy=syy-sy*sy/n,d=Math.sqrt(Math.max(dx*dy,1e-12));return (sxy-sx*sy/n)/d}
+function genPoints(targetR,n,trap){var tries=0,pts,r;
+do{pts=[];var i,noise=trap?1.1:Math.sqrt(Math.max(0.02,1-targetR*targetR));
+for(i=0;i<n;i++){var x=randn();var y=targetR*x+noise*randn();if(trap&&i===n-1){x=3;y=-3*Math.sign(targetR||1)}pts.push({x:x,y:y})}
+r=corr(pts);tries++}while(Math.abs(r-targetR)>0.03&&tries<40);
+return {pts:pts,r:r}}
+function pickTarget(){var d=state.diff;if(d==='easy'){var a=[0.85,-0.85,0.75,-0.75,0.9];return a[Math.floor(Math.random()*a.length)]}
+if(d==='hard'){var b=[0.15,-0.2,0.35,-0.4,0.05,-0.55,0.6];return b[Math.floor(Math.random()*b.length)]}
+var c=[0.55,-0.5,0.3,-0.35,0.7,-0.65,0.1,-0.15];return c[Math.floor(Math.random()*c.length)]}
+function nearestBand(r){var best=BANDS[0],bd=1e9,i;for(i=0;i<BANDS.length;i++){var d=Math.abs(BANDS[i]-r);if(d<bd){bd=d;best=BANDS[i]}}return best}
+function startRound(){if(state.finished)return;var n=state.diff==='easy'?50:(state.diff==='hard'?28:40);var trap=state.diff==='hard'&&Math.random()<0.35;var t=pickTarget();var g=genPoints(t,n,trap);state.points=g.pts;state.trueR=g.r;state.guess=nearestBand(g.r);state.hintUsed=false;state.showLine=false;state.mode=state.diff==='easy'?'band':'slider';if(state.timer){clearInterval(state.timer);state.timer=null}if(state.diff==='hard'){state.timeLeft=35;state.timer=setInterval(function(){if(!state.mounted)return;state.timeLeft--;setText('srg-time',state.timeLeft);if(state.timeLeft<=0){clearInterval(state.timer);state.timer=null;toast('시간 초과','err');nextAfter(0)}},1000)}else setText('srg-time','—');renderUI();draw()}
+function draw(){var cv=byId('srg-cv');if(!cv)return;var ctx=cv.getContext('2d');ctx.clearRect(0,0,CW,CH);ctx.fillStyle='#fff';ctx.fillRect(0,0,CW,CH);var pts=state.points;if(!pts.length)return;var i,xmin=1e9,xmax=-1e9,ymin=1e9,ymax=-1e9;for(i=0;i<pts.length;i++){xmin=Math.min(xmin,pts[i].x);xmax=Math.max(xmax,pts[i].x);ymin=Math.min(ymin,pts[i].y);ymax=Math.max(ymax,pts[i].y)}var pad=36,dx=xmax-xmin||1,dy=ymax-ymin||1;xmin-=dx*.08;xmax+=dx*.08;ymin-=dy*.08;ymax+=dy*.08;dx=xmax-xmin;dy=ymax-ymin;function X(x){return pad+(x-xmin)/dx*(CW-pad*2)}function Y(y){return CH-pad-(y-ymin)/dy*(CH-pad*2)}ctx.strokeStyle='#e2e8f0';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(pad,Y(0));ctx.lineTo(CW-pad,Y(0));ctx.moveTo(X(0),pad);ctx.lineTo(X(0),CH-pad);ctx.stroke();ctx.fillStyle='rgba(2,132,199,.75)';for(i=0;i<pts.length;i++){ctx.beginPath();ctx.arc(X(pts[i].x),Y(pts[i].y),3.2,0,Math.PI*2);ctx.fill()}if(state.showLine){var n=pts.length,sx=0,sy=0,sxx=0,sxy=0;for(i=0;i<n;i++){sx+=pts[i].x;sy+=pts[i].y;sxx+=pts[i].x*pts[i].x;sxy+=pts[i].x*pts[i].y}var b=(sxy-sx*sy/n)/(sxx-sx*sx/n+1e-12),a=sy/n-b*sx/n;ctx.strokeStyle='#d97706';ctx.lineWidth=2;ctx.setLineDash([6,4]);ctx.beginPath();ctx.moveTo(X(xmin),Y(a+b*xmin));ctx.lineTo(X(xmax),Y(a+b*xmax));ctx.stroke();ctx.setLineDash([])}ctx.fillStyle='#64748b';ctx.font='12px sans-serif';ctx.fillText('x',CW-22,Y(0)-6);ctx.fillText('y',X(0)+6,18)}
+function scoreGuess(g){var tr=state.trueR,dirOk=(tr===0&&Math.abs(g)<0.15)||(tr*g>0)||(Math.abs(tr)<0.15&&Math.abs(g)<0.15);var sc=0;if(dirOk)sc+=20;var nb=nearestBand(tr);if(Math.abs(g-nb)<1e-9||Math.abs(g-tr)<=0.15)sc+=40;var er=Math.abs(g-tr);if(er<=0.1)sc+=60;else if(er<=0.2)sc+=30;if(state.hintUsed)sc=Math.max(0,sc-10);if(state.diff==='hard'&&state.timeLeft>0)sc+=Math.min(15,Math.floor(state.timeLeft/3));return {sc:sc,dirOk:dirOk,er:er}}
+function submit(){if(state.finished)return;var g=state.mode==='band'?state.guess:parseFloat(byId('srg-slider').value);var res=scoreGuess(g);state.score+=res.sc;if(res.sc>=50)state.combo++;else state.combo=0;if(state.combo>=2){var b=(state.combo-1)*5;state.score+=b}state.showLine=true;draw();var msg='정답 r ≈ '+state.trueR.toFixed(2)+' / 추정 '+g.toFixed(2)+' (오차 '+res.er.toFixed(2)+') → +'+res.sc+'점';setText('srg-msg',msg);setText('srg-score',state.score);toast(res.sc>=50?'좋아요! +'+res.sc:'확인 +'+res.sc,res.sc>=50?'ok':'');if(state.timer){clearInterval(state.timer);state.timer=null}var tid=setTimeout(function(){nextAfter(res.sc)},1200);state.pending.push(tid)}
+function nextAfter(){if(state.round>=TOTAL){finish();return}state.round++;setText('srg-round',state.round+'/'+TOTAL);startRound()}
+function finish(){state.finished=true;if(state.timer){clearInterval(state.timer);state.timer=null}toast('종료! 최종 '+state.score+'점','ok');openRank(true)}
+function openRank(reg){var m=byId('srg-modal');if(!m)return;var list=[];try{list=JSON.parse(localStorage.getItem('mathlab_lb_scatter_r')||'[]')}catch(e){}var rows=list.slice(0,5).map(function(it,i){return '<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #e2e8f0"><span>'+(i+1)+'위 '+esc(it.nickname)+'</span><b style="color:#0284c7">'+it.score+'점</b></div>'}).join('')||'<p style="color:#64748b">기록 없음</p>';var regH=reg?'<p><b>최종 '+state.score+'점</b></p><input id="srg-nick" maxlength="12" placeholder="닉네임" style="width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:8px"><button class="srg-btn p" id="srg-save" style="width:100%;margin-top:8px">명예의 전당 등록</button>':'';m.innerHTML='<div class="box"><h3 style="margin:0 0 10px">🏆 명예의 전당</h3>'+regH+rows+'<button class="srg-btn" id="srg-close" style="width:100%;margin-top:10px">닫기</button></div>';m.className='srg-modal on';byId('srg-close').onclick=function(){m.className='srg-modal'};var sb=byId('srg-save');if(sb)sb.onclick=function(){var nm=(byId('srg-nick').value||'익명').trim().slice(0,12);try{if(typeof window.submitRanking==='function')window.submitRanking(APP_TITLE,state.score,true,nm+'('+(state.diff==='easy'?'쉬움':state.diff==='hard'?'도전':'보통')+')',BOARD)}catch(e){}try{list.push({nickname:nm,score:state.score});list.sort(function(a,b){return b.score-a.score});localStorage.setItem('mathlab_lb_scatter_r',JSON.stringify(list.slice(0,20)))}catch(e){}toast('저장됨','ok');m.className='srg-modal';loadRank()}}
+function loadRank(){var el=byId(BOARD);if(!el)return;if(typeof window.loadGameLeaderboard==='function'){try{window.loadGameLeaderboard(APP_TITLE,true,BOARD);return}catch(e){}}var list=[];try{list=JSON.parse(localStorage.getItem('mathlab_lb_scatter_r')||'[]')}catch(e){}el.innerHTML=list.length?list.slice(0,5).map(function(it,i){return '<div style="display:flex;justify-content:space-between;padding:8px 10px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;margin-bottom:6px"><span>'+(i+1)+'위 '+esc(it.nickname)+'</span><b style="color:#0284c7">'+it.score+'</b></div>'}).join(''):'<p style="text-align:center;color:#94a3b8">아직 기록 없음</p>'}
+function renderUI(){setText('srg-round',state.round+'/'+TOTAL);setText('srg-score',state.score);setText('srg-msg','산점도를 보고 상관계수 r을 추정하세요. (상관 ≠ 인과)');var bar=byId('srg-opts');if(bar){bar.innerHTML=BANDS.map(function(b){return '<button type="button" class="srg-opt'+(state.guess===b?' on':'')+'" data-b="'+b+'">'+(b>0?'+':'')+b+'</button>'}).join('')}var sl=byId('srg-slider');if(sl){sl.value=String(state.guess);setText('srg-gval',Number(state.guess).toFixed(2))}document.querySelectorAll('.srg-diff').forEach(function(btn){btn.classList.toggle('on',btn.getAttribute('data-d')===state.diff)})}
+function html(){return '<div class="game-scatter-r-guesser" id="srg-root">'+
+'<div class="srg-h"><h2 class="srg-t">📉 산점도 상관계수 추측기</h2><div style="display:flex;gap:6px;flex-wrap:wrap">'+
+'<button type="button" class="srg-btn" id="srg-guide">📖 방법</button><button type="button" class="srg-btn" id="srg-rank">🏆</button><button type="button" class="srg-btn" id="srg-home">🏠 홈</button></div></div>'+
+'<div class="srg-bar"><button type="button" class="srg-diff" data-d="easy">쉬움</button><button type="button" class="srg-diff on" data-d="normal">보통</button><button type="button" class="srg-diff" data-d="hard">도전</button></div>'+
+'<div class="srg-bar"><span class="srg-chip">라운드 <b id="srg-round">1/6</b></span><span class="srg-chip">점수 <b id="srg-score">0</b></span><span class="srg-chip">시간 <b id="srg-time">—</b></span></div>'+
+'<div class="srg-main"><div class="srg-box"><canvas id="srg-cv" width="'+CW+'" height="'+CH+'"></canvas><p class="srg-note">📌 상관관계는 인과를 의미하지 않습니다. 점의 퍼짐으로 r의 부호·강도를 읽으세요.</p></div>'+
+'<div><div class="srg-box"><div class="srg-msg" id="srg-msg"></div><div style="font-weight:800;margin:8px 0 4px">구간 선택</div><div class="srg-opts" id="srg-opts"></div>'+
+'<div style="font-weight:800;margin:10px 0 4px">슬라이더 추정 <span id="srg-gval">0.00</span></div><input type="range" class="srg-slider" id="srg-slider" min="-1" max="1" step="0.01" value="0">'+
+'<div class="srg-bar" style="margin-top:10px"><button type="button" class="srg-btn" id="srg-hint">💡 회귀선 힌트 (-10)</button><button type="button" class="srg-btn g" id="srg-submit">✅ 제출</button><button type="button" class="srg-btn" id="srg-restart">🔄</button></div></div>'+
+'<div class="srg-box srg-rank"><div style="font-weight:900;margin-bottom:8px">🏆 명예의 전당</div><div id="'+BOARD+'"></div></div></div></div>'+
+'<div class="srg-toast" id="srg-toast"></div><div class="srg-modal" id="srg-modal"></div></div>'}
+function bind(){var root=byId('srg-root');if(!root)return;
+byId('srg-home').onclick=goHome;byId('srg-rank').onclick=function(){openRank(state.finished)};byId('srg-submit').onclick=submit;byId('srg-restart').onclick=function(){state.finished=false;state.round=1;state.score=0;state.combo=0;startRound()};
+byId('srg-hint').onclick=function(){if(state.showLine)return;state.hintUsed=true;state.showLine=true;draw();toast('회귀선 표시 (-10 적용 예정)')};
+byId('srg-guide').onclick=function(){var m=byId('srg-modal');var slides=['<div class="srg-slide"><h4>1. 산점도와 상관계수 r</h4><p>산점도(Scatter Plot)는 두 변수 사이의 관계를 나타내기 위해 직교 좌표계에 점들을 흩뿌려 그린 그래프입니다.</p><p><span class="hl">상관계수 r</span>은 이 두 변수 간의 <span class="hl">선형 관계의 강도와 방향</span>을 -1부터 1 사이의 수치로 나타냅니다.</p></div>','<div class="srg-slide"><h4>2. r 값의 의미</h4><ul><li><span class="hl">r &gt; 0</span> : 양의 상관관계 (우상향)</li><li><span class="hl">r &lt; 0</span> : 음의 상관관계 (우하향)</li><li><span class="hl">r = 0</span> : 상관관계 없음 (둥글게 뭉침)</li><li><span class="hl">r = ±1</span> : 완벽한 직선 형태</li></ul><p>점들이 직선에 가깝게 모여있을수록 절댓값이 1에 가까워집니다.</p></div>','<div class="srg-slide"><h4>3. 게임 플레이 방법</h4><p>화면에 생성된 산점도를 보고, 점들의 퍼짐 정도와 기울기를 통해 상관계수 r을 추정하세요.</p><p>하단의 <span class="hl">구간 선택 버튼</span>(보통 난이도 이하) 또는 <span class="hl">슬라이더</span>(도전 난이도)를 이용해 값을 입력하고 제출하면 점수를 획득합니다!</p></div>','<div class="srg-slide"><h4>4. ⚠️ 주의: 상관관계 ≠ 인과관계</h4><p>아이스크림 판매량과 상어 공격 횟수는 <span class="hl">양의 상관관계</span>를 가지지만, 아이스크림이 상어 공격의 원인(인과)은 아닙니다. (제3의 변수: 여름이라는 계절)</p><p>산점도는 관계성을 보여줄 뿐, 원인과 결과를 증명하지 않음에 유의하세요!</p></div>'];m.innerHTML='<div class="box"><h3 style="margin:0 0 4px">📖 학습 가이드</h3><div class="srg-slider-wrap"><div class="srg-slides" id="srg-slides-ct">'+slides.join('')+'</div></div><div class="srg-nav"><button class="srg-navbtn" id="srg-prev">이전</button><div class="srg-dots" id="srg-dots-ct">'+slides.map(function(s,i){return '<div class="srg-dot'+(i===0?' on':'')+'" data-i="'+i+'"></div>'}).join('')+'</div><button class="srg-navbtn" id="srg-next">다음</button></div><button class="srg-btn p" id="srg-close" style="width:100%;margin-top:16px">닫기</button></div>';m.className='srg-modal on';var curr=0;function updateSlide(){var ct=byId('srg-slides-ct');if(ct)ct.style.transform='translateX(-'+(curr*100)+'%)';var dots=byId('srg-dots-ct');if(dots)Array.from(dots.children).forEach(function(d,i){d.className='srg-dot'+(i===curr?' on':'')})}byId('srg-prev').onclick=function(){if(curr>0)curr--;updateSlide()};byId('srg-next').onclick=function(){if(curr<slides.length-1)curr++;updateSlide()};var dotsCt=byId('srg-dots-ct');if(dotsCt)dotsCt.onclick=function(e){var idx=e.target.getAttribute('data-i');if(idx!==null){curr=parseInt(idx);updateSlide()}};byId('srg-close').onclick=function(){m.className='srg-modal'}};
+root.querySelectorAll('.srg-diff').forEach(function(btn){btn.onclick=function(){state.diff=btn.getAttribute('data-d');state.finished=false;state.round=1;state.score=0;startRound()}});
+var opts=byId('srg-opts');if(opts)opts.onclick=function(ev){var b=ev.target&&ev.target.getAttribute('data-b');if(b==null)return;state.guess=parseFloat(b);state.mode='band';renderUI()};
+var sl=byId('srg-slider');if(sl)sl.oninput=function(){state.guess=parseFloat(sl.value);state.mode='slider';setText('srg-gval',state.guess.toFixed(2));}}
+function mount(container){var host=null;if(typeof container==='string'){try{host=document.querySelector(container)}catch(e){}}else if(container instanceof HTMLElement)host=container;
+if(!host)host=document.getElementById('mathlab-view')||document.getElementById('new-root');
+if(!host||host===document.body){host=document.getElementById('scatter-r-guesser-force-host');if(!host){host=document.createElement('div');host.id='scatter-r-guesser-force-host';document.body.appendChild(host)}}host.style.display='';host.style.minHeight='60vh';state.host=host;state.mounted=true;host.innerHTML=html();bind();startRound();loadRank()}
+function destroy(){if(state.timer)clearInterval(state.timer);state.pending.forEach(clearTimeout);state.pending=[];state.mounted=false;if(state.host)try{state.host.innerHTML=''}catch(e){}state.host=null}
+function goHome(){destroy();var fh=document.getElementById('scatter-r-guesser-force-host');if(fh){fh.style.display='none';fh.innerHTML=''}var mv=document.getElementById('mathlab-view');if(mv){mv.style.display='none';mv.innerHTML=''}var ag=document.querySelector('.app-grid'),ds=document.getElementById('dashboard-screen');if(ag)ag.style.display='';if(ds)ds.style.display='';if(typeof window.goHome==='function')try{window.goHome()}catch(e){}}
+var API={mount:mount,resetGame:function(){state.finished=false;state.round=1;state.score=0;startRound()},destroy:destroy,goHome:goHome};
+function reg(){if(typeof window.MathLabGames==='undefined'||typeof window.MathLabGames.register!=='function')return;try{if(window.MathLabGames.get&&window.MathLabGames.get(APP_ID))return;window.MathLabGames.register({id:APP_ID,title:APP_TITLE,icon:'📉',sourceType:'new',mount:function(c,x){API.mount(c,x)},reset:function(){API.resetGame()},destroy:function(){API.destroy()},goHome:function(){API.goHome()}})}catch(e){console.warn(e)}}
+reg();window.addEventListener('DOMContentLoaded',reg);setTimeout(reg,100);setTimeout(reg,500);
+window.ScatterRGuesser=API;window.initScatterRGuesserGame=function(){reg();if(window.MathLabGames&&window.MathLabGames.mount){try{window.MathLabGames.mount(APP_ID);return}catch(e){}}API.mount(document.getElementById('mathlab-view'))};window.launchScatterRGuesserGame=window.initScatterRGuesserGame;
+})();
+</script>

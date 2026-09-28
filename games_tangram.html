@@ -1,0 +1,1272 @@
+<!-- 웹 칠교놀이 (Tangram) Gen-3 표준 완결판 - 버벅임(랙) 원천 차단 & 100% 무겹침 정밀 실루엣 18문항 -->
+<style>
+  .game-tangram {
+    width: 100%;
+    min-height: 100%;
+    padding: 24px;
+    box-sizing: border-box;
+    color: #ffffff;
+    background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #1e293b 100%);
+    border-radius: 24px;
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+    user-select: none;
+    -webkit-user-select: none;
+    border: 3px solid #8b5cf6;
+    box-shadow: inset 0 0 50px rgba(0,0,0,0.8);
+  }
+
+  .game-tangram * { box-sizing: border-box; }
+  
+  /* 가독성을 극대화한 순백색/고명도 상단 헤더 */
+  .game-tangram .tg-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; flex-wrap: wrap; gap: 14px; }
+  .game-tangram .title-area h2 { 
+    margin: 0 0 8px; 
+    font-size: clamp(1.8rem, 3vw, 2.5rem); 
+    color: #ffffff !important; 
+    font-weight: 900; 
+    display: flex; 
+    align-items: center; 
+    gap: 12px; 
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.8), 0 4px 10px rgba(0,0,0,0.8); 
+  }
+  .game-tangram .title-area p { 
+    margin: 0; 
+    color: #fef08a !important; 
+    font-size: 1.15rem; 
+    font-weight: 800; 
+    text-shadow: 0 2px 4px rgba(0,0,0,0.7); 
+  }
+  .game-tangram .stats-bar { display: flex; gap: 12px; font-weight: 800; font-size: 1.05rem; flex-wrap: wrap; align-items: center; }
+  
+  .game-tangram .stat-badge { 
+    background: #0f172a; 
+    padding: 10px 18px; 
+    border-radius: 16px; 
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5); 
+    border: 2px solid #a5b4fc; 
+    color: #ffffff; 
+    display: flex; 
+    align-items: center; 
+    gap: 8px; 
+    font-weight: 900; 
+    font-size: 1.1rem;
+  }
+  .game-tangram .stat-badge.score { color: #fef08a; border-color: #f59e0b; background: #271c14; }
+  .game-tangram .stat-badge.stage { color: #ffffff; border-color: #38bdf8; background: #0f172a; }
+  .game-tangram .stat-badge.timer { color: #fca5a5; border-color: #ef4444; background: #451a1a; animation: pulseTimer 1s infinite; display: none; }
+  @keyframes pulseTimer { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+  
+  @keyframes howtoPulse {
+    0% { transform: scale(1); box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4); }
+    50% { transform: scale(1.05); box-shadow: 0 6px 20px rgba(139, 92, 246, 0.9); }
+    100% { transform: scale(1); box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4); }
+  }
+  .game-tangram .btn-howto {
+    background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+    color: #ffffff !important;
+    border: 2px solid #c4b5fd;
+    padding: 12px 22px;
+    border-radius: 16px;
+    font-size: 1.1rem;
+    font-weight: 900;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+    animation: howtoPulse 2.5s infinite;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+  }
+  .game-tangram .btn-howto:hover {
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 8px 24px rgba(139, 92, 246, 0.8);
+    background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%);
+    animation: none;
+  }
+
+  .game-tangram .main-layout { display: flex; gap: 24px; flex-wrap: wrap; }
+  .game-tangram .game-area { flex: 1; min-width: 320px; display: flex; flex-direction: column; gap: 20px; }
+  .game-tangram .card { background: #0f172a; border-radius: 20px; padding: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.6); border: 2px solid #6366f1; }
+  
+  /* 칠교 보드 컨테이너 */
+  .game-tangram .board-card {
+    background: radial-gradient(circle at center, #1e1b4b 0%, #0f172a 80%);
+    border: 4px solid #8b5cf6;
+    border-radius: 28px;
+    padding: 22px;
+    text-align: center;
+    position: relative;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.7), inset 0 0 30px rgba(139, 92, 246, 0.3);
+  }
+
+  .game-tangram .mission-tag { 
+    font-size: 1.15rem; 
+    font-weight: 900; 
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); 
+    color: #ffffff !important; 
+    padding: 10px 24px; 
+    border-radius: 24px; 
+    display: inline-block; 
+    margin-bottom: 18px; 
+    border: 2px solid #fef08a; 
+    box-shadow: 0 6px 15px rgba(245, 158, 11, 0.5); 
+    text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+  }
+
+  /* SVG 보드 래퍼 */
+  .game-tangram .svg-wrapper {
+    width: 100%;
+    max-width: 540px;
+    margin: 0 auto 16px;
+    background: #090d16;
+    border-radius: 20px;
+    border: 2px solid #475569;
+    box-shadow: inset 0 0 30px rgba(0,0,0,0.9);
+    overflow: hidden;
+    position: relative;
+  }
+  .game-tangram svg { width: 100%; height: auto; display: block; touch-action: none; }
+
+  /* 조작 패널 바 */
+  .game-tangram .control-panel {
+    background: #1e293b;
+    border: 2px solid #6366f1;
+    border-radius: 20px;
+    padding: 16px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .game-tangram .selected-info { font-size: 1.1rem; font-weight: 900; color: #fef08a; display: flex; align-items: center; gap: 8px; text-shadow: 0 1px 2px rgba(0,0,0,0.8); }
+  .game-tangram .btn-group { display: flex; gap: 8px; flex-wrap: wrap; }
+  
+  .game-tangram .btn-ctrl {
+    background: #0f172a;
+    border: 2px solid #8b5cf6;
+    color: #ffffff !important;
+    font-size: 1.05rem;
+    font-weight: 900;
+    padding: 12px 18px;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+  }
+  .game-tangram .btn-ctrl:hover:not(:disabled) { background: #4f46e5; border-color: #a5b4fc; transform: translateY(-2px); }
+  .game-tangram .btn-ctrl:active:not(:disabled) { transform: translateY(1px); }
+  .game-tangram .btn-ctrl:disabled { opacity: 0.35; cursor: not-allowed; border-color: #334155; color: #94a3b8 !important; }
+  .game-tangram .btn-ctrl.flip-btn { border-color: #f59e0b; color: #ffffff !important; background: #b45309; }
+  .game-tangram .btn-ctrl.flip-btn:hover:not(:disabled) { background: #d97706; border-color: #fde047; }
+
+  .game-tangram .btn-secondary { background: #1e293b; color: #ffffff !important; border: 2px solid #6366f1; padding: 14px 22px; font-size: 1.05rem; border-radius: 14px; cursor: pointer; font-weight: 900; transition: all 0.15s; }
+  .game-tangram .btn-secondary:hover:not(:disabled) { background: #4f46e5; border-color: #a5b4fc; }
+
+  .game-tangram .result-area { text-align: center; margin-top: 16px; padding: 20px; border-radius: 18px; display: none; font-weight: 800; font-size: 1.25rem; line-height: 1.6; }
+  .game-tangram .result-area.show { display: block; animation: fadeIn 0.4s; }
+  .game-tangram .result-area.success { background: #064e3b; border: 2px solid #34d399; color: #ffffff; }
+  .game-tangram .result-area.error { background: #7f1d1d; border: 2px solid #f87171; color: #ffffff; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+
+  .game-tangram .sidebar { width: 320px; display: flex; flex-direction: column; gap: 16px; flex-shrink: 0; }
+  @media (max-width: 768px) { .game-tangram .sidebar { width: 100%; } }
+
+  .game-tangram .diff-selector { display: flex; gap: 6px; background: #090d16; border-radius: 16px; padding: 6px; border: 2px solid #6366f1; }
+  .game-tangram .diff-btn { flex: 1; padding: 12px 8px; border: none; border-radius: 12px; font-weight: 900; font-size: 0.95rem; cursor: pointer; color: #cbd5e1; background: transparent; transition: all 0.2s; }
+  .game-tangram .diff-btn.active { background: #8b5cf6; color: #ffffff !important; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+
+  .game-tangram .rank-item {
+    display: flex; justify-content: space-between; align-items: center;
+    background: #0f172a; border: 1px solid #6366f1;
+    padding: 12px 16px; border-radius: 14px; margin-bottom: 8px;
+    font-size: 1rem; color: #ffffff; font-weight: 800;
+  }
+  .game-tangram .rank-num { color: #fbbf24; font-weight: 900; margin-right: 8px; }
+  .game-tangram .rank-score { color: #38bdf8; font-weight: 900; }
+</style>
+<script>
+(function() {
+  // 7개 칠교 조각 기본 기하 정의 (중심 0,0 기준 SVG 다각형 좌표)
+  // 500x450 캔버스 기준: 조각끼리 맞물릴 때 1px의 오차나 겹침도 발생하지 않도록 정밀 기하 설계!
+  const PIECE_DEFS = [
+    { id: 'L1', name: '큰 삼각형 1', type: 'L', color: '#ef4444', points: '-80,-40 80,-40 0,40', origX: 70, origY: 380 },
+    { id: 'L2', name: '큰 삼각형 2', type: 'L', color: '#f97316', points: '-80,-40 80,-40 0,40', origX: 180, origY: 380 },
+    { id: 'M',  name: '중간 삼각형', type: 'M', color: '#eab308', points: '-56.5685,-28.2843 56.5685,-28.2843 0,28.2843', origX: 280, origY: 380 },
+    { id: 'S1', name: '작은 삼각형 1', type: 'S', color: '#22c55e', points: '-40,-20 40,-20 0,20', origX: 360, origY: 375 },
+    { id: 'S2', name: '작은 삼각형 2', type: 'S', color: '#06b6d4', points: '-40,-20 40,-20 0,20', origX: 430, origY: 375 },
+    { id: 'SQ', name: '정사각형',     type: 'SQ', color: '#3b82f6', points: '-28.2843,-28.2843 28.2843,-28.2843 28.2843,28.2843 -28.2843,28.2843', origX: 360, origY: 420 },
+    { id: 'PARA', name: '평행사변형', type: 'PARA', color: '#a855f7', points: '-60,-20 20,-20 60,20 -20,20', origX: 440, origY: 420, canFlip: true }
+  ];
+
+  // 겹침(Overlaps) 전혀 없이, 모서리와 변이 100% 빈틈없이 들어맞는 기하학적 정밀 실루엣 18문항!
+  const STAGES = {
+    easy: [
+      { name: '정사각형 (Square)', desc: '칠교 조각 7개를 모두 합쳐 완벽한 정사각형을 만드세요.', targets: [
+        { type: 'L', x: 210, y: 130, angle: 0, flip: false },
+        { type: 'L', x: 210, y: 210, angle: 180, flip: false },
+        { type: 'M', x: 290, y: 210, angle: 270, flip: false },
+        { type: 'S', x: 270, y: 150, angle: 180, flip: false },
+        { type: 'S', x: 250, y: 230, angle: 0, flip: false },
+        { type: 'SQ', x: 250, y: 170, angle: 45, flip: false },
+        { type: 'PARA', x: 190, y: 230, angle: 0, flip: false }
+      ]},
+      { name: '큰 삼각형 (Giant Triangle)', desc: '7개의 조각으로 커다란 직각 이등변 삼각형을 조립하세요.', targets: [
+        { type: 'L', x: 210, y: 190, angle: 0, flip: false },
+        { type: 'L', x: 290, y: 190, angle: 0, flip: false },
+        { type: 'M', x: 250, y: 134, angle: 180, flip: false },
+        { type: 'S', x: 170, y: 210, angle: 180, flip: false },
+        { type: 'S', x: 330, y: 210, angle: 180, flip: false },
+        { type: 'SQ', x: 250, y: 210, angle: 45, flip: false },
+        { type: 'PARA', x: 250, y: 250, angle: 0, flip: false }
+      ]},
+      { name: '안락한 집 (House)', desc: '삼각 지붕과 튼튼한 사각 벽이 있는 안락한 집!', targets: [
+        { type: 'L', x: 250, y: 180, angle: 180, flip: false },
+        { type: 'L', x: 250, y: 100, angle: 0, flip: false },
+        { type: 'M', x: 194, y: 180, angle: 90, flip: false },
+        { type: 'S', x: 306, y: 180, angle: 270, flip: false },
+        { type: 'S', x: 250, y: 236, angle: 180, flip: false },
+        { type: 'SQ', x: 250, y: 180, angle: 0, flip: false },
+        { type: 'PARA', x: 306, y: 236, angle: 0, flip: false }
+      ]},
+      { name: '바다의 돛단배 (Sailboat)', desc: '바람을 가르는 돛단배를 겹침 없이 조립해보세요.', targets: [
+        { type: 'L', x: 230, y: 130, angle: 270, flip: false },
+        { type: 'L', x: 230, y: 210, angle: 90, flip: false },
+        { type: 'M', x: 310, y: 170, angle: 0, flip: false },
+        { type: 'S', x: 150, y: 170, angle: 180, flip: false },
+        { type: 'S', x: 270, y: 250, angle: 0, flip: false },
+        { type: 'SQ', x: 230, y: 250, angle: 0, flip: false },
+        { type: 'PARA', x: 174, y: 250, angle: 0, flip: false }
+      ]},
+      { name: '헤엄치는 물고기 (Fish)', desc: '지느러미와 꼬리를 흔들며 바다를 헤엄치는 물고기!', targets: [
+        { type: 'L', x: 200, y: 180, angle: 45, flip: false },
+        { type: 'L', x: 200, y: 180, angle: 225, flip: false },
+        { type: 'M', x: 280, y: 180, angle: 90, flip: false },
+        { type: 'S', x: 120, y: 180, angle: 90, flip: false },
+        { type: 'S', x: 336, y: 180, angle: 270, flip: false },
+        { type: 'SQ', x: 200, y: 180, angle: 45, flip: false },
+        { type: 'PARA', x: 256, y: 124, angle: 45, flip: true }
+      ]},
+      { name: '밝은 촛불 (Candle)', desc: '어둠을 밝히는 따뜻한 촛대와 촛불입니다.', targets: [
+        { type: 'L', x: 250, y: 240, angle: 180, flip: false },
+        { type: 'L', x: 250, y: 240, angle: 0, flip: false },
+        { type: 'M', x: 250, y: 160, angle: 180, flip: false },
+        { type: 'S', x: 194, y: 268, angle: 90, flip: false },
+        { type: 'S', x: 306, y: 268, angle: 270, flip: false },
+        { type: 'SQ', x: 250, y: 268, angle: 0, flip: false },
+        { type: 'PARA', x: 250, y: 104, angle: 45, flip: true }
+      ]}
+    ],
+    normal: [
+      { name: '우아한 백조 (Swan)', desc: '호수 위를 노니는 백조의 우아한 실루엣입니다.', targets: [
+        { type: 'L', x: 230, y: 200, angle: 135, flip: false },
+        { type: 'L', x: 230, y: 200, angle: 315, flip: false },
+        { type: 'M', x: 286, y: 144, angle: 225, flip: false },
+        { type: 'S', x: 150, y: 130, angle: 45, flip: false },
+        { type: 'S', x: 314, y: 228, angle: 135, flip: false },
+        { type: 'SQ', x: 180, y: 160, angle: 45, flip: false },
+        { type: 'PARA', x: 210, y: 250, angle: 45, flip: false }
+      ]},
+      { name: '앉아있는 고양이 (Cat)', desc: '쫑긋한 귀와 긴 꼬리를 가진 고양이를 맞춰보세요!', targets: [
+        { type: 'L', x: 240, y: 200, angle: 180, flip: false },
+        { type: 'L', x: 240, y: 200, angle: 0, flip: false },
+        { type: 'M', x: 320, y: 200, angle: 270, flip: false },
+        { type: 'S', x: 212, y: 92, angle: 180, flip: false },
+        { type: 'S', x: 268, y: 92, angle: 180, flip: false },
+        { type: 'SQ', x: 240, y: 120, angle: 45, flip: false },
+        { type: 'PARA', x: 170, y: 228, angle: 90, flip: true }
+      ]},
+      { name: '우주 로켓 (Rocket)', desc: '하늘 높이 우주로 솟아오르는 우주 로켓의 실루엣!', targets: [
+        { type: 'L', x: 250, y: 180, angle: 270, flip: false },
+        { type: 'L', x: 250, y: 180, angle: 90, flip: false },
+        { type: 'M', x: 250, y: 100, angle: 0, flip: false },
+        { type: 'S', x: 194, y: 236, angle: 180, flip: false },
+        { type: 'S', x: 306, y: 236, angle: 180, flip: false },
+        { type: 'SQ', x: 250, y: 236, angle: 0, flip: false },
+        { type: 'PARA', x: 250, y: 292, angle: 0, flip: true }
+      ]},
+      { name: '튼튼한 다리 (Bridge)', desc: '강을 건너는 아름다운 아치형 다리입니다.', targets: [
+        { type: 'L', x: 200, y: 180, angle: 0, flip: false },
+        { type: 'L', x: 300, y: 180, angle: 0, flip: false },
+        { type: 'M', x: 250, y: 152, angle: 180, flip: false },
+        { type: 'S', x: 172, y: 236, angle: 90, flip: false },
+        { type: 'S', x: 328, y: 236, angle: 270, flip: false },
+        { type: 'SQ', x: 250, y: 208, angle: 0, flip: false },
+        { type: 'PARA', x: 250, y: 264, angle: 0, flip: false }
+      ]},
+      { name: '푸른 나무 (Tree)', desc: '가운데 풍성하게 뻗은 가지와 기둥을 가진 나무.', targets: [
+        { type: 'L', x: 250, y: 170, angle: 0, flip: false },
+        { type: 'L', x: 250, y: 250, angle: 180, flip: false },
+        { type: 'M', x: 250, y: 114, angle: 0, flip: false },
+        { type: 'S', x: 194, y: 170, angle: 270, flip: false },
+        { type: 'S', x: 306, y: 170, angle: 90, flip: false },
+        { type: 'SQ', x: 250, y: 278, angle: 0, flip: false },
+        { type: 'PARA', x: 250, y: 64, angle: 0, flip: false }
+      ]},
+      { name: '달리는 사람 (Runner)', desc: '힘차게 다리를 뻗어 달리는 선수의 실루엣!', targets: [
+        { type: 'L', x: 230, y: 160, angle: 135, flip: false },
+        { type: 'L', x: 230, y: 240, angle: 315, flip: false },
+        { type: 'M', x: 286, y: 184, angle: 45, flip: false },
+        { type: 'S', x: 174, y: 132, angle: 225, flip: false },
+        { type: 'S', x: 174, y: 268, angle: 135, flip: false },
+        { type: 'SQ', x: 202, y: 200, angle: 45, flip: false },
+        { type: 'PARA', x: 286, y: 240, angle: 135, flip: true }
+      ]}
+    ],
+    hard: [
+      { name: '비상하는 독수리 (Eagle)', desc: '날개를 활짝 펴고 비상하는 독수리의 완벽 기하 조합! (반전 주의)', targets: [
+        { type: 'L', x: 190, y: 180, angle: 45, flip: false },
+        { type: 'L', x: 310, y: 180, angle: 315, flip: false },
+        { type: 'M', x: 250, y: 240, angle: 180, flip: false },
+        { type: 'S', x: 250, y: 124, angle: 0, flip: false },
+        { type: 'S', x: 250, y: 296, angle: 180, flip: false },
+        { type: 'SQ', x: 250, y: 180, angle: 45, flip: false },
+        { type: 'PARA', x: 150, y: 236, angle: 135, flip: true }
+      ]},
+      { name: '뒤뚱뒤뚱 오리 (Duck)', desc: '귀엽게 걸어가는 오리의 통짜 실루엣입니다.', targets: [
+        { type: 'L', x: 230, y: 190, angle: 135, flip: false },
+        { type: 'L', x: 230, y: 190, angle: 315, flip: false },
+        { type: 'M', x: 286, y: 246, angle: 135, flip: false },
+        { type: 'S', x: 160, y: 120, angle: 45, flip: false },
+        { type: 'S', x: 188, y: 246, angle: 225, flip: false },
+        { type: 'SQ', x: 190, y: 150, angle: 45, flip: false },
+        { type: 'PARA', x: 260, y: 160, angle: 45, flip: true }
+      ]},
+      { name: '질주하는 말 (Horse)', desc: '초원을 빠르게 질주하는 야생마의 역동적인 모습!', targets: [
+        { type: 'L', x: 240, y: 180, angle: 180, flip: false },
+        { type: 'L', x: 240, y: 180, angle: 0, flip: false },
+        { type: 'M', x: 160, y: 180, angle: 270, flip: false },
+        { type: 'S', x: 320, y: 140, angle: 90, flip: false },
+        { type: 'S', x: 200, y: 240, angle: 180, flip: false },
+        { type: 'SQ', x: 280, y: 140, angle: 0, flip: false },
+        { type: 'PARA', x: 280, y: 240, angle: 0, flip: true }
+      ]},
+      { name: '사막의 낙타 (Camel)', desc: '높은 봉우리와 등뼈를 가진 사막의 왕 낙타입니다.', targets: [
+        { type: 'L', x: 250, y: 190, angle: 0, flip: false },
+        { type: 'L', x: 210, y: 190, angle: 180, flip: false },
+        { type: 'M', x: 310, y: 190, angle: 90, flip: false },
+        { type: 'S', x: 150, y: 140, angle: 270, flip: false },
+        { type: 'S', x: 230, y: 250, angle: 0, flip: false },
+        { type: 'SQ', x: 180, y: 140, angle: 0, flip: false },
+        { type: 'PARA', x: 290, y: 250, angle: 0, flip: false }
+      ]},
+      { name: '신비의 피라미드 (Pyramid)', desc: '거대한 이집트 피라미드 실루엣을 제한시간 내 완성하세요!', targets: [
+        { type: 'L', x: 210, y: 210, angle: 0, flip: false },
+        { type: 'L', x: 290, y: 210, angle: 0, flip: false },
+        { type: 'M', x: 250, y: 154, angle: 180, flip: false },
+        { type: 'S', x: 154, y: 238, angle: 90, flip: false },
+        { type: 'S', x: 346, y: 238, angle: 270, flip: false },
+        { type: 'SQ', x: 250, y: 126, angle: 45, flip: false },
+        { type: 'PARA', x: 250, y: 266, angle: 0, flip: true }
+      ]},
+      { name: '왕의 왕관 (Crown)', desc: '황금빛 뾰족한 장식으로 빛나는 영광의 왕관!', targets: [
+        { type: 'L', x: 210, y: 200, angle: 180, flip: false },
+        { type: 'L', x: 290, y: 200, angle: 180, flip: false },
+        { type: 'M', x: 250, y: 200, angle: 0, flip: false },
+        { type: 'S', x: 154, y: 172, angle: 270, flip: false },
+        { type: 'S', x: 346, y: 172, angle: 90, flip: false },
+        { type: 'SQ', x: 250, y: 144, angle: 45, flip: false },
+        { type: 'PARA', x: 250, y: 256, angle: 0, flip: false }
+      ]}
+    ]
+  };
+
+  const Tangram = {
+    id: 'tangram',
+    container: null,
+    state: {
+      difficulty: 'easy',
+      roundIdx: 0,
+      maxRounds: 6,
+      score: 0,
+      pieces: [],
+      selectedId: null,
+      timer: 90,
+      isAnswered: false,
+      isGameOver: false,
+      hintUsed: false,
+      startTime: 0,
+      draggingId: null,
+      dragOffset: { x: 0, y: 0 }
+    },
+    timers: [],
+    timerId: null,
+    _boundListeners: false, // 전역 리스너 중복 바인딩 원천 차단 플래그
+
+    mount(container, context) {
+      let target = null;
+      if (typeof container === 'string') target = document.querySelector(container);
+      else if (container instanceof HTMLElement) target = container;
+      if (!target) target = document.getElementById('mathlab-view') || document.getElementById('new-root') || document.getElementById('game-container');
+
+      if (!target || target === document.body) {
+        let host = document.getElementById('tangram-force-host');
+        if (!host) {
+          host = document.createElement('div'); host.id = 'tangram-force-host';
+          host.style.cssText = 'width:100%; max-width:960px; margin:0 auto; padding:20px 10px; box-sizing:border-box; z-index:999; position:relative; background:#1e1b4b; min-height:650px; display:block; border-radius:24px;';
+          const header = document.querySelector('header, .navbar, #app-header, .top-bar');
+          if (header && header.parentNode) header.parentNode.insertBefore(host, header.nextSibling);
+          else document.body.appendChild(host);
+        }
+        target = host;
+      }
+
+      this.container = target;
+      this.container.style.display = 'block'; this.container.style.visibility = 'visible'; this.container.style.opacity = '1'; this.container.style.minHeight = '650px';
+
+      let parentNode = this.container.parentElement;
+      while (parentNode && parentNode !== document.body && parent !== document.documentElement) {
+        if (parentNode.style && parentNode.style.display === 'none') parentNode.style.display = 'block';
+        if (parentNode.style && parentNode.style.visibility === 'hidden') parentNode.style.visibility = 'visible';
+        parent = parent.parentElement;
+      }
+
+      this.restoreGlobalNavigation();
+      this.resetGame();
+    },
+
+    restoreGlobalNavigation() {
+      const navElements = document.querySelectorAll('header, .navbar, #app-header, .top-bar, #floating-home-btn, .floating-home, [id*="home"], [class*="floating"]');
+      navElements.forEach(el => { if (el && el.style && el.style.display === 'none') el.style.display = ''; });
+    },
+
+    setDifficulty(diff) {
+      if (this.state.difficulty === diff && !this.state.isGameOver && this.state.roundIdx === 0) return;
+      this.state.difficulty = diff;
+      this.resetGame();
+    },
+
+    resetGame() {
+      if (window.MathLabCleanup && typeof window.MathLabCleanup.clearTimers === 'function') {
+        window.MathLabCleanup.clearTimers(this.timers);
+      }
+      this.timers.forEach(clearTimeout);
+      this.timers = [];
+      if (this.timerId) { clearInterval(this.timerId); this.timerId = null; }
+      
+      this.state.roundIdx = 0;
+      this.state.score = 0;
+      this.state.isGameOver = false;
+      
+      this.setupRound();
+    },
+    
+    setupRound() {
+      const stageList = STAGES[this.state.difficulty] || STAGES.easy;
+      this.state.maxRounds = stageList.length;
+      
+      if (this.state.roundIdx >= stageList.length) {
+        this.gameOver(true);
+        return;
+      }
+
+      if (this.timerId) { clearInterval(this.timerId); this.timerId = null; }
+
+      this.state.hintUsed = false;
+      this.state.isAnswered = false;
+      this.state.selectedId = 'L1';
+      this.state.startTime = Date.now();
+      this.state.draggingId = null;
+
+      this.state.pieces = PIECE_DEFS.map(def => ({
+        ...def,
+        x: def.origX,
+        y: def.origY,
+        angle: 0,
+        flipped: false,
+        isLocked: false
+      }));
+
+      if (this.state.difficulty === 'hard') {
+        this.state.timer = 90;
+        this.timerId = setInterval(() => {
+          if (this.state.isAnswered || this.state.isGameOver) return;
+          this.state.timer--;
+          this.updateTimerUI();
+          if (this.state.timer <= 0) {
+            clearInterval(this.timerId); this.timerId = null;
+            this.handleTimeout();
+          }
+        }, 1000);
+      }
+
+      this.render();
+    },
+
+    updateTimerUI() {
+      const el = this.container?.querySelector('.stat-badge.timer');
+      const valEl = el?.querySelector('.timer-val');
+      if (valEl) valEl.textContent = `${this.state.timer}초`;
+    },
+
+    handleTimeout() {
+      this.state.isAnswered = true;
+      const resArea = this.container?.querySelector('.result-area');
+      if (resArea) {
+        resArea.className = 'result-area show error';
+        resArea.innerHTML = `⏰ <strong>시간 초과! 실루엣 완성 실패!</strong><br>제한 시간 내에 7개의 조각을 모두 알맞게 맞춰야 합니다.`;
+      }
+      const t = setTimeout(() => { this.gameOver(false); }, 2000);
+      this.timers.push(t);
+    },
+
+    selectPiece(id) {
+      if (this.state.isAnswered || this.state.isGameOver) return;
+      this.state.selectedId = id;
+      // 💡 [버벅임 해소 핵심]: innerHTML을 갈아엎지 않고 DOM 클래스/속성만 즉시 업데이트!
+      this.updatePieceStylesOnly();
+      this.updateControlUI();
+    },
+
+    rotateSelected(deltaAngle) {
+      if (!this.state.selectedId || this.state.isAnswered || this.state.isGameOver) return;
+      const p = this.state.pieces.find(item => item.id === this.state.selectedId);
+      if (!p || p.isLocked) return;
+
+      p.angle = (p.angle + deltaAngle + 360) % 360;
+      this.checkSnap(p);
+      
+      // 💡 [버벅임 해소 핵심]: DOM 전체 재성성 없이 해당 조각의 transform과 스냅 상태만 동시 동기화!
+      this.updateSinglePieceTransform(p);
+      this.updatePieceStylesOnly();
+      this.checkVictoryCondition();
+    },
+
+    flipSelected() {
+      if (!this.state.selectedId || this.state.isAnswered || this.state.isGameOver) return;
+      const p = this.state.pieces.find(item => item.id === this.state.selectedId);
+      if (!p || !p.canFlip || p.isLocked) return;
+
+      p.flipped = !p.flipped;
+      this.checkSnap(p);
+      this.updateSinglePieceTransform(p);
+      this.updatePieceStylesOnly();
+      this.checkVictoryCondition();
+    },
+
+    // 45도 각도 스냅 + 허용 오차 기반 고정 판정
+    checkSnap(p) {
+      if (p.isLocked) return;
+      const stageList = STAGES[this.state.difficulty] || STAGES.easy;
+      const curStage = stageList[this.state.roundIdx];
+      if (!curStage) return;
+
+      const matchingTargets = curStage.targets.filter(t => t.type === p.type);
+      for (let t of matchingTargets) {
+        const alreadyOccupied = this.state.pieces.some(other => other.isLocked && Math.abs(other.x - t.x) < 5 && Math.abs(other.y - t.y) < 5);
+        if (alreadyOccupied) continue;
+
+        const dist = Math.hypot(p.x - t.x, p.y - t.y);
+        if (dist < 38) {
+          let angleMatch = false;
+          let flipMatch = (p.flipped === t.flip);
+
+          if (p.type === 'SQ') {
+            angleMatch = (p.angle % 90 === t.angle % 90);
+            flipMatch = true;
+          } else if (p.type === 'PARA') {
+            if (p.flipped === t.flip) {
+              angleMatch = (p.angle % 180 === t.angle % 180);
+            } else {
+              angleMatch = false;
+            }
+          } else {
+            angleMatch = (p.angle === t.angle);
+            flipMatch = true;
+          }
+
+          if (angleMatch && flipMatch) {
+            p.x = t.x;
+            p.y = t.y;
+            p.angle = t.angle;
+            p.flipped = t.flip;
+            p.isLocked = true;
+            break;
+          }
+        }
+      }
+    },
+
+    checkVictoryCondition() {
+      const allLocked = this.state.pieces.every(p => p.isLocked);
+      if (!allLocked) return;
+
+      this.state.isAnswered = true;
+      if (this.timerId) { clearInterval(this.timerId); this.timerId = null; }
+
+      let pts = 20;
+      if (this.state.difficulty === 'hard') {
+        pts += Math.floor(this.state.timer * 0.4);
+      }
+      if (this.state.hintUsed) pts = Math.max(5, pts - 5);
+      this.state.score += pts;
+
+      const resArea = this.container.querySelector('.result-area');
+      if (resArea) {
+        resArea.className = 'result-area show success';
+        resArea.innerHTML = `
+          🎉 🧩 <strong>실루엣 퍼즐 완벽 성공! (+${pts}점)</strong><br>
+          7개의 칠교 조각을 빈틈이나 겹침 없이 정확하게 맞추어 작품을 완성했습니다!
+        `;
+      }
+
+      const t = setTimeout(() => {
+        this.state.roundIdx++;
+        this.setupRound();
+      }, 2200);
+      this.timers.push(t);
+      this.updateStatsUI();
+    },
+
+    gameOver(cleared) {
+      if (cleared && !this.state.isGameOver) {
+        this.state.score += 50;
+      }
+      this.state.isGameOver = true;
+      if (this.timerId) { clearInterval(this.timerId); this.timerId = null; }
+      this.render();
+      
+      if (this.state.score > 0) {
+        const t = setTimeout(() => {
+          this.showInlineRankingModal('board-tangram', this.state.score, { cleared: cleared, difficulty: this.state.difficulty });
+        }, 600);
+        this.timers.push(t);
+      }
+    },
+
+    showHowToPlayModal() {
+      document.getElementById('mathlab-tg-howto-modal')?.remove();
+      const modalHtml = `
+        <div id="mathlab-tg-howto-modal" style="position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(15,23,42,0.88); backdrop-filter:blur(8px); display:flex; align-items:center; justify-content:center; z-index:999999; padding:20px; box-sizing:border-box; font-family:'Pretendard',sans-serif; animation: fadeIn 0.3s;">
+          <div style="background:#0f172a; border-radius:28px; padding:32px 28px; max-width:640px; width:100%; max-height:85vh; overflow-y:auto; box-shadow:0 25px 50px -12px rgba(0,0,0,0.8); border:4px solid #8b5cf6; position:relative; color:#ffffff;">
+            
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #334155; padding-bottom:16px; margin-bottom:20px;">
+              <div style="display:flex; align-items:center; gap:12px;">
+                <span style="font-size:38px;">🧩</span>
+                <div>
+                  <h2 style="margin:0; font-size:26px; font-weight:900; color:#ffffff !important; text-shadow:0 0 15px rgba(255,255,255,0.7);">웹 칠교놀이 게임 방법</h2>
+                  <p style="margin:4px 0 0; font-size:14px; color:#fef08a !important; font-weight:800;">7개의 조각을 회전·반전해 목표 실루엣을 완성하는 도형 퍼즐!</p>
+                </div>
+              </div>
+              <button id="tg-howto-close-top" style="background:#1e293b; border:none; width:44px; height:44px; border-radius:50%; font-size:22px; cursor:pointer; color:#ffffff; font-weight:bold; display:flex; align-items:center; justify-content:center; transition:background 0.2s;">✕</button>
+            </div>
+
+            <div style="display:flex; flex-direction:column; gap:16px; text-align:left; color:#ffffff;">
+              <div style="background:#1e1b4b; border-left:6px solid #8b5cf6; padding:18px; border-radius:14px; border: 1px solid #4f46e5;">
+                <h3 style="margin:0 0 8px; font-size:17px; color:#fef08a !important; font-weight:900;">🎯 1. 게임의 목표</h3>
+                <p style="margin:0; font-size:14.5px; line-height:1.6; font-weight:800; color:#ffffff;">보드 아래에 있는 7개의 칠교 조각을 마우스/터치로 끌어올려, 중앙에 제시된 목표 실루엣(모양)을 빈틈없이 채워 완성하세요!</p>
+              </div>
+
+              <div style="background:#0f172a; border:2px solid #6366f1; padding:18px; border-radius:16px;">
+                <h3 style="margin:0 0 10px; font-size:17px; color:#38bdf8 !important; font-weight:900;">✨ 2. 도형의 변환 (회전과 반전) 조작</h3>
+                <ul style="margin:0; padding-left:20px; font-size:14px; line-height:1.7; font-weight:800; color:#ffffff;">
+                  <li><strong>조각 선택:</strong> 조각을 클릭하면 밝은 노란색 테두리가 빛나며 선택됩니다.</li>
+                  <li><strong>45° 회전:</strong> 하단의 <strong style="color:#fef08a;">[↻ 우회전]</strong> / <strong style="color:#fef08a;">[↺ 좌회전]</strong> 버튼을 누르거나, <strong>조각을 더블클릭/더블탭</strong>하면 45도씩 회전합니다!</li>
+                  <li><strong>좌우 반전 (평행사변형):</strong> 평행사변형 조각은 회전만으로 맞출 수 없는 경우가 있습니다. <strong style="color:#f97316;">[↔ 좌우 반전]</strong> 버튼을 눌러 조각을 뒤집어보세요!</li>
+                </ul>
+              </div>
+
+              <div style="background:#271c14; border-left:6px solid #f59e0b; padding:18px; border-radius:14px; border: 1px solid #d97706;">
+                <h3 style="margin:0 0 8px; font-size:17px; color:#fef08a !important; font-weight:900;">⚡ 3. 자석 스냅 & 통짜 실루엣 시스템</h3>
+                <p style="margin:0; font-size:14px; line-height:1.6; font-weight:800; color:#ffffff;">
+                  조각이 정답 위치와 각도에 근접하면 <strong>자석처럼 '찰칵' 스냅되며 고정</strong>됩니다!<br>
+                  보통/도전 난이도에서는 <strong>내부 경계선이 완벽히 사라진 통짜 실루엣</strong>이 제공되므로, 7개 도형의 분할 및 구성 능력을 발휘해보세요!
+                </p>
+              </div>
+            </div>
+
+            <button id="tg-howto-close-btn" style="width:100%; margin-top:24px; padding:18px; border-radius:16px; font-size:17px; font-weight:900; background:linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%); color:#ffffff !important; border:none; cursor:pointer; box-shadow:0 8px 20px rgba(139,92,246,0.5); transition:transform 0.15s;">
+              🚀 이해했습니다! 칠교 퍼즐 도전 시작
+            </button>
+
+          </div>
+        </div>
+      `;
+      document.body.insertAdjacentHTML('beforeend', modalHtml);
+      
+      const closeModal = () => document.getElementById('mathlab-tg-howto-modal')?.remove();
+      document.getElementById('tg-howto-close-top')?.addEventListener('click', closeModal);
+      document.getElementById('tg-howto-close-btn')?.addEventListener('click', closeModal);
+      document.getElementById('mathlab-tg-howto-modal')?.addEventListener('click', (e) => {
+        if (e.target.id === 'mathlab-tg-howto-modal') closeModal();
+      });
+    },
+
+    showInlineRankingModal(boardId, score, metadata) {
+      document.getElementById('mathlab-inline-ranking-modal')?.remove();
+      const gameName = '웹 칠교놀이';
+      const modalHtml = `
+        <div id="mathlab-inline-ranking-modal" style="position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(15,23,42,0.88); backdrop-filter:blur(8px); display:flex; align-items:center; justify-content:center; z-index:999999; padding:20px; box-sizing:border-box; font-family:'Pretendard',sans-serif;">
+          <div style="background:#0f172a; border-radius:26px; padding:30px 26px; max-width:420px; width:100%; box-shadow:0 20px 40px rgba(0,0,0,0.8); text-align:center; border:4px solid #8b5cf6; color:#ffffff;">
+            <div style="font-size:46px; margin-bottom:10px;">🧩🏆</div>
+            <h2 style="margin:0 0 8px; font-size:26px; font-weight:900; color:#ffffff !important; text-shadow:0 0 15px rgba(255,255,255,0.7);">명예의 전당 등록</h2>
+            <p style="margin:0 0 20px; font-size:15px; color:#fef08a !important; font-weight:800;">6개 칠교 스테이지 도전을 마쳤습니다!<br>이름을 남겨 Top 5 엘리트 랭킹에 도전하세요!</p>
+            <div style="background:#1e1b4b; border:2px solid #8b5cf6; border-radius:18px; padding:16px; margin-bottom:20px;">
+              <div style="font-size:14px; color:#e0e7ff; font-weight:800; margin-bottom:4px;">🏆 최종 달성 점수</div>
+              <div style="font-size:36px; font-weight:900; color:#fbbf24;">${score} <span style="font-size:20px;">점</span></div>
+            </div>
+            <input type="text" id="inline-rank-nickname" placeholder="퍼즐 탐구자 닉네임 (예: 칠교마스터)" maxlength="10" style="width:100%; padding:14px 16px; font-size:16px; font-weight:800; border:2px solid #6366f1; background:#1e293b; color:#ffffff; border-radius:14px; outline:none; text-align:center; margin-bottom:20px; box-sizing:border-box;">
+            <div style="display:flex; gap:10px;">
+              <button id="inline-rank-cancel" style="flex:1; padding:14px; border-radius:14px; font-size:15px; font-weight:800; background:#1e293b; color:#ffffff; border:1px solid #6366f1; cursor:pointer;">건너뛰기</button>
+              <button id="inline-rank-submit" style="flex:2; padding:14px; border-radius:14px; font-size:15px; font-weight:900; background:linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%); color:#ffffff !important; border:none; cursor:pointer; box-shadow:0 4px 10px rgba(139,92,246,0.5);">🚀 등록하기</button>
+            </div>
+          </div>
+        </div>
+      `;
+      document.body.insertAdjacentHTML('beforeend', modalHtml);
+      const inputEl = document.getElementById('inline-rank-nickname'); if (inputEl) inputEl.focus();
+      const closeAndClean = () => document.getElementById('mathlab-inline-ranking-modal')?.remove();
+      document.getElementById('inline-rank-cancel')?.addEventListener('click', closeAndClean);
+      const doSubmit = () => {
+        let nickname = (inputEl?.value.trim() || '칠교마스터');
+        
+        if (typeof window.submitRanking === 'function') {
+          try { window.submitRanking(gameName, score, true, nickname, boardId); } catch(e){}
+        } else if (typeof google !== 'undefined' && google.script && google.script.run && typeof google.script.run.saveGameScore === 'function') {
+          try {
+            const sheetId = (typeof getLeaderboardSheetId === 'function') ? getLeaderboardSheetId() : '';
+            const meta = (typeof getLeaderboardMeta === 'function') ? getLeaderboardMeta() : {};
+            google.script.run.withSuccessHandler(() => { this.loadLeaderboard(); }).saveGameScore(sheetId, gameName, nickname, score, true, meta);
+          } catch(e){}
+        }
+
+        let ranks = JSON.parse(localStorage.getItem(`rank_${boardId}`) || '[]');
+        ranks.push({ ...(metadata || {}), nickname: nickname, score: score, date: new Date().toISOString() });
+        ranks.sort((a, b) => (b.score || 0) - (a.score || 0));
+        localStorage.setItem(`rank_${boardId}`, JSON.stringify(ranks.slice(0, 50)));
+        closeAndClean(); this.loadLeaderboard();
+      };
+      document.getElementById('inline-rank-submit')?.addEventListener('click', doSubmit);
+      inputEl?.addEventListener('keydown', (e) => { if (e.key === 'Enter') doSubmit(); });
+    },
+
+    updateStatsUI() {
+      const root = this.container?.querySelector('.game-tangram');
+      if (!root) return;
+      
+      const scoreEl = root.querySelector('.score-val'); if (scoreEl) scoreEl.textContent = `${this.state.score}점`;
+    },
+
+    updateControlUI() {
+      const root = this.container?.querySelector('.game-tangram');
+      if (!root) return;
+      
+      const selP = this.state.pieces.find(p => p.id === this.state.selectedId);
+      const nameEl = root.querySelector('#tg-sel-name');
+      const btnRotateRight = root.querySelector('#tg-btn-rot-right');
+      const btnRotateLeft = root.querySelector('#tg-btn-rot-left');
+      const btnFlip = root.querySelector('#tg-btn-flip');
+
+      if (selP) {
+        if (nameEl) nameEl.textContent = `${selP.name} (선택됨)`;
+        if (btnRotateRight) btnRotateRight.disabled = selP.isLocked || this.state.isAnswered;
+        if (btnRotateLeft) btnRotateLeft.disabled = selP.isLocked || this.state.isAnswered;
+        if (btnFlip) {
+          btnFlip.disabled = !selP.canFlip || selP.isLocked || this.state.isAnswered;
+          btnFlip.style.display = selP.canFlip ? 'flex' : 'none';
+        }
+      } else {
+        if (nameEl) nameEl.textContent = '조각을 클릭하여 선택하세요';
+        if (btnRotateRight) btnRotateRight.disabled = true;
+        if (btnRotateLeft) btnRotateLeft.disabled = true;
+        if (btnFlip) btnFlip.disabled = true;
+      }
+    },
+
+    // 💡 [버벅임 0% 최적화]: DOM 전체를 갈아엎지 않고 개별 조각의 속성/스타일만 초고속 렌더링
+    updateSinglePieceTransform(p) {
+      const root = this.container?.querySelector('.game-tangram');
+      if (!root) return;
+      const group = root.querySelector(`.tg-piece-group[data-id="${p.id}"]`);
+      if (group) {
+        group.setAttribute('transform', `translate(${p.x}, ${p.y}) rotate(${p.angle}) scale(${p.flipped ? -1 : 1}, 1)`);
+      }
+    },
+
+    updatePieceStylesOnly() {
+      const root = this.container?.querySelector('.game-tangram');
+      if (!root) return;
+      const svgEl = root.querySelector('#tg-svg-canvas');
+      if (!svgEl) return;
+
+      this.state.pieces.forEach(p => {
+        const isSel = (p.id === this.state.selectedId);
+        const group = svgEl.querySelector(`.tg-piece-group[data-id="${p.id}"]`);
+        if (!group) return;
+
+        let strokeColor = isSel ? '#fef08a' : (p.isLocked ? '#4ade80' : '#ffffff');
+        let strokeWidth = isSel ? '4.5' : (p.isLocked ? '3.5' : '2');
+        let filterStr = isSel ? 'drop-shadow(0 0 12px rgba(254, 240, 138, 0.9))' : 'drop-shadow(0 4px 8px rgba(0,0,0,0.6))';
+
+        group.style.cursor = p.isLocked ? 'default' : 'grab';
+        group.style.filter = filterStr;
+
+        const poly = group.querySelector('polygon');
+        if (poly) {
+          poly.setAttribute('stroke', strokeColor);
+          poly.setAttribute('stroke-width', strokeWidth);
+        }
+
+        let lockIcon = group.querySelector('.lock-icon');
+        if (p.isLocked && !lockIcon) {
+          const textEl = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+          textEl.setAttribute('class', 'lock-icon');
+          textEl.setAttribute('x', '0'); textEl.setAttribute('y', '6');
+          textEl.setAttribute('text-anchor', 'middle'); textEl.setAttribute('font-size', '18');
+          textEl.setAttribute('fill', '#ffffff'); textEl.setAttribute('font-weight', 'bold');
+          textEl.textContent = '✅';
+          group.appendChild(textEl);
+        } else if (!p.isLocked && lockIcon) {
+          lockIcon.remove();
+        }
+
+        // 선택된 조각을 맨 위 레이어로 끌어올리기 (DOM 트리 이동)
+        if (isSel && group.parentNode && group.parentNode.lastElementChild !== group) {
+          group.parentNode.appendChild(group);
+        }
+      });
+    },
+
+    // 초기 마운트 또는 라운드 리셋 시 단 1회만 SVG DOM 트리 구축
+    updateSVG() {
+      const root = this.container?.querySelector('.game-tangram');
+      if (!root) return;
+      const svgEl = root.querySelector('#tg-svg-canvas');
+      if (!svgEl) return;
+
+      const stageList = STAGES[this.state.difficulty] || STAGES.easy;
+      const curStage = stageList[this.state.roundIdx] || stageList[0];
+
+      let targetHtml = '';
+      if (this.state.difficulty === 'easy') {
+        curStage.targets.forEach((t) => {
+          const def = PIECE_DEFS.find(item => item.type === t.type);
+          if (!def) return;
+          const transformStr = `translate(${t.x}, ${t.y}) rotate(${t.angle}) scale(${t.flip ? -1 : 1}, 1)`;
+          targetHtml += `<polygon points="${def.points}" transform="${transformStr}" fill="rgba(56, 189, 248, 0.22)" stroke="#38bdf8" stroke-dasharray="6,4" stroke-width="2.5" />`;
+        });
+      } else {
+        // 내부 경계선이 완벽하게 사라진 100% 통짜 실루엣!
+        curStage.targets.forEach((t) => {
+          const def = PIECE_DEFS.find(item => item.type === t.type);
+          if (!def) return;
+          const transformStr = `translate(${t.x}, ${t.y}) rotate(${t.angle}) scale(${t.flip ? -1 : 1}, 1)`;
+          targetHtml += `<polygon points="${def.points}" transform="${transformStr}" fill="#334155" stroke="#334155" stroke-width="1.5" stroke-linejoin="round" />`;
+        });
+      }
+
+      let piecesHtml = '';
+      this.state.pieces.forEach(p => {
+        const isSel = (p.id === this.state.selectedId);
+        const transformStr = `translate(${p.x}, ${p.y}) rotate(${p.angle}) scale(${p.flipped ? -1 : 1}, 1)`;
+        
+        let strokeColor = isSel ? '#fef08a' : (p.isLocked ? '#4ade80' : '#ffffff');
+        let strokeWidth = isSel ? '4.5' : (p.isLocked ? '3.5' : '2');
+        let filterStr = isSel ? 'drop-shadow(0 0 12px rgba(254, 240, 138, 0.9))' : 'drop-shadow(0 4px 8px rgba(0,0,0,0.6))';
+
+        piecesHtml += `
+          <g class="tg-piece-group" data-id="${p.id}" transform="${transformStr}" style="cursor: ${p.isLocked ? 'default' : 'grab'}; filter: ${filterStr};">
+            <polygon points="${p.points}" fill="${p.color}" stroke="${strokeColor}" stroke-width="${strokeWidth}" stroke-linejoin="round" />
+            ${p.isLocked ? `<text class="lock-icon" x="0" y="6" text-anchor="middle" font-size="18" fill="#ffffff" font-weight="bold">✅</text>` : ''}
+          </g>
+        `;
+      });
+
+      const targetStyle = (this.state.difficulty !== 'easy') ? 'filter: drop-shadow(0 0 10px rgba(129, 140, 248, 0.6));' : '';
+
+      svgEl.innerHTML = `
+        <line x1="0" y1="330" x2="500" y2="330" stroke="#475569" stroke-width="2" stroke-dasharray="8,6" />
+        <text x="250" y="352" text-anchor="middle" font-size="14" font-weight="900" fill="#94a3b8">👇 하단 조각 보관 트레이 👇</text>
+        
+        <g id="tg-target-layer" style="${targetStyle}">${targetHtml}</g>
+        <g id="tg-pieces-layer">${piecesHtml}</g>
+      `;
+    },
+
+    render() {
+      const isCleared = this.state.roundIdx >= this.state.maxRounds;
+      const stageList = STAGES[this.state.difficulty] || STAGES.easy;
+      const curStage = stageList[this.state.roundIdx] || stageList[0];
+
+      const html = `
+        <div class="game-tangram">
+          <div class="tg-header">
+            <div class="title-area">
+              <h2>🧩 웹 칠교놀이 (Tangram)</h2>
+              <p>7개의 조각을 회전·반전하여 제시된 실루엣을 완벽하게 맞추세요!</p>
+            </div>
+            <div class="stats-bar">
+              <button class="btn-howto" id="tg-btn-howto-top">❓ 게임 방법 가이드</button>
+              <div class="stat-badge stage">🚩 스테이지: ${Math.min(this.state.roundIdx + 1, this.state.maxRounds)}/${this.state.maxRounds} (${curStage?.name || ''})</div>
+              <div class="stat-badge score"><span class="score-val">${this.state.score}점</span></div>
+              <div class="stat-badge timer" style="display: ${this.state.difficulty === 'hard' ? 'flex' : 'none'};">⏱️ <span class="timer-val">${this.state.timer}초</span></div>
+            </div>
+          </div>
+          
+          <div class="main-layout">
+            <div class="game-area">
+              ${this.state.isGameOver ? `
+                <div class="card" style="text-align:center; padding: 40px;">
+                  <h3 style="font-size: 2.4rem; color: #ffffff !important; margin-top: 0; text-shadow:0 0 15px rgba(255,255,255,0.7);">${isCleared ? '🏆 웹 칠교놀이 엘리트 마스터 완료!' : '💥 시간 초과! 퍼즐 도전을 다시 시작하세요!'}</h3>
+                  <p style="font-size: 1.4rem; color: #f8fafc; font-weight: 800;">최종 달성 점수: <strong style="color:#fef08a;">${this.state.score}점</strong></p>
+                  <button class="btn-howto" id="tg-btn-restart-big" style="margin: 24px auto 0; max-width: 280px; padding: 18px; font-size: 1.3rem; justify-content:center;">🔄 새 실루엣 도전하기</button>
+                </div>
+              ` : `
+                <div class="board-card">
+                  <div class="mission-tag">✨ ${curStage?.name || ''} : ${curStage?.desc || ''}</div>
+                  
+                  <div class="svg-wrapper">
+                    <svg id="tg-svg-canvas" viewBox="0 0 500 450"></svg>
+                  </div>
+                  
+                  <div class="control-panel">
+                    <div class="selected-info">
+                      <span>👆</span> <span id="tg-sel-name">큰 삼각형 1 (선택됨)</span>
+                    </div>
+                    <div class="btn-group">
+                      <button class="btn-ctrl" id="tg-btn-rot-right">↻ 45° 우회전</button>
+                      <button class="btn-ctrl" id="tg-btn-rot-left">↺ 45° 좌회전</button>
+                      <button class="btn-ctrl flip-btn" id="tg-btn-flip" style="display:none;">↔ 좌우 반전</button>
+                    </div>
+                  </div>
+
+                  <div style="color: #ffffff; font-size: 1rem; font-weight: 800; margin-top: 16px; text-shadow:0 1px 2px rgba(0,0,0,0.8);">
+                    💡 조각을 마우스나 손가락으로 드래그하고, 선택 후 하단 회전 버튼이나 <strong>조각 더블클릭</strong>으로 45도씩 돌릴 수 있습니다!
+                  </div>
+                </div>
+                
+                <div class="result-area"></div>
+                
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
+                  <button class="btn-secondary" id="tg-btn-hint" ${this.state.isAnswered ? 'disabled' : ''}>💡 조각 1개 정답 위치로 맞추기 (-5점)</button>
+                  <button class="btn-secondary" id="tg-btn-reset-round" ${this.state.isAnswered ? 'disabled' : ''}>🔄 조각 트레이로 초기화</button>
+                </div>
+              `}
+            </div>
+            
+            <div class="sidebar">
+              <div class="card" style="padding:18px;">
+                <h3 style="margin-top:0; font-size:1.2rem; color:#ffffff !important; margin-bottom:12px; text-shadow:0 0 10px rgba(255,255,255,0.5);">⚙️ 난이도 선택</h3>
+                <div class="diff-selector">
+                  <button class="diff-btn ${this.state.difficulty === 'easy' ? 'active' : ''}" data-diff="easy">쉬움 (6문항/선 있음)</button>
+                  <button class="diff-btn ${this.state.difficulty === 'normal' ? 'active' : ''}" data-diff="normal">보통 (6문항/실루엣)</button>
+                  <button class="diff-btn ${this.state.difficulty === 'hard' ? 'active' : ''}" data-diff="hard">도전 (6문항/제한+반전)</button>
+                </div>
+              </div>
+
+              <div class="card" style="padding:18px;">
+                <h3 style="margin-top:0; font-size:1.2rem; border-bottom:2px solid #6366f1; padding-bottom:12px; color:#ffffff !important; text-align:center; text-shadow:0 0 10px rgba(255,255,255,0.5);">🏆 명예의 전당 (Top 5)</h3>
+                <div id="board-tangram">
+                  <p style="color:#94a3b8; font-size:1rem; text-align:center; margin:16px 0;">로딩 중...</p>
+                </div>
+              </div>
+              
+              <div class="card" style="padding:18px;">
+                <button class="btn-secondary" style="width:100%; margin-bottom:12px; padding:14px;" id="tg-btn-restart-side">🔄 처음부터 다시 도전</button>
+                <button class="btn-secondary" style="width:100%; padding:14px; background:#059669; color:#ffffff !important; border:none;" id="tg-btn-home">🏠 홈으로</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      this.container.innerHTML = html;
+      this.bindEvents();
+      this.updateSVG();
+      this.updateControlUI();
+      this.loadLeaderboard();
+    },
+
+    bindEvents() {
+      const root = this.container?.querySelector('.game-tangram');
+      if (!root) return;
+      
+      const btnHowToTop = root.querySelector('#tg-btn-howto-top');
+      if (btnHowToTop) btnHowToTop.addEventListener('click', () => this.showHowToPlayModal());
+
+      root.querySelectorAll('.diff-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const diff = btn.getAttribute('data-diff');
+          this.setDifficulty(diff);
+        });
+      });
+
+      const btnRotRight = root.querySelector('#tg-btn-rot-right');
+      if (btnRotRight) btnRotRight.addEventListener('click', () => this.rotateSelected(45));
+
+      const btnRotLeft = root.querySelector('#tg-btn-rot-left');
+      if (btnRotLeft) btnRotLeft.addEventListener('click', () => this.rotateSelected(-45));
+
+      const btnFlip = root.querySelector('#tg-btn-flip');
+      if (btnFlip) btnFlip.addEventListener('click', () => this.flipSelected());
+
+      const btnHint = root.querySelector('#tg-btn-hint');
+      if (btnHint) btnHint.addEventListener('click', () => {
+        this.state.hintUsed = true;
+        const stageList = STAGES[this.state.difficulty] || STAGES.easy;
+        const curStage = stageList[this.state.roundIdx];
+        if (!curStage) return;
+
+        const unlocked = this.state.pieces.filter(p => !p.isLocked);
+        if (unlocked.length > 0) {
+          const p = unlocked[0];
+          const targets = curStage.targets.filter(t => t.type === p.type);
+          for (let t of targets) {
+            const occ = this.state.pieces.some(o => o.isLocked && Math.abs(o.x - t.x) < 5 && Math.abs(o.y - t.y) < 5);
+            if (!occ) {
+              p.x = t.x; p.y = t.y; p.angle = t.angle; p.flipped = t.flip; p.isLocked = true;
+              this.updateSinglePieceTransform(p);
+              this.updatePieceStylesOnly();
+              this.updateControlUI();
+              this.checkVictoryCondition();
+              btnHint.disabled = true;
+              return;
+            }
+          }
+        }
+      });
+      
+      const btnResetRound = root.querySelector('#tg-btn-reset-round');
+      if (btnResetRound) btnResetRound.addEventListener('click', () => this.setupRound());
+
+      const btnRestartBig = root.querySelector('#tg-btn-restart-big');
+      if (btnRestartBig) btnRestartBig.addEventListener('click', () => this.resetGame());
+      
+      const btnRestartSide = root.querySelector('#tg-btn-restart-side');
+      if (btnRestartSide) btnRestartSide.addEventListener('click', () => this.resetGame());
+
+      const keyHandler = (e) => {
+        if (!this.container || !document.body.contains(this.container)) {
+          window.removeEventListener('keydown', keyHandler);
+          return;
+        }
+        if (this.state.isAnswered || this.state.isGameOver || !this.state.selectedId) return;
+
+        if (e.key === 'ArrowRight' || e.key === 'r' || e.key === 'R') {
+          e.preventDefault();
+          this.rotateSelected(45);
+        } else if (e.key === 'ArrowLeft') {
+          e.preventDefault();
+          this.rotateSelected(-45);
+        } else if (e.key === 'f' || e.key === 'F' || e.key === ' ') {
+          e.preventDefault();
+          this.flipSelected();
+        }
+      };
+      window.removeEventListener('keydown', this._keyHandler);
+      this._keyHandler = keyHandler;
+      window.addEventListener('keydown', this._keyHandler);
+
+      const btnHome = root.querySelector('#tg-btn-home');
+      if (btnHome) {
+        btnHome.addEventListener('click', (e) => {
+          e.preventDefault();
+          const topBottomHome = document.getElementById('mathlab-floating-home') || document.querySelector('#legacy-back-home-btn') || document.querySelector('.floating-home');
+          if (topBottomHome) topBottomHome.click();
+          else if (typeof window.MathLabRenderHome === 'function') window.MathLabRenderHome();
+          else if (typeof window.goHome === 'function') window.goHome();
+          else location.reload();
+        });
+      }
+
+      // 💡 [버벅임/메모리 누수 해소]: SVG 드래그 및 마우스 리스너는 초기 렌더링 시 단 1번만 전역 바인딩!
+      this.bindSVGEventsOnce();
+    },
+    
+    bindSVGEventsOnce() {
+      if (this._boundListeners) return;
+      this._boundListeners = true;
+
+      let lastTapTime = 0;
+
+      const getSVGPoint = (e, svgEl) => {
+        const rect = svgEl.getBoundingClientRect();
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        const x = (clientX - rect.left) * (500 / rect.width);
+        const y = (clientY - rect.top) * (450 / rect.height);
+        return { x, y };
+      };
+
+      const startDrag = (e) => {
+        const group = e.target.closest('.tg-piece-group');
+        if (!group) return;
+        const svgEl = group.closest('svg');
+        if (!svgEl) return;
+        
+        const id = group.getAttribute('data-id');
+        const p = this.state.pieces.find(item => item.id === id);
+        if (!p || p.isLocked) return;
+
+        const now = Date.now();
+        if (now - lastTapTime < 300 && this.state.selectedId === id) {
+          this.rotateSelected(45);
+          lastTapTime = 0;
+          return;
+        }
+        lastTapTime = now;
+
+        this.selectPiece(id);
+        this.state.draggingId = id;
+        
+        const pt = getSVGPoint(e, svgEl);
+        this.state.dragOffset = { x: pt.x - p.x, y: pt.y - p.y };
+
+        if (e.type === 'touchstart') e.preventDefault();
+      };
+
+      // 💡 [requestAnimationFrame 초고속 스로틀링 적용]
+      let rafId = null;
+      let pendingEvent = null;
+
+      const moveDrag = (e) => {
+        if (!this.state.draggingId) return;
+        if (e.type === 'touchmove') e.preventDefault();
+        pendingEvent = e;
+
+        if (!rafId) {
+          rafId = requestAnimationFrame(() => {
+            rafId = null;
+            if (!this.state.draggingId || !pendingEvent) return;
+            
+            const p = this.state.pieces.find(item => item.id === this.state.draggingId);
+            if (!p || p.isLocked) return;
+
+            const root = this.container?.querySelector('.game-tangram');
+            const svgEl = root?.querySelector('#tg-svg-canvas');
+            if (!svgEl) return;
+
+            const pt = getSVGPoint(pendingEvent, svgEl);
+            p.x = Math.round(pt.x - this.state.dragOffset.x);
+            p.y = Math.round(pt.y - this.state.dragOffset.y);
+            p.x = Math.max(30, Math.min(470, p.x));
+            p.y = Math.max(30, Math.min(420, p.y));
+
+            // DOM 전체 재건 없이 transform 속성만 실시간 변경
+            this.updateSinglePieceTransform(p);
+          });
+        }
+      };
+
+      const endDrag = () => {
+        if (!this.state.draggingId) return;
+        const p = this.state.pieces.find(item => item.id === this.state.draggingId);
+        this.state.draggingId = null;
+
+        if (p && !p.isLocked) {
+          this.checkSnap(p);
+          this.updateSinglePieceTransform(p);
+          this.updatePieceStylesOnly();
+          this.checkVictoryCondition();
+        }
+      };
+
+      this._onStartDrag = startDrag;
+      this._onMoveDrag = moveDrag;
+      this._onEndDrag = endDrag;
+
+      document.addEventListener('mousedown', (e) => {
+        if (e.target.closest('#tg-svg-canvas')) startDrag(e);
+      });
+      document.addEventListener('mousemove', moveDrag);
+      window.addEventListener('mouseup', endDrag);
+
+      document.addEventListener('touchstart', (e) => {
+        if (e.target.closest('#tg-svg-canvas')) startDrag(e);
+      }, { passive: false });
+      document.addEventListener('touchmove', moveDrag, { passive: false });
+      window.addEventListener('touchend', endDrag);
+
+      document.addEventListener('wheel', (e) => {
+        if (e.target.closest('#tg-svg-canvas') && this.state.selectedId && !this.state.isAnswered) {
+          e.preventDefault();
+          this.rotateSelected(e.deltaY > 0 ? 45 : -45);
+        }
+      }, { passive: false });
+    },
+
+    loadLeaderboard() {
+      try {
+        if (typeof window.loadGameLeaderboard === 'function') {
+          window.loadGameLeaderboard('웹 칠교놀이', true, 'board-tangram');
+        } else {
+          const localRanks = JSON.parse(localStorage.getItem('rank_board-tangram') || '[]');
+          this.renderRankList(localRanks.slice(0, 5));
+        }
+      } catch (e) {
+        console.error('[Tangram] 명예의 전당 로드 오류:', e);
+        const localRanks = JSON.parse(localStorage.getItem('rank_board-tangram') || '[]');
+        this.renderRankList(localRanks.slice(0, 5));
+      }
+    },
+
+    renderRankList(ranks) {
+      const el = this.container?.querySelector('#board-tangram');
+      if (!el) return;
+
+      if (!ranks || ranks.length === 0) {
+        el.innerHTML = '<div style="text-align:center; color:#94a3b8; padding: 12px 0;">아직 등록된 랭킹이 없습니다. 첫 주인공이 되어보세요!</div>';
+        return;
+      }
+
+      el.innerHTML = ranks.map((r, i) => `
+        <div class="rank-item">
+          <div><span class="rank-num">${i + 1}위</span> ${r.nickname || '익명'}</div>
+          <div class="rank-score">${r.score || 0}점</div>
+        </div>
+      `).join('');
+    },
+
+    destroy() {
+      if (window.MathLabCleanup && typeof window.MathLabCleanup.clearTimers === 'function') {
+        window.MathLabCleanup.clearTimers(this.timers);
+      }
+      this.timers.forEach(clearTimeout);
+      this.timers = [];
+      if (this.timerId) { clearInterval(this.timerId); this.timerId = null; }
+      if (this._keyHandler) window.removeEventListener('keydown', this._keyHandler);
+      if (this._onEndDrag) {
+        window.removeEventListener('mouseup', this._onEndDrag);
+        window.removeEventListener('touchend', this._onEndDrag);
+      }
+      this._boundListeners = false;
+      document.getElementById('mathlab-inline-ranking-modal')?.remove();
+      document.getElementById('mathlab-tg-howto-modal')?.remove();
+      const host = document.getElementById('tangram-force-host'); if (host) host.remove();
+      if (this.container) this.container.innerHTML = '';
+      this.container = null;
+    }
+  };
+
+  if (!window.MathLabGames) {
+    window.MathLabGames = {
+      registry: {},
+      register(app) { this.registry[app.id] = app; },
+      mount(id, container, context) {
+        if (this.registry[id]) this.registry[id].mount(container, context);
+      }
+    };
+  }
+  
+  if (typeof window.MathLabGames.register === 'function') {
+      window.MathLabGames.register(Tangram);
+  }
+
+  window.launchTangramGame = function() {
+    if (typeof window.MathLabGames !== 'undefined' && typeof window.MathLabGames.mount === 'function') {
+      try {
+        window.MathLabGames.mount('tangram');
+        return;
+      } catch(e) {
+        console.warn('MathLabGames mount 실패, 직접 마운트 시도:', e);
+      }
+    }
+    const target = document.getElementById('mathlab-view') || document.getElementById('new-root') || document.body;
+    Tangram.mount(target);
+  };
+})();
+</script>

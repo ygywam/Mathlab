@@ -1,0 +1,1720 @@
+<!-- 구버전 호환 섹션 (기존 대시보드 인덱스 파일과의 호환용) -->
+<style>
+  #game-polyhedron-maze { display: none; }
+</style>
+<div id="game-polyhedron-maze"></div>
+
+<!-- ==========================================================================
+     [앱 38] 다면체 면 타기 미로 (Polyhedron 3D Topology Maze) - Gen-3 완결판
+     ========================================================================== -->
+<style>
+  /* ==========================================================================
+     Gen-3 수학 실험실 표준 스타일 - 다면체 면 타기 미로
+     모던 슬레이트 & 다크 네이비 테마 (#0f172a, #1e293b)
+     ========================================================================== */
+  .game-polyhedron-maze {
+    width: 100%;
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 20px;
+    background: #0f172a;
+    color: #e2e8f0;
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    border-radius: 24px;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.55);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    position: relative;
+    box-sizing: border-box;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  /* 1. 상단 바 & 버튼 영역 */
+  .game-polyhedron-maze .poly-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding-bottom: 14px;
+    border-bottom: 2px solid #1e293b;
+  }
+  .game-polyhedron-maze .poly-title-wrap {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .game-polyhedron-maze .poly-badge {
+    background: linear-gradient(135deg, #38bdf8, #2563eb);
+    color: #ffffff;
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+  }
+  .game-polyhedron-maze .poly-title {
+    font-size: 1.45rem;
+    font-weight: 800;
+    margin: 0;
+    color: #f8fafc;
+    letter-spacing: -0.5px;
+  }
+  .game-polyhedron-maze .poly-subtitle {
+    font-size: 0.86rem;
+    color: #94a3b8;
+    margin: 4px 0 0 0;
+  }
+  .game-polyhedron-maze .poly-header-btns {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .game-polyhedron-maze .poly-btn {
+    padding: 8px 14px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid #334155;
+    background: #1e293b;
+    color: #e2e8f0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .game-polyhedron-maze .poly-btn:hover {
+    background: #334155;
+    transform: translateY(-1px);
+  }
+  .game-polyhedron-maze .poly-btn.btn-ranking {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: #ffffff;
+    border: none;
+    box-shadow: 0 3px 10px rgba(245, 158, 11, 0.3);
+  }
+  .game-polyhedron-maze .poly-btn.btn-guide {
+    background: linear-gradient(135deg, #06b6d4, #0891b2);
+    color: #ffffff;
+    border: none;
+    box-shadow: 0 3px 10px rgba(6, 182, 212, 0.3);
+  }
+  .game-polyhedron-maze .poly-btn.btn-home {
+    background: #dc2626;
+    color: #ffffff;
+    border: none;
+  }
+
+  /* 2. 컨트롤 바 (난이도 선택) */
+  .game-polyhedron-maze .poly-control-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #1e293b;
+    padding: 10px 16px;
+    border-radius: 16px;
+    border: 1px solid #334155;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .game-polyhedron-maze .mode-info-tag {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: #38bdf8;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .game-polyhedron-maze .diff-tabs {
+    display: flex;
+    gap: 6px;
+  }
+  .game-polyhedron-maze .diff-btn {
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #cbd5e1;
+    background: #334155;
+    border: 1px solid #475569;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .game-polyhedron-maze .diff-btn.active {
+    background: #10b981;
+    border-color: #34d399;
+    color: #0f172a;
+  }
+
+  /* 3. 다면체 선택 칩 */
+  .game-polyhedron-maze .poly-selector-bar {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 4px 0;
+  }
+  .game-polyhedron-maze .poly-chip {
+    flex: 1;
+    min-width: 130px;
+    background: #1e293b;
+    border: 2px solid #334155;
+    border-radius: 14px;
+    padding: 10px 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+  }
+  .game-polyhedron-maze .poly-chip:hover {
+    border-color: #475569;
+    transform: translateY(-2px);
+  }
+  .game-polyhedron-maze .poly-chip.active {
+    background: rgba(56, 189, 248, 0.15);
+    border-color: #38bdf8;
+    box-shadow: 0 0 16px rgba(56, 189, 248, 0.25);
+  }
+  .game-polyhedron-maze .poly-chip-name {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: #f8fafc;
+  }
+  .game-polyhedron-maze .poly-chip-meta {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    margin-top: 4px;
+  }
+
+  /* 4. 메인 아레나 (3D 캔버스 인터랙티브 영역) */
+  .game-polyhedron-maze .poly-arena-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .game-polyhedron-maze .player-stage {
+    background: #111827;
+    border: 2px solid #334155;
+    border-radius: 20px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    position: relative;
+    box-shadow: inset 0 2px 10px rgba(0,0,0,0.4);
+  }
+  .game-polyhedron-maze .stage-status-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #1e293b;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .game-polyhedron-maze .player-tag {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #f8fafc;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .game-polyhedron-maze .status-metrics {
+    display: flex;
+    gap: 16px;
+    font-size: 0.92rem;
+    font-weight: 700;
+    flex-wrap: wrap;
+  }
+  .game-polyhedron-maze .metric-item {
+    background: #1e293b;
+    padding: 6px 14px;
+    border-radius: 10px;
+    border: 1px solid #334155;
+  }
+  .game-polyhedron-maze .metric-item .val {
+    color: #38bdf8;
+    font-weight: 800;
+  }
+
+  /* 중심 3D 캔버스 뷰포트 */
+  .game-polyhedron-maze .stage-viewport {
+    width: 100%;
+    min-height: 440px;
+    background: radial-gradient(circle at center, #1e293b 0%, #090d16 100%);
+    border-radius: 16px;
+    border: 1px solid #1e293b;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .game-polyhedron-maze #poly-3d-canvas {
+    width: 100%;
+    max-width: 600px;
+    height: 440px;
+    cursor: grab;
+    touch-action: pan-x pan-y;
+  }
+  .game-polyhedron-maze #poly-3d-canvas:active {
+    cursor: grabbing;
+  }
+
+  /* 3D 뷰포트 안내 패치 */
+  .game-polyhedron-maze .viewport-hint-bar {
+    position: absolute;
+    top: 14px;
+    left: 16px;
+    right: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    pointer-events: none;
+    z-index: 10;
+  }
+  .game-polyhedron-maze .hint-badge {
+    background: rgba(15, 23, 42, 0.85);
+    border: 1px solid #334155;
+    color: #94a3b8;
+    padding: 6px 12px;
+    border-radius: 10px;
+    font-size: 0.8rem;
+    pointer-events: auto;
+  }
+  .game-polyhedron-maze .hint-badge strong { color: #38bdf8; }
+  .game-polyhedron-maze .btn-camera-reset {
+    background: rgba(30, 41, 59, 0.9);
+    border: 1px solid #38bdf8;
+    color: #38bdf8;
+    padding: 6px 12px;
+    border-radius: 10px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    pointer-events: auto;
+    transition: all 0.2s;
+  }
+  .game-polyhedron-maze .btn-camera-reset:hover {
+    background: #38bdf8;
+    color: #0f172a;
+  }
+
+  /* 토스트 안내 메시지 (상단 중앙 슬라이드 다운) */
+  .game-polyhedron-maze .poly-toast {
+    position: absolute;
+    top: 54px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-20px);
+    background: rgba(15, 23, 42, 0.95);
+    border: 2px solid #38bdf8;
+    color: #ffffff;
+    padding: 12px 24px;
+    border-radius: 14px;
+    font-size: 0.92rem;
+    font-weight: 800;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+    z-index: 100;
+    pointer-events: none;
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .game-polyhedron-maze .poly-toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  .game-polyhedron-maze .poly-toast.toast-warn {
+    border-color: #ef4444;
+    background: rgba(127, 29, 29, 0.95);
+  }
+  .game-polyhedron-maze .poly-toast.toast-success {
+    border-color: #10b981;
+    background: rgba(6, 78, 59, 0.95);
+  }
+
+  /* 하단 이동 컨트롤 버튼 바 */
+  .game-polyhedron-maze .stage-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .game-polyhedron-maze .controls-label {
+    font-size: 0.86rem;
+    color: #94a3b8;
+    text-align: center;
+  }
+  .game-polyhedron-maze .move-btn-grid {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .game-polyhedron-maze .move-btn {
+    background: #1e293b;
+    border: 2px solid #38bdf8;
+    color: #f8fafc;
+    padding: 10px 18px;
+    border-radius: 14px;
+    font-size: 0.95rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 4px 12px rgba(56, 189, 248, 0.15);
+  }
+  .game-polyhedron-maze .move-btn:hover:not(:disabled) {
+    background: #38bdf8;
+    color: #0f172a;
+    transform: translateY(-2px);
+  }
+  .game-polyhedron-maze .move-btn:disabled {
+    opacity: 0.45;
+    border-color: #475569;
+    cursor: not-allowed;
+  }
+
+  /* 5. 플로어 모달 공통 (게임 방법 가이드 / 단계 클리어 게이트 / 퀴즈 게이트) */
+  .game-polyhedron-maze .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(6px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    padding: 20px;
+  }
+  .game-polyhedron-maze .modal-card {
+    background: #1e293b;
+    border: 2px solid #38bdf8;
+    border-radius: 24px;
+    padding: 26px;
+    width: 100%;
+    max-width: 640px;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.8);
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    max-height: 85vh;
+    overflow-y: auto;
+  }
+  .game-polyhedron-maze .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #334155;
+    padding-bottom: 12px;
+  }
+  .game-polyhedron-maze .modal-title {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: #38bdf8;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .game-polyhedron-maze .modal-close-btn {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: color 0.2s;
+  }
+  .game-polyhedron-maze .modal-close-btn:hover { color: #f8fafc; }
+
+  /* 가이드 모달 전용 스타일 */
+  .game-polyhedron-maze .guide-grid-modal {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .game-polyhedron-maze .guide-section-box {
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 16px;
+    padding: 16px;
+  }
+  .game-polyhedron-maze .guide-section-title {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #facc15;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .game-polyhedron-maze .guide-section-box ul {
+    margin: 0;
+    padding-left: 20px;
+    color: #cbd5e1;
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+  .game-polyhedron-maze .guide-section-box li { margin-bottom: 6px; }
+
+  /* 퀴즈 & 스테이지 전환 모달 내부 */
+  .game-polyhedron-maze .quiz-question {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #f8fafc;
+    line-height: 1.5;
+    margin: 0;
+    padding: 14px;
+    background: #0f172a;
+    border-radius: 14px;
+    border: 1px solid #334155;
+  }
+  .game-polyhedron-maze .quiz-options {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .game-polyhedron-maze .quiz-opt-btn {
+    background: #0f172a;
+    border: 2px solid #334155;
+    color: #e2e8f0;
+    padding: 14px;
+    border-radius: 14px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s;
+  }
+  .game-polyhedron-maze .quiz-opt-btn:hover {
+    border-color: #38bdf8;
+    background: #1e293b;
+    color: #38bdf8;
+  }
+  .game-polyhedron-maze .stage-next-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 6px;
+  }
+  .game-polyhedron-maze .btn-action-primary {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: #ffffff;
+    border: none;
+    padding: 14px;
+    border-radius: 14px;
+    font-size: 1rem;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+    transition: all 0.2s;
+  }
+  .game-polyhedron-maze .btn-action-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(16, 185, 129, 0.45);
+  }
+  .game-polyhedron-maze .btn-action-secondary {
+    background: #334155;
+    color: #e2e8f0;
+    border: 1px solid #475569;
+    padding: 12px;
+    border-radius: 14px;
+    font-size: 0.92rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .game-polyhedron-maze .btn-action-secondary:hover {
+    background: #475569;
+    color: #ffffff;
+  }
+
+  /* 6. 하단 상시 명예의 전당 보드 */
+  .game-polyhedron-maze .bottom-ranking-card {
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 20px;
+    padding: 20px;
+    margin-top: 8px;
+  }
+  .game-polyhedron-maze .ranking-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+    border-bottom: 1px solid #334155;
+    padding-bottom: 10px;
+  }
+  .game-polyhedron-maze .ranking-title {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #facc15;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+</style>
+
+<script>
+// ==========================================
+// 38. 🚀 [앱 38] 다면체 면 타기 미로 (3D Geometry Engine)
+// ==========================================
+(function() {
+  const SOUNDS = {
+    move:  'https://actions.google.com/sounds/v1/movement/footsteps_on_tile_floor.ogg',
+    fold:  'https://actions.google.com/sounds/v1/science_fiction/teleport_appear.ogg',
+    item:  'https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg',
+    obs:   'https://actions.google.com/sounds/v1/impacts/wood_plank_drop.ogg',
+    clear: 'https://actions.google.com/sounds/v1/cartoon/consequence_success.ogg',
+    wrong: 'https://actions.google.com/sounds/v1/cartoon/wobble_low.ogg'
+  };
+
+  // 🌟 [보안] XSS 방어용 HTML 특수기호 이스케이프 함수
+  function escapeHTML(str) {
+    if (!str) return '';
+    return String(str).replace(/[&<>"']/g, function(match) {
+      const escape = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+      return escape[match];
+    });
+  }
+
+  // 3D 기하 연산 도구 (3D 도형 공작소 이식)
+  const phi = (1 + Math.sqrt(5)) / 2;
+  const vSub = (a, b) => [a[0]-b[0], a[1]-b[1], a[2]-b[2]];
+  const vAdd = (a, b) => [a[0]+b[0], a[1]+b[1], a[2]+b[2]];
+  const vCross = (a, b) => [a[1]*b[2]-a[2]*b[1], a[2]*b[0]-a[0]*b[2], a[0]*b[1]-a[1]*b[0]];
+  const vDot = (a, b) => a[0]*b[0] + a[1]*b[1] + a[2]*b[2];
+  const vMag = a => Math.sqrt(vDot(a,a));
+  const vNorm = a => { let m = vMag(a); return m === 0 ? [0,0,0] : [a[0]/m, a[1]/m, a[2]/m]; };
+  function mApply(m, p) {
+    return [
+      m[0]*p[0] + m[1]*p[1] + m[2]*p[2] + m[3],
+      m[4]*p[0] + m[5]*p[1] + m[6]*p[2] + m[7],
+      m[8]*p[0] + m[9]*p[1] + m[10]*p[2] + m[11]
+    ];
+  }
+
+  // 5대 정다면체 기하 정보 및 퀴즈 DB (🌟 정답 번호 1, 2, 3번 골고루 분산 배치)
+  const POLY_DATA = {
+    tetra: {
+      name: '정사면체 (Tetrahedron)',
+      v: 4, e: 6, f: 4,
+      facesCount: 4,
+      quiz: [
+        // 정답: 2번 (a: 1)
+        { q: '정사면체의 면(Face), 꼭짓점(Vertex), 모서리(Edge)의 개수 조합으로 옳은 것은?', o: ['F:4, V:6, E:4', 'F:4, V:4, E:6', 'F:6, V:4, E:6'], a: 1 },
+        // 정답: 3번 (a: 2)
+        { q: '오일러 공식(V - E + F)에 정사면체의 수치를 대입한 결과는?', o: ['4 - 4 + 6 = 6', '6 - 6 + 4 = 4', '4 - 6 + 4 = 2'], a: 2 }
+      ]
+    },
+    cube: {
+      name: '정육면체 (Cube)',
+      v: 8, e: 12, f: 6,
+      facesCount: 6,
+      quiz: [
+        // 정답: 3번 (a: 2)
+        { q: '정육면체의 모든 모서리(Edge)의 총 개수는 몇 개일까요?', o: ['8개', '6개', '12개'], a: 2 },
+        // 정답: 2번 (a: 1)
+        { q: '정육면체(V:8, E:12, F:6)가 성립시키는 오일러 공식(V - E + F = 2)의 식은?', o: ['6 - 12 + 8 = 2', '8 - 12 + 6 = 2', '12 - 8 + 6 = 10'], a: 1 }
+      ]
+    },
+    octa: {
+      name: '정팔면체 (Octahedron)',
+      v: 6, e: 12, f: 8,
+      facesCount: 8,
+      quiz: [
+        // 정답: 2번 (a: 1)
+        { q: '정팔면체의 꼭짓점(V)과 모서리(E)의 개수를 올바르게 짝지은 것은?', o: ['V:8개, E:12개', 'V:6개, E:12개', 'V:12개, E:8개'], a: 1 },
+        // 정답: 1번 (a: 0)
+        { q: '정팔면체에 대한 오일러 공식(V - E + F) 연산 결과는?', o: ['6 - 12 + 8 = 2', '8 - 12 + 6 = 2', '12 - 8 + 6 = 10'], a: 0 }
+      ]
+    },
+    dodeca: {
+      name: '정십이면체 (Dodecahedron)',
+      v: 20, e: 30, f: 12,
+      facesCount: 12,
+      quiz: [
+        // 정답: 3번 (a: 2)
+        { q: '정십이면체를 구성하는 각 면의 모양과 총 모서리(E) 수는?', o: ['정육각형, 모서리 24개', '정삼각형, 모서리 20개', '정오각형, 모서리 30개'], a: 2 },
+        // 정답: 2번 (a: 1)
+        { q: '정십이면체(V:20, E:30, F:12)에 오일러 공식을 적용한 식은?', o: ['12 - 30 + 20 = 2', '20 - 30 + 12 = 2', '30 - 20 + 12 = 22'], a: 1 }
+      ]
+    },
+    icosa: {
+      name: '정이십면체 (Icosahedron)',
+      v: 12, e: 30, f: 20,
+      facesCount: 20,
+      quiz: [
+        // 정답: 2번 (a: 1)
+        { q: '정이십면체의 면(F:20개)을 이루는 입체도형 기본 단위는?', o: ['정오각형', '정삼각형', '정사각형'], a: 1 },
+        // 정답: 3번 (a: 2)
+        { q: '정이십면체(V:12, E:30, F:20)에서도 성립하는 불변의 오일러 결과는?', o: ['20 - 30 + 12 = 2', '30 - 20 + 12 = 22', '12 - 30 + 20 = 2'], a: 2 }
+      ]
+    }
+  };
+
+  const POLY_KEYS = ['tetra', 'cube', 'octa', 'dodeca', 'icosa'];
+
+  const DIFF_SETTINGS = {
+    easy:   { poly: 'tetra',  timeLimit: 0,   maxMoves: 999, label: '🟢 쉬움 (정사/육면체)' },
+    normal: { poly: 'octa',   timeLimit: 120, maxMoves: 999, label: '🟡 보통 (정팔면체)' },
+    hard:   { poly: 'dodeca', timeLimit: 90,  maxMoves: 999, label: '🔴 도전 (정십이/이십면체)' }
+  };
+
+  let state = {
+    polyKey: 'tetra',     // 🌟 기본 다면체: 정사면체
+    difficulty: 'easy',   // 🌟 기본 난이도: 쉬움
+    soundEnabled: true,
+    timerInterval: null,
+    accumulatedScore: 0,  // 단계 연속 진행 시 누적 점수
+    player: {
+      currentFace: 0,
+      moves: 0,
+      score: 0,
+      itemsCollected: 0,
+      totalItems: 5,
+      items: {},
+      obstacles: {},
+      visited: [],
+      timeRemain: 120,
+      isCleared: false
+    }
+  };
+
+  // 3D 캔버스 엔진 상태
+  let poly3dCtx = null;
+  let poly3dCanvas = null;
+  let poly3dReqId = null;
+  let currentPolyGeom = null; // { faces: [...], adjacency: {...} }
+  let polyAngleX = 0.3;
+  let polyAngleY = -0.5;
+  let isDragging = false;
+  let dragStartX = 0, dragStartY = 0;
+  let baseAngleX = 0, baseAngleY = 0;
+  let allProjectedFaces = [];
+
+  function playSound(type) {
+    if (!state.soundEnabled) return;
+    try {
+      const audio = new Audio(SOUNDS[type]);
+      audio.volume = 0.5;
+      audio.play().catch(() => {});
+    } catch(e) {}
+  }
+
+  function showToast(msg, type = 'info') {
+    const toast = document.getElementById('poly-main-toast');
+    if (!toast) return;
+    toast.className = 'poly-toast show';
+    if (type === 'warn') toast.classList.add('toast-warn');
+    if (type === 'success') toast.classList.add('toast-success');
+    toast.innerHTML = msg;
+    setTimeout(() => toast.classList.remove('show'), 3200);
+  }
+
+  // ==========================================================================
+  // 안전 마운트 & UI 구성
+  // ==========================================================================
+  function mount(container, context = {}) {
+    let host = null;
+    if (typeof container === 'string') host = document.querySelector(container);
+    else if (container instanceof HTMLElement) host = container;
+    if (!host) host = window.MathLabUtils?.getMountContainer ? window.MathLabUtils.getMountContainer(container) : document.getElementById('mathlab-view');
+    if (!host || !(host instanceof HTMLElement)) host = document.getElementById('new-root') || document.getElementById('game-container') || document.getElementById('mathlab-view');
+
+    if (!host || !(host instanceof HTMLElement) || host === document.body) {
+      let createdHost = document.getElementById('polyhedron-maze-force-host');
+      if (!createdHost) {
+        createdHost = document.createElement('div');
+        createdHost.id = 'polyhedron-maze-force-host';
+        document.body.appendChild(createdHost);
+      }
+      host = createdHost;
+    }
+
+    const footerEl = document.querySelector('footer, #footer, .app-footer') ||
+                     Array.from(document.querySelectorAll('div, p, span')).find(el => el.textContent && el.textContent.includes('2026 기록조율사'));
+    if (footerEl && host && typeof host.compareDocumentPosition === 'function' && (host.compareDocumentPosition(footerEl) & Node.DOCUMENT_POSITION_PRECEDING)) {
+      footerEl.parentNode.insertBefore(host, footerEl);
+    }
+
+    host.style.display = '';
+    host.style.visibility = 'visible';
+    host.style.opacity = '1';
+
+    let parent = host.parentElement;
+    while (parent && parent !== document.body && parent !== document.documentElement) {
+      if (parent.style && parent.style.display === 'none') parent.style.display = 'block';
+      if (parent.style && parent.style.visibility === 'hidden') parent.style.visibility = 'visible';
+      parent = parent.parentElement;
+    }
+
+    document.querySelectorAll('header, .navbar, #app-header, .top-bar, #floating-home-btn, .floating-home').forEach(el => {
+      if (el && el.style && el.style.display === 'none') el.style.display = '';
+    });
+
+    host.innerHTML = `
+      <div class="game-polyhedron-maze" id="polyhedron-maze-app">
+        <!-- 1. 상단 타이틀 바 & 가이드 팝업 버튼 -->
+        <div class="poly-header">
+          <div class="poly-title-wrap">
+            <div class="poly-badge">🎲</div>
+            <div>
+              <h2 class="poly-title">다면체 면 타기 미로 (3D Geometry Maze)</h2>
+              <p class="poly-subtitle">실제 기하학 다각형 3D 다면체를 마우스/터치로 회전하며 인접 면을 누비고 보석을 수집하세요!</p>
+            </div>
+          </div>
+          <div class="poly-header-btns">
+            <button class="poly-btn" onclick="PolyhedronMaze.toggleSound()" id="poly-sound-btn">🔊 효과음 ON</button>
+            <button class="poly-btn btn-ranking" onclick="PolyhedronMaze.showRankingModal()">🏆 명예의 전당</button>
+            <button class="poly-btn btn-guide" onclick="PolyhedronMaze.showGuideModal()">📖 게임 방법</button>
+            <button class="poly-btn btn-home" onclick="PolyhedronMaze.goHome()">🏠 홈으로</button>
+          </div>
+        </div>
+
+        <!-- 2. 컨트롤 바 (1인 탐험 표기 & 🌟 쉬움 active로 초기화) -->
+        <div class="poly-control-bar">
+          <div class="mode-info-tag">👤 1인 3D 정다면체 자율 탐험 모드</div>
+          <div class="diff-tabs">
+            <button class="diff-btn active" id="diff-easy" onclick="PolyhedronMaze.setDifficulty('easy')">🟢 쉬움 (정사/육면체)</button>
+            <button class="diff-btn" id="diff-normal" onclick="PolyhedronMaze.setDifficulty('normal')">🟡 보통 (정팔면체)</button>
+            <button class="diff-btn" id="diff-hard" onclick="PolyhedronMaze.setDifficulty('hard')">🔴 도전 (정십이/이십면체)</button>
+          </div>
+        </div>
+
+        <!-- 3. 다면체 선택 칩 바 -->
+        <div class="poly-selector-bar" id="poly-chip-bar"></div>
+
+        <!-- 4. 메인 아레나 컨테이너 -->
+        <div class="poly-arena-container">
+          <div class="player-stage" id="stage-p1">
+            <div class="stage-status-bar">
+              <div class="player-tag">🔴 <strong>플레이어 탐험 상태</strong></div>
+              <div class="status-metrics">
+                <div class="metric-item">💎 보석: <span class="val" id="p1-items">0 / 5</span></div>
+                <div class="metric-item">🚶 이동: <span class="val" id="p1-moves">0</span></div>
+                <div class="metric-item">⏳ 남은 시간: <span class="val" id="p1-time">무제한</span></div>
+                <div class="metric-item">🏆 누적 점수: <span class="val" id="p1-score">0점</span></div>
+              </div>
+            </div>
+
+            <div class="stage-viewport">
+              <div class="viewport-hint-bar">
+                <div class="hint-badge">👆 <strong>마우스/터치 드래그</strong>로 360° 자유 회전 | <strong>하늘색 인접 면 클릭</strong>으로 이동</div>
+                <button class="btn-camera-reset" onclick="PolyhedronMaze.alignToCurrentFace()">🎯 현재 면 정면 보기</button>
+              </div>
+              <div class="poly-toast" id="poly-main-toast">✨ 차원 이동 완료!</div>
+              <canvas id="poly-3d-canvas" width="600" height="440"></canvas>
+            </div>
+
+            <div class="stage-controls">
+              <div class="controls-label">🚶 3D 캔버스 속 하이라이트된 하늘색 면을 직접 클릭하거나 아래 번호 버튼을 눌러 이동하세요:</div>
+              <div class="move-btn-grid" id="controls-p1"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5. 가이드 팝업 모달 -->
+        <div class="modal-overlay" id="poly-guide-modal">
+          <div class="modal-card">
+            <div class="modal-header">
+              <h3 class="modal-title">📖 게임 방법 및 오일러 공식 학습 가이드</h3>
+              <button class="modal-close-btn" onclick="PolyhedronMaze.closeGuideModal()">✕</button>
+            </div>
+            <div class="guide-grid-modal">
+              <div class="guide-section-box">
+                <div class="guide-section-title">🎯 게임 목표 & 3D 인터랙티브 규칙</div>
+                <ul>
+                  <li><strong>실제 3D 정다면체 탐험</strong>: 정사·육·팔·십이·이십면체의 기하학적 다각형으로 구현된 3D 입체를 탐험하며 <strong>보석(💎) 5개</strong>를 획득하세요!</li>
+                  <li><strong>드래그 & 클릭 탐험</strong>: 마우스 드래그나 터치 슬라이드로 입체를 360도 회전하며 위치를 파악합니다. 현재 위치는 황금색(📍), 이동 가능한 인접 면은 하늘색으로 표시됩니다.</li>
+                  <li><strong>이동 방법</strong>: 3D 입체 속의 <strong>하늘색 인접 면을 직접 클릭</strong>하거나 <strong>하단 이동 버튼</strong>을 누르면 플레이어가 이동합니다.</li>
+                </ul>
+              </div>
+              <div class="guide-section-box">
+                <div class="guide-section-title">✨ 오일러 공식 (V - E + F = 2) & 누적 도전</div>
+                <ul>
+                  <li><strong>장애물 우회</strong>: 붉은색 장애물(💥/🪨)이 위치한 면으로는 진입할 수 없으므로 다면체를 돌며 우회로를 찾으세요.</li>
+                  <li><strong>오일러 공식</strong>: 각 정다면체의 꼭짓점(V), 모서리(E), 면(F)의 개수가 달라도 불변의 관계식 (V - E + F = 2)가 항상 성립합니다.</li>
+                  <li><strong>연속 탐험 & 점수 누적</strong>: 보석 5개를 모아 관문 퀴즈를 통과하면 점수가 누적된 채 다음 정다면체로 이어집니다. 탐험을 마감할 때 최종 점수를 명예의 전당에 등재하세요!</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 6. 클리어 퀴즈 모달 -->
+        <div class="modal-overlay" id="poly-quiz-modal">
+          <div class="modal-card">
+            <div class="modal-header">
+              <h3 class="modal-title" id="quiz-header">💡 [클리어 관문] 다면체 성질 퀴즈</h3>
+            </div>
+            <p class="quiz-question" id="quiz-question">질문이 로딩됩니다...</p>
+            <div class="quiz-options" id="quiz-options-grid"></div>
+          </div>
+        </div>
+
+        <!-- 7. 단계 클리어 및 다음 진행 모달 -->
+        <div class="modal-overlay" id="stage-transition-modal">
+          <div class="modal-card">
+            <div class="modal-header">
+              <h3 class="modal-title" id="stage-clear-title">🎉 다면체 탐험 클리어!</h3>
+            </div>
+            <div class="quiz-question" id="stage-clear-summary">점수 안내가 표시됩니다.</div>
+            <div class="stage-next-actions">
+              <button class="btn-action-primary" id="btn-next-stage" onclick="PolyhedronMaze.proceedToNextStage()">🚀 다음 단계 다면체로 계속 탐험하기 (점수 누적!)</button>
+              <button class="btn-action-secondary" onclick="PolyhedronMaze.finishAndRegisterScore()">🛑 여기서 탐험 마감하고 명예의 전당에 점수 등록하기</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 🌟 8. 예쁜 명예의 전당 닉네임 입력 팝업 모달 (prompt 대체) -->
+        <div class="modal-overlay" id="poly-ranking-modal">
+          <div class="modal-card" style="max-width: 480px;">
+            <div class="modal-header">
+              <h3 class="modal-title">🏆 명예의 전당 점수 등재</h3>
+              <button class="modal-close-btn" onclick="document.getElementById('poly-ranking-modal').style.display='none'">✕</button>
+            </div>
+            <div style="background:#0f172a; padding:18px; border-radius:16px; border:1px solid #334155; text-align:center;">
+              <p style="margin:0; font-size:0.9rem; color:#94a3b8;">현재 달성 누적 탐험 점수</p>
+              <div id="ranking-modal-score" style="font-size:2.2rem; font-weight:900; color:#facc15; margin:6px 0;">0점</div>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:8px;">
+              <label style="font-size:0.9rem; font-weight:700; color:#cbd5e1;">도전자 닉네임 입력</label>
+              <input type="text" id="ranking-nickname-input" placeholder="멋진 도전 학생 닉네임을 입력하세요 (예: 기하학마스터)" style="background:#0f172a; border:2px solid #38bdf8; border-radius:12px; padding:12px 16px; color:#f8fafc; font-size:1rem; font-weight:700; outline:none;">
+            </div>
+            <div style="display:flex; gap:10px; margin-top:6px;">
+              <button class="btn-action-primary" style="flex:1;" onclick="PolyhedronMaze.submitRankingScore()">🏆 명예의 전당에 등재하기</button>
+              <button class="btn-action-secondary" onclick="document.getElementById('poly-ranking-modal').style.display='none'">취소</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 9. 하단 상시 명예의 전당 랭킹 보드 -->
+        <div class="bottom-ranking-card" id="poly-bottom-ranking-sec">
+          <div class="ranking-header">
+            <div class="ranking-title">🏆 다면체 면 타기 미로 명예의 전당 (실시간 랭킹 보드)</div>
+          </div>
+          <div id="board-polyhedron-maze-bottom">
+            <p style="text-align:center; color:#94a3b8; padding:12px 0;">랭킹 데이터를 불러오는 중...</p>
+          </div>
+        </div>
+      </div>
+    `;
+
+    renderPolyhedronChips();
+    init3DEngine();
+    // 🌟 초기값을 완벽하게 정사면체(tetra) & 쉬움(easy)으로 동기화하여 시작
+    selectPolyhedron('tetra');
+    renderBottomLeaderboard();
+  }
+
+  // 3D 도형 정밀 기하 데이터 생성 (3D 도형 공작소 알고리즘)
+  function buildPolyhedronGeometry(type) {
+    let v = [];
+    if (type === 'tetra') {
+      v = [[1,1,1], [1,-1,-1], [-1,1,-1], [-1,-1,1]];
+    } else if (type === 'cube') {
+      v = [[1,1,1],[1,1,-1],[1,-1,1],[1,-1,-1],[-1,1,1],[-1,1,-1],[-1,-1,1],[-1,-1,-1]];
+    } else if (type === 'octa') {
+      v = [[1,0,0], [-1,0,0], [0,1,0], [0,-1,0], [0,0,1], [0,0,-1]];
+    } else if (type === 'icosa') {
+      v = [[0,1,phi],[0,-1,phi],[0,1,-phi],[0,-1,-phi],[1,phi,0],[-1,phi,0],[1,-phi,0],[-1,-phi,0],[phi,0,1],[-phi,0,1],[phi,0,-1],[-phi,0,-1]];
+    } else if (type === 'dodeca') {
+      let inv = 1/phi;
+      for(let i of [-1,1]) for(let j of [-1,1]) for(let k of [-1,1]) v.push([i,j,k]);
+      for(let i of [-1,1]) for(let j of [-1,1]) {
+        v.push([0, i*inv, j*phi]);
+        v.push([i*inv, j*phi, 0]);
+        v.push([i*phi, 0, j*inv]);
+      }
+    }
+
+    let rawFaces = [];
+    for(let i=0; i<v.length; i++) {
+      for(let j=i+1; j<v.length; j++) {
+        for(let k=j+1; k<v.length; k++) {
+          let n = vCross(vSub(v[j],v[i]), vSub(v[k],v[i]));
+          if(vMag(n) < 0.01) continue;
+          n = vNorm(n);
+          let d = vDot(n, v[i]);
+          let faceV = [];
+          let s1 = 0, s2 = 0;
+          for(let m=0; m<v.length; m++) {
+            let dist = vDot(n, v[m]) - d;
+            if(Math.abs(dist) < 0.05) faceV.push(m);
+            else if(dist > 0) s1++;
+            else s2++;
+          }
+          if(s1 === 0 || s2 === 0) {
+            let exists = rawFaces.find(f => f.length === faceV.length && f.every(x => faceV.includes(x)));
+            if(!exists && faceV.length >= 3) {
+              let c = [0,0,0];
+              faceV.forEach(x => c = vAdd(c, v[x]));
+              c = [c[0]/faceV.length, c[1]/faceV.length, c[2]/faceV.length];
+              let u = vNorm(vSub(v[faceV[0]], c));
+              let w = vNorm(vCross(n, u));
+              faceV.sort((a,b) => Math.atan2(vDot(vSub(v[a],c),w), vDot(vSub(v[a],c),u)) - Math.atan2(vDot(vSub(v[b],c),w), vDot(vSub(v[b],c),u)));
+              rawFaces.push(faceV);
+            }
+          }
+        }
+      }
+    }
+
+    let faces = rawFaces.map((fIdx, id) => {
+      let pts = fIdx.map(idx => v[idx]);
+      let normal = vNorm(vCross(vSub(pts[1],pts[0]), vSub(pts[2],pts[0])));
+      let c = [0,0,0];
+      pts.forEach(p => c = vAdd(c, p));
+      c = [c[0]/pts.length, c[1]/pts.length, c[2]/pts.length];
+      if(vDot(normal, c) < 0) normal = [-normal[0], -normal[1], -normal[2]];
+      return { id, pts, normal, centroid: c };
+    });
+
+    // 인접 면 계산 (공통 꼭짓점 2개 이상 공유 시 인접)
+    let adjacency = {};
+    for(let i=0; i<faces.length; i++) {
+      adjacency[i] = [];
+      for(let j=0; j<faces.length; j++) {
+        if(i === j) continue;
+        let shared = 0;
+        for(let p1 of faces[i].pts) {
+          for(let p2 of faces[j].pts) {
+            if(vMag(vSub(p1, p2)) < 0.05) shared++;
+          }
+        }
+        if(shared >= 2) adjacency[i].push(j);
+      }
+    }
+
+    // 캔버스 크기 맞춤 스케일 정규화
+    let maxDist = 0;
+    v.forEach(pt => maxDist = Math.max(maxDist, vMag(pt)));
+    let baseScale = 160 / maxDist;
+
+    return { faces, adjacency, baseScale };
+  }
+
+  // 3D 캔버스 초기화 및 마우스/터치 드래그 이벤트 연결
+  function init3DEngine() {
+    poly3dCanvas = document.getElementById('poly-3d-canvas');
+    if (!poly3dCanvas) return;
+    poly3dCtx = poly3dCanvas.getContext('2d');
+
+    // 이벤트 리스너 중복 방지
+    if (poly3dCanvas.dataset.bound === '1') return;
+    poly3dCanvas.dataset.bound = '1';
+
+    const startDrag = (clientX, clientY) => {
+      isDragging = true;
+      dragStartX = clientX;
+      dragStartY = clientY;
+      baseAngleX = polyAngleX;
+      baseAngleY = polyAngleY;
+    };
+    const moveDrag = (clientX, clientY) => {
+      if (!isDragging) return;
+      let dx = clientX - dragStartX;
+      let dy = clientY - dragStartY;
+      polyAngleY = baseAngleY + dx * 0.01;
+      polyAngleX = baseAngleX - dy * 0.01;
+    };
+    const endDrag = (clientX, clientY) => {
+      let dx = Math.abs(clientX - dragStartX);
+      let dy = Math.abs(clientY - dragStartY);
+      isDragging = false;
+      // 드래그 거리가 5px 이하인 경우 클릭으로 인식하여 면 선택
+      if (dx <= 5 && dy <= 5 && poly3dCanvas) {
+        const rect = poly3dCanvas.getBoundingClientRect();
+        const pt = { x: clientX - rect.left, y: clientY - rect.top };
+        handleCanvasHitTest(pt);
+      }
+    };
+
+    poly3dCanvas.addEventListener('pointerdown', e => {
+      poly3dCanvas.setPointerCapture(e.pointerId);
+      startDrag(e.clientX, e.clientY);
+    });
+    poly3dCanvas.addEventListener('pointermove', e => moveDrag(e.clientX, e.clientY));
+    poly3dCanvas.addEventListener('pointerup', e => endDrag(e.clientX, e.clientY));
+    poly3dCanvas.addEventListener('pointercancel', () => isDragging = false);
+
+    if (poly3dReqId) cancelAnimationFrame(poly3dReqId);
+    draw3DLoop();
+  }
+
+  // 다각형 내 점 포함 여부 검사 (Hit Testing)
+  function isPointInPolygon(pt, polygon) {
+    let inside = false;
+    for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+      let xi = polygon[i].x, yi = polygon[i].y;
+      let xj = polygon[j].x, yj = polygon[j].y;
+      let intersect = ((yi > pt.y) !== (yj > pt.y)) && (pt.x < (xj - xi) * (pt.y - yi) / (yj - yi) + xi);
+      if (intersect) inside = !inside;
+    }
+    return inside;
+  }
+
+  // 3D 캔버스 클릭 시 인접 면 이동 판별
+  function handleCanvasHitTest(pt) {
+    if (!currentPolyGeom || allProjectedFaces.length === 0) return;
+    const p = state.player;
+    const neighbors = currentPolyGeom.adjacency[p.currentFace] || [];
+
+    // 앞쪽에 있는 면부터 역순(Z-깊이 높은 순)으로 검사
+    for (let i = allProjectedFaces.length - 1; i >= 0; i--) {
+      const f = allProjectedFaces[i];
+      if (isPointInPolygon(pt, f.projPts)) {
+        // 카메라 뒤쪽을 향하는 면(법선 Z < -0.15)은 선택에서 제외
+        if (f.projNormal[2] < -0.15) continue;
+        if (f.id === p.currentFace) {
+          showToast(`📍 현재 위치한 [면 ${f.id}]입니다. 인접한 하늘색 면을 클릭하세요!`, 'info');
+        } else if (neighbors.includes(f.id)) {
+          pressFace(f.id);
+        } else {
+          showToast('⚠️ 인접한 하늘색 면으로만 한 칸씩 이동할 수 있습니다.', 'warn');
+        }
+        break;
+      }
+    }
+  }
+
+  // 현재 면이 카메라 정면을 바라보도록 회전 보간
+  function alignToCurrentFace() {
+    if (!currentPolyGeom) return;
+    const currFace = currentPolyGeom.faces[state.player.currentFace];
+    if (!currFace) return;
+    let n = currFace.normal;
+    // 법선 벡터를 정면(Z 양의 방향)으로 정렬하는 목표 각도 계산
+    let targetAngY = Math.atan2(n[0], n[2]);
+    let targetAngX = Math.asin(n[1] / Math.max(0.001, vMag(n)));
+    polyAngleY = -targetAngY;
+    polyAngleX = targetAngX;
+    showToast(`🎯 [면 ${currFace.id}] 정면으로 카메라 시점이 정렬되었습니다.`, 'info');
+  }
+
+  // 3D 렌더링 루프
+  function draw3DLoop() {
+    if (!poly3dCtx || !poly3dCanvas || !currentPolyGeom) {
+      poly3dReqId = requestAnimationFrame(draw3DLoop);
+      return;
+    }
+    const ctx = poly3dCtx;
+    const w = poly3dCanvas.width, h = poly3dCanvas.height;
+    ctx.clearRect(0, 0, w, h);
+
+    // 드래그 중이 아닐 때는 미세하게 회전하여 입체감 부여
+    if (!isDragging) {
+      polyAngleY += 0.0025;
+    }
+
+    const cY = Math.cos(polyAngleY), sY = Math.sin(polyAngleY);
+    const cX = Math.cos(polyAngleX), sX = Math.sin(polyAngleX);
+    const rotMat = [
+      cY, sX*sY, cX*sY, 0,
+      0, cX, -sX, 0,
+      -sY, sX*cY, cX*cY, 0,
+      0, 0, 0, 1
+    ];
+
+    const cx = w / 2, cy = h / 2;
+    const scale = currentPolyGeom.baseScale;
+    const p = state.player;
+    const neighbors = currentPolyGeom.adjacency[p.currentFace] || [];
+
+    allProjectedFaces = currentPolyGeom.faces.map(face => {
+      let projPts = face.pts.map(pt => {
+        let tp = mApply(rotMat, pt);
+        return { x: cx + tp[0] * scale, y: cy - tp[1] * scale, z: tp[2] };
+      });
+      let zDepth = projPts.reduce((sum, pt) => sum + pt.z, 0) / projPts.length;
+      let projNormal = mApply(rotMat, face.normal);
+      let projCenter = mApply(rotMat, face.centroid);
+      return { id: face.id, projPts, zDepth, projNormal, projCenter: { x: cx + projCenter[0]*scale, y: cy - projCenter[1]*scale, z: projCenter[2] } };
+    });
+
+    // Z-깊이 기준으로 뒤쪽에서 앞쪽으로 정렬하여 렌더링
+    allProjectedFaces.sort((a, b) => a.zDepth - b.zDepth);
+    const lightDir = vNorm([0.5, 0.5, 1.0]);
+
+    allProjectedFaces.forEach(f => {
+      const isCurrent = f.id === p.currentFace;
+      const isNeighbor = neighbors.includes(f.id) && !p.obstacles[f.id];
+      const isObs = p.obstacles[f.id];
+      const hasItem = p.items[f.id];
+
+      ctx.beginPath();
+      ctx.moveTo(f.projPts[0].x, f.projPts[0].y);
+      for(let i=1; i<f.projPts.length; i++) ctx.lineTo(f.projPts[i].x, f.projPts[i].y);
+      ctx.closePath();
+
+      // 빛 반사 조도 계산
+      let brightness = Math.max(0.25, Math.min(1.0, vDot(f.projNormal, lightDir) * 0.45 + 0.55));
+
+      // 면 상태별 입체 색상 및 테두리 부여
+      if (isCurrent) {
+        ctx.fillStyle = `rgba(234, 179, 8, ${0.92 * brightness})`;
+        ctx.strokeStyle = '#fef08a';
+        ctx.lineWidth = 3.5;
+      } else if (isNeighbor) {
+        ctx.fillStyle = `rgba(56, 189, 248, ${0.85 * brightness})`;
+        ctx.strokeStyle = '#bae6fd';
+        ctx.lineWidth = 2.8;
+      } else if (isObs) {
+        ctx.fillStyle = `rgba(239, 68, 68, ${0.8 * brightness})`;
+        ctx.strokeStyle = '#fca5a5';
+        ctx.lineWidth = 2.0;
+      } else {
+        ctx.fillStyle = `rgba(30, 41, 59, ${0.85 * brightness})`;
+        ctx.strokeStyle = '#475569';
+        ctx.lineWidth = 1.6;
+      }
+
+      ctx.fill();
+      ctx.stroke();
+
+      // 앞면을 바라보는 면(정면 근접)에는 면 번호와 아이콘(📍, 💎, 🪨) 렌더링
+      if (f.projNormal[2] > -0.18) {
+        ctx.save();
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.font = isCurrent || isNeighbor ? '900 16px Pretendard, sans-serif' : '700 14px Pretendard, sans-serif';
+        ctx.fillStyle = isCurrent || isNeighbor ? '#0f172a' : '#f8fafc';
+        ctx.fillText(`면 ${f.id}`, f.projCenter.x, f.projCenter.y - 8);
+
+        let iconText = isCurrent ? '📍' : (isObs ? '🪨' : (hasItem ? '💎' : ''));
+        if (iconText) {
+          ctx.font = '22px sans-serif';
+          ctx.fillText(iconText, f.projCenter.x, f.projCenter.y + 14);
+        }
+        ctx.restore();
+      }
+    });
+
+    poly3dReqId = requestAnimationFrame(draw3DLoop);
+  }
+
+  // 다면체 칩 바 렌더링
+  function renderPolyhedronChips() {
+    const bar = document.getElementById('poly-chip-bar');
+    if (!bar) return;
+    bar.innerHTML = POLY_KEYS.map(key => {
+      const d = POLY_DATA[key];
+      const isActive = state.polyKey === key;
+      return `
+        <div class="poly-chip ${isActive ? 'active' : ''}" onclick="PolyhedronMaze.selectPolyhedron('${key}')">
+          <div class="poly-chip-name">${d.name.split(' ')[0]}</div>
+          <div class="poly-chip-meta">V:${d.v} E:${d.e} F:${d.f}</div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function selectPolyhedron(key) {
+    state.polyKey = key;
+
+    // 🌟 짧은 키(tetra, cube, octa, dodeca, icosa)에 완벽 매칭
+    let targetDiff = 'normal';
+    if (key === 'tetra' || key === 'cube') {
+      targetDiff = 'easy';
+    } else if (key === 'octa') {
+      targetDiff = 'normal';
+    } else if (key === 'dodeca' || key === 'icosa') {
+      targetDiff = 'hard';
+    }
+    state.difficulty = targetDiff;
+
+    const easyBtn = document.getElementById('diff-easy');
+    const normalBtn = document.getElementById('diff-normal');
+    const hardBtn = document.getElementById('diff-hard');
+    if (easyBtn) easyBtn.classList.toggle('active', targetDiff === 'easy');
+    if (normalBtn) normalBtn.classList.toggle('active', targetDiff === 'normal');
+    if (hardBtn) hardBtn.classList.toggle('active', targetDiff === 'hard');
+
+    renderPolyhedronChips();
+    resetGame();
+  }
+
+  function setDifficulty(diff) {
+    if (!DIFF_SETTINGS[diff]) return;
+    state.difficulty = diff;
+    document.getElementById('diff-easy').classList.toggle('active', diff === 'easy');
+    document.getElementById('diff-normal').classList.toggle('active', diff === 'normal');
+    document.getElementById('diff-hard').classList.toggle('active', diff === 'hard');
+    
+    // 난이도 버튼 클릭 시, 현재 다면체가 해당 난이도에 맞지 않으면 대표 다면체로 이동
+    if (diff === 'easy' && state.polyKey !== 'tetra' && state.polyKey !== 'cube') {
+      state.polyKey = 'tetra';
+    } else if (diff === 'normal' && state.polyKey !== 'octa') {
+      state.polyKey = 'octa';
+    } else if (diff === 'hard' && state.polyKey !== 'dodeca' && state.polyKey !== 'icosa') {
+      state.polyKey = 'dodeca';
+    }
+    
+    renderPolyhedronChips();
+    resetGame();
+  }
+
+  function setPlayerMode(mode) {
+    // 1인 전용 고정
+  }
+
+  // 미로 시드 생성 (정밀 기하학 면 기반)
+  function spawnMaze() {
+    currentPolyGeom = buildPolyhedronGeometry(state.polyKey);
+    const facesCount = currentPolyGeom.faces.length;
+    const p = state.player;
+    p.currentFace = 0;
+    p.moves = 0;
+    p.itemsCollected = 0;
+    p.totalItems = Math.min(5, facesCount - 1);
+    p.items = {};
+    p.obstacles = {};
+    p.visited = [0];
+    p.isCleared = false;
+    p.timeRemain = DIFF_SETTINGS[state.difficulty].timeLimit;
+
+    const availableFaces = Array.from({length: facesCount}, (_, i) => i).filter(f => f !== 0);
+    for (let i = 0; i < p.totalItems && availableFaces.length > 0; i++) {
+      const idx = Math.floor(Math.random() * availableFaces.length);
+      p.items[availableFaces.splice(idx, 1)[0]] = true;
+    }
+    const obsCount = Math.min(Math.floor(facesCount * 0.16), availableFaces.length);
+    for (let i = 0; i < obsCount && availableFaces.length > 0; i++) {
+      const idx = Math.floor(Math.random() * availableFaces.length);
+      p.obstacles[availableFaces.splice(idx, 1)[0]] = true;
+    }
+
+    // 새 도형 선택 시 시점 정돈
+    alignToCurrentFace();
+  }
+
+  function resetGame() {
+    if (state.timerInterval) clearInterval(state.timerInterval);
+    state.timerInterval = null;
+
+    spawnMaze();
+    renderStageControls();
+
+    const setting = DIFF_SETTINGS[state.difficulty];
+    if (setting.timeLimit > 0) {
+      state.timerInterval = setInterval(() => {
+        const p = state.player;
+        if (!p.isCleared && p.timeRemain > 0) {
+          p.timeRemain--;
+          updateStatusText();
+          if (p.timeRemain === 0) {
+            showToast('⏰ [시간 초과] 제한 시간이 만료되었습니다! 탐험을 재시작합니다.', 'warn');
+            playSound('wrong');
+            setTimeout(() => resetGame(), 2000);
+          }
+        }
+      }, 1000);
+    }
+  }
+
+  function renderStageControls() {
+    if (!currentPolyGeom) return;
+    const p = state.player;
+    const controls = document.getElementById('controls-p1');
+    if (!controls) return;
+
+    const neighbors = currentPolyGeom.adjacency[p.currentFace] || [];
+    controls.innerHTML = neighbors.map(nId => {
+      const isObs = p.obstacles[nId];
+      return `
+        <button class="move-btn" onclick="PolyhedronMaze.pressFace(${nId})" ${isObs ? 'disabled' : ''}>
+          ➡️ 면 ${nId}로 이동 ${p.items[nId] ? '💎' : ''} ${isObs ? '(🪨장애물)' : ''}
+        </button>
+      `;
+    }).join('');
+
+    updateStatusText();
+  }
+
+  function updateStatusText() {
+    const p = state.player;
+    const setting = DIFF_SETTINGS[state.difficulty];
+    const itemsEl = document.getElementById('p1-items');
+    const movesEl = document.getElementById('p1-moves');
+    const timeEl  = document.getElementById('p1-time');
+    const scoreEl = document.getElementById('p1-score');
+
+    if (itemsEl) itemsEl.textContent = `${p.itemsCollected} / ${p.totalItems}`;
+    if (movesEl) movesEl.textContent = `${p.moves}회`;
+    if (timeEl)  timeEl.textContent = setting.timeLimit > 0 ? `${p.timeRemain}초` : '무제한';
+    if (scoreEl) scoreEl.textContent = `${state.accumulatedScore + p.score}점`;
+  }
+
+  function pressFace(targetFaceId) {
+    if (!currentPolyGeom) return;
+    const p = state.player;
+    if (p.isCleared) return;
+
+    const neighbors = currentPolyGeom.adjacency[p.currentFace] || [];
+    if (!neighbors.includes(targetFaceId)) {
+      showToast('⚠️ 인접한 면(하늘색으로 하이라이트된 면)으로만 한 칸씩 이동할 수 있습니다.', 'warn');
+      return;
+    }
+    if (p.obstacles[targetFaceId]) {
+      showToast('🪨 붉은색 장애물이 위치한 면입니다. 우회하여 이동하세요!', 'warn');
+      playSound('obs');
+      return;
+    }
+
+    p.currentFace = targetFaceId;
+    p.moves++;
+    if (!p.visited.includes(targetFaceId)) p.visited.push(targetFaceId);
+    playSound('move');
+
+    // 이동한 면이 정면을 향하도록 카메라 시점 부드럽게 정렬
+    alignToCurrentFace();
+
+    // 보석 수집 처리
+    if (p.items[targetFaceId]) {
+      delete p.items[targetFaceId];
+      p.itemsCollected++;
+      p.score += 15;
+      playSound('item');
+      showToast(`💎 보석 수집 완료! (${p.itemsCollected}/${p.totalItems})`, 'success');
+    }
+
+    updateStatusText();
+    renderStageControls();
+
+    // 클리어 판정 (모든 보석 수집 완료 시 관문 퀴즈 오픈)
+    if (p.itemsCollected >= p.totalItems) {
+      setTimeout(() => openQuizGate(), 350);
+    }
+  }
+
+  // ==========================================================================
+  // 7. 성질 퀴즈 & 오일러 공식 게이트 (클리어 관문)
+  // ==========================================================================
+  let currentStep = 1;
+
+  function openQuizGate() {
+    currentStep = 1;
+    renderQuizQuestion();
+    const modal = document.getElementById('poly-quiz-modal');
+    if (modal) modal.style.display = 'flex';
+  }
+
+  function renderQuizQuestion() {
+    const d = POLY_DATA[state.polyKey];
+    const qHeader = document.getElementById('quiz-header');
+    const qText = document.getElementById('quiz-question');
+    const qGrid = document.getElementById('quiz-options-grid');
+    if (!qHeader || !qText || !qGrid) return;
+
+    const qData = d.quiz[currentStep - 1];
+    qHeader.textContent = `💡 [클리어 관문 ${currentStep}/2] 다면체 성질 & 오일러 공식 퀴즈`;
+    qText.textContent = `Q${currentStep}. ${qData.q}`;
+
+    // 🌟 퀴즈 정답 번호 무작위 셔플 (Fisher-Yates) 및 인덱스 추적
+    let optionsWithIndex = qData.o.map((opt, originalIdx) => ({ text: opt, originalIdx: originalIdx }));
+    for (let i = optionsWithIndex.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [optionsWithIndex[i], optionsWithIndex[j]] = [optionsWithIndex[j], optionsWithIndex[i]];
+    }
+
+    qGrid.innerHTML = optionsWithIndex.map((item, newIdx) => `
+      <button class="quiz-opt-btn" onclick="PolyhedronMaze.submitQuizAnswer(${item.originalIdx}, ${qData.a})">
+        ${newIdx + 1}. ${item.text}
+      </button>
+    `).join('');
+  }
+
+  function submitQuizAnswer(selected, correct) {
+    if (selected === correct) {
+      playSound('item');
+      if (currentStep === 1) {
+        currentStep = 2;
+        renderQuizQuestion();
+      } else {
+        document.getElementById('poly-quiz-modal').style.display = 'none';
+        onStageComplete();
+      }
+    } else {
+      playSound('move');
+      // 🌟 alert 대신 경고 토스트 창으로 세련되게 안내
+      showToast('❌ 정답이 아닙니다. 꼭짓점(V), 모서리(E), 면(F)의 개수를 다시 한번 생각해보세요!', 'warn');
+    }
+  }
+
+  // ==========================================================================
+  // 8. 스테이지 클리어 & 연속 차원 탐험 게이트
+  // ==========================================================================
+  function onStageComplete() {
+    const p = state.player;
+    const setting = DIFF_SETTINGS[state.difficulty];
+    p.isCleared = true;
+    playSound('clear');
+
+    // 최종 점수 정산
+    p.score += 20; // 클리어 기본 점수
+    const unusedMoves = Math.max(0, setting.maxMoves - p.moves);
+    p.score += unusedMoves * 2;
+    p.score += p.timeRemain; // 남은 시간 보너스
+
+    if (state.timerInterval) clearInterval(state.timerInterval);
+
+    // 마지막 단계(정이십면체 icosa)인지 확인
+    if (state.polyKey === 'icosa') {
+      state.accumulatedScore += p.score;
+      setTimeout(() => {
+        // 🌟 alert 대신 축하 토스트 창 띄우기
+        showToast(`🎉 [최종 완결!] 모든 정다면체 탐험 완료! 최종 달성: ${state.accumulatedScore}점`, 'success');
+        showRankingModal();
+      }, 200);
+    } else {
+      // 다음 다면체 단계가 남은 경우: 모달 게이트 표시 (연속 진행 vs 마감)
+      const modal = document.getElementById('stage-transition-modal');
+      const summary = document.getElementById('stage-clear-summary');
+      if (summary) {
+        summary.innerHTML = `
+          <strong>🎉 [${POLY_DATA[state.polyKey].name}] 탐험 클리어!</strong><br><br>
+          • 이번 단계 획득 점수: <span style="color:#38bdf8; font-weight:800;">${p.score}점</span><br>
+          • 이전까지 누적 점수: <span style="color:#facc15; font-weight:800;">${state.accumulatedScore}점</span><br>
+          • <strong>현재 총 달성 점수: <span style="color:#10b981; font-size:1.15rem; font-weight:900;">${state.accumulatedScore + p.score}점</span></strong><br><br>
+          다음 정다면체로 계속 탐험하여 점수를 더 쌓겠습니까? 아니면 여기서 마감하고 명예의 전당에 등록하시겠습니까?
+        `;
+      }
+      if (modal) modal.style.display = 'flex';
+    }
+  }
+
+  // 🌟 다음 정다면체 단계로 이동
+  function proceedToNextStage() {
+    const modal = document.getElementById('stage-transition-modal');
+    if (modal) modal.style.display = 'none';
+
+    state.accumulatedScore += state.player.score;
+    const nextMap = { tetra: 'cube', cube: 'octa', octa: 'dodeca', dodeca: 'icosa' };
+    const nextKey = nextMap[state.polyKey] || 'icosa';
+    
+    selectPolyhedron(nextKey);
+    showToast(`🚀 [${POLY_DATA[nextKey].name}] 단계로 진입했습니다. 화이팅!`, 'success');
+  }
+
+  // 🌟 탐험 마감 및 명예의 전당 등록
+  function finishAndRegisterScore() {
+    const modal = document.getElementById('stage-transition-modal');
+    if (modal) modal.style.display = 'none';
+
+    state.accumulatedScore += state.player.score;
+    showRankingModal();
+  }
+
+  // ==========================================================================
+  // 9. 명예의 전당 랭킹 모달 & 하단 상시 보드 완벽 연동 (prompt 제거)
+  // ==========================================================================
+  function showRankingModal() {
+    const totalScore = state.accumulatedScore + (state.player ? state.player.score : 0);
+    const modal = document.getElementById('poly-ranking-modal');
+    const scoreEl = document.getElementById('ranking-modal-score');
+    const inputEl = document.getElementById('ranking-nickname-input');
+    
+    if (scoreEl) scoreEl.textContent = `${totalScore}점`;
+    if (inputEl) {
+      inputEl.value = `도전학생${Math.floor(Math.random()*90+10)}`;
+    }
+    if (modal) {
+      modal.style.display = 'flex';
+      if (inputEl) setTimeout(() => inputEl.focus(), 100);
+    }
+  }
+
+  // 🌟 모달 창에서 닉네임 입력 후 등재하기 버튼 클릭 시 실행
+  function submitRankingScore() {
+    const totalScore = state.accumulatedScore + (state.player ? state.player.score : 0);
+    const inputEl = document.getElementById('ranking-nickname-input');
+    const nickname = (inputEl && inputEl.value.trim()) ? inputEl.value.trim() : '익명도전자';
+
+    const modal = document.getElementById('poly-ranking-modal');
+    if (modal) modal.style.display = 'none';
+
+    try {
+      let list = JSON.parse(localStorage.getItem('mathlab_lb_polyhedron_maze') || '[]');
+      const dateStr = new Date().toLocaleDateString('ko-KR', { month: '2-digit', day: '2-digit' });
+      list.push({ nickname, score: totalScore, date: dateStr });
+      list.sort((a, b) => b.score - a.score);
+      localStorage.setItem('mathlab_lb_polyhedron_maze', JSON.stringify(list.slice(0, 20)));
+    } catch(e) {}
+
+    // 전역 랭킹 함수 파라미터 완벽 일치 ('polyhedron-maze', 점수, 내림차순, 닉네임문자열, 하단보드ID)
+    if (typeof window.submitRanking === 'function') {
+      window.submitRanking('polyhedron-maze', totalScore, true, nickname, 'board-polyhedron-maze-bottom');
+      showToast(`🎉 [등재 완료] ${escapeHTML(nickname)}님의 기록(${totalScore}점)이 명예의 전당에 등재되었습니다!`, 'success');
+    } else if (typeof window.parent?.submitRanking === 'function') {
+      window.parent.submitRanking('polyhedron-maze', totalScore, true, nickname, 'board-polyhedron-maze-bottom');
+      showToast(`🎉 [등재 완료] ${escapeHTML(nickname)}님의 기록(${totalScore}점)이 명예의 전당에 등재되었습니다!`, 'success');
+    } else {
+      showToast(`🎉 [등재 완료] ${escapeHTML(nickname)}님의 기록(${totalScore}점)이 명예의 전당에 등재되었습니다!`, 'success');
+    }
+
+    renderBottomLeaderboard();
+  }
+
+  function renderBottomLeaderboard() {
+    if (typeof loadGameLeaderboard === 'function') {
+      loadGameLeaderboard('polyhedron-maze', true, 'board-polyhedron-maze-bottom');
+    } else {
+      try {
+        let list = JSON.parse(localStorage.getItem('mathlab_lb_polyhedron_maze') || '[]');
+        const bottomEl = document.getElementById('board-polyhedron-maze-bottom');
+        if (bottomEl) {
+          if (list.length === 0) {
+            bottomEl.innerHTML = '<p style="text-align:center; color:#94a3b8; padding:12px 0;">아직 등록된 기록이 없습니다. 다면체 미로를 탐험하고 첫 번째 1위가 되어보세요!</p>';
+          } else {
+            bottomEl.innerHTML = list.slice(0, 5).map((item, idx) => `
+              <div style="display:flex; justify-content:space-between; align-items:center; background:#0f172a; padding:10px 14px; border-radius:10px; border:1px solid #334155; margin-bottom:6px;">
+                <span style="font-weight:800; color:${idx === 0 ? '#facc15' : '#cbd5e1'};">${idx === 0 ? '👑 1위' : `${idx + 1}위`} - ${escapeHTML(item.nickname)} (${item.date || ''})</span>
+                <span style="color:#38bdf8; font-weight:900;">${item.score}점</span>
+              </div>
+            `).join('');
+          }
+        }
+      } catch(e) {}
+    }
+  }
+
+  function showGuideModal() {
+    const modal = document.getElementById('poly-guide-modal');
+    if (modal) modal.style.display = 'flex';
+  }
+
+  function closeGuideModal() {
+    const modal = document.getElementById('poly-guide-modal');
+    if (modal) modal.style.display = 'none';
+  }
+
+  function toggleSound() {
+    state.soundEnabled = !state.soundEnabled;
+    const btn = document.getElementById('poly-sound-btn');
+    if (btn) btn.textContent = state.soundEnabled ? '🔊 효과음 ON' : '🔇 효과음 OFF';
+    showToast(state.soundEnabled ? '🔊 효과음이 켜졌습니다.' : '🔇 효과음이 꺼졌습니다.', 'info');
+  }
+
+  // ==========================================================================
+  // 10. 안전 해제 및 홈으로 복귀 (goHome & destroy)
+  // ==========================================================================
+  function destroy() {
+    if (state.timerInterval) {
+      clearInterval(state.timerInterval);
+      state.timerInterval = null;
+    }
+    if (poly3dReqId) {
+      cancelAnimationFrame(poly3dReqId);
+      poly3dReqId = null;
+    }
+    if (poly3dCanvas) poly3dCanvas.dataset.bound = '0';
+  }
+
+  function goHome() {
+    destroy();
+    if (typeof window.LegacyBridge?.backHome === 'function') {
+      window.LegacyBridge.backHome();
+      return;
+    }
+    if (typeof window.renderLegacyDashboardHome === 'function') {
+      window.renderLegacyDashboardHome();
+      return;
+    }
+    const legacyRoot = document.getElementById('legacy-root');
+    const newRoot = document.getElementById('new-root');
+    const dashboard = document.getElementById('dashboard-screen') || document.querySelector('.dashboard-grid') || document.querySelector('.dashboard-container');
+    const forceHost = document.getElementById('polyhedron-maze-force-host');
+
+    if (legacyRoot) {
+      legacyRoot.style.display = 'block';
+      legacyRoot.classList.remove('hidden');
+    }
+    if (dashboard && dashboard.style) {
+      dashboard.style.display = 'block';
+      dashboard.classList.add('active');
+    }
+    if (newRoot) {
+      newRoot.style.display = 'none';
+      newRoot.innerHTML = '';
+    }
+    if (forceHost) {
+      forceHost.style.display = 'none';
+      forceHost.innerHTML = '';
+    }
+
+    const appEl = document.getElementById('polyhedron-maze-app');
+    if (appEl) appEl.remove();
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // ==========================================================================
+  // 11. 외부 노출 객체 및 3중 자율 등록 템플릿
+  // ==========================================================================
+  const PolyhedronMaze = {
+    mount,
+    resetGame,
+    destroy,
+    goHome,
+    selectPolyhedron,
+    setPlayerMode,
+    setDifficulty,
+    pressFace,
+    submitQuizAnswer,
+    showRankingModal,
+    submitRankingScore,  // 🌟 예쁜 모달용 제출 함수 추가
+    showGuideModal,
+    closeGuideModal,
+    alignToCurrentFace,
+    proceedToNextStage,
+    finishAndRegisterScore,
+    toggleSound
+  };
+
+  window.PolyhedronMaze = PolyhedronMaze;
+
+  // Gen-3 수학 실험실 표준 3중 자율 등록
+  function registerMyApp() {
+    if (window.MathLabGames && typeof window.MathLabGames.register === 'function') {
+      window.MathLabGames.register({
+        id: 'polyhedron-maze',
+        title: '다면체 면 타기 미로',
+        icon: '🎲',
+        category: 'game',
+        sourceType: 'new',
+        players: '1인',
+        mount: (container, ctx) => PolyhedronMaze.mount(container, ctx),
+        reset: () => PolyhedronMaze.resetGame(),
+        destroy: () => PolyhedronMaze.destroy(),
+        goHome: () => PolyhedronMaze.goHome()
+      });
+      return true;
+    }
+    return false;
+  }
+
+  if (!registerMyApp()) {
+    window.addEventListener('DOMContentLoaded', registerMyApp);
+    setTimeout(registerMyApp, 100);
+    setTimeout(registerMyApp, 500);
+  }
+
+  // 범용 실행기 브리지 연결
+  window.initPolyhedronMazeGame = (container) => PolyhedronMaze.mount(container);
+  window.launchPolyhedronMazeGame = (container) => PolyhedronMaze.mount(container);
+})();
+</script>

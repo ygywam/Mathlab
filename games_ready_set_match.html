@@ -1,0 +1,560 @@
+<!-- 🧸 레디셋고 짝꿍 매치 : 1~4인 카테고리 매칭 & 스피드 1등 보너스 & 엉뚱 AI 대결 완결판 (랭킹 박스 ID 불일치 완벽 패치) -->
+<script>
+(function () {
+  const ReadySetMatchGame = {
+    playerCount: 2, turnIndex: 0, maxTurns: 10, phase: 'ready',
+    timerMs: 5000, maxTimerMs: 5000, timerInterval: null, aiTimeout: null,
+    currentItem: null, isMatch: false, matchPressCount: 0,
+    players: [], practiceMode: false, containerEl: null,
+    
+    // 🎨 유아 친화 데이터셋 (색깔, 동물, 사물)
+    dataPool: [
+      { category: '색깔', label: '빨강', icon: '🔴', colorHint: '#ef4444' },
+      { category: '색깔', label: '파랑', icon: '🔵', colorHint: '#3b82f6' },
+      { category: '색깔', label: '노랑', icon: '🟡', colorHint: '#eab308' },
+      { category: '색깔', label: '초록', icon: '🟢', colorHint: '#22c55e' },
+      { category: '색깔', label: '보라', icon: '🟣', colorHint: '#a855f7' },
+      { category: '색깔', label: '주황', icon: '🟠', colorHint: '#f97316' },
+      { category: '동물', label: '강아지', icon: '🐶', colorHint: '#854d0e' },
+      { category: '동물', label: '고양이', icon: '🐱', colorHint: '#ca8a04' },
+      { category: '동물', label: '토끼', icon: '🐰', colorHint: '#ec4899' },
+      { category: '동물', label: '곰', icon: '🐻', colorHint: '#713f12' },
+      { category: '동물', label: '사자', icon: '🦁', colorHint: '#d97706' },
+      { category: '동물', label: '원숭이', icon: '🐵', colorHint: '#b45309' },
+      { category: '사물', label: '공', icon: '⚽', colorHint: '#1e293b' },
+      { category: '사물', label: '자동차', icon: '🚗', colorHint: '#dc2626' },
+      { category: '사물', label: '사과', icon: '🍎', colorHint: '#b91c1c' },
+      { category: '사물', label: '집', icon: '🏠', colorHint: '#0284c7' },
+      { category: '사물', label: '별', icon: '⭐', colorHint: '#facc15' },
+      { category: '사물', label: '우산', icon: '☂️', colorHint: '#6366f1' }
+    ],
+
+    mount(container) {
+      let target = null;
+      if (typeof container === 'string') target = document.querySelector(container);
+      else if (container instanceof HTMLElement) target = container;
+      if (!target) target = document.getElementById('mathlab-view') || document.getElementById('new-root') || document.getElementById('game-container');
+
+      if (!target || target === document.body) {
+        let host = document.getElementById('ready-match-force-host');
+        if (!host) {
+          host = document.createElement('div'); host.id = 'ready-match-force-host';
+          host.style.cssText = 'width:100%; max-width:1080px; margin:0 auto; padding:16px 10px; box-sizing:border-box; z-index:999; position:relative; background:#ffffff; min-height:720px; display:block;';
+          const header = document.querySelector('header, .navbar, #app-header, .top-bar');
+          if (header && header.parentNode) header.parentNode.insertBefore(host, header.nextSibling);
+          else document.body.appendChild(host);
+        }
+        target = host;
+      }
+
+      this.containerEl = target;
+      this.containerEl.style.display = 'block'; this.containerEl.style.visibility = 'visible'; this.containerEl.style.opacity = '1'; this.containerEl.style.minHeight = '720px';
+
+      let parent = this.containerEl.parentElement;
+      while (parent && parent !== document.body && parent !== document.documentElement) {
+        if (parent.style && parent.style.display === 'none') parent.style.display = 'block';
+        if (parent.style && parent.style.visibility === 'hidden') parent.style.visibility = 'visible';
+        parent = parent.parentElement;
+      }
+
+      this.restoreGlobalNavigation();
+      this.initPlayers();
+      this.renderStyleAndDOM();
+      this.bindEvents();
+      this.loadLeaderboard();
+    },
+
+    restoreGlobalNavigation() {
+      const navElements = document.querySelectorAll('header, .navbar, #app-header, .top-bar, #floating-home-btn, .floating-home, [id*="home"], [class*="floating"]');
+      navElements.forEach(el => { if (el && el.style && el.style.display === 'none') el.style.display = ''; });
+    },
+
+    initPlayers() {
+      if (this.playerCount === 1) {
+        // 🚀 1인 플레이: 나 vs 조금 멍청한 로봇 AI
+        this.players = [
+          { id: 1, name: '🙋 플레이어 (나)', char: '🐻', color: '#ef4444', keyName: 'A / 터치', keyCode: 'KeyA', score: 0, locked: false, status: '대기', isAi: false },
+          { id: 2, name: '🤖 엉뚱 로봇 AI', char: '🤖', color: '#64748b', keyName: '자동 플레이', keyCode: '', score: 0, locked: false, status: '대기', isAi: true }
+        ];
+      } else {
+        const presets = [
+          { id: 1, name: '1P 빨강 곰', char: '🐻', color: '#ef4444', keyName: 'A / 터치', keyCode: 'KeyA', score: 0, locked: false, status: '대기', isAi: false },
+          { id: 2, name: '2P 파랑 토끼', char: '🐰', color: '#3b82f6', keyName: 'L / 터치', keyCode: 'KeyL', score: 0, locked: false, status: '대기', isAi: false },
+          { id: 3, name: '3P 초록 강아지', char: '🐶', color: '#22c55e', keyName: 'Q / 터치', keyCode: 'KeyQ', score: 0, locked: false, status: '대기', isAi: false },
+          { id: 4, name: '4P 노랑 고양이', char: '🐱', color: '#eab308', keyName: 'P / 터치', keyCode: 'KeyP', score: 0, locked: false, status: '대기', isAi: false }
+        ];
+        this.players = presets.slice(0, this.playerCount);
+      }
+    },
+
+    renderStyleAndDOM() {
+      if (!this.containerEl) return;
+      this.containerEl.innerHTML = `
+        <style>
+          .game-ready-match { font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif; max-width: 1080px; margin: 0 auto; padding: 14px 10px; color: #1e293b; user-select: none; box-sizing: border-box; width: 100%; overflow-x: hidden; }
+          .game-ready-match * { box-sizing: border-box; }
+          .game-ready-match .header-box { text-align: center; background: linear-gradient(135deg, #f97316, #ea580c); color: #ffffff; border-radius: 28px; padding: 22px 16px; margin-bottom: 16px; box-shadow: 0 6px 20px rgba(249, 115, 22, 0.25); border: 3px solid #ffedd5; position: relative; }
+          .game-ready-match .title-row { display: flex; justify-content: center; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 8px; }
+          .game-ready-match .title-text { font-size: 32px; font-weight: 900; margin: 0; color: #ffffff; letter-spacing: -0.5px; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+          .game-ready-match .title-badge { background: #fef08a; color: #854d0e; padding: 6px 18px; border-radius: 20px; font-size: 14px; font-weight: 900; box-shadow: 0 2px 6px rgba(0,0,0,0.15); }
+          .game-ready-match .desc-text { color: #ffedd5; font-size: 15px; font-weight: 700; margin: 0 0 16px; word-break: keep-all; line-height: 1.5; }
+          
+          .game-ready-match .config-bar { display: flex; justify-content: center; align-items: center; gap: 10px; flex-wrap: wrap; background: rgba(0, 0, 0, 0.2); border-radius: 18px; padding: 10px 16px; margin-bottom: 14px; }
+          .game-ready-match .config-bar label { font-size: 14px; font-weight: 900; color: #ffffff; display: flex; align-items: center; gap: 6px; }
+          .game-ready-match .config-bar select, .game-ready-match .config-bar button { padding: 8px 14px; border-radius: 12px; font-weight: 800; font-size: 14px; border: none; cursor: pointer; outline: none; }
+          .game-ready-match .btn-start { background: #22c55e; color: #ffffff; font-size: 16px; padding: 8px 24px; box-shadow: 0 4px 12px rgba(34,197,94,0.4); transition: all 0.2s; }
+          .game-ready-match .btn-start:hover { background: #16a34a; transform: scale(1.05); }
+          .game-ready-match .btn-home { background: #475569; color: #ffffff; font-size: 14px; padding: 8px 16px; border-radius: 12px; border: none; cursor: pointer; font-weight: 800; transition: all 0.2s; }
+          .game-ready-match .btn-home:hover { background: #334155; }
+          
+          .game-ready-match .status-bar { display: flex; justify-content: space-between; align-items: center; background: #f8fafc; border: 2px solid #cbd5e1; border-radius: 20px; padding: 14px 20px; margin-bottom: 16px; font-weight: 900; font-size: 16px; color: #334155; }
+          .game-ready-match .time-bar-wrap { flex: 1; margin: 0 20px; height: 18px; background: #e2e8f0; border-radius: 10px; overflow: hidden; position: relative; border: 1px solid #cbd5e1; }
+          .game-ready-match .time-bar-fill { height: 100%; background: linear-gradient(90deg, #22c55e, #eab308, #ef4444); width: 100%; transition: width 0.1s linear; }
+          
+          .game-ready-match .stage-board { background: #ffffff; border: 4px solid #f97316; border-radius: 36px; min-height: 290px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; padding: 24px; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.06); text-align: center; }
+          .game-ready-match .phase-text { font-size: 56px; font-weight: 900; margin-bottom: 10px; animation: bounceIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
+          @keyframes bounceIn { 0% { transform: scale(0.3); opacity: 0; } 70% { transform: scale(1.1); } 100% { transform: scale(1); opacity: 1; } }
+          
+          .game-ready-match .item-label { font-size: 46px; font-weight: 900; margin-bottom: 8px; color: #1e293b; }
+          .game-ready-match .item-icon { font-size: 100px; line-height: 1; margin: 10px 0; animation: pulse 1.5s infinite; }
+          @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+          .game-ready-match .guide-bubble { background: #fef08a; color: #854d0e; font-size: 16px; font-weight: 900; padding: 8px 20px; border-radius: 20px; margin-top: 12px; border: 2px dashed #ca8a04; }
+          
+          /* 🚀 전자칠판용 초대형 버튼 & 터치 최적화 스타일 */
+          .game-ready-match .players-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; width: 100%; }
+          .game-ready-match .player-btn { min-height: 150px; border-radius: 28px; border: 4px solid rgba(0,0,0,0.1); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 16px; cursor: pointer; transition: all 0.15s; position: relative; box-shadow: 0 8px 0 rgba(0,0,0,0.2); touch-action: manipulation; }
+          .game-ready-match .player-btn:active:not(.locked) { transform: translateY(6px); box-shadow: 0 2px 0 rgba(0,0,0,0.2); }
+          .game-ready-match .player-btn.locked { opacity: 0.45; cursor: not-allowed; filter: grayscale(50%); }
+          .game-ready-match .p-name { font-size: 18px; font-weight: 900; color: #ffffff; text-shadow: 0 2px 4px rgba(0,0,0,0.3); margin-bottom: 4px; }
+          .game-ready-match .p-char { font-size: 42px; margin: 4px 0; pointer-events: none; }
+          .game-ready-match .p-key { background: rgba(0,0,0,0.35); color: #ffffff; font-size: 13px; font-weight: 900; padding: 4px 12px; border-radius: 12px; margin-top: 4px; pointer-events: none; }
+          .game-ready-match .p-score { font-size: 24px; font-weight: 900; color: #fef08a; text-shadow: 0 2px 4px rgba(0,0,0,0.4); margin-top: 4px; }
+          .game-ready-match .p-status { position: absolute; top: 10px; right: 14px; background: #ffffff; color: #1e293b; font-size: 12px; font-weight: 900; padding: 4px 10px; border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.15); }
+
+          .game-ready-match .rank-box { background: #f8fafc; border: 2px solid #cbd5e1; border-radius: 24px; padding: 20px; margin-top: 20px; text-align: left; }
+          .game-ready-match .rank-title { font-size: 18px; font-weight: 900; color: #1e293b; margin: 0 0 12px; }
+          .game-ready-match .rank-list { display: flex; flex-direction: column; gap: 8px; }
+          .game-ready-match .rank-item { display: flex; justify-content: space-between; background: #ffffff; padding: 10px 16px; border-radius: 14px; font-size: 14px; font-weight: 800; border: 1px solid #e2e8f0; }
+        </style>
+
+        <div class="game-ready-match">
+          
+          <!-- 가이드 모달 -->
+          <div id="rm-guide-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9999; justify-content:center; align-items:center;">
+            <div style="background:#fff; width:90%; max-width:500px; border-radius:16px; padding:24px; box-shadow:0 10px 25px rgba(0,0,0,0.2); text-align:left;">
+              <h3 style="margin-top:0; color:#1e293b; border-bottom:1px solid #e2e8f0; padding-bottom:12px;">📖 게임 방법 (레디셋고 짝꿍 매치)</h3>
+              <div style="color:#475569; font-size:1rem; line-height:1.6; margin-bottom:20px;">
+                1. <strong>일치하면 터치!</strong>: 제시어(예: 색깔 '빨강')와 등장하는 아이콘(🔴)이 일치하면 빠르게 자신의 버튼을 누르세요.<br>
+                2. <strong>스피드 1등 보너스</strong>: 일치할 때 가장 먼저 누른 사람은 +15점, 늦게 누른 사람은 +10점을 얻습니다.<br>
+                3. <strong>다르면 참기!</strong>: 제시어와 아이콘이 다를 때 누르면 -5점 감점됩니다. 꾹 참으면 턴 종료 시 방어 성공으로 +5점을 얻습니다.<br>
+                4. <strong>1인 모드</strong>: AI 로봇과 대결하며, AI는 가끔 실수로 누르거나 늦게 누릅니다.
+              </div>
+              <div style="text-align:right;">
+                <button id="rm-close-guide" style="background:#16a34a; color:#fff; border:none; padding:10px 20px; border-radius:8px; cursor:pointer; font-weight:bold;">확인</button>
+              </div>
+            </div>
+          </div>
+<div class="header-box">
+            <div class="title-row">
+              <span style="font-size:36px;">🧸</span>
+              <h1 class="title-text">레디셋고 짝꿍 매치</h1>
+              <span class="title-badge">스피드 1등 보너스 & 엉뚱 AI 대결</span>
+              <button id="btn-guide" style="background:#3b82f6; color:#fff; font-size:14px; font-weight:bold; padding:6px 12px; border:none; border-radius:8px; cursor:pointer; margin-left:8px;">📖 게임 방법</button>
+            </div>
+            <p class="desc-text">제시어와 아이콘이 <strong>일치하면 누르고!</strong> 다르면 <strong>꾹 참으세요!</strong><br>일치할 때 가장 먼저 누른 사람은 <strong>+15점 스피드 1등 보너스</strong> 획득!</p>
+            <div class="config-bar">
+              <label>👥 참여 인원:
+                <select id="sel-player-cnt">
+                  <option value="1">1인 플레이 (나 vs 🤖 엉뚱 로봇 AI)</option>
+                  <option value="2" selected>2인 플레이 (A / L / 터치)</option>
+                  <option value="3">3인 플레이 (A / L / Q / 터치)</option>
+                  <option value="4">4인 플레이 (A / L / Q / P / 터치)</option>
+                </select>
+              </label>
+              <label>🎯 모드:
+                <select id="sel-mode">
+                  <option value="10">본 게임 (총 10턴)</option>
+                  <option value="2">연습 모드 (총 2턴)</option>
+                </select>
+              </label>
+              <button class="btn-start" id="btn-start-game">🚀 게임 시작하기</button>
+              <button class="btn-home" id="btn-ready-home">🏠 홈으로</button>
+            </div>
+          </div>
+
+          <div class="status-bar">
+            <div>🏁 진행: <span id="st-turn">0</span> / <span id="st-max-turn">10</span> 턴</div>
+            <div class="time-bar-wrap"><div class="time-bar-fill" id="st-time-bar" style="width:100%;"></div></div>
+            <div id="st-time-txt">5.0초</div>
+          </div>
+
+          <div class="stage-board" id="stage-board">
+            <div style="font-size:24px; font-weight:900; color:#64748b;">☝️ 상단의 [🚀 게임 시작하기] 버튼을 눌러주세요!</div>
+            <div style="font-size:15px; color:#94a3b8; margin-top:8px;">전자칠판·모바일에서는 대형 버튼을 직접 터치하고, PC에서는 키보드를 누르세요!</div>
+          </div>
+
+          <div class="players-grid" id="players-grid"></div>
+          
+          <div class="rank-box">
+            <h3 class="rank-title">👑 레디셋고 짝꿍 매치 명예의 전당 Top 5</h3>
+            <!-- 🚨 [패치 완료] 시스템 공식 랭킹 함수가 찾을 수 있도록 ID를 board-ready-set-match로 일치! -->
+            <div class="rank-list" id="board-ready-set-match"><div style="text-align:center; color:#94a3b8; padding:8px 0; font-size:13px;">랭킹 로딩 중...</div></div>
+          </div>
+        </div>
+      `;
+      this.updatePlayersUI();
+    },
+
+    bindEvents() {
+      if (!this.containerEl) return;
+      
+      const btnGuide = this.containerEl.querySelector('#btn-guide');
+      const btnCloseGuide = this.containerEl.querySelector('#rm-close-guide');
+      const guideModal = this.containerEl.querySelector('#rm-guide-modal');
+      if (btnGuide && guideModal) btnGuide.addEventListener('click', () => guideModal.style.display = 'flex');
+      if (btnCloseGuide && guideModal) btnCloseGuide.addEventListener('click', () => guideModal.style.display = 'none');
+
+      this.containerEl.querySelector('#btn-start-game')?.addEventListener('click', () => {
+        this.playerCount = parseInt(this.containerEl.querySelector('#sel-player-cnt').value, 10) || 2;
+        this.maxTurns = parseInt(this.containerEl.querySelector('#sel-mode').value, 10) || 10;
+        this.practiceMode = (this.maxTurns === 2);
+        this.initPlayers();
+        this.startNewGame();
+      });
+
+      this.containerEl.querySelector('#sel-player-cnt')?.addEventListener('change', (e) => {
+        this.playerCount = parseInt(e.target.value, 10) || 2;
+        this.initPlayers();
+        this.updatePlayersUI();
+      });
+
+      // 🚨 [패치 완료] 홈으로 버튼: 상단/하단의 이미 잘 작동하는 홈 버튼을 그대로 클릭하도록 연결!
+      const homeBtn = this.containerEl.querySelector('#btn-ready-home');
+      if (homeBtn) {
+        homeBtn.onclick = null;
+        homeBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const topBottomHome = document.getElementById('mathlab-floating-home') || document.querySelector('#legacy-back-home-btn') || document.querySelector('.floating-home');
+          if (topBottomHome) {
+            topBottomHome.click();
+          } else if (typeof window.MathLabRenderHome === 'function') {
+            window.MathLabRenderHome();
+          } else if (typeof window.goHome === 'function') {
+            window.goHome();
+          } else {
+            location.reload();
+          }
+        });
+      }
+
+      // 💡 PC 키보드 입력 리스너 (A, L, Q, P)
+      this._keyHandler = (e) => {
+        if (this.phase !== 'go') return;
+        const p = this.players.find(item => !item.isAi && (item.keyCode.toLowerCase() === e.code.toLowerCase() || item.keyName.toLowerCase().startsWith(e.key.toLowerCase())));
+        if (p) { e.preventDefault(); this.handlePlayerInput(p.id); }
+      };
+      window.removeEventListener('keydown', this._keyHandler);
+      window.addEventListener('keydown', this._keyHandler);
+    },
+
+    updatePlayersUI() {
+      const gridEl = this.containerEl?.querySelector('#players-grid'); if (!gridEl) return;
+      gridEl.innerHTML = this.players.map(p => `
+        <div class="player-btn ${p.locked ? 'locked' : ''}" style="background:${p.color};" data-pid="${p.id}">
+          <span class="p-status">${p.status}</span>
+          <div class="p-name">${p.name}</div>
+          <div class="p-char">${p.char}</div>
+          <div class="p-key">👆 ${p.keyName}</div>
+          <div class="p-score">🌟 ${p.score}점</div>
+        </div>
+      `).join('');
+
+      // 🚀 전자칠판·모바일·PC 모두 즉각 반응하는 다중 터치 이벤트 등록
+      gridEl.querySelectorAll('.player-btn').forEach(btn => {
+        const pid = parseInt(btn.getAttribute('data-pid'), 10);
+        const p = this.players.find(item => item.id === pid);
+        if (p && !p.isAi) {
+          const trigger = (e) => { e.preventDefault(); e.stopPropagation(); this.handlePlayerInput(pid); };
+          btn.addEventListener('pointerdown', trigger);
+          btn.addEventListener('touchstart', trigger, { passive: false });
+          btn.addEventListener('click', trigger);
+        }
+      });
+    },
+
+    startNewGame() {
+      clearInterval(this.timerInterval);
+      clearTimeout(this.aiTimeout);
+      this.turnIndex = 0;
+      this.players.forEach(p => { p.score = 0; p.locked = false; p.status = '대기'; });
+      this.containerEl.querySelector('#st-max-turn').innerText = this.maxTurns;
+      this.updatePlayersUI();
+      this.nextTurn();
+    },
+
+    nextTurn() {
+      if (this.turnIndex >= this.maxTurns) {
+        this.endGame();
+        return;
+      }
+      this.turnIndex++;
+      this.matchPressCount = 0;
+      this.containerEl.querySelector('#st-turn').innerText = this.turnIndex;
+      this.players.forEach(p => { p.locked = false; p.status = '대기'; });
+      this.updatePlayersUI();
+
+      // 💡 [카테고리 일치 철칙] 동물은 동물에서, 색깔은 색깔에서만 보기 생성!
+      const baseItem = this.dataPool[Math.floor(Math.random() * this.dataPool.length)];
+      this.isMatch = (Math.random() < 0.60);
+      let targetIcon = baseItem.icon;
+      if (!this.isMatch) {
+        // 같은 카테고리(예: 동물) 내부에서만 다른 아이콘을 추출하여 뜬금없는 불일치 방지!
+        const sameCatOthers = this.dataPool.filter(d => d.category === baseItem.category && d.icon !== baseItem.icon);
+        targetIcon = sameCatOthers[Math.floor(Math.random() * sameCatOthers.length)].icon;
+      }
+      this.currentItem = { ...baseItem, displayIcon: targetIcon };
+
+      // 🚀 [첫 턴에만 레디·셋·고 연출!] 2턴부터는 0.5초 초고속 진행으로 몰입감 극대화!
+      if (this.turnIndex === 1) {
+        this.runSequence(['READY... ✊', 'SET... 🖐️', 'GO! 🔥'], [900, 900, 700], () => this.startTurnPlaying());
+      } else {
+        this.runSequence(['⚡ 다음 문제!'], [450], () => this.startTurnPlaying());
+      }
+    },
+
+    runSequence(texts, delays, onComplete) {
+      const board = this.containerEl?.querySelector('#stage-board'); if (!board) return;
+      let step = 0;
+      const showStep = () => {
+        if (step >= texts.length) { onComplete(); return; }
+        const color = (step === 0 ? '#f97316' : (step === 1 ? '#3b82f6' : '#22c55e'));
+        board.innerHTML = `<div class="phase-text" style="color:${color};">${texts[step]}</div>`;
+        setTimeout(() => { step++; showStep(); }, delays[step]);
+      };
+      showStep();
+    },
+
+    startTurnPlaying() {
+      this.phase = 'go';
+      const board = this.containerEl?.querySelector('#stage-board');
+      if (board && this.currentItem) {
+        board.innerHTML = `
+          <div style="font-size:16px; font-weight:800; color:#64748b; margin-bottom:4px;">제시어 카테고리: [ ${this.currentItem.category} ]</div>
+          <div class="item-label" style="color:${this.currentItem.colorHint || '#1e293b'};">${this.currentItem.label}</div>
+          <div class="item-icon">${this.currentItem.displayIcon}</div>
+          <div class="guide-bubble">${this.isMatch ? '💡 제시어와 아이콘이 같나요? 가장 먼저 누르세요! 🖐️' : '💡 제시어와 아이콘이 다른가요? 참으세요! 🤫'}</div>
+        `;
+      }
+
+      // 🤖 [1인 게임 모드] 엉뚱 로봇 AI 자동 액션 예약!
+      const aiPlayer = this.players.find(p => p.isAi);
+      if (aiPlayer) {
+        clearTimeout(this.aiTimeout);
+        if (this.isMatch) {
+          if (Math.random() < 0.80) {
+            const delay = 1200 + Math.floor(Math.random() * 2000);
+            this.aiTimeout = setTimeout(() => this.handlePlayerInput(aiPlayer.id), delay);
+          }
+        } else {
+          if (Math.random() < 0.25) {
+            const delay = 1500 + Math.floor(Math.random() * 2000);
+            this.aiTimeout = setTimeout(() => this.handlePlayerInput(aiPlayer.id), delay);
+          }
+        }
+      }
+
+      this.timerMs = 5000;
+      this.maxTimerMs = 5000;
+      const startTime = Date.now();
+      
+      clearInterval(this.timerInterval);
+      this.timerInterval = setInterval(() => {
+        const elapsed = Date.now() - startTime;
+        this.timerMs = Math.max(0, this.maxTimerMs - elapsed);
+        const ratio = (this.timerMs / this.maxTimerMs) * 100;
+        const fillEl = this.containerEl?.querySelector('#st-time-bar');
+        const txtEl = this.containerEl?.querySelector('#st-time-txt');
+        if (fillEl) fillEl.style.width = `${ratio}%`;
+        if (txtEl) txtEl.innerText = `${(this.timerMs / 1000).toFixed(1)}초`;
+
+        if (this.timerMs <= 0) {
+          clearInterval(this.timerInterval);
+          this.resolveTurnResult();
+        }
+      }, 50);
+    },
+
+    handlePlayerInput(pid) {
+      if (this.phase !== 'go') return;
+      const p = this.players.find(item => item.id === pid);
+      if (!p || p.locked) return;
+
+      p.locked = true;
+      
+      if (this.isMatch) {
+        this.matchPressCount++;
+        if (this.matchPressCount === 1) {
+          p.score += 15;
+          p.status = '🥇 스피드 1등! (+15)';
+        } else {
+          p.score += 10;
+          p.status = '🎉 정답! (+10)';
+        }
+      } else {
+        p.score = Math.max(0, p.score - 5);
+        p.status = '앗, 참기 실패! (-5)';
+      }
+      this.updatePlayersUI();
+
+      if (this.isMatch && this.players.every(item => item.locked)) {
+        clearInterval(this.timerInterval);
+        clearTimeout(this.aiTimeout);
+        setTimeout(() => this.resolveTurnResult(), 400);
+      }
+    },
+
+    resolveTurnResult() {
+      this.phase = 'result';
+      clearTimeout(this.aiTimeout);
+      
+      this.players.forEach(p => {
+        if (!p.locked) {
+          if (!this.isMatch) {
+            p.score += 5;
+            p.status = '🛡️ 참기 성공! (+5)';
+          } else {
+            p.status = '😊 아쉬워요 (0)';
+          }
+        }
+      });
+      this.updatePlayersUI();
+
+      const board = this.containerEl?.querySelector('#stage-board');
+      if (board) {
+        const msg = this.isMatch ? '🎉 정답은 [ 일치 ]였습니다! 먼저 누른 사람이 1등 득점!' : '🛡️ 정답은 [ 불일치 ]였습니다! 꾹 참은 사람이 득점!';
+        board.innerHTML = `
+          <div style="font-size:32px; font-weight:900; color:#1e293b; margin-bottom:12px;">⏰ 턴 판정!</div>
+          <div style="font-size:22px; font-weight:900; color:#ea580c; background:#ffedd5; padding:12px 24px; border-radius:20px;">${msg}</div>
+        `;
+      }
+
+      setTimeout(() => { this.nextTurn(); }, 2200);
+    },
+
+    endGame() {
+      this.phase = 'gameOver';
+      clearTimeout(this.aiTimeout);
+      const board = this.containerEl?.querySelector('#stage-board');
+      const sorted = [...this.players].sort((a, b) => b.score - a.score);
+      const winner = sorted[0];
+
+      if (board) {
+        board.innerHTML = `
+          <div style="font-size:48px; margin-bottom:10px;">👑🏆</div>
+          <div style="font-size:36px; font-weight:900; color:#ea580c; margin-bottom:8px;">최종 우승: ${winner.name}!</div>
+          <div style="font-size:20px; font-weight:800; color:#64748b; margin-bottom:16px;">모든 턴이 종료되었습니다. 짝짝짝! 👏</div>
+          <button class="btn-start" style="font-size:18px; padding:12px 32px;" onclick="document.querySelector('#btn-start-game').click();">🔄 다시 도전하기</button>
+        `;
+      }
+
+      setTimeout(() => {
+        // 🚨 [패치 완료] nickname을 metadata에 넣지 않고 별도로 전달하여 덮어쓰기 원천 봉쇄!
+        const metadata = { gameTitle: '레디셋고 짝꿍 매치', score: winner.score, playerCount: this.playerCount };
+        this.showInlineRankingModal('board-ready-set-match', winner.score, metadata);
+      }, 1000);
+    },
+
+    showInlineRankingModal(boardId, score, metadata) {
+      document.getElementById('mathlab-inline-ranking-modal')?.remove();
+      const gameName = '레디셋고 짝꿍 매치';
+      const modalHtml = `
+        <div id="mathlab-inline-ranking-modal" style="position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(15,23,42,0.85); backdrop-filter:blur(6px); display:flex; align-items:center; justify-content:center; z-index:999999; padding:20px; box-sizing:border-box; font-family:'Pretendard',sans-serif;">
+          <div style="background:#ffffff; border-radius:28px; padding:32px 24px; max-width:420px; width:100%; box-shadow:0 25px 50px rgba(0,0,0,0.5); text-align:center; border:4px solid #f97316;">
+            <div style="font-size:48px; margin-bottom:10px;">🧸👑</div>
+            <h2 style="margin:0 0 8px; font-size:26px; font-weight:900; color:#1e293b;">명예의 전당 등록</h2>
+            <p style="margin:0 0 20px; font-size:14px; color:#64748b;">레디셋고 짝꿍 매치를 멋지게 완주했습니다!<br>우승팀 이름을 남겨 Top 5 랭킹에 도전하세요!</p>
+            <div style="background:#ffedd5; border:1px solid #fed7aa; border-radius:18px; padding:16px; margin-bottom:22px;">
+              <div style="font-size:13px; color:#c2410c; font-weight:800; margin-bottom:4px;">🏆 최종 최고 점수</div>
+              <div style="font-size:36px; font-weight:900; color:#ea580c;">${score} <span style="font-size:20px;">점</span></div>
+            </div>
+            <input type="text" id="inline-rank-nickname" placeholder="우승팀 닉네임 입력 (예: 귀염둥이팀)" maxlength="12" style="width:100%; padding:14px 16px; font-size:16px; font-weight:700; border:2px solid #cbd5e1; border-radius:14px; outline:none; text-align:center; margin-bottom:20px; box-sizing:border-box;">
+            <div style="display:flex; gap:10px;">
+              <button id="inline-rank-cancel" style="flex:1; padding:14px; border-radius:14px; font-size:15px; font-weight:800; background:#e2e8f0; color:#475569; border:none; cursor:pointer;">건너뛰기</button>
+              <button id="inline-rank-submit" style="flex:2; padding:14px; border-radius:14px; font-size:15px; font-weight:800; background:#f97316; color:#ffffff; border:none; cursor:pointer;">🚀 등록하기</button>
+            </div>
+          </div>
+        </div>
+      `;
+      document.body.insertAdjacentHTML('beforeend', modalHtml);
+      const inputEl = document.getElementById('inline-rank-nickname'); if (inputEl) inputEl.focus();
+      const closeAndClean = () => document.getElementById('mathlab-inline-ranking-modal')?.remove();
+      document.getElementById('inline-rank-cancel')?.addEventListener('click', closeAndClean);
+      const doSubmit = () => {
+        let nickname = (inputEl?.value.trim() || '귀염둥이팀');
+        
+        // 🚨 [패치 완료] 1. 구글 시트 및 수학실험실 공식 저장 함수(submitRanking) 호출!
+        if (typeof window.submitRanking === 'function') {
+          try { window.submitRanking(gameName, score, true, nickname, boardId); } catch(e){}
+        } else if (typeof google !== 'undefined' && google.script && google.script.run && typeof google.script.run.saveGameScore === 'function') {
+          try {
+            const sheetId = (typeof getLeaderboardSheetId === 'function') ? getLeaderboardSheetId() : '';
+            const meta = (typeof getLeaderboardMeta === 'function') ? getLeaderboardMeta() : {};
+            google.script.run.withSuccessHandler(() => { this.loadLeaderboard(); }).saveGameScore(sheetId, gameName, nickname, score, true, meta);
+          } catch(e){}
+        }
+
+        // 🚨 [패치 완료] 2. 닉네임 덮어쓰기 원천 봉쇄 (...metadata를 먼저 풀고 nickname을 뒤에 명시)
+        let ranks = JSON.parse(localStorage.getItem(`rank_${boardId}`) || '[]');
+        ranks.push({ ...(metadata || {}), nickname: nickname, score: score, date: new Date().toISOString() });
+        ranks.sort((a, b) => (b.score || 0) - (a.score || 0));
+        localStorage.setItem(`rank_${boardId}`, JSON.stringify(ranks.slice(0, 50)));
+        closeAndClean(); this.loadLeaderboard();
+      };
+      document.getElementById('inline-rank-submit')?.addEventListener('click', doSubmit);
+      inputEl?.addEventListener('keydown', (e) => { if (e.key === 'Enter') doSubmit(); });
+    },
+
+    loadLeaderboard() {
+      if (!this.containerEl) return;
+      // 🚨 [패치 완료] 우리 시스템 공식 구글 시트 랭킹 불러오기 호출!
+      if (typeof window.loadGameLeaderboard === 'function') {
+        window.loadGameLeaderboard('레디셋고 짝꿍 매치', true, 'board-ready-set-match');
+      } else {
+        const localRanks = JSON.parse(localStorage.getItem('rank_board-ready-set-match') || '[]');
+        this.renderRankList(localRanks.slice(0, 5));
+      }
+    },
+
+    renderRankList(ranks) {
+      const el = this.containerEl?.querySelector('#board-ready-set-match') || this.containerEl?.querySelector('#rank-list'); if (!el) return;
+      if (!ranks || ranks.length === 0) { el.innerHTML = '<div style="text-align:center; color:#94a3b8; padding:8px 0; font-size:13px;">아직 등록된 랭킹이 없습니다! 지금 첫 우승자가 되어보세요!</div>'; return; }
+      el.innerHTML = ranks.map((r, i) => `<div class="rank-item"><div><span style="color:#ea580c; font-weight:900; margin-right:6px;">${i + 1}위</span> ${r.nickname || '귀염둥이팀'}</div><div style="color:#c2410c; font-weight:900;">${r.score || 0}점</div></div>`).join('');
+    },
+
+    destroy() {
+      clearInterval(this.timerInterval);
+      clearTimeout(this.aiTimeout);
+      if (this._keyHandler) window.removeEventListener('keydown', this._keyHandler);
+      document.getElementById('mathlab-inline-ranking-modal')?.remove();
+      const host = document.getElementById('ready-match-force-host'); if (host) host.remove();
+    }
+  };
+
+  window.ReadySetMatchGame = ReadySetMatchGame;
+  window.launchReadySetMatchGame = function() {
+    if (typeof window.MathLabGames !== 'undefined' && typeof window.MathLabGames.mount === 'function') {
+      try { window.MathLabGames.mount('ready-set-match'); return; } catch(e){}
+    }
+    ReadySetMatchGame.mount();
+  };
+
+  if (typeof window.MathLabGames !== 'undefined' && typeof window.MathLabGames.register === 'function') {
+    window.MathLabGames.register({
+      id: 'ready-set-match', title: '레디셋고 짝꿍 매치', icon: '🧸', sourceType: 'new',
+      mount(container, context) { ReadySetMatchGame.mount(container, context); },
+      reset() { ReadySetMatchGame.startNewGame(); },
+      destroy() { ReadySetMatchGame.destroy(); }
+    });
+  }
+})();
+</script>

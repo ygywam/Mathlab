@@ -1,0 +1,761 @@
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;700;800;900&display=swap');
+@import url('https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css');
+
+.rw-app, .rw-app * { box-sizing: border-box; }
+.rw-app {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 20px 22px 28px;
+  font-family: 'Pretendard', system-ui, sans-serif;
+  background: #f8fafc;
+  color: #0f172a;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+}
+
+/* Header */
+.rw-app .h {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  background: #ffffff;
+  padding: 16px 22px;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+  margin-bottom: 16px;
+}
+.rw-app .t {
+  font-size: 1.35rem;
+  font-weight: 900;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #0284c7;
+}
+.rw-app .sub-title {
+  font-size: 0.88rem;
+  color: #64748b;
+  font-weight: 700;
+}
+
+/* Nav Tabs */
+.rw-app .nav-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  background: #ffffff;
+  padding: 6px;
+  border-radius: 14px;
+  border: 1px solid #e2e8f0;
+}
+.rw-app .tab-btn {
+  flex: 1;
+  padding: 12px 14px;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.98rem;
+  font-weight: 800;
+  cursor: pointer;
+  background: transparent;
+  color: #64748b;
+  transition: all 0.2s;
+  text-align: center;
+}
+.rw-app .tab-btn.active {
+  background: #0ea5e9;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(14,165,233,0.25);
+}
+
+/* Card & Layout */
+.rw-app .card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+.rw-app .card-title {
+  font-size: 1.15rem;
+  font-weight: 900;
+  color: #0f172a;
+  margin-top: 0;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 2px solid #f1f5f9;
+  padding-bottom: 10px;
+}
+
+.rw-app .grid-2 {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 16px;
+}
+@media(max-width: 860px) {
+  .rw-app .grid-2 { grid-template-columns: 1fr; }
+}
+
+/* Canvas Chart */
+.rw-app canvas {
+  width: 100%;
+  height: 320px;
+  display: block;
+  border-radius: 12px;
+  background: #0f172a;
+  box-shadow: inset 0 2px 6px rgba(0,0,0,0.3);
+}
+
+/* Stats Chips */
+.rw-app .chips-bar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 12px 0;
+}
+.rw-app .chip {
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: #334155;
+}
+.rw-app .chip b { color: #0284c7; }
+
+/* Control Buttons */
+.rw-app .btn {
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #1e293b;
+  border-radius: 10px;
+  padding: 10px 16px;
+  font-weight: 800;
+  cursor: pointer;
+  font-size: 0.92rem;
+  transition: all 0.15s;
+}
+.rw-app .btn:hover { background: #f1f5f9; }
+.rw-app .btn.p { background: #0284c7; border-color: #0284c7; color: #ffffff; box-shadow: 0 3px 0 #0369a1; }
+.rw-app .btn.g { background: #059669; border-color: #059669; color: #ffffff; box-shadow: 0 3px 0 #047857; }
+.rw-app .btn.w { background: #dc2626; border-color: #dc2626; color: #ffffff; box-shadow: 0 3px 0 #b91c1c; }
+.rw-app .btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+
+/* Form Controls & Slider */
+.rw-app .inp {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  outline: none;
+}
+.rw-app .select-input {
+  padding: 8px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  font-size: 0.92rem;
+  font-weight: 800;
+  outline: none;
+  background: #ffffff;
+}
+.rw-app input[type=range] {
+  width: 100%;
+  accent-color: #0284c7;
+  cursor: pointer;
+}
+
+/* Math Display Box */
+.rw-app .math-block {
+  background: #ffffff;
+  padding: 12px 18px;
+  border-radius: 12px;
+  display: block;
+  border: 1px solid #bae6fd;
+  margin: 10px 0;
+  font-size: 1.05rem;
+  overflow-x: auto;
+}
+
+/* Modal */
+.rw-app .modal { position: fixed; inset: 0; background: rgba(15,23,42,0.55); display: none; align-items: center; justify-content: center; z-index: 9400; padding: 14px; backdrop-filter: blur(4px); }
+.rw-app .modal.on { display: flex; }
+.rw-app .modal .mbox { background: #fff; border-radius: 18px; max-width: 580px; width: 100%; padding: 22px; max-height: 88vh; overflow: auto; box-shadow: 0 20px 50px rgba(15,23,42,0.3); }
+</style>
+
+<!-- KaTeX Script -->
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+
+<script>
+(function(){
+'use strict';
+var APP_ID = 'random-walk-stock';
+var APP_TITLE = '무작위 행보 주식 시장 (Random Walk Stock)';
+var ICON = '📈';
+var FORCE = 'random-walk-stock-force-host';
+
+var INITIAL_PRICE = 100;
+var INITIAL_CASH = 10000;
+
+var S = {
+  host: null,
+  activeTab: 'sim',
+  running: false,
+  t: 0,
+  maxT: 50,
+  stepDelta: 2,
+  feeRate: 0.002,
+  price: INITIAL_PRICE,
+  pricePath: [INITIAL_PRICE],
+  cash: INITIAL_CASH,
+  shares: 0,
+  totalFeePaid: 0,
+  tradeCount: 0,
+  bhShares: INITIAL_CASH / INITIAL_PRICE,
+  bhCash: 0,
+  timer: null
+};
+
+function $(id) { return document.getElementById(id); }
+
+function renderMath(latex, container, displayMode) {
+  if (typeof katex !== 'undefined' && container) {
+    try {
+      katex.render(latex, container, { throwOnError: false, displayMode: !!displayMode });
+      return;
+    } catch(e){}
+  }
+  if (container) container.textContent = latex;
+}
+
+function updateMathElements() {
+  document.querySelectorAll('.math-tex').forEach(function(el) {
+    var tex = el.getAttribute('data-tex');
+    var isDisplay = el.getAttribute('data-display') === 'true';
+    if (tex) renderMath(tex, el, isDisplay);
+  });
+}
+
+function getEquity() {
+  return S.cash + S.shares * S.price;
+}
+
+function getBHEquity() {
+  return S.bhCash + S.bhShares * S.price;
+}
+
+var RandomWalkStockApp = {
+  mount: function(container) {
+    var host = null;
+    if (typeof container === 'string') { try { host = document.querySelector(container); } catch(e){} }
+    else if (container instanceof HTMLElement) host = container;
+    if (!host && window.MathLabUtils && window.MathLabUtils.getMountContainer) {
+      try { host = window.MathLabUtils.getMountContainer(container); } catch(e){}
+    }
+    if (!host || !(host instanceof HTMLElement)) host = document.getElementById('mathlab-view') || document.getElementById('new-root');
+    
+    if (!host || !(host instanceof HTMLElement) || host === document.body) {
+      host = document.getElementById(FORCE);
+      if (!host) { host = document.createElement('div'); host.id = FORCE; document.body.appendChild(host); }
+    }
+    
+    var footerEl = document.querySelector('footer,#footer,.app-footer');
+    if (footerEl && host && typeof host.compareDocumentPosition === 'function' && (host.compareDocumentPosition(footerEl) & Node.DOCUMENT_POSITION_PRECEDING)) {
+      try { footerEl.parentNode.insertBefore(host, footerEl); } catch(e){}
+    }
+    
+    host.style.display = ''; host.style.visibility = 'visible'; host.style.opacity = '1';
+    S.host = host;
+    host.innerHTML = this.renderChrome();
+    this.bindEvents();
+    this.resetMarket();
+    updateMathElements();
+  },
+
+  renderChrome: function() {
+    var h = '';
+    h += '<div class="rw-app" id="rw-app-root">';
+    
+    /* Header */
+    h += '  <div class="h">';
+    h += '    <div>';
+    h += '      <h2 class="t">' + ICON + ' ' + APP_TITLE + '</h2>';
+    h += '      <div class="sub-title">확률과 통계 · 이항 무작위 행보 및 금융 수학 실생활 탐구</div>';
+    h += '    </div>';
+    h += '    <button type="button" class="btn" id="btn-open-guide">📖 학습 개요</button>';
+    h += '  </div>';
+
+    /* Navigation Tabs */
+    h += '  <div class="nav-tabs">';
+    h += '    <button type="button" class="tab-btn active" data-tab="sim">1. 📈 주가 난수 시뮬레이터</button>';
+    h += '    <button type="button" class="tab-btn" data-tab="math">2. 📐 수학적 모델 및 수식</button>';
+    h += '    <button type="button" class="tab-btn" data-tab="prob">3. 🧩 실전 확률 탐구 문제 (4선)</button>';
+    h += '  </div>';
+
+    /* TAB 1: Simulator */
+    h += '  <div id="tab-sec-sim">';
+    h += '    <div class="card">';
+    h += '      <div class="card-title">📊 실시간 이항 무작위 행보 주가 차트</div>';
+    
+    h += '      <canvas id="rw-canvas" width="700" height="320"></canvas>';
+
+    h += '      <div class="chips-bar">';
+    h += '        <span class="chip">시간(틱 t): <b id="lbl-t">0 / 50</b></span>';
+    h += '        <span class="chip">현재 주가(S_t): <b id="lbl-price">100.00</b>원</span>';
+    h += '        <span class="chip">나의 자산: <b id="lbl-eq" style="color:#059669;">10,000</b>원</span>';
+    h += '        <span class="chip">장기보유(B&H) 자산: <b id="lbl-bh" style="color:#0284c7;">10,000</b>원</span>';
+    h += '        <span class="chip">누적 수수료: <b id="lbl-fee" style="color:#dc2626;">0</b>원</span>';
+    h += '      </div>';
+
+    h += '      <div class="grid-2">';
+    h += '        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:14px; padding:16px;">';
+    h += '          <div style="font-weight:900; font-size:1.05rem; color:#0f172a; margin-bottom:10px;">🕹️ 매매 컨트롤러</div>';
+    
+    h += '          <div style="display:flex; gap:8px; margin-bottom:12px;">';
+    h += '            <button type="button" class="btn g" id="btn-start-sim" style="flex:1;">▶ 시뮬레이션 시작</button>';
+    h += '            <button type="button" class="btn" id="btn-pause-sim">⏸ 일시정지</button>';
+    h += '            <button type="button" class="btn" id="btn-reset-sim">🔄 초기화</button>';
+    h += '          </div>';
+
+    h += '          <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px;">';
+    h += '            <button type="button" class="btn p" id="btn-buy-1">📈 1주 매수</button>';
+    h += '            <button type="button" class="btn w" id="btn-sell-1">📉 1주 매도</button>';
+    h += '          </div>';
+
+    /* Max T Slider Control */
+    h += '          <div style="background:#ffffff; padding:10px 14px; border-radius:10px; border:1px solid #cbd5e1; margin-bottom:10px;">';
+    h += '            <div style="display:flex; justify-content:space-between; font-weight:800; font-size:0.9rem; color:#334155; margin-bottom:6px;">';
+    h += '              <span>총 시뮬레이션 기간 (최대 틱수):</span>';
+    h += '              <b id="lbl-slider-val" style="color:#0284c7;">50 틱</b>';
+    h += '            </div>';
+    h += '            <input type="range" id="rng-max-t" min="30" max="200" step="10" value="50">';
+    h += '          </div>';
+
+    h += '          <div style="display:flex; justify-content:space-between; align-items:center; background:#ffffff; padding:10px 14px; border-radius:10px; border:1px solid #cbd5e1;">';
+    h += '            <span style="font-weight:800; color:#334155; font-size:0.9rem;">거래 수수료율:</span>';
+    h += '            <select id="sel-fee-rate" class="select-input">';
+    h += '              <option value="0">0% (수수료 없음)</option>';
+    h += '              <option value="0.001">0.1%</option>';
+    h += '              <option value="0.002" selected>0.2% (기본)</option>';
+    h += '              <option value="0.005">0.5% (고수수료)</option>';
+    h += '            </select>';
+    h += '          </div>';
+    h += '        </div>';
+
+    h += '        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:14px; padding:16px;">';
+    h += '          <div style="font-weight:900; font-size:1.05rem; color:#0f172a; margin-bottom:10px;">📊 잔고 및 벤치마크 현황</div>';
+    h += '          <div style="line-height:1.85; font-weight:800; font-size:0.93rem; color:#334155;">';
+    h += '            • 보유 현금: <span id="lbl-cash" style="color:#0284c7;">10,000</span>원<br>';
+    h += '            • 보유 주식: <span id="lbl-shares" style="color:#059669;">0</span>주<br>';
+    h += '            • 총 매매 횟수: <span id="lbl-trades">0</span>회<br>';
+    h += '            • 주식 시장 수익률: <span id="lbl-market-return">0.00%</span><br>';
+    h += '            • 나의 계좌 수익률: <span id="lbl-my-return">0.00%</span>';
+    h += '          </div>';
+    h += '          <div id="lbl-sim-status-msg" style="margin-top:12px; font-weight:800; font-size:0.88rem; color:#64748b; background:#fff; padding:10px 12px; border-radius:8px; border:1px solid #e2e8f0;">[▶ 시작] 버튼을 눌러 시뮬레이션을 시작하세요.</div>';
+    h += '        </div>';
+    h += '      </div>';
+
+    h += '    </div>';
+    h += '  </div>';
+
+    /* TAB 2: Math Model & Clean LaTeX */
+    h += '  <div id="tab-sec-math" style="display:none;">';
+    h += '    <div class="card">';
+    h += '      <div class="card-title">📐 주가 무작위 행보의 수학적 성질</div>';
+
+    h += '      <div style="line-height:1.7; color:#334155; margin-bottom:16px;">';
+    h += '        금융수학에서 무작위 행보 가설은 주가의 미래 움직임이 과거 주가 흐름과 독립적인 독립 확률 변수의 합으로 결정된다는 모델입니다.';
+    h += '      </div>';
+
+    h += '      <div style="background:#f0f9ff; border:1px solid #bae6fd; border-radius:14px; padding:16px; margin-bottom:14px; line-height:1.7;">';
+    h += '        <div style="font-weight:900; font-size:1.05rem; color:#0369a1; margin-bottom:6px;">1. 이항 모델 수식</div>';
+    h += '        <p>각 시간 틱 <span class="math-tex" data-tex="t"></span>에서 주가 <span class="math-tex" data-tex="S_t"></span>는 독립적인 확률변수 <span class="math-tex" data-tex="X_{t} \\in \{+\\delta, -\\delta\}"></span>에 의해 변동합니다:</p>';
+    h += '        <div class="math-block"><span class="math-tex" data-display="true" data-tex="S_{t+1} = S_t + X_{t+1}, \\quad P(X_{t+1} = +\\delta) = \\frac{1}{2}, \\quad P(X_{t+1} = -\\delta) = \\frac{1}{2}"></span></div>';
+    h += '      </div>';
+
+    h += '      <div style="background:#fefce8; border:1px solid #fde047; border-radius:14px; padding:16px; margin-bottom:14px; line-height:1.7;">';
+    h += '        <div style="font-weight:900; font-size:1.05rem; color:#854d0e; margin-bottom:6px;">2. 기댓값 불변성 및 마르팅게일 성질</div>';
+    h += '        <p>대칭 무작위 행보에서 다음 틱 주가의 기댓값은 현재 주가와 같습니다:</p>';
+    h += '        <div class="math-block"><span class="math-tex" data-display="true" data-tex="E[S_{t+1} \\mid S_t] = S_t \\cdot \\frac{1}{2} + S_t \\cdot \\frac{1}{2} = S_t"></span></div>';
+    h += '        <p>따라서 차트에서 연속 5번 하락했더라도, <b>다음 틱에 주가가 오를 확률은 여전히 정확히 1/2(50%)</b>입니다. 이를 잊고 "곧 오를 때가 됐다"고 착각하는 것을 <b>도박사의 오류</b>라고 합니다.</p>';
+    h += '      </div>';
+
+    h += '      <div style="background:#fef2f2; border:1px solid #fecaca; border-radius:14px; padding:16px; line-height:1.7;">';
+    h += '        <div style="font-weight:900; font-size:1.05rem; color:#991b1b; margin-bottom:6px;">3. 수수료 마찰과 잦은 매매의 손실</div>';
+    h += '        <p>기댓값이 0인 무작위 시장에서 매매 수수료 <span class="math-tex" data-tex="f"></span>가 존재할 경우, <span class="math-tex" data-tex="N"></span>회 매매 후의 자산 기댓값은 다음과 같이 감소합니다:</p>';
+    h += '        <div class="math-block"><span class="math-tex" data-display="true" data-tex="E[W_N] = S_0 - \\sum_{k=1}^N f \\cdot S_k < S_0"></span></div>';
+    h += '        <p>즉, 무작위 시장에서 잦은 사고팔기를 지속하면 <b>수수료 마찰 비용으로 인해 확률적으로 반드시 단기매매 없는 장기보유 전략보다 손실을 보게 됩니다.</b></p>';
+    h += '      </div>';
+
+    h += '    </div>';
+    h += '  </div>';
+
+    /* TAB 3: Problem Solving */
+    h += '  <div id="tab-sec-prob" style="display:none;">';
+    h += '    <div class="card">';
+    h += '      <div class="card-title">🧩 실전 확률 및 금융 수학 탐구 문제 (4선)</div>';
+
+    var probs = [
+      {
+        title: "Q1. 도박사의 오류와 독립 시행의 확률",
+        q: "어느 주식이 6틱 연속으로 하락하여 100원에서 88원까지 떨어졌습니다. 다음 7번째 틱에서 주가가 상승할 확률은 얼마일까요?",
+        sol: "<b>[정답: 1/2 (50%)]</b><br>• 각각의 틱 변동은 과거의 결과와 상관없는 **독립 시행**입니다.<br>• 과거에 아무리 연속 하락했더라도 다음 틱에 오를 확률은 여전히 정확히 <span class=\"math-tex\" data-tex=\"p = \\frac{1}{2}\"></span> 입니다."
+      },
+      {
+        title: "Q2. 장기보유 vs 단기 매매 수수료 마찰",
+        q: "수수료 0.2% 시장에서 A는 100원에 매수 후 가만히 보유하고, B는 50번 사고팔았습니다. 50틱 후 주가가 다시 100원이 되었다면 두 사람의 자산 차이는 얼마일까요?",
+        sol: "<b>[수학적 해설]</b><br>• 장기보유 A: 수수료 1회 지불 ➔ 자산 10,000원 고정<br>• 50회 매매 B: 50번 매매 시 수수료 약 <span class=\"math-tex\" data-tex=\"50 \\times 0.2\\% = 10\\%\"></span> 손실 발생!<br>• 따라서 무작위 시장에서는 잦은 매매를 할수록 수수료 마찰로 인해 손실이 누적됩니다."
+      },
+      {
+        title: "Q3. 무작위 행보의 장기 분산과 변동성",
+        q: "1틱당 변동 폭이 <span class=\"math-tex\" data-tex=\"\\delta = 2\"></span>일 때, <span class=\"math-tex\" data-tex=\"t\"></span>틱 후 주가 변동의 분산 <span class=\"math-tex\" data-tex=\"\\operatorname{Var}(S_t)\"></span>은 <span class=\"math-tex\" data-tex=\"t\"></span>에 따라 어떻게 변할까요?",
+        sol: "<b>[정답: Var(S_t) = 4t]</b><br>• 독립 확률변수의 합이므로 분산은 시간에 비례하여 증가합니다: <span class=\"math-tex\" data-tex=\"\\operatorname{Var}(S_t) = t \\cdot \\delta^2 = 4t\"></span><br>• 표준편차(변동성)는 <span class=\"math-tex\" data-tex=\"\\sigma = 2\\sqrt{t}\"></span>로 시간에 제곱근 비례하여 커집니다."
+      },
+      {
+        title: "Q4. 파산 흡수 조건 및 자산 관리",
+        q: "자산이 한정된 투자자가 무작위 행보 시장에서 무한히 오랫동안 거래를 지속하면 어떻게 될까요?",
+        sol: "<b>[수학적 분석]</b><br>• 0원에 도달하면 게임이 끝나는 파산 흡수 조건에서, 수수료 마찰이 존재하면 장기적으로 파산 확률이 100%에 수렴합니다.<br>• 따라서 무작위 단기 매매를 피하고 장기 우상향 자산에 투자하는 것이 바람직합니다."
+      }
+    ];
+
+    probs.forEach(function(item, idx) {
+      h += '<div style="background:#ffffff; border:1px solid #e2e8f0; border-radius:14px; padding:16px; margin-bottom:14px;">';
+      h += '  <div style="font-weight:900; font-size:1.05rem; color:#0284c7; margin-bottom:6px;">' + item.title + '</div>';
+      h += '  <div style="line-height:1.6; color:#334155; margin-bottom:10px;">' + item.q + '</div>';
+      h += '  <button type="button" class="btn p btn-show-sol" data-idx="' + idx + '">💡 수학적 해설 보기</button>';
+      h += '  <div id="sol-' + idx + '" style="display:none; background:#f8fafc; border:1px solid #cbd5e1; border-radius:12px; padding:14px; margin-top:10px; font-size:0.92rem; line-height:1.65;">' + item.sol + '</div>';
+      h += '</div>';
+    });
+
+    h += '  </div>';
+    h += '  </div>';
+
+    /* Modal Guide */
+    h += '<div class="modal" id="rw-modal">';
+    h += '  <div class="mbox" style="position:relative;">';
+    h += '    <h3 style="color:#0284c7; font-weight:900;">🎓 무작위 행보 주식 시장 탐구 개요</h3>';
+    h += '    <p>본 학습 모듈은 확률과 통계의 <b>독립 시행</b> 및 <b>이항 무작위 행보</b> 개념을 금융 시장 시뮬레이션을 통해 학습하는 교과 탐구 모듈입니다.</p>';
+    h += '    <ul style="line-height:1.7;">';
+    h += '      <li><b>대칭 무작위 행보:</b> 매 틱 주가가 50% 확률로 +2원 또는 -2원 변동</li>';
+    h += '      <li><b>독립 시행:</b> 직전 틱의 상승/하락 결과가 다음 틱 확률에 영향을 주지 않음</li>';
+    h += '      <li><b>장기보유 벤치마크:</b> 잦은 매매에 따른 수수료 마찰 비용과의 비교 학습</li>';
+    h += '    </ul>';
+    h += '    <button type="button" class="btn p" id="btn-modal-close" style="width:100%; margin-top:14px; padding:12px;">학습 시작하기</button>';
+    h += '  </div>';
+    h += '</div>';
+
+    h += '</div>';
+    return h;
+  },
+
+  bindEvents: function() {
+    var _this = this;
+    var root = S.host.querySelector('#rw-app-root');
+
+    /* Tabs */
+    root.querySelectorAll('.tab-btn').forEach(function(btn) {
+      btn.onclick = function() {
+        root.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
+        this.classList.add('active');
+        S.activeTab = this.getAttribute('data-tab');
+
+        root.querySelector('#tab-sec-sim').style.display = (S.activeTab === 'sim') ? 'block' : 'none';
+        root.querySelector('#tab-sec-math').style.display = (S.activeTab === 'math') ? 'block' : 'none';
+        root.querySelector('#tab-sec-prob').style.display = (S.activeTab === 'prob') ? 'block' : 'none';
+
+        updateMathElements();
+        if (S.activeTab === 'sim') _this.drawChart();
+      };
+    });
+
+    /* Controls */
+    root.querySelector('#btn-start-sim').onclick = function() { _this.startSim(); };
+    root.querySelector('#btn-pause-sim').onclick = function() { _this.pauseSim(); };
+    root.querySelector('#btn-reset-sim').onclick = function() { _this.resetMarket(); };
+
+    root.querySelector('#btn-buy-1').onclick = function() { _this.buy(1); };
+    root.querySelector('#btn-sell-1').onclick = function() { _this.sell(1); };
+
+    root.querySelector('#sel-fee-rate').onchange = function() {
+      S.feeRate = parseFloat(this.value);
+    };
+
+    /* Max T Slider Event */
+    var slider = root.querySelector('#rng-max-t');
+    if (slider) {
+      slider.oninput = function() {
+        S.maxT = parseInt(this.value, 10);
+        root.querySelector('#lbl-slider-val').textContent = S.maxT + ' 틱';
+        _this.hud();
+        _this.drawChart();
+      };
+    }
+
+    /* Solution Toggles */
+    root.querySelectorAll('.btn-show-sol').forEach(function(btn) {
+      btn.onclick = function() {
+        var idx = this.getAttribute('data-idx');
+        var solEl = root.querySelector('#sol-' + idx);
+        if (solEl) {
+          var isShown = solEl.style.display === 'block';
+          solEl.style.display = isShown ? 'none' : 'block';
+          this.textContent = isShown ? '💡 수학적 해설 보기' : '🙈 해설 닫기';
+          updateMathElements();
+        }
+      };
+    });
+
+    /* Modal */
+    root.querySelector('#btn-open-guide').onclick = function() { root.querySelector('#rw-modal').classList.add('on'); };
+    root.querySelector('#btn-modal-close').onclick = function() { root.querySelector('#rw-modal').classList.remove('on'); };
+  },
+
+  startSim: function() {
+    var _this = this;
+    if (S.running) return;
+    if (S.t >= S.maxT) this.resetMarket();
+    S.running = true;
+    S.timer = setInterval(function() { _this.step(); }, 350);
+    this.updateStatusMsg("📈 주가 시뮬레이션 진행 중... (독립 난수 변동)");
+  },
+
+  pauseSim: function() {
+    S.running = false;
+    if (S.timer) { clearInterval(S.timer); S.timer = null; }
+    this.updateStatusMsg("⏸ 시뮬레이션 일시정지됨");
+  },
+
+  resetMarket: function() {
+    this.pauseSim();
+    S.t = 0;
+    S.price = INITIAL_PRICE;
+    S.pricePath = [INITIAL_PRICE];
+    S.cash = INITIAL_CASH;
+    S.shares = 0;
+    S.totalFeePaid = 0;
+    S.tradeCount = 0;
+    S.bhShares = INITIAL_CASH / INITIAL_PRICE;
+    S.bhCash = 0;
+
+    this.hud();
+    this.drawChart();
+    this.updateStatusMsg("[▶ 시작] 버튼을 눌러 시뮬레이션을 시작하세요.");
+  },
+
+  step: function() {
+    if (!S.running) return;
+    S.t++;
+    
+    var delta = (Math.random() < 0.5) ? S.stepDelta : -S.stepDelta;
+    S.price = Math.max(1, S.price + delta);
+    S.pricePath.push(S.price);
+
+    this.hud();
+    this.drawChart();
+
+    if (S.t >= S.maxT) {
+      this.pauseSim();
+      this.updateStatusMsg("🏁 시뮬레이션 완료! 나의 자산과 장기보유(B&H) 자산을 비교해 보세요.");
+    }
+  },
+
+  buy: function(qty) {
+    var cost = S.price * qty;
+    var fee = cost * S.feeRate;
+    if (S.cash < cost + fee) return;
+    
+    S.cash -= (cost + fee);
+    S.shares += qty;
+    S.totalFeePaid += fee;
+    S.tradeCount++;
+    this.hud();
+  },
+
+  sell: function(qty) {
+    if (S.shares < qty) return;
+    var revenue = S.price * qty;
+    var fee = revenue * S.feeRate;
+    
+    S.shares -= qty;
+    S.cash += (revenue - fee);
+    S.totalFeePaid += fee;
+    S.tradeCount++;
+    this.hud();
+  },
+
+  hud: function() {
+    var root = S.host.querySelector('#rw-app-root');
+    if (!root) return;
+
+    var eq = getEquity();
+    var bh = getBHEquity();
+    var marketRet = ((S.price - INITIAL_PRICE) / INITIAL_PRICE) * 100;
+    var myRet = ((eq - INITIAL_CASH) / INITIAL_CASH) * 100;
+
+    root.querySelector('#lbl-t').textContent = S.t + ' / ' + S.maxT;
+    root.querySelector('#lbl-price').textContent = S.price.toFixed(2);
+    root.querySelector('#lbl-eq').textContent = Math.round(eq).toLocaleString();
+    root.querySelector('#lbl-bh').textContent = Math.round(bh).toLocaleString();
+    root.querySelector('#lbl-fee').textContent = Math.round(S.totalFeePaid).toLocaleString();
+
+    root.querySelector('#lbl-cash').textContent = Math.round(S.cash).toLocaleString();
+    root.querySelector('#lbl-shares').textContent = S.shares;
+    root.querySelector('#lbl-trades').textContent = S.tradeCount;
+    root.querySelector('#lbl-market-return').textContent = (marketRet >= 0 ? '+' : '') + marketRet.toFixed(2) + '%';
+    root.querySelector('#lbl-my-return').textContent = (myRet >= 0 ? '+' : '') + myRet.toFixed(2) + '%';
+  },
+
+  updateStatusMsg: function(msg) {
+    var root = S.host.querySelector('#rw-app-root');
+    if (root && root.querySelector('#lbl-sim-status-msg')) {
+      root.querySelector('#lbl-sim-status-msg').textContent = msg;
+    }
+  },
+
+  drawChart: function() {
+    var root = S.host.querySelector('#rw-app-root');
+    if (!root) return;
+    var cv = root.querySelector('#rw-canvas');
+    if (!cv) return;
+    var ctx = cv.getContext('2d');
+
+    var W = cv.width = cv.clientWidth || 700;
+    var H = cv.height = 320;
+    var pad = 40;
+
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(0, 0, W, H);
+
+    var minP = Math.min.apply(null, S.pricePath);
+    var maxP = Math.max.apply(null, S.pricePath);
+    if (maxP - minP < 10) { maxP += 5; minP -= 5; }
+
+    function X(t) { return pad + (t / S.maxT) * (W - pad * 2); }
+    function Y(p) { return H - pad - ((p - minP) / (maxP - minP)) * (H - pad * 2); }
+
+    // Grid lines
+    ctx.strokeStyle = '#1e293b';
+    ctx.lineWidth = 1;
+    for (var pVal = Math.floor(minP); pVal <= Math.ceil(maxP); pVal += 5) {
+      var yG = Y(pVal);
+      ctx.beginPath();
+      ctx.moveTo(pad, yG);
+      ctx.lineTo(W - pad, yG);
+      ctx.stroke();
+    }
+
+    // Baseline E[S_t] = 100
+    var yBase = Y(INITIAL_PRICE);
+    ctx.strokeStyle = '#f59e0b';
+    ctx.setLineDash([4, 4]);
+    ctx.beginPath();
+    ctx.moveTo(pad, yBase);
+    ctx.lineTo(W - pad, yBase);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    ctx.fillStyle = '#f59e0b';
+    ctx.font = '700 11px sans-serif';
+    ctx.fillText('기댓값 E[S_t] = 100원', pad + 10, yBase - 6);
+
+    // Price Line
+    ctx.strokeStyle = '#38bdf8';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    for (var i = 0; i < S.pricePath.length; i++) {
+      var xPos = X(i);
+      var yPos = Y(S.pricePath[i]);
+      if (i === 0) ctx.moveTo(xPos, yPos);
+      else ctx.lineTo(xPos, yPos);
+    }
+    ctx.stroke();
+
+    // Latest price dot
+    if (S.pricePath.length > 0) {
+      var lastX = X(S.pricePath.length - 1);
+      var lastY = Y(S.price);
+      ctx.fillStyle = '#0ea5e9';
+      ctx.beginPath();
+      ctx.arc(lastX, lastY, 5, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  },
+
+  destroy: function() {
+    this.pauseSim();
+    if (S.host) S.host.innerHTML = '';
+    S.host = null;
+  }
+};
+
+function goHome() {
+  RandomWalkStockApp.pauseSim();
+  if (S.host) S.host.innerHTML = '';
+  if (typeof window.LegacyBridge !== 'undefined' && typeof window.LegacyBridge.backHome === 'function') {
+    window.LegacyBridge.backHome();
+  } else if (typeof window.MathLabGames !== 'undefined' && window.MathLabGames.goHome) {
+    window.MathLabGames.goHome();
+  } else {
+    window.location.reload();
+  }
+}
+
+function reg() {
+  if (typeof window.MathLabGames === 'undefined' || typeof window.MathLabGames.register !== 'function') return;
+  try {
+    if (window.MathLabGames.get && window.MathLabGames.get(APP_ID)) return;
+    window.MathLabGames.register({
+      id: APP_ID,
+      title: APP_TITLE,
+      icon: ICON,
+      sourceType: 'new',
+      players: '1인',
+      isMultiplayer: false,
+      mount: function(c, x) { RandomWalkStockApp.mount(c, x); },
+      reset: function() { RandomWalkStockApp.resetMarket(); },
+      destroy: function() { RandomWalkStockApp.destroy(); },
+      goHome: function() { goHome(); }
+    });
+  } catch (e) {
+    console.warn(APP_ID + ' reg', e);
+  }
+}
+
+reg();
+window.addEventListener('DOMContentLoaded', reg);
+setTimeout(reg, 100);
+setTimeout(reg, 500);
+
+window.RandomWalkStock = {
+  mount: function(c) { RandomWalkStockApp.mount(c); },
+  resetGame: function() { RandomWalkStockApp.resetMarket(); },
+  destroy: function() { RandomWalkStockApp.destroy(); },
+  goHome: goHome
+};
+
+window.initRandomWalkStock = function() {
+  reg();
+  try {
+    if (window.LegacyBridge) {
+      window.LegacyBridge.hideAllLegacySections();
+      if (window.LegacyBridge.showNewRoot) window.LegacyBridge.showNewRoot();
+    }
+  } catch (e) {}
+  if (window.MathLabGames && window.MathLabGames.mount) {
+    try { window.MathLabGames.mount(APP_ID); return; } catch (e) {}
+  }
+  RandomWalkStockApp.mount(document.getElementById('mathlab-view'));
+};
+
+window.launchRandomWalkStock = window.initRandomWalkStock;
+})();
+</script>

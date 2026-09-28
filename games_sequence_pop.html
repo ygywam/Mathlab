@@ -1,0 +1,755 @@
+<style>
+  .game-sequence-pop {
+    width: 100%; min-height: 100%; padding: 24px; box-sizing: border-box;
+    color: #1f2937; background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+    border-radius: 24px; font-family: inherit; user-select: none;
+  }
+  .game-sequence-pop * { box-sizing: border-box; }
+  
+  .game-sequence-pop .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
+  .game-sequence-pop .title-area h2 { margin: 0 0 8px; font-size: clamp(1.6rem, 3vw, 2.2rem); color: #166534; }
+  .game-sequence-pop .title-area p { margin: 0; color: #15803d; font-size: 1.05rem; }
+  
+  .game-sequence-pop .stats { display: flex; gap: 16px; font-weight: 600; font-size: 1.1rem; }
+  .game-sequence-pop .score-val { color: #1d4ed8; font-size: 1.3rem; }
+  .game-sequence-pop .combo-val { color: #d97706; font-size: 1.3rem; }
+  
+  .game-sequence-pop .main-layout { display: flex; gap: 24px; flex-wrap: wrap; }
+  .game-sequence-pop .game-area { flex: 1; min-width: 320px; display: flex; flex-direction: column; gap: 16px; }
+  .game-sequence-pop .card { background: #fff; border-radius: 16px; padding: 24px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); position: relative; }
+  
+  .game-sequence-pop .time-bar-container { width: 100%; height: 24px; background: #e5e7eb; border-radius: 12px; overflow: hidden; position: relative; margin-bottom: 16px; }
+  .game-sequence-pop .sp-time-fill { height: 100%; width: 50%; background: #3b82f6; transition: width 0.1s linear, background-color 0.3s; }
+  .game-sequence-pop .sp-time-text { position: absolute; width: 100%; text-align: center; top: 0; left: 0; line-height: 24px; font-weight: bold; color: #fff; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); font-size: 0.95rem; }
+  
+  .game-sequence-pop .board-wrap {
+    width: 100%; max-width: 400px; margin: 0 auto; aspect-ratio: 1/1;
+    background: #f1f5f9; border-radius: 12px; padding: 8px;
+    touch-action: none; position: relative;
+  }
+  
+  .game-sequence-pop .board-grid {
+    display: grid; grid-template-columns: repeat(6, 1fr); grid-template-rows: repeat(6, 1fr);
+    gap: 6px; width: 100%; height: 100%;
+  }
+  
+  .game-sequence-pop .sp-cell {
+    background: #fff; border-radius: 8px; border: 2px solid #cbd5e1;
+    display: flex; justify-content: center; align-items: center;
+    font-size: clamp(1.5rem, 6vw, 2rem); font-weight: bold; color: #334155;
+    cursor: pointer; transition: transform 0.1s, border-color 0.1s, background-color 0.1s;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  }
+  
+  .game-sequence-pop .sp-cell.selected {
+    background: #dbeafe; border-color: #3b82f6; color: #1d4ed8;
+    transform: scale(0.95); box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  .game-sequence-pop .sp-cell.popping {
+    animation: popAnim 0.3s forwards;
+  }
+  
+  .game-sequence-pop .sp-cell.error {
+    background: #fee2e2; border-color: #ef4444; color: #b91c1c;
+    animation: shakeAnim 0.3s;
+  }
+  
+  @keyframes popAnim { 50% { transform: scale(1.2); opacity: 0.5; } 100% { transform: scale(0); opacity: 0; } }
+  @keyframes shakeAnim { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+  
+  .game-sequence-pop .feedback-text {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    font-size: 2rem; font-weight: bold; color: #fff; text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+    pointer-events: none; opacity: 0; z-index: 10; white-space: nowrap;
+  }
+  
+  .game-sequence-pop .feedback-text.show {
+    animation: floatUp 0.8s ease-out forwards;
+  }
+  
+  @keyframes floatUp { 0% { opacity: 0; transform: translate(-50%, -30%); } 20% { opacity: 1; transform: translate(-50%, -50%); } 80% { opacity: 1; transform: translate(-50%, -70%); } 100% { opacity: 0; transform: translate(-50%, -80%); } }
+  
+  .game-sequence-pop .current-path-info {
+    text-align: center; font-size: 1.2rem; font-weight: bold; color: #475569; min-height: 2rem; margin-top: 12px;
+  }
+  
+  .game-sequence-pop .controls { display: flex; justify-content: center; gap: 12px; margin-top: 16px; }
+  
+  .game-sequence-pop .btn-primary { background: #16a34a; color: white; border: none; padding: 12px 24px; font-size: 1.1rem; border-radius: 8px; cursor: pointer; font-weight: bold; transition: background 0.2s; }
+  .game-sequence-pop .btn-primary:hover:not(:disabled) { background: #15803d; }
+  .game-sequence-pop .btn-primary:disabled { background: #86efac; cursor: not-allowed; }
+  
+  .game-sequence-pop .btn-secondary { background: #e5e7eb; color: #374151; border: none; padding: 12px 20px; font-size: 1rem; border-radius: 8px; cursor: pointer; font-weight: 600; }
+  .game-sequence-pop .btn-secondary:hover:not(:disabled) { background: #d1d5db; }
+  
+  .game-sequence-pop .sidebar { width: 320px; display: flex; flex-direction: column; gap: 16px; flex-shrink: 0; }
+  @media (max-width: 768px) { .game-sequence-pop .sidebar { width: 100%; } }
+  
+  .game-sequence-pop .guide-box { background: #f8fafc; padding: 16px; border-radius: 12px; border: 1px solid #e2e8f0; font-size: 0.95rem; line-height: 1.5; color: #475569; }
+</style>
+<script>
+(function() {
+  const SequencePopGame = {
+    id: 'sequence-pop',
+    container: null,
+    timers: [],
+    timerInterval: null,
+    isDragging: false,
+    
+    state: {
+      board: [],
+      selectedPath: [],
+      timeLeft: 15, // Starts with 15s
+      score: 0,
+      combo: 0,
+      maxCombo: 0,
+      feverCount: 0,
+      superFeverCount: 0,
+      maxLength: 0,
+      correctCount: 0,
+      wrongCount: 0,
+      isGameOver: true,
+      isAnimating: false
+    },
+
+    mount(container, context = {}) {
+      let host = null;
+      if (typeof container === 'string') host = document.querySelector(container);
+      else if (container instanceof HTMLElement) host = container;
+      
+      if (!host) host = window.MathLabUtils?.getMountContainer ? window.MathLabUtils.getMountContainer(container) : document.getElementById('mathlab-view');
+      if (!host || !(host instanceof HTMLElement)) host = document.getElementById('new-root') || document.getElementById('game-container') || document.getElementById('mathlab-view');
+
+      if (!host || !(host instanceof HTMLElement) || host === document.body) {
+        let createdHost = document.getElementById('sp-force-host');
+        if (!createdHost) {
+          createdHost = document.createElement('div');
+          createdHost.id = 'sp-force-host';
+          document.body.appendChild(createdHost);
+        }
+        host = createdHost;
+      }
+
+      const footerEl = document.querySelector('footer, #footer, .app-footer') || 
+                       Array.from(document.querySelectorAll('div, p, span')).find(el => el.textContent && el.textContent.includes('2026 기록조율사'));
+      if (footerEl && host && typeof host.compareDocumentPosition === 'function' && (host.compareDocumentPosition(footerEl) & Node.DOCUMENT_POSITION_PRECEDING)) {
+        footerEl.parentNode.insertBefore(host, footerEl);
+      }
+
+      host.style.display = '';
+      host.style.visibility = 'visible';
+      host.style.opacity = '1';
+
+      let parent = host.parentElement;
+      while (parent && parent !== document.body && parent !== document.documentElement) {
+        if (parent.style && parent.style.display === 'none') parent.style.display = 'block';
+        if (parent.style && parent.style.visibility === 'hidden') parent.style.visibility = 'visible';
+        parent = parent.parentElement;
+      }
+
+      document.querySelectorAll('header, .navbar, #app-header, .top-bar, #floating-home-btn, .floating-home, [id*="home"], [class*="floating"]').forEach(el => {
+        if (el && el.style && el.style.display === 'none') el.style.display = '';
+      });
+
+      this.container = host;
+      this.renderInit();
+      this.loadLeaderboard();
+    },
+    
+    renderInit() {
+      const html = `
+        <div class="game-sequence-pop">
+          
+          <!-- 모달 오버레이 구조 -->
+          <div id="sp-guide-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9999; justify-content:center; align-items:center;">
+            <div style="background:#fff; width:90%; max-width:500px; border-radius:16px; padding:24px; box-shadow:0 10px 25px rgba(0,0,0,0.2);">
+              <h3 style="margin-top:0; color:#1e293b; border-bottom:1px solid #e2e8f0; padding-bottom:12px;">📖 수열크러시 게임 방법</h3>
+              <div style="color:#475569; font-size:1rem; line-height:1.6; margin-bottom:20px;">
+                1. 상/하/좌/우/대각선으로 인접한 칸을 드래그해 <strong>3개 이상의 등차/등비수열</strong>을 만드세요.<br>
+                2. 똑같은 숫자 반복(예: 2-2-2)은 인정되지 않습니다.<br>
+                3. <strong>4개 연결</strong> 시 피버(점수 2배), <strong>5개 이상 연결</strong> 시 슈퍼 피버(점수 3배)가 발동됩니다.<br>
+                4. 정답 시 시간이 늘어나며(+2~5초), 오답 시 페널티(-3초)가 있습니다.
+              </div>
+              <div style="text-align:right;">
+                <button id="sp-close-guide" style="background:#16a34a; color:#fff; border:none; padding:10px 20px; border-radius:8px; cursor:pointer; font-weight:bold;">확인</button>
+              </div>
+            </div>
+          </div>
+          <div class="header">
+            <div class="title-area">
+              <h2>🎈 수열 크러시</h2>
+              <p>등차수열 규칙을 찾아 숫자를 연결하고 터뜨리세요!</p>
+            </div>
+            <div class="stats">
+              <button class="btn-secondary" id="sp-btn-guide" style="margin-right:8px; background:#e0e7ff; color:#4f46e5;">📖 게임 방법</button>
+              <div class="score-val">점수: 0점</div>
+              <div class="combo-val">콤보: 0연속</div>
+            </div>
+          </div>
+          
+          <div class="main-layout">
+            <div class="game-area">
+              <div class="card">
+                <div class="time-bar-container">
+                  <div class="sp-time-fill"></div>
+                  <div class="sp-time-text">60.0초</div>
+                </div>
+                
+                <div class="board-wrap" id="sp-board-wrap">
+                  <div class="board-grid" id="sp-grid"></div>
+                  <div class="feedback-text" id="sp-feedback"></div>
+                  <div id="sp-overlay" style="position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.7); display:flex; justify-content:center; align-items:center; border-radius:12px; z-index:20;">
+                    <button class="btn-primary" id="sp-start-btn" style="font-size:1.5rem; padding:16px 32px;">게임 시작</button>
+                  </div>
+                </div>
+                
+                <div class="current-path-info" id="sp-path-info">시작을 눌러주세요</div>
+                
+                <div class="controls">
+                  <button class="btn-secondary" id="sp-btn-reroll" title="시간 소모 없이 보드 숫자들을 다시 섞습니다.">🎲 보드 새로고침</button>
+                  <button class="btn-secondary" id="sp-btn-home" style="background:#64748b; color:#fff;">🏠 홈으로</button>
+                </div>
+              </div>
+              
+              <div class="guide-box">
+                <strong style="color:#1e293b; font-size:1.05rem;">📖 게임 규칙</strong><br>
+                1. 상/하/좌/우/대각선으로 인접한 칸을 드래그해 <strong>3개 이상의 등차수열</strong>을 만드세요.<br>
+                2. 공차가 일정한 등차수열(예: 1-2-3, 9-7-5)과 공비가 일정한 등비수열(예: 2-4-8) 모두 가능합니다.<br>
+                3. 똑같은 숫자 반복(예: 2-2-2)은 인정되지 않습니다.<br>
+                4. <strong>4개 연결</strong> 시 피버(점수 2배), <strong>5개 이상 연결</strong> 시 슈퍼 피버(점수 3배)가 발동됩니다.<br>
+                5. 정답 시 시간이 늘어나며(+2~5초), 오답 시 페널티(-3초)가 있습니다.
+              </div>
+            </div>
+            
+            <div class="sidebar">
+              <div class="card" style="padding:16px;">
+                <h3 style="margin-top:0; font-size:1.1rem; border-bottom:1px solid #e5e7eb; padding-bottom:12px; color:#1f2937;">🏆 명예의 전당</h3>
+                <div id="sp-leaderboard-container">
+                  <p style="color:#6b7280; font-size:0.95rem; text-align:center; margin:16px 0;">로딩 중...</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      this.container.innerHTML = html;
+      this.bindInitEvents();
+    },
+    
+    bindInitEvents() {
+      const guideBtn = this.container.querySelector('#sp-btn-guide');
+      const closeGuideBtn = this.container.querySelector('#sp-close-guide');
+      const guideModal = this.container.querySelector('#sp-guide-modal');
+      if (guideBtn && guideModal) guideBtn.addEventListener('click', () => guideModal.style.display = 'flex');
+      if (closeGuideBtn && guideModal) closeGuideBtn.addEventListener('click', () => guideModal.style.display = 'none');
+      
+      const startBtn = this.container.querySelector('#sp-start-btn');
+      if (startBtn) startBtn.addEventListener('click', () => this.startGame());
+      
+      const rerollBtn = this.container.querySelector('#sp-btn-reroll');
+      if (rerollBtn) rerollBtn.addEventListener('click', () => {
+        if (!this.state.isGameOver) this.rerollBoard();
+      });
+
+      const homeBtn = this.container.querySelector('#sp-btn-home');
+      if (homeBtn) homeBtn.addEventListener('click', () => {
+        window.MathLabUtils?.goHome ? window.MathLabUtils.goHome() : (window.LegacyBridge && window.LegacyBridge.backHome ? window.LegacyBridge.backHome() : location.reload());
+      });
+      
+      const wrap = this.container.querySelector('#sp-board-wrap');
+      if (!wrap) return;
+      
+      // Pointer events for drag (mouse + touch)
+      wrap.addEventListener('pointerdown', e => this.handlePointerDown(e));
+      wrap.addEventListener('pointermove', e => this.handlePointerMove(e));
+      window.addEventListener('pointerup', e => this.handlePointerUp(e)); // Window to catch release outside
+    },
+
+    startGame() {
+      this.container.querySelector('#sp-overlay').style.display = 'none';
+      this.reset();
+    },
+
+    reset() {
+      if (window.MathLabCleanup && typeof window.MathLabCleanup.clearTimers === 'function') {
+        window.MathLabCleanup.clearTimers(this.timers);
+      }
+      this.timers.forEach(clearTimeout);
+      clearInterval(this.timerInterval);
+      this.timers = [];
+      this.isDragging = false;
+      
+      this.state = {
+        board: this.generateBoard(),
+        selectedPath: [],
+        timeLeft: 60,
+        score: 0,
+        combo: 0,
+        maxCombo: 0,
+        feverCount: 0,
+        superFeverCount: 0,
+        maxLength: 0,
+        correctCount: 0,
+        wrongCount: 0,
+        isGameOver: false,
+        isAnimating: false
+      };
+      
+      this.renderBoard();
+      this.updateStats();
+      this.startTimer();
+    },
+    
+    generateBoard() {
+      const b = [];
+      for(let i=0; i<6; i++) {
+        const row = [];
+        for(let j=0; j<6; j++) row.push(Math.floor(Math.random() * 15) + 1);
+        b.push(row);
+      }
+      return b;
+    },
+    
+    rerollBoard() {
+      this.state.board = this.generateBoard();
+      this.state.selectedPath = [];
+      this.renderBoard();
+      this.updatePathInfo();
+    },
+
+    renderBoard() {
+      const grid = this.container.querySelector('#sp-grid');
+      if (!grid) return;
+      
+      let html = '';
+      for (let r=0; r<6; r++) {
+        for (let c=0; c<6; c++) {
+          const val = this.state.board[r][c];
+          if (val === null) {
+            html += `<div class="sp-cell" style="background:transparent; border-color:transparent;"></div>`;
+            continue;
+          }
+          
+          const id = `${r},${c}`;
+          const idxInPath = this.state.selectedPath.findIndex(p => p.id === id);
+          const isSelected = idxInPath !== -1;
+          
+          html += `
+            <div class="sp-cell ${isSelected ? 'selected' : ''}" data-r="${r}" data-c="${c}" data-val="${val}">
+              ${val}
+            </div>
+          `;
+        }
+      }
+      grid.innerHTML = html;
+      this.updatePathInfo();
+    },
+    
+    updatePathInfo() {
+      const info = this.container.querySelector('#sp-path-info');
+      if (!info) return;
+      if (this.state.selectedPath.length === 0) {
+        info.textContent = '숫자를 드래그하여 연결하세요';
+      } else {
+        const str = this.state.selectedPath.map(p => p.val).join(' ➔ ');
+        info.textContent = str;
+      }
+    },
+
+    handlePointerDown(e) {
+      if (this.state.isGameOver || this.state.isAnimating) return;
+      const cell = e.target.closest('.sp-cell');
+      if (cell && cell.dataset.val) {
+        this.isDragging = true;
+        this.addToPath(cell);
+      }
+      e.preventDefault(); // Prevents touch scroll
+    },
+
+    handlePointerMove(e) {
+      if (!this.isDragging || this.state.isGameOver || this.state.isAnimating) return;
+      e.preventDefault();
+      
+      const touch = e.touches ? e.touches[0] : e;
+      const el = document.elementFromPoint(touch.clientX, touch.clientY);
+      if (!el) return;
+      const cell = el.closest('.sp-cell');
+      
+      if (cell && cell.dataset.val) {
+        // 대각선 슬라이드 시 모서리를 스치며 엉뚱한 칸이 선택되는 현상 방지 (터치/마우스 공통)
+        const rect = cell.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        const dist = Math.hypot(touch.clientX - centerX, touch.clientY - centerY);
+        
+        // 칸의 내접원(반지름 50%) 안쪽으로 포인터가 들어왔을 때만 선택 인정
+        if (dist < Math.min(rect.width, rect.height) * 0.5) {
+          this.addToPath(cell);
+        }
+      }
+    },
+
+    handlePointerUp(e) {
+      if (!this.isDragging) return;
+      this.isDragging = false;
+      this.evaluatePath();
+    },
+    
+    addToPath(cell) {
+      const r = parseInt(cell.dataset.r);
+      const c = parseInt(cell.dataset.c);
+      const id = `${r},${c}`;
+      const val = parseInt(cell.dataset.val);
+      
+      if (this.state.selectedPath.length === 0) {
+        this.state.selectedPath.push({ r, c, id, val });
+        this.renderBoard();
+        return;
+      }
+      
+      const last = this.state.selectedPath[this.state.selectedPath.length - 1];
+      
+      // Allow backtracking to immediate previous tile
+      if (this.state.selectedPath.length >= 2) {
+        const prev = this.state.selectedPath[this.state.selectedPath.length - 2];
+        if (prev.id === id) {
+          this.state.selectedPath.pop();
+          this.renderBoard();
+          return;
+        }
+      }
+      
+      // Ignore if already in path
+      if (this.state.selectedPath.some(p => p.id === id)) return;
+      
+      // Check adjacency
+      const dr = Math.abs(last.r - r);
+      const dc = Math.abs(last.c - c);
+      if (dr <= 1 && dc <= 1 && (dr !== 0 || dc !== 0)) {
+        this.state.selectedPath.push({ r, c, id, val });
+        this.renderBoard();
+      }
+    },
+    
+    isValidSequence(path) {
+      if (path.length < 3) return false;
+      
+      let isArith = true;
+      let diff = path[1].val - path[0].val;
+      if (diff === 0) isArith = false; 
+      for (let i = 2; i < path.length; i++) {
+        if (path[i].val - path[i-1].val !== diff) {
+          isArith = false;
+          break;
+        }
+      }
+      if (isArith) return { ok: true, type: 'arithmetic', val: diff };
+      
+      let isGeom = true;
+      let ratio = path[1].val / path[0].val;
+      if (ratio === 1) isGeom = false;
+      for (let i = 2; i < path.length; i++) {
+        if (Math.abs(path[i].val / path[i-1].val - ratio) > 0.0001) {
+          isGeom = false;
+          break;
+        }
+      }
+      if (isGeom) return { ok: true, type: 'geometric', val: ratio };
+      
+      return false;
+    },
+    
+    evaluatePath() {
+      const path = this.state.selectedPath;
+      if (path.length < 3) {
+        this.state.selectedPath = [];
+        this.renderBoard();
+        return;
+      }
+      
+      const res = this.isValidSequence(path);
+      if (res.ok) {
+        this.handlePop(path, res.type, res.val);
+      } else {
+        this.handleMiss();
+      }
+    },
+    
+    handlePop(path, type, val) {
+      this.state.isAnimating = true;
+      
+      let multiplier = 1;
+      let feverType = '';
+      if (path.length >= 5) { multiplier = 3; feverType = 'SUPER FEVER! ×3'; this.state.superFeverCount++; }
+      else if (path.length === 4) { multiplier = 2; feverType = 'FEVER! ×2'; this.state.feverCount++; }
+      
+      this.state.combo++;
+      this.state.maxCombo = Math.max(this.state.maxCombo, this.state.combo);
+      this.state.maxLength = Math.max(this.state.maxLength, path.length);
+      this.state.correctCount++;
+      
+      const baseScore = path.length * 50;
+      const finalScore = baseScore * multiplier + (this.state.combo * 10);
+      this.state.score += finalScore;
+      
+      let timeBonus = 2;
+      if (path.length === 4) timeBonus = 3;
+      if (path.length >= 5) timeBonus = 5;
+      this.state.timeLeft = Math.min(60, this.state.timeLeft + timeBonus);
+      
+      path.forEach(p => {
+        const cell = this.container.querySelector(`.sp-cell[data-r="${p.r}"][data-c="${p.c}"]`);
+        if (cell) cell.classList.add('popping');
+      });
+      
+      let msg = '';
+      if (type === 'arithmetic') {
+        msg = `공차 ${val > 0 ? '+'+val : val} 등차수열!`;
+      } else {
+        let ratioStr = val;
+        if (val === 0.5) ratioStr = '1/2';
+        else if (Math.abs(val - 1/3) < 0.001) ratioStr = '1/3';
+        else if (val === 1.5) ratioStr = '3/2';
+        else if (Math.abs(val - 2/3) < 0.001) ratioStr = '2/3';
+        msg = `공비 ×${ratioStr} 등비수열!`;
+      }
+      
+      this.showFeedback(feverType || msg, feverType ? '#a855f7' : '#16a34a');
+      
+      setTimeout(() => {
+        path.forEach(p => { this.state.board[p.r][p.c] = null; });
+        this.state.selectedPath = [];
+        this.applyGravity();
+      }, 300);
+    },
+    
+    handleMiss() {
+      this.state.combo = 0;
+      this.state.wrongCount++;
+      this.state.score = Math.max(0, this.state.score - 50);
+      this.state.timeLeft = Math.max(0, this.state.timeLeft - 3);
+      
+      this.showFeedback('수열 규칙 아님!', '#ef4444');
+      
+      const cells = this.container.querySelectorAll('.sp-cell.selected');
+      cells.forEach(c => c.classList.add('error'));
+      
+      this.state.isAnimating = true;
+      setTimeout(() => {
+        this.state.selectedPath = [];
+        this.state.isAnimating = false;
+        this.renderBoard();
+        this.updateStats();
+        if (this.state.timeLeft <= 0) this.gameOver();
+      }, 300);
+    },
+    
+    applyGravity() {
+      for (let c = 0; c < 6; c++) {
+        let emptyRow = 5;
+        for (let r = 5; r >= 0; r--) {
+          if (this.state.board[r][c] !== null) {
+            this.state.board[emptyRow][c] = this.state.board[r][c];
+            if (emptyRow !== r) this.state.board[r][c] = null;
+            emptyRow--;
+          }
+        }
+        for (let r = emptyRow; r >= 0; r--) {
+          this.state.board[r][c] = Math.floor(Math.random() * 15) + 1;
+        }
+      }
+      
+      this.renderBoard();
+      this.updateStats();
+      setTimeout(() => {
+        this.state.isAnimating = false;
+      }, 100);
+    },
+    
+    showFeedback(text, color) {
+      const fb = this.container.querySelector('#sp-feedback');
+      if (!fb) return;
+      fb.textContent = text;
+      fb.style.color = color;
+      fb.classList.remove('show');
+      void fb.offsetWidth; // trigger reflow
+      fb.classList.add('show');
+    },
+
+    startTimer() {
+      this.lastTick = Date.now();
+      this.timerInterval = setInterval(() => {
+        if (this.state.isGameOver) return;
+        const now = Date.now();
+        const dt = (now - this.lastTick) / 1000;
+        this.lastTick = now;
+        
+        this.state.timeLeft -= dt;
+        if (this.state.timeLeft <= 0) {
+          this.state.timeLeft = 0;
+          this.updateTimeBar();
+          this.gameOver();
+        } else {
+          this.updateTimeBar();
+        }
+      }, 50);
+    },
+    
+    updateTimeBar() {
+      const bar = this.container.querySelector('.sp-time-fill');
+      const text = this.container.querySelector('.sp-time-text');
+      if (bar && text) {
+        const pct = (this.state.timeLeft / 60) * 100;
+        bar.style.width = `${Math.min(100, Math.max(0, pct))}%`;
+        text.textContent = `${this.state.timeLeft.toFixed(1)}초`;
+        bar.style.background = this.state.timeLeft <= 10 ? '#ef4444' : '#3b82f6';
+      }
+    },
+    
+    updateStats() {
+      const root = this.container.querySelector('.game-sequence-pop');
+      if (!root) return;
+      root.querySelector('.score-val').textContent = `점수: ${this.state.score}점`;
+      root.querySelector('.combo-val').textContent = `콤보: ${this.state.combo}연속`;
+      this.updateTimeBar();
+    },
+
+    gameOver() {
+      this.state.isGameOver = true;
+      clearInterval(this.timerInterval);
+      this.state.selectedPath = [];
+      this.renderBoard();
+      
+      const overlay = this.container.querySelector('#sp-overlay');
+      if (overlay) {
+        overlay.style.display = 'flex';
+        overlay.innerHTML = `
+          <div style="text-align:center;">
+            <h2 style="color:#b91c1c; font-size:2rem; margin:0 0 16px;">TIME OVER!</h2>
+            <p style="font-size:1.2rem; margin-bottom:20px;">최종 점수: <strong>${this.state.score}점</strong></p>
+            <input type="text" id="sp-nickname" maxlength="12" placeholder="명예의 전당 닉네임" style="padding:8px; border-radius:8px; border:1px solid #cbd5e1; margin-bottom:12px; width:100%; text-align:center; font-family:inherit; font-size:1rem;">
+            <button class="btn-primary" id="sp-save-btn" style="background:#0ea5e9; margin-bottom:8px;">🏆 랭킹 등록</button>
+            <button class="btn-primary" id="sp-restart-btn" style="background:#64748b;">다시 하기</button>
+          </div>
+        `;
+        overlay.querySelector('#sp-restart-btn').addEventListener('click', () => this.startGame());
+        const saveBtn = overlay.querySelector('#sp-save-btn');
+        const nickInput = overlay.querySelector('#sp-nickname');
+        saveBtn.addEventListener('click', () => {
+          let nickname = nickInput.value.trim() || '익명의 도전자';
+          if (typeof window.submitRanking === 'function') {
+            window.submitRanking('수열크러시', this.state.score, true, { value: nickname, trim: () => nickname }, 'sp-leaderboard-container');
+          }
+          if (typeof window.MathLabToast !== 'undefined' && window.MathLabToast.show) {
+            window.MathLabToast.show('명예의 전당에 기록되었습니다!', 'ok');
+          } else if (typeof toast === 'function') {
+            toast('명예의 전당 기록 완료!', 'ok');
+          }
+          saveBtn.disabled = true;
+          saveBtn.textContent = '등록 완료';
+          saveBtn.style.opacity = '0.5';
+          nickInput.disabled = true;
+          this.loadLeaderboard();
+        });
+      }
+    },
+    
+    loadLeaderboard() {
+      try {
+        if (typeof window.loadGameLeaderboard === 'function') {
+          window.loadGameLeaderboard('수열크러시', true, 'sp-leaderboard-container');
+          return;
+        }
+        const lbContainer = this.container.querySelector('#sp-leaderboard-container');
+        if (lbContainer) {
+          lbContainer.innerHTML = '<p style="color:#6b7280; font-size:0.9rem; text-align:center;">명예의 전당 오프라인</p>';
+        }
+      } catch (e) {
+        console.error('[SequencePop] Leaderboard error:', e);
+      }
+    },
+
+    destroy() {
+      if (window.MathLabCleanup && typeof window.MathLabCleanup.clearTimers === 'function') {
+        window.MathLabCleanup.clearTimers(this.timers);
+      }
+      this.timers.forEach(clearTimeout);
+      clearInterval(this.timerInterval);
+      this.timers = [];
+      window.removeEventListener('pointerup', this.handlePointerUp);
+      if (this.container) this.container.innerHTML = '';
+    }
+  };
+
+    const gameMeta = {
+    id: 'sequence-pop',
+    title: '수열크러시',
+    icon: '💥',
+    description: '등차수열 규칙을 찾아 숫자를 연결하고 터뜨리는 액션 퍼즐',
+    appType: 'game',
+    topApp: '수학 게임',
+    activityType: ['게임', '퍼즐', '문제풀이'],
+    schoolLevel: ['middle', 'high'],
+    gradeBand: ['중2', '중3', '고1'],
+    curriculumArea: ['규칙성', '함수', '수와 연산'],
+    unit: ['수열', '규칙 찾기'],
+    concepts: ['등차수열', '등비수열'],
+    category: '수열과 규칙',
+    level: '중/고',
+    concept: '등차수열, 등비수열, 규칙 찾기',
+    classroomUse: ['개인전', '정리 활동', '도입 활동'],
+    difficulty: '보통',
+    duration: '5분',
+    renderMode: 'DOM',
+    sourceType: 'new',
+    playModes: ['single'],
+    tags: ['수열', '패턴', '퍼즐', '액션', '등차수열', '등비수열'],
+    keywords: ['수열', '등차수열', '등비수열'],
+    mount(container, context) {
+      SequencePopGame.mount(container, context);
+    },
+    reset() {
+      SequencePopGame.reset();
+    },
+    destroy() {
+      SequencePopGame.destroy();
+    },
+    goHome() {
+      if (window.LegacyBridge && typeof window.LegacyBridge.backHome === 'function') {
+        window.LegacyBridge.backHome();
+      }
+    }
+  };
+
+  function registerSequencePop() {
+    if (typeof window.MathLabGames !== 'undefined' && typeof window.MathLabGames.register === 'function') {
+      if (!window.MathLabGames.get('sequence-pop')) {
+        try {
+          window.MathLabGames.register(gameMeta);
+        } catch (e) { console.warn('sequence-pop 방어적 등록:', e); }
+      }
+    }
+  }
+
+  registerSequencePop();
+  window.addEventListener('DOMContentLoaded', registerSequencePop);
+  setTimeout(registerSequencePop, 100);
+  setTimeout(registerSequencePop, 500);
+
+  window.initSequencePopGame = function() {
+    registerSequencePop();
+    if (window.LegacyBridge && typeof window.LegacyBridge.hideAllLegacySections === 'function') {
+      window.LegacyBridge.hideAllLegacySections();
+      window.LegacyBridge.showNewRoot();
+    }
+    if (typeof window.MathLabGames !== 'undefined' && typeof window.MathLabGames.mount === 'function') {
+      try { window.MathLabGames.mount('sequence-pop'); return; } catch(e) {}
+    }
+    const targetEl = document.getElementById('mathlab-view') || document.getElementById('new-root') || document.getElementById('game-container');
+    SequencePopGame.mount(targetEl);
+  };
+
+  window.launchSequencePop = window.initSequencePopGame;
+})();
+</script>

@@ -1,0 +1,1047 @@
+<!-- 연산자 블라인드 스나이퍼 (Operator Blind Sniper) Gen-3 표준 완결판 -->
+<style>
+  .game-operator-sniper {
+    width: 100%;
+    min-height: 100%;
+    padding: 24px;
+    box-sizing: border-box;
+    color: #f8fafc;
+    background: linear-gradient(135deg, #090d16 0%, #111827 50%, #064e3b 100%);
+    border-radius: 24px;
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+    user-select: none;
+    -webkit-user-select: none;
+    border: 2px solid #10b981;
+    box-shadow: inset 0 0 50px rgba(0,0,0,0.8);
+  }
+
+  .game-operator-sniper * { box-sizing: border-box; }
+  
+  .game-operator-sniper .os-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
+  .game-operator-sniper .title-area h2 { margin: 0 0 6px; font-size: clamp(1.6rem, 3vw, 2.3rem); color: #34d399; font-weight: 900; display: flex; align-items: center; gap: 10px; text-shadow: 0 0 15px rgba(52, 211, 153, 0.5); }
+  .game-operator-sniper .title-area p { margin: 0; color: #a7f3d0; font-size: 1.05rem; font-weight: 600; opacity: 0.9; }
+  .game-operator-sniper .stats-bar { display: flex; gap: 12px; font-weight: 800; font-size: 1.05rem; flex-wrap: wrap; align-items: center; }
+  
+  .game-operator-sniper .stat-badge { background: #0f172a; padding: 8px 16px; border-radius: 14px; box-shadow: 0 4px 8px rgba(0,0,0,0.4); border: 2px solid #059669; color: #a7f3d0; display: flex; align-items: center; gap: 6px; }
+  .game-operator-sniper .stat-badge.score { color: #fbbf24; border-color: #d97706; background: #1e1b18; }
+  .game-operator-sniper .stat-badge.combo { color: #34d399; border-color: #10b981; background: #064e3b; }
+  .game-operator-sniper .stat-badge.life { color: #fca5a5; border-color: #ef4444; background: #451a1a; }
+  .game-operator-sniper .stat-badge.timer { color: #fecaca; border-color: #f87171; background: #4c1d1d; animation: pulseTimer 1s infinite; display: none; }
+  @keyframes pulseTimer { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+  
+  @keyframes howtoPulse {
+    0% { transform: scale(1); box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3); }
+    50% { transform: scale(1.05); box-shadow: 0 6px 18px rgba(16, 185, 129, 0.6); }
+    100% { transform: scale(1); box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3); }
+  }
+  .game-operator-sniper .btn-howto {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 14px;
+    font-size: 1.05rem;
+    font-weight: 900;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+    animation: howtoPulse 2.5s infinite;
+  }
+  .game-operator-sniper .btn-howto:hover {
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 8px 20px rgba(16, 185, 129, 0.5);
+    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    animation: none;
+  }
+
+  .game-operator-sniper .main-layout { display: flex; gap: 24px; flex-wrap: wrap; }
+  
+  .game-operator-sniper .game-area { flex: 1; min-width: 320px; display: flex; flex-direction: column; gap: 20px; }
+  .game-operator-sniper .card { background: #0f172a; border-radius: 20px; padding: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); border: 2px solid #065f46; }
+  
+  /* 조준경 스나이퍼 뷰어 */
+  .game-operator-sniper .scope-box {
+    background: radial-gradient(circle at center, #064e3b 0%, #022c22 60%, #090d16 100%);
+    border: 4px solid #10b981;
+    border-radius: 28px;
+    padding: 34px 20px;
+    text-align: center;
+    position: relative;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.6), inset 0 0 30px rgba(16, 185, 129, 0.2);
+    overflow: hidden;
+  }
+  
+  /* 조준선 십자가 레이어 */
+  .game-operator-sniper .scope-box::before {
+    content: ""; position: absolute; top: 50%; left: 0; width: 100%; height: 1px; background: rgba(52, 211, 153, 0.15); pointer-events: none;
+  }
+  .game-operator-sniper .scope-box::after {
+    content: ""; position: absolute; top: 0; left: 50%; width: 1px; height: 100%; background: rgba(52, 211, 153, 0.15); pointer-events: none;
+  }
+
+  .game-operator-sniper .mission-tag { font-size: 0.9rem; font-weight: 800; background: #047857; color: #ecfdf5; padding: 6px 18px; border-radius: 20px; display: inline-block; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; border: 1px solid #34d399; position: relative; z-index: 2; }
+  
+  /* 수식 타겟 디스플레이 */
+  .game-operator-sniper .equation-display {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 10px auto 26px;
+    position: relative;
+    z-index: 2;
+  }
+  
+  .game-operator-sniper .num-chip {
+    background: #1e293b;
+    border: 2px solid #475569;
+    color: #f8fafc;
+    font-size: 2rem;
+    font-weight: 900;
+    padding: 12px 20px;
+    border-radius: 16px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    font-family: monospace;
+  }
+  
+  .game-operator-sniper .paren-chip {
+    color: #fbbf24;
+    font-size: 2.5rem;
+    font-weight: 900;
+    padding: 0 4px;
+  }
+
+  .game-operator-sniper .op-slot {
+    background: #022c22;
+    border: 3px dashed #10b981;
+    color: #34d399;
+    font-size: 2rem;
+    font-weight: 900;
+    width: 64px;
+    height: 64px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+  }
+  .game-operator-sniper .op-slot:hover { transform: scale(1.08); background: #064e3b; border-style: solid; }
+  .game-operator-sniper .op-slot.selected {
+    background: #065f46;
+    border-color: #fbbf24;
+    color: #fbbf24;
+    box-shadow: 0 0 20px rgba(251, 191, 36, 0.5);
+    animation: lockPulse 1.2s infinite;
+  }
+  @keyframes lockPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+  .game-operator-sniper .op-slot.filled { border-style: solid; border-color: #34d399; background: #064e3b; color: #ffffff; }
+
+  .game-operator-sniper .target-chip {
+    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    border: 3px solid #6ee7b7;
+    color: #ffffff;
+    font-size: 2.2rem;
+    font-weight: 900;
+    padding: 12px 24px;
+    border-radius: 18px;
+    box-shadow: 0 0 25px rgba(16, 185, 129, 0.4);
+  }
+
+  /* 연산자 장전 탄약 키패드 */
+  .game-operator-sniper .ammo-section {
+    background: #0f172a;
+    border: 2px solid #065f46;
+    border-radius: 20px;
+    padding: 20px;
+    position: relative;
+    z-index: 2;
+  }
+  .game-operator-sniper .ammo-title { font-size: 1.1rem; font-weight: 900; color: #34d399; margin: 0 0 14px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+  
+  .game-operator-sniper .ammo-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+  @media (max-width: 500px) { .game-operator-sniper .ammo-grid { grid-template-columns: repeat(2, 1fr); } }
+  
+  .game-operator-sniper .btn-ammo {
+    background: #1e293b;
+    border: 3px solid #10b981;
+    color: #a7f3d0;
+    font-size: 1.6rem;
+    font-weight: 900;
+    padding: 16px 10px;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.15s;
+    box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  .game-operator-sniper .btn-ammo:hover:not(:disabled) { background: #064e3b; color: white; transform: translateY(-3px); box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3); border-color: #6ee7b7; }
+  .game-operator-sniper .btn-ammo:active:not(:disabled) { transform: translateY(2px); }
+  .game-operator-sniper .btn-ammo:disabled { opacity: 0.4; cursor: not-allowed; border-color: #334155; }
+  .game-operator-sniper .btn-ammo span { font-size: 0.9rem; font-weight: 700; color: #94a3b8; }
+  .game-operator-sniper .btn-ammo:hover span { color: #d1fae5; }
+
+  .game-operator-sniper .btn-fire {
+    width: 100%;
+    margin-top: 16px;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    font-size: 1.4rem;
+    font-weight: 900;
+    padding: 18px;
+    border: none;
+    border-radius: 18px;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+  .game-operator-sniper .btn-fire:hover:not(:disabled) { background: linear-gradient(135deg, #34d399 0%, #10b981 100%); transform: translateY(-2px); box-shadow: 0 12px 25px rgba(16, 185, 129, 0.6); }
+  .game-operator-sniper .btn-fire:disabled { background: #334155; color: #94a3b8; cursor: not-allowed; box-shadow: none; }
+
+  .game-operator-sniper .btn-secondary { background: #1e293b; color: #a7f3d0; border: 1px solid #065f46; padding: 12px 20px; font-size: 1rem; border-radius: 12px; cursor: pointer; font-weight: 700; transition: all 0.15s; }
+  .game-operator-sniper .btn-secondary:hover:not(:disabled) { background: #064e3b; }
+
+  .game-operator-sniper .result-area { text-align: left; margin-top: 16px; padding: 20px; border-radius: 16px; display: none; font-weight: 800; font-size: 1.1rem; line-height: 1.6; }
+  .game-operator-sniper .result-area.show { display: block; animation: fadeIn 0.4s; }
+  .game-operator-sniper .result-area.success { background: #064e3b; border: 2px solid #34d399; color: #ecfdf5; }
+  .game-operator-sniper .result-area.error { background: #7f1d1d; border: 2px solid #f87171; color: #fecaca; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+
+  .game-operator-sniper .step-list { margin: 10px 0 0; padding-left: 20px; font-size: 1rem; font-weight: 700; opacity: 0.95; }
+  .game-operator-sniper .step-list li { margin-bottom: 6px; }
+
+  .game-operator-sniper .sidebar { width: 320px; display: flex; flex-direction: column; gap: 16px; flex-shrink: 0; }
+  @media (max-width: 768px) { .game-operator-sniper .sidebar { width: 100%; } }
+
+  .game-operator-sniper .diff-selector { display: flex; gap: 6px; background: #090d16; p: 6px; border-radius: 14px; padding: 6px; border: 1px solid #065f46; }
+  .game-operator-sniper .diff-btn { flex: 1; padding: 10px 8px; border: none; border-radius: 10px; font-weight: 800; font-size: 0.95rem; cursor: pointer; color: #64748b; background: transparent; transition: all 0.2s; }
+  .game-operator-sniper .diff-btn.active { background: #10b981; color: #ffffff; box-shadow: 0 2px 6px rgba(0,0,0,0.3); }
+
+  .game-operator-sniper .rank-item {
+    display: flex; justify-content: space-between; align-items: center;
+    background: #1e293b; border: 1px solid #065f46;
+    padding: 10px 14px; border-radius: 12px; margin-bottom: 8px;
+    font-size: 0.95rem; color: #a7f3d0; font-weight: 700;
+  }
+  .game-operator-sniper .rank-num { color: #34d399; font-weight: 900; margin-right: 8px; }
+  .game-operator-sniper .rank-score { color: #6ee7b7; font-weight: 900; }
+</style>
+<script>
+(function() {
+  function calcSingle(a, b, op) {
+    if (op === '+') return a + b;
+    if (op === '−' || op === '-') return a - b;
+    if (op === '×' || op === '*') return a * b;
+    if (op === '÷' || op === '/') {
+      if (b === 0) return null;
+      if (a % b !== 0) return null; // 정수 결과 보장!
+      return a / b;
+    }
+    return null;
+  }
+
+  // 자체 2패스 사칙연산 우선순위 파서 (eval 금지!)
+  function evaluateExpression(nums, ops, parenIdx) {
+    let n = [...nums];
+    let o = [...ops];
+    let steps = [];
+
+    // 1단계: 괄호 계산 (존재 시 가장 먼저!)
+    if (parenIdx !== null && parenIdx !== undefined && parenIdx >= 0 && parenIdx < o.length) {
+      const a = n[parenIdx];
+      const b = n[parenIdx + 1];
+      const op = o[parenIdx];
+      const res = calcSingle(a, b, op);
+      if (res === null) return { val: null, steps };
+      steps.push(`🎯 괄호 우선 계산: (${a} ${op} ${b}) = ${res}`);
+      n.splice(parenIdx, 2, res);
+      o.splice(parenIdx, 1);
+    }
+
+    // 2단계: 곱셈과 나눗셈 (×, ÷ 우선 계산!)
+    let i = 0;
+    while (i < o.length) {
+      if (o[i] === '×' || o[i] === '÷') {
+        const a = n[i];
+        const b = n[i + 1];
+        const op = o[i];
+        const res = calcSingle(a, b, op);
+        if (res === null) return { val: null, steps };
+        steps.push(`⚡ 곱셈·나눗셈 우선: ${a} ${op} ${b} = ${res}`);
+        n.splice(i, 2, res);
+        o.splice(i, 1);
+      } else {
+        i++;
+      }
+    }
+
+    // 3단계: 덧셈과 뺄셈 (+, −)
+    i = 0;
+    while (i < o.length) {
+      const a = n[i];
+      const b = n[i + 1];
+      const op = o[i];
+      const res = calcSingle(a, b, op);
+      if (res === null) return { val: null, steps };
+      steps.push(`➕ 덧셈·뺄셈 계산: ${a} ${op} ${b} = ${res}`);
+      n.splice(i, 2, res);
+      o.splice(i, 1);
+    }
+
+    return { val: n[0], steps };
+  }
+
+  const OperatorSniper = {
+    id: 'operator-sniper',
+    container: null,
+    state: {
+      difficulty: 'easy', // 'easy', 'normal', 'hard'
+      roundIdx: 0,
+      maxRounds: 10,
+      score: 0,
+      combo: 0,
+      lives: 3,
+      nums: [],
+      userOps: [], // length is nums.length - 1
+      parenIdx: null,
+      targetValue: 0,
+      selectedSlotIdx: 0,
+      timer: 60,
+      isAnswered: false,
+      isGameOver: false,
+      hintUsed: false,
+      startTime: 0
+    },
+    timers: [],
+    timerId: null,
+
+    mount(container, context) {
+      let target = null;
+      if (typeof container === 'string') target = document.querySelector(container);
+      else if (container instanceof HTMLElement) target = container;
+      if (!target) target = document.getElementById('mathlab-view') || document.getElementById('new-root') || document.getElementById('game-container');
+
+      // 💡 [자가 복구 엔진] 컨테이너가 없거나 가려져 있다면, 100% 보이는 전용 도화지 생성!
+      if (!target || target === document.body) {
+        let host = document.getElementById('operator-sniper-force-host');
+        if (!host) {
+          host = document.createElement('div'); host.id = 'operator-sniper-force-host';
+          host.style.cssText = 'width:100%; max-width:960px; margin:0 auto; padding:20px 10px; box-sizing:border-box; z-index:999; position:relative; background:#090d16; min-height:650px; display:block; border-radius:24px;';
+          const header = document.querySelector('header, .navbar, #app-header, .top-bar');
+          if (header && header.parentNode) header.parentNode.insertBefore(host, header.nextSibling);
+          else document.body.appendChild(host);
+        }
+        target = host;
+      }
+
+      this.container = target;
+      this.container.style.display = 'block'; this.container.style.visibility = 'visible'; this.container.style.opacity = '1'; this.container.style.minHeight = '650px';
+
+      let parent = this.container.parentElement;
+      while (parent && parent !== document.body && parent !== document.documentElement) {
+        if (parent.style && parent.style.display === 'none') parent.style.display = 'block';
+        if (parent.style && parent.style.visibility === 'hidden') parent.style.visibility = 'visible';
+        parent = parent.parentElement;
+      }
+
+      this.restoreGlobalNavigation();
+      this.resetGame();
+    },
+
+    restoreGlobalNavigation() {
+      const navElements = document.querySelectorAll('header, .navbar, #app-header, .top-bar, #floating-home-btn, .floating-home, [id*="home"], [class*="floating"]');
+      navElements.forEach(el => { if (el && el.style && el.style.display === 'none') el.style.display = ''; });
+    },
+
+    setDifficulty(diff) {
+      if (this.state.difficulty === diff && !this.state.isGameOver && this.state.roundIdx === 0) return;
+      this.state.difficulty = diff;
+      this.resetGame();
+    },
+
+    resetGame() {
+      if (window.MathLabCleanup && typeof window.MathLabCleanup.clearTimers === 'function') {
+        window.MathLabCleanup.clearTimers(this.timers);
+      }
+      this.timers.forEach(clearTimeout);
+      this.timers = [];
+      if (this.timerId) { clearInterval(this.timerId); this.timerId = null; }
+      
+      this.state.roundIdx = 0;
+      this.state.score = 0;
+      this.state.combo = 0;
+      this.state.lives = 3;
+      this.state.isGameOver = false;
+      
+      this.setupRound();
+    },
+    
+    setupRound() {
+      if (this.state.roundIdx >= this.state.maxRounds || this.state.lives <= 0) {
+        this.gameOver(this.state.lives > 0);
+        return;
+      }
+
+      if (this.timerId) { clearInterval(this.timerId); this.timerId = null; }
+
+      this.state.hintUsed = false;
+      this.state.isAnswered = false;
+      this.state.startTime = Date.now();
+      this.state.selectedSlotIdx = 0;
+
+      // 난이도별 문제 생성 & 전수 검증
+      let numCount = 3; // 연산자 2개
+      let availableOps = ['+', '−', '×'];
+      this.state.parenIdx = null;
+
+      if (this.state.difficulty === 'normal') {
+        numCount = Math.random() > 0.4 ? 4 : 3; // 연산자 2~3개
+        availableOps = ['+', '−', '×', '÷'];
+      } else if (this.state.difficulty === 'hard') {
+        numCount = 4; // 연산자 3개
+        availableOps = ['+', '−', '×', '÷'];
+        if (Math.random() > 0.4) this.state.parenIdx = Math.floor(Math.random() * 2); // 0 또는 1번 위치 괄호
+        
+        // 속사 모드 타이머
+        this.state.timer = 40;
+        this.timerId = setInterval(() => {
+          if (this.state.isAnswered || this.state.isGameOver) return;
+          this.state.timer--;
+          this.updateTimerUI();
+          if (this.state.timer <= 0) {
+            clearInterval(this.timerId); this.timerId = null;
+            this.handleTimeout();
+          }
+        }, 1000);
+      }
+
+      // 해가 존재하는 정수 조합 찾기 (전수 탐색)
+      let found = false;
+      let attempt = 0;
+      while (!found && attempt < 200) {
+        attempt++;
+        const testNums = [];
+        for (let j = 0; j < numCount; j++) {
+          testNums.push(Math.floor(Math.random() * 10) + 1);
+        }
+
+        // 가능한 연산자 조합 생성
+        const combinations = [];
+        const genCombos = (curr) => {
+          if (curr.length === numCount - 1) { combinations.push(curr); return; }
+          for (let op of availableOps) genCombos([...curr, op]);
+        };
+        genCombos([]);
+
+        const validResults = [];
+        for (let c of combinations) {
+          const evalRes = evaluateExpression(testNums, c, this.state.parenIdx);
+          if (evalRes.val !== null && Number.isInteger(evalRes.val) && evalRes.val >= -30 && evalRes.val <= 100) {
+            validResults.push({ ops: c, val: evalRes.val });
+          }
+        }
+
+        if (validResults.length > 0) {
+          // 목표값 채택
+          const chosen = validResults[Math.floor(Math.random() * validResults.length)];
+          this.state.nums = testNums;
+          this.state.targetValue = chosen.val;
+          this.state.userOps = new Array(numCount - 1).fill(null);
+          found = true;
+        }
+      }
+
+      this.render();
+    },
+
+    updateTimerUI() {
+      const el = this.container?.querySelector('.stat-badge.timer');
+      const valEl = el?.querySelector('.timer-val');
+      if (valEl) valEl.textContent = `${this.state.timer}초`;
+    },
+
+    handleTimeout() {
+      this.state.isAnswered = true;
+      this.state.combo = 0;
+      this.state.lives--;
+      this.state.score = Math.max(0, this.state.score - 5);
+
+      const resArea = this.container?.querySelector('.result-area');
+      if (resArea) {
+        resArea.className = 'result-area show error';
+        resArea.innerHTML = `⏰ <strong>속사 시간 초과! 타겟을 놓쳤습니다! (생명 -1)</strong><br>제한 시간 내에 모든 물음표를 저격해야 합니다.`;
+      }
+      this.updateStatsUI();
+
+      const t = setTimeout(() => {
+        if (this.state.lives <= 0) this.gameOver(false);
+        else this.setupRound();
+      }, 2000);
+      this.timers.push(t);
+    },
+
+    selectSlot(idx) {
+      if (this.state.isAnswered || this.state.isGameOver) return;
+      this.state.selectedSlotIdx = idx;
+      this.updateSlotsUI();
+    },
+
+    loadAmmo(op) {
+      if (this.state.isAnswered || this.state.isGameOver) return;
+      this.state.userOps[this.state.selectedSlotIdx] = op;
+      
+      // 자동으로 다음 빈 슬롯으로 조준 이동
+      let nextIdx = this.state.selectedSlotIdx + 1;
+      if (nextIdx >= this.state.userOps.length) {
+        const firstEmpty = this.state.userOps.indexOf(null);
+        if (firstEmpty !== -1) nextIdx = firstEmpty;
+      }
+      if (nextIdx < this.state.userOps.length) this.state.selectedSlotIdx = nextIdx;
+      
+      this.updateSlotsUI();
+    },
+
+    updateSlotsUI() {
+      const root = this.container?.querySelector('.game-operator-sniper');
+      if (!root) return;
+      
+      const slots = root.querySelectorAll('.op-slot');
+      slots.forEach((el, idx) => {
+        el.className = 'op-slot';
+        if (idx === this.state.selectedSlotIdx) el.classList.add('selected');
+        if (this.state.userOps[idx]) {
+          el.classList.add('filled');
+          el.textContent = this.state.userOps[idx];
+        } else {
+          el.textContent = '?';
+        }
+      });
+
+      const btnFire = root.querySelector('#os-btn-fire');
+      if (btnFire) {
+        const allFilled = !this.state.userOps.includes(null);
+        btnFire.disabled = !allFilled || this.state.isAnswered;
+      }
+    },
+
+    fireSniper() {
+      if (this.state.isAnswered || this.state.isGameOver) return;
+      if (this.state.userOps.includes(null)) return;
+
+      this.state.isAnswered = true;
+      if (this.timerId) { clearInterval(this.timerId); this.timerId = null; }
+
+      // 전수 검증: 사용자의 연산자 조합을 직접 계산하여 목표값과 일치하는지 판정! (복수 해 인정!)
+      const res = evaluateExpression(this.state.nums, this.state.userOps, this.state.parenIdx);
+      const isHit = (res.val !== null && res.val === this.state.targetValue);
+      const resArea = this.container.querySelector('.result-area');
+      
+      if (isHit) {
+        let pts = 10;
+        const timeDiff = (Date.now() - this.state.startTime) / 1000;
+        if (timeDiff <= 5) pts += 5; // 속사 스피드 보너스
+        if (this.state.hintUsed) pts = Math.max(3, pts - 5);
+        
+        this.state.combo++;
+        if (this.state.combo >= 3) pts += 5;
+        this.state.score += pts;
+
+        if (resArea) {
+          resArea.className = 'result-area show success';
+          let stepsHtml = res.steps.map(s => `<li>${s}</li>`).join('');
+          resArea.innerHTML = `
+            🎉 🎯 <strong>스나이퍼 명중! 등식 완성! (+${pts}점)</strong><br>
+            선택하신 조합으로 사칙연산 우선순위를 적용한 결과, 목표값(<strong>${this.state.targetValue}</strong>)에 정확히 도달했습니다!
+            <ul class="step-list">${stepsHtml}</ul>
+          `;
+        }
+
+        const t = setTimeout(() => {
+          this.state.roundIdx++;
+          this.setupRound();
+        }, 2200);
+        this.timers.push(t);
+      } else {
+        this.state.combo = 0;
+        this.state.lives--;
+        this.state.score = Math.max(0, this.state.score - 5);
+        
+        if (resArea) {
+          resArea.className = 'result-area show error';
+          let stepsHtml = res.steps.length > 0 ? res.steps.map(s => `<li>${s}</li>`).join('') : '<li>나눗셈 불능(0으로 나누기 또는 소수 발생)</li>';
+          resArea.innerHTML = `
+            💥 <strong>빗나감! 등식 불일치! (생명 -1)</strong><br>
+            입력하신 조합을 계산한 최종 결과는 <strong>${res.val === null ? '계산 불가' : res.val}</strong>이 되어 목표값(<strong>${this.state.targetValue}</strong>)과 다릅니다!<br>
+            💡 <strong>우선순위 계산 검증 과정:</strong>
+            <ul class="step-list">${stepsHtml}</ul>
+          `;
+        }
+
+        const t = setTimeout(() => {
+          if (this.state.lives <= 0) {
+            this.gameOver(false);
+          } else {
+            this.state.isAnswered = false;
+            this.render();
+          }
+        }, 3000);
+        this.timers.push(t);
+      }
+
+      this.updateStatsUI();
+      this.updateSlotsUI();
+    },
+
+    gameOver(cleared) {
+      if (cleared && !this.state.isGameOver) {
+        this.state.score += 50; // 클리어 보너스
+      }
+      this.state.isGameOver = true;
+      if (this.timerId) { clearInterval(this.timerId); this.timerId = null; }
+      this.render();
+      
+      if (this.state.score > 0) {
+        const t = setTimeout(() => {
+          this.showInlineRankingModal('board-operator-sniper', this.state.score, { cleared: cleared, difficulty: this.state.difficulty });
+        }, 600);
+        this.timers.push(t);
+      }
+    },
+
+    showHowToPlayModal() {
+      document.getElementById('mathlab-os-howto-modal')?.remove();
+      const modalHtml = `
+        <div id="mathlab-os-howto-modal" style="position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(15,23,42,0.85); backdrop-filter:blur(8px); display:flex; align-items:center; justify-content:center; z-index:999999; padding:20px; box-sizing:border-box; font-family:'Pretendard',sans-serif; animation: fadeIn 0.3s;">
+          <div style="background:#0f172a; border-radius:28px; padding:32px 28px; max-width:620px; width:100%; max-height:85vh; overflow-y:auto; box-shadow:0 25px 50px -12px rgba(0,0,0,0.7); border:4px solid #10b981; position:relative; color:#f8fafc;">
+            
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #065f46; padding-bottom:16px; margin-bottom:20px;">
+              <div style="display:flex; align-items:center; gap:10px;">
+                <span style="font-size:36px;">🎯</span>
+                <div>
+                  <h2 style="margin:0; font-size:24px; font-weight:900; color:#34d399;">연산자 블라인드 스나이퍼 게임 방법</h2>
+                  <p style="margin:4px 0 0; font-size:13px; color:#a7f3d0; font-weight:700;">물음표에 숨은 연산자를 저격해 등식을 완성하는 엘리트 스나이퍼!</p>
+                </div>
+              </div>
+              <button id="os-howto-close-top" style="background:#1e293b; border:none; width:40px; height:40px; border-radius:50%; font-size:20px; cursor:pointer; color:#a7f3d0; font-weight:bold; display:flex; align-items:center; justify-content:center; transition:background 0.2s;">✕</button>
+            </div>
+
+            <div style="display:flex; flex-direction:column; gap:16px; text-align:left; color:#f8fafc;">
+              <div style="background:#064e3b; border-left:5px solid #10b981; padding:16px; border-radius:12px;">
+                <h3 style="margin:0 0 6px; font-size:16px; color:#34d399; font-weight:900;">🎯 1. 게임의 목표</h3>
+                <p style="margin:0; font-size:14px; line-height:1.5; font-weight:600; color:#ecfdf5;">조준경에 제시된 수식의 물음표(<strong> ? </strong>) 자리에 알맞은 연산자(+, −, ×, ÷)를 장전하여 <strong>목표값과 일치하는 등식을 완성</strong>하는 사칙연산 우선순위 게임입니다.</p>
+              </div>
+
+              <div style="background:#1e293b; border:2px solid #065f46; padding:18px; border-radius:16px;">
+                <h3 style="margin:0 0 10px; font-size:16px; color:#fbbf24; font-weight:900;">⚡ 2. 사칙연산 우선순위 핵심 규칙</h3>
+                <ol style="margin:0; padding-left:20px; font-size:13.5px; line-height:1.6; font-weight:600; color:#d1fae5;">
+                  <li><strong>괄호 (  )</strong>가 있다면 괄호 안을 가장 먼저 계산합니다!</li>
+                  <li><strong>곱셈(×)과 나눗셈(÷)</strong>을 덧셈·뺄셈보다 먼저 계산합니다!</li>
+                  <li><strong>덧셈(+)과 뺄셈(−)</strong>은 마지막 단계에서 앞에서부터 차례로 계산합니다!</li>
+                </ol>
+                <div style="background:#022c22; p:10px; border-radius:10px; padding:10px; margin-top:10px; font-size:13px; font-weight:800; color:#34d399;">
+                  💡 예시: <code>5 + 3 × 2</code>는 앞에서부터 8×2=16이 아니라, 곱셈 먼저 <code>3×2=6</code>을 한 후 <code>5+6 = 11</code>이 됩니다!
+                </div>
+              </div>
+
+              <div style="background:#065f46; border-left:5px solid #fbbf24; padding:16px; border-radius:12px;">
+                <h3 style="margin:0 0 6px; font-size:16px; color:#fef08a; font-weight:900;">🕹️ 3. 조작 방법 및 속사 모드</h3>
+                <ul style="margin:0; padding-left:20px; font-size:13.5px; line-height:1.6; font-weight:600; color:#ecfdf5;">
+                  <li>물음표 슬롯을 클릭하여 타겟을 고른 뒤, 하단의 <strong>연산자 탄약 버튼</strong>을 눌러 장전하세요. (자동으로 다음 빈 슬롯 이동)</li>
+                  <li>모든 물음표가 채워지면 <strong style="color:#fbbf24;">[🎯 발사! (정답 제출)]</strong> 버튼이 활성화됩니다!</li>
+                  <li>⚡ 복수 해 허용: 목표값을 만드는 연산자 조합이 여러 개일 경우, <strong>어떤 올바른 조합이든 모두 정답으로 인정</strong>됩니다!</li>
+                </ul>
+              </div>
+            </div>
+
+            <button id="os-howto-close-btn" style="width:100%; margin-top:24px; padding:16px; border-radius:16px; font-size:16px; font-weight:900; background:linear-gradient(135deg, #10b981 0%, #059669 100%); color:#ffffff; border:none; cursor:pointer; box-shadow:0 8px 16px rgba(16,185,129,0.4); transition:transform 0.15s;">
+              🚀 이해했습니다! 스나이퍼 조준 개시
+            </button>
+
+          </div>
+        </div>
+      `;
+      document.body.insertAdjacentHTML('beforeend', modalHtml);
+      
+      const closeModal = () => document.getElementById('mathlab-os-howto-modal')?.remove();
+      document.getElementById('os-howto-close-top')?.addEventListener('click', closeModal);
+      document.getElementById('os-howto-close-btn')?.addEventListener('click', closeModal);
+      document.getElementById('mathlab-os-howto-modal')?.addEventListener('click', (e) => {
+        if (e.target.id === 'mathlab-os-howto-modal') closeModal();
+      });
+    },
+
+    showInlineRankingModal(boardId, score, metadata) {
+      document.getElementById('mathlab-inline-ranking-modal')?.remove();
+      const gameName = '연산자 블라인드 스나이퍼';
+      const modalHtml = `
+        <div id="mathlab-inline-ranking-modal" style="position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(15,23,42,0.85); backdrop-filter:blur(6px); display:flex; align-items:center; justify-content:center; z-index:999999; padding:20px; box-sizing:border-box; font-family:'Pretendard',sans-serif;">
+          <div style="background:#0f172a; border-radius:24px; padding:28px 24px; max-width:400px; width:100%; box-shadow:0 20px 40px rgba(0,0,0,0.7); text-align:center; border:3px solid #10b981; color:#f8fafc;">
+            <div style="font-size:42px; margin-bottom:10px;">🎯🏆</div>
+            <h2 style="margin:0 0 8px; font-size:24px; font-weight:900; color:#34d399;">명예의 전당 등록</h2>
+            <p style="margin:0 0 20px; font-size:14px; color:#a7f3d0;">10개 타겟 저격 미션을 마쳤습니다!<br>이름을 남겨 Top 5 엘리트 랭킹에 도전하세요!</p>
+            <div style="background:#064e3b; border:1px solid #10b981; border-radius:16px; padding:14px; margin-bottom:20px;">
+              <div style="font-size:13px; color:#a7f3d0; font-weight:800; margin-bottom:4px;">🏆 최종 달성 점수</div>
+              <div style="font-size:32px; font-weight:900; color:#fbbf24;">${score} <span style="font-size:18px;">점</span></div>
+            </div>
+            <input type="text" id="inline-rank-nickname" placeholder="스나이퍼 닉네임 입력 (예: 연산왕명사수)" maxlength="10" style="width:100%; padding:14px 16px; font-size:16px; font-weight:700; border:2px solid #065f46; background:#1e293b; color:#ffffff; border-radius:14px; outline:none; text-align:center; margin-bottom:20px; box-sizing:border-box;">
+            <div style="display:flex; gap:10px;">
+              <button id="inline-rank-cancel" style="flex:1; padding:14px; border-radius:14px; font-size:15px; font-weight:800; background:#1e293b; color:#a7f3d0; border:1px solid #065f46; cursor:pointer;">건너뛰기</button>
+              <button id="inline-rank-submit" style="flex:2; padding:14px; border-radius:14px; font-size:15px; font-weight:800; background:linear-gradient(135deg, #10b981 0%, #059669 100%); color:#ffffff; border:none; cursor:pointer; box-shadow:0 4px 8px rgba(16,185,129,0.4);">🚀 등록하기</button>
+            </div>
+          </div>
+        </div>
+      `;
+      document.body.insertAdjacentHTML('beforeend', modalHtml);
+      const inputEl = document.getElementById('inline-rank-nickname'); if (inputEl) inputEl.focus();
+      const closeAndClean = () => document.getElementById('mathlab-inline-ranking-modal')?.remove();
+      document.getElementById('inline-rank-cancel')?.addEventListener('click', closeAndClean);
+      const doSubmit = () => {
+        let nickname = (inputEl?.value.trim() || '연산왕명사수');
+        
+        if (typeof window.submitRanking === 'function') {
+          try { window.submitRanking(gameName, score, true, nickname, boardId); } catch(e){}
+        } else if (typeof google !== 'undefined' && google.script && google.script.run && typeof google.script.run.saveGameScore === 'function') {
+          try {
+            const sheetId = (typeof getLeaderboardSheetId === 'function') ? getLeaderboardSheetId() : '';
+            const meta = (typeof getLeaderboardMeta === 'function') ? getLeaderboardMeta() : {};
+            google.script.run.withSuccessHandler(() => { this.loadLeaderboard(); }).saveGameScore(sheetId, gameName, nickname, score, true, meta);
+          } catch(e){}
+        }
+
+        let ranks = JSON.parse(localStorage.getItem(`rank_${boardId}`) || '[]');
+        ranks.push({ ...(metadata || {}), nickname: nickname, score: score, date: new Date().toISOString() });
+        ranks.sort((a, b) => (b.score || 0) - (a.score || 0));
+        localStorage.setItem(`rank_${boardId}`, JSON.stringify(ranks.slice(0, 50)));
+        closeAndClean(); this.loadLeaderboard();
+      };
+      document.getElementById('inline-rank-submit')?.addEventListener('click', doSubmit);
+      inputEl?.addEventListener('keydown', (e) => { if (e.key === 'Enter') doSubmit(); });
+    },
+
+    updateStatsUI() {
+      const root = this.container?.querySelector('.game-operator-sniper');
+      if (!root) return;
+      
+      const scoreEl = root.querySelector('.score-val'); if (scoreEl) scoreEl.textContent = `${this.state.score}점`;
+      const comboEl = root.querySelector('.combo-val'); if (comboEl) comboEl.textContent = `${this.state.combo}연속`;
+      const lifeEl = root.querySelector('.life-val'); if (lifeEl) lifeEl.textContent = '❤️'.repeat(Math.max(0, this.state.lives));
+    },
+
+    render() {
+      const isCleared = this.state.roundIdx >= this.state.maxRounds;
+      
+      let tagText = `연산자 ${this.state.userOps.length}개 저격 미션`;
+      if (this.state.parenIdx !== null) tagText += ' (괄호 우선순위 주의!)';
+
+      const html = `
+        <div class="game-operator-sniper">
+          <div class="os-header">
+            <div class="title-area">
+              <h2>🎯 연산자 블라인드 스나이퍼</h2>
+              <p>물음표에 숨겨진 연산자를 저격해 등식을 완성하는 사칙연산 스나이퍼!</p>
+            </div>
+            <div class="stats-bar">
+              <button class="btn-howto" id="os-btn-howto-top">❓ 게임 방법 가이드</button>
+              <div class="stat-badge">🚩 스테이지: ${Math.min(this.state.roundIdx + 1, this.state.maxRounds)}/${this.state.maxRounds}</div>
+              <div class="stat-badge score"><span class="score-val">${this.state.score}점</span></div>
+              <div class="stat-badge combo">🔥 콤보: <span class="combo-val">${this.state.combo}연속</span></div>
+              <div class="stat-badge life">생명: <span class="life-val">${'❤️'.repeat(Math.max(0, this.state.lives))}</span></div>
+              <div class="stat-badge timer" style="display: ${this.state.difficulty === 'hard' ? 'flex' : 'none'};">⏱️ <span class="timer-val">${this.state.timer}초</span></div>
+            </div>
+          </div>
+          
+          <div class="main-layout">
+            <div class="game-area">
+              ${this.state.isGameOver ? `
+                <div class="card" style="text-align:center; padding: 40px;">
+                  <h3 style="font-size: 2rem; color: #34d399; margin-top: 0;">${isCleared ? '🏆 연산자 스나이퍼 엘리트 마스터 완료!' : '💥 타겟 놓침! 사격 훈련을 다시 도전하세요!'}</h3>
+                  <p style="font-size: 1.2rem; color: #a7f3d0;">최종 달성 점수: <strong>${this.state.score}점</strong></p>
+                  <button class="btn-fire" id="os-btn-restart-big" style="margin: 24px auto 0; max-width: 280px;">🔄 새 사격 작전 개시</button>
+                </div>
+              ` : `
+                <div class="scope-box">
+                  <div class="mission-tag">🎯 타겟 조준경: ${tagText}</div>
+                  
+                  <div class="equation-display">
+                    ${this.state.nums.map((n, i) => {
+                      let chipHtml = '';
+                      if (this.state.parenIdx === i) chipHtml += '<span class="paren-chip">(</span>';
+                      chipHtml += `<div class="num-chip">${n}</div>`;
+                      if (this.state.parenIdx === i - 1) chipHtml += '<span class="paren-chip">)</span>';
+                      
+                      if (i < this.state.userOps.length) {
+                        chipHtml += `<div class="op-slot ${i === this.state.selectedSlotIdx ? 'selected' : ''}" data-idx="${i}" title="클릭하여 이 물음표 조준">?</div>`;
+                      }
+                      return chipHtml;
+                    }).join('')}
+                    <div style="font-size: 2.2rem; font-weight: 900; color: #34d399; padding: 0 4px;">=</div>
+                    <div class="target-chip">${this.state.targetValue}</div>
+                  </div>
+                  
+                  <div style="color: #a7f3d0; font-size: 0.95rem; font-weight: 700; margin-bottom: 4px;">
+                    💡 깜빡이는 물음표가 조준 중인 슬롯입니다! 아래 연산자 탄약을 눌러 장전하세요.
+                  </div>
+                </div>
+
+                <div class="ammo-section">
+                  <div class="ammo-title">💥 연산자 탄약 장전 (선택한 슬롯에 입력됨)</div>
+                  <div class="ammo-grid">
+                    <button class="btn-ammo" data-op="+" ${this.state.isAnswered ? 'disabled' : ''}>+ <span>덧셈 장전</span></button>
+                    <button class="btn-ammo" data-op="−" ${this.state.isAnswered ? 'disabled' : ''}>− <span>뺄셈 장전</span></button>
+                    <button class="btn-ammo" data-op="×" ${this.state.isAnswered ? 'disabled' : ''}>× <span>곱셈 장전</span></button>
+                    <button class="btn-ammo" data-op="÷" ${this.state.isAnswered ? 'disabled' : ''}>÷ <span>나눗셈 장전</span></button>
+                  </div>
+                  <button class="btn-fire" id="os-btn-fire" disabled>🎯 발사! (정답 등식 검증)</button>
+                </div>
+                
+                <div class="result-area"></div>
+                
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
+                  <button class="btn-secondary" id="os-btn-hint" ${this.state.isAnswered ? 'disabled' : ''}>💡 정답 연산자 1개 스캔 (-5점)</button>
+                  <button class="btn-secondary" id="os-btn-reset-round" ${this.state.isAnswered ? 'disabled' : ''}>🔄 타겟 다시 요청하기</button>
+                </div>
+              `}
+            </div>
+            
+            <div class="sidebar">
+              <div class="card" style="padding:16px;">
+                <h3 style="margin-top:0; font-size:1.05rem; color:#34d399; margin-bottom:10px;">⚙️ 난이도 선택</h3>
+                <div class="diff-selector">
+                  <button class="diff-btn ${this.state.difficulty === 'easy' ? 'active' : ''}" data-diff="easy">쉬움 (2개)</button>
+                  <button class="diff-btn ${this.state.difficulty === 'normal' ? 'active' : ''}" data-diff="normal">보통 (2~3개)</button>
+                  <button class="diff-btn ${this.state.difficulty === 'hard' ? 'active' : ''}" data-diff="hard">도전 (속사+괄호)</button>
+                </div>
+              </div>
+
+              <div class="card" style="padding:16px;">
+                <h3 style="margin-top:0; font-size:1.1rem; border-bottom:1px solid #065f46; padding-bottom:12px; color:#34d399; text-align:center;">🏆 명예의 전당 (Top 5)</h3>
+                <div id="board-operator-sniper">
+                  <p style="color:#64748b; font-size:0.95rem; text-align:center; margin:16px 0;">로딩 중...</p>
+                </div>
+              </div>
+              
+              <div class="card" style="padding:16px;">
+                <button class="btn-secondary" style="width:100%; margin-bottom:12px; padding:12px;" id="os-btn-restart-side">🔄 처음부터 다시 작전 개시</button>
+                <button class="btn-secondary" style="width:100%; padding:12px; background:#059669; color:#ffffff; border:none;" id="os-btn-home">🏠 홈으로</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      this.container.innerHTML = html;
+      this.bindEvents();
+      this.updateSlotsUI();
+      this.loadLeaderboard();
+    },
+
+    bindEvents() {
+      const root = this.container?.querySelector('.game-operator-sniper');
+      if (!root) return;
+      
+      const btnHowToTop = root.querySelector('#os-btn-howto-top');
+      if (btnHowToTop) btnHowToTop.addEventListener('click', () => this.showHowToPlayModal());
+
+      root.querySelectorAll('.diff-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const diff = btn.getAttribute('data-diff');
+          this.setDifficulty(diff);
+        });
+      });
+
+      root.querySelectorAll('.op-slot').forEach(el => {
+        el.addEventListener('click', () => {
+          const idx = parseInt(el.getAttribute('data-idx'), 10);
+          this.selectSlot(idx);
+        });
+      });
+
+      root.querySelectorAll('.btn-ammo').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const op = btn.getAttribute('data-op');
+          this.loadAmmo(op);
+        });
+      });
+
+      const btnFire = root.querySelector('#os-btn-fire');
+      if (btnFire) btnFire.addEventListener('click', () => this.fireSniper());
+
+      const btnHint = root.querySelector('#os-btn-hint');
+      if (btnHint) btnHint.addEventListener('click', () => {
+        this.state.hintUsed = true;
+        
+        // 전수 검증으로 가능한 올바른 연산자 조합 중 하나를 찾아 힌트 제공
+        const availableOps = ['+', '−', '×', '÷'];
+        const combinations = [];
+        const genCombos = (curr) => {
+          if (curr.length === this.state.userOps.length) { combinations.push(curr); return; }
+          for (let op of availableOps) genCombos([...curr, op]);
+        };
+        genCombos([]);
+
+        const validCombos = combinations.filter(c => {
+          const res = evaluateExpression(this.state.nums, c, this.state.parenIdx);
+          return res.val === this.state.targetValue;
+        });
+
+        if (validCombos.length > 0) {
+          const sol = validCombos[0];
+          // 첫 번째 또는 현재 빈 슬롯에 정답 연산자 채우기
+          let targetSlot = this.state.selectedSlotIdx;
+          this.state.userOps[targetSlot] = sol[targetSlot];
+          this.updateSlotsUI();
+        }
+        
+        btnHint.disabled = true;
+      });
+      
+      const btnResetRound = root.querySelector('#os-btn-reset-round');
+      if (btnResetRound) btnResetRound.addEventListener('click', () => this.setupRound());
+
+      const btnRestartBig = root.querySelector('#os-btn-restart-big');
+      if (btnRestartBig) btnRestartBig.addEventListener('click', () => this.resetGame());
+      
+      const btnRestartSide = root.querySelector('#os-btn-restart-side');
+      if (btnRestartSide) btnRestartSide.addEventListener('click', () => this.resetGame());
+
+      // 키보드 사칙연산 키 입력 지원 (+, -, *, /)
+      const keyHandler = (e) => {
+        if (!this.container || !document.body.contains(this.container)) {
+          window.removeEventListener('keydown', keyHandler);
+          return;
+        }
+        if (this.state.isAnswered || this.state.isGameOver) return;
+
+        if (e.key === '+' || e.key === '=' ) this.loadAmmo('+');
+        else if (e.key === '-' || e.key === '_') this.loadAmmo('−');
+        else if (e.key === '*' || e.key === 'x' || e.key === 'X') this.loadAmmo('×');
+        else if (e.key === '/' || e.key === '?') this.loadAmmo('÷');
+        else if (e.key === 'Enter') {
+          if (!this.state.userOps.includes(null)) this.fireSniper();
+        } else if (e.key === 'ArrowRight' || e.key === 'Tab') {
+          e.preventDefault();
+          this.selectSlot((this.state.selectedSlotIdx + 1) % this.state.userOps.length);
+        } else if (e.key === 'ArrowLeft') {
+          e.preventDefault();
+          this.selectSlot((this.state.selectedSlotIdx - 1 + this.state.userOps.length) % this.state.userOps.length);
+        }
+      };
+      window.removeEventListener('keydown', this._keyHandler);
+      this._keyHandler = keyHandler;
+      window.addEventListener('keydown', this._keyHandler);
+
+      const btnHome = root.querySelector('#os-btn-home');
+      if (btnHome) {
+        btnHome.addEventListener('click', (e) => {
+          e.preventDefault();
+          const topBottomHome = document.getElementById('mathlab-floating-home') || document.querySelector('#legacy-back-home-btn') || document.querySelector('.floating-home');
+          if (topBottomHome) topBottomHome.click();
+          else if (typeof window.MathLabRenderHome === 'function') window.MathLabRenderHome();
+          else if (typeof window.goHome === 'function') window.goHome();
+          else location.reload();
+        });
+      }
+    },
+    
+    loadLeaderboard() {
+      try {
+        if (typeof window.loadGameLeaderboard === 'function') {
+          window.loadGameLeaderboard('연산자 블라인드 스나이퍼', true, 'board-operator-sniper');
+        } else {
+          const localRanks = JSON.parse(localStorage.getItem('rank_board-operator-sniper') || '[]');
+          this.renderRankList(localRanks.slice(0, 5));
+        }
+      } catch (e) {
+        console.error('[OperatorSniper] 명예의 전당 로드 오류:', e);
+        const localRanks = JSON.parse(localStorage.getItem('rank_board-operator-sniper') || '[]');
+        this.renderRankList(localRanks.slice(0, 5));
+      }
+    },
+
+    renderRankList(ranks) {
+      const el = this.container?.querySelector('#board-operator-sniper');
+      if (!el) return;
+
+      if (!ranks || ranks.length === 0) {
+        el.innerHTML = '<div style="text-align:center; color:#64748b; padding: 12px 0;">아직 등록된 랭킹이 없습니다. 첫 주인공이 되어보세요!</div>';
+        return;
+      }
+
+      const escapeHTML = (str) => {
+        if (!str) return '';
+        return String(str).replace(/[&<>"']/g, function(match) {
+          const escape = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+          return escape[match];
+        });
+      };
+      el.innerHTML = ranks.map((r, i) => `
+        <div class="rank-item">
+          <div><span class="rank-num">${i + 1}위</span> ${escapeHTML(r.nickname || '익명')}</div>
+          <div class="rank-score">${r.score || 0}점</div>
+        </div>
+      `).join('');
+    },
+
+    destroy() {
+      if (window.MathLabCleanup && typeof window.MathLabCleanup.clearTimers === 'function') {
+        window.MathLabCleanup.clearTimers(this.timers);
+      }
+      this.timers.forEach(clearTimeout);
+      this.timers = [];
+      if (this.timerId) { clearInterval(this.timerId); this.timerId = null; }
+      if (this._keyHandler) window.removeEventListener('keydown', this._keyHandler);
+      document.getElementById('mathlab-inline-ranking-modal')?.remove();
+      document.getElementById('mathlab-os-howto-modal')?.remove();
+      const host = document.getElementById('operator-sniper-force-host'); if (host) host.remove();
+      if (this.container) this.container.innerHTML = '';
+      this.container = null;
+    }
+  };
+
+  if (!window.MathLabGames) {
+    window.MathLabGames = {
+      registry: {},
+      register(app) { this.registry[app.id] = app; },
+      get(id) { return this.registry[id]; },
+      mount(id, container, context) {
+        if (this.registry[id]) this.registry[id].mount(container, context);
+      }
+    };
+  }
+  
+  if (typeof window.MathLabGames.register === 'function') {
+    if (!window.MathLabGames.get?.('operator-sniper')) {
+      window.MathLabGames.register(OperatorSniper);
+    }
+  }
+
+  window.launchOperatorSniperGame = function() {
+    if (typeof window.MathLabGames !== 'undefined' && typeof window.MathLabGames.mount === 'function') {
+      try {
+        window.MathLabGames.mount('operator-sniper');
+        return;
+      } catch(e) {
+        console.warn('MathLabGames mount 실패, 직접 마운트 시도:', e);
+      }
+    }
+    const target = document.getElementById('mathlab-view') || document.getElementById('new-root') || document.body;
+    OperatorSniper.mount(target);
+  };
+})();
+</script>

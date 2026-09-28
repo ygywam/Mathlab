@@ -1,0 +1,951 @@
+<!-- 2D 루빅스 펼치기 (2D Rubiks) 모드 선택 탭 & 순백색 고대비 타이틀 완결판 -->
+<style>
+  .game-rubiks-2d {
+    width: 100%;
+    min-height: 100%;
+    padding: 20px;
+    box-sizing: border-box;
+    background: #0f172a;
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+    color: #f8fafc;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    user-select: none;
+  }
+
+  .game-rubiks-2d * { box-sizing: border-box; }
+
+  /* 🌟 [시인성 1000% 방어막] 글로벌 스타일을 완벽히 이기는 고대비 상단 헤더 바 */
+  .game-rubiks-2d .rb-top-bar {
+    width: 100%;
+    max-width: 580px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    background: #1e293b !important;
+    padding: 18px 22px;
+    border-radius: 20px;
+    border: 2px solid #38bdf8 !important;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5) !important;
+  }
+
+  /* 🚨 글로벌 h1 어두운 글씨 덮어쓰기를 완벽 차단하는 !important 순백색 설정 */
+  .game-rubiks-2d .rb-title h1 {
+    margin: 0 !important;
+    font-size: 1.65rem !important;
+    font-weight: 900 !important;
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    text-shadow: 0 2px 10px rgba(255,255,255,0.4) !important;
+  }
+  
+  .game-rubiks-2d .rb-diff-badge {
+    background: #3b82f6 !important;
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+    padding: 4px 14px;
+    border-radius: 999px;
+    font-size: 0.88rem;
+    font-weight: 800;
+    margin-top: 6px;
+    display: inline-block;
+  }
+
+  .game-rubiks-2d .btn-manual {
+    background: #38bdf8 !important; color: #0f172a !important; -webkit-text-fill-color: #0f172a !important; font-weight: 800; padding: 10px 16px; border-radius: 12px; border: none; cursor: pointer; font-size: 0.95rem;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3); transition: all 0.15s;
+  }
+  .game-rubiks-2d .btn-manual:hover { background: #0ea5e9 !important; color: #ffffff !important; -webkit-text-fill-color: #ffffff !important; }
+  .game-rubiks-2d .btn-manual:active { transform: scale(0.95); }
+
+  /* 🌟 [신설] 3×3 / 4×4 보드 선택 탭 (언제든 4×4 도전 가능!) */
+  .game-rubiks-2d .mission-tabs {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    width: 100%;
+    max-width: 580px;
+    margin-bottom: 20px;
+  }
+  .game-rubiks-2d .tab-btn {
+    padding: 14px;
+    border-radius: 16px;
+    border: 2px solid #334155;
+    background: #1e293b;
+    color: #94a3b8;
+    font-size: 1.02rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+  }
+  .game-rubiks-2d .tab-btn.active {
+    border-color: #38bdf8;
+    background: #0ea5e9;
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+    box-shadow: 0 6px 16px rgba(14,165,233,0.35);
+  }
+
+  /* 점수 및 현황 헤더 */
+  .game-rubiks-2d .rb-header {
+    width: 100%;
+    max-width: 580px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    background: #1e293b;
+    padding: 16px 22px;
+    border-radius: 16px;
+    border: 1px solid #334155;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.25);
+  }
+
+  .game-rubiks-2d .rb-stats { text-align: right; }
+  .game-rubiks-2d .rb-stats div { font-size: 0.95rem; font-weight: 600; color: #cbd5e1; margin-bottom: 4px; }
+  .game-rubiks-2d .rb-stats strong { color: #38bdf8; font-size: 1.15rem; }
+
+  /* Board Area */
+  .game-rubiks-2d .rb-play-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 580px;
+    background: #1e293b;
+    padding: 24px 20px;
+    border-radius: 20px;
+    border: 1px solid #334155;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+    margin-bottom: 24px;
+    position: relative;
+  }
+
+  /* 🌟 [겹침 완벽 해결] 목표 패턴 박스 - position: relative 독립 패널 배치 */
+  .game-rubiks-2d .rb-target-box {
+    position: relative;
+    width: 100%;
+    max-width: 300px;
+    background: #0f172a;
+    padding: 14px 20px;
+    border-radius: 14px;
+    border: 2px solid #38bdf8;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.3);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 24px;
+  }
+  
+  .game-rubiks-2d .rb-target-title {
+    font-size: 1.05rem !important; color: #fef08a !important; -webkit-text-fill-color: #fef08a !important; margin-bottom: 10px; text-align: center; font-weight: 800; text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+  }
+
+  .game-rubiks-2d .rb-target-grid {
+    display: grid; gap: 4px; background: #334155; padding: 5px; border-radius: 6px;
+  }
+  .game-rubiks-2d .rb-target-cell {
+    width: 22px; height: 22px; border-radius: 4px;
+  }
+
+  /* Main Grid Wrapper with Arrows */
+  .game-rubiks-2d .rb-grid-wrapper {
+    position: relative;
+    padding: 42px;
+    margin: 10px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .game-rubiks-2d .rb-grid {
+    display: grid;
+    gap: 5px;
+    background: #0f172a;
+    border: 4px solid #475569;
+    border-radius: 12px;
+    padding: 5px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+  }
+
+  .game-rubiks-2d .rb-cell {
+    border-radius: 8px;
+    transition: transform 0.15s, background-color 0.15s;
+    box-shadow: inset 0 0 0 2px rgba(255,255,255,0.15);
+  }
+
+  /* Arrows */
+  .game-rubiks-2d .rb-arrow {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #334155;
+    color: white;
+    cursor: pointer;
+    font-size: 1.25rem;
+    font-weight: 800;
+    border-radius: 8px;
+    transition: background 0.15s, transform 0.1s;
+    user-select: none;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+  }
+  .game-rubiks-2d .rb-arrow:hover { background: #475569; }
+  .game-rubiks-2d .rb-arrow:active { transform: scale(0.9); background: #0ea5e9; }
+  
+  .game-rubiks-2d .rb-arrow.hinted {
+    background: #f59e0b;
+    box-shadow: 0 0 16px #f59e0b;
+    animation: pulse 0.8s infinite alternate;
+  }
+
+  @keyframes pulse {
+    0% { transform: scale(1); }
+    100% { transform: scale(1.15); }
+  }
+
+  /* Controls */
+  .game-rubiks-2d .rb-controls {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+    max-width: 580px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+  
+  .game-rubiks-2d .btn-ctrl {
+    flex: 1 1 calc(50% - 10px);
+    min-width: 120px;
+    padding: 14px;
+    border-radius: 14px;
+    border: none;
+    font-weight: 800;
+    font-size: 0.98rem;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    transition: transform 0.1s, background 0.2s;
+    color: white;
+  }
+  .game-rubiks-2d .btn-ctrl:active { transform: scale(0.96); }
+  .game-rubiks-2d .btn-ctrl:disabled { opacity: 0.4; cursor: not-allowed; }
+  
+  .game-rubiks-2d .btn-undo { background: #64748b; }
+  .game-rubiks-2d .btn-undo:hover { background: #475569; }
+  .game-rubiks-2d .btn-hint { background: #f59e0b; }
+  .game-rubiks-2d .btn-hint:hover { background: #d97706; }
+  .game-rubiks-2d .btn-shuffle { background: #ef4444; }
+  .game-rubiks-2d .btn-shuffle:hover { background: #dc2626; }
+  .game-rubiks-2d .btn-home { background: #3b82f6; }
+  .game-rubiks-2d .btn-home:hover { background: #2563eb; }
+
+  /* Strategy Manual Modal */
+  .game-rubiks-2d .rb-modal-overlay {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 50; padding: 20px;
+  }
+  .game-rubiks-2d .rb-modal {
+    background: #1e293b; border: 2px solid #38bdf8; border-radius: 20px; max-width: 520px; width: 100%; padding: 26px; color: #f8fafc;
+    box-shadow: 0 20px 35px rgba(0,0,0,0.6); max-height: 85vh; overflow-y: auto; text-align: left;
+  }
+  .game-rubiks-2d .rb-modal h3 { color: #38bdf8; margin-top: 0; font-size: 1.4rem; border-bottom: 1px solid #334155; padding-bottom: 12px; }
+  .game-rubiks-2d .rb-modal h4 { color: #facc15; margin: 18px 0 8px 0; font-size: 1.1rem; }
+  .game-rubiks-2d .rb-modal p { font-size: 0.98rem; line-height: 1.6; color: #cbd5e1; margin-bottom: 8px; }
+  .game-rubiks-2d .btn-close-modal { background: #38bdf8; color: #0f172a; border: none; font-weight: 800; padding: 14px 20px; border-radius: 12px; cursor: pointer; margin-top: 22px; width: 100%; font-size: 1.05rem; }
+
+  /* Overlay */
+  .game-rubiks-2d .rb-overlay {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(15, 23, 42, 0.95);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    border-radius: 20px;
+    backdrop-filter: blur(8px);
+    text-align: center;
+    padding: 24px;
+    animation: fadeIn 0.3s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+  }
+  
+  .game-rubiks-2d .btn-primary {
+    background: #3b82f6; color: white; padding: 14px 28px;
+    border-radius: 12px; border: none; font-size: 1.1rem;
+    font-weight: 800; cursor: pointer; margin-top: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    transition: background 0.2s, transform 0.1s;
+  }
+  .game-rubiks-2d .btn-primary:hover { background: #2563eb; }
+  .game-rubiks-2d .btn-primary:active { transform: scale(0.97); }
+
+  .game-rubiks-2d .rb-rank-card {
+    background: #1e293b;
+    border: 1px solid #38bdf8;
+    border-radius: 16px;
+    padding: 18px;
+    width: 100%;
+    max-width: 360px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+    margin: 15px 0;
+  }
+
+  .game-rubiks-2d .rank-item {
+    display: flex; justify-content: space-between; align-items: center;
+    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+    padding: 8px 14px; border-radius: 8px; margin-bottom: 6px;
+    font-size: 0.95rem; color: #f8fafc; font-weight: 600;
+  }
+  .game-rubiks-2d .rank-num { color: #fbbf24; font-weight: 900; margin-right: 8px; }
+  .game-rubiks-2d .rank-score { color: #38bdf8; font-weight: 800; }
+
+  @media (max-width: 500px) {
+    .game-rubiks-2d .rb-title h1 { font-size: 1.35rem !important; }
+    .game-rubiks-2d .btn-ctrl { flex: 1 1 100%; }
+    .game-rubiks-2d .rb-grid-wrapper { padding: 34px; }
+  }
+</style>
+
+<script>
+(function() {
+  const COLORS = ['#ef4444', '#3b82f6', '#10b981', '#eab308']; // Red, Blue, Green, Yellow
+
+  const Rubiks2DGame = {
+    id: 'rubiks-2d',
+    title: '2D 루빅스 펼치기',
+    icon: '🧊',
+    category: 'game',
+    
+    container: null,
+    timers: [],
+    timerInterval: null,
+    
+    state: {
+      size: 3,
+      difficulty: '3×3 초급 모드',
+      stage: 1,
+      board: [],
+      goalBoard: [],
+      solutionPath: [],
+      moveCount: 0,
+      maxMoves: 25,
+      score: 0,
+      startTime: 0,
+      timeElapsed: 0,
+      isGameOver: false,
+      isAnimating: false,
+      hintMove: null
+    },
+
+    mount(container, context = {}) {
+      let target = typeof container === 'string' ? document.querySelector(container) : container;
+      if (!target || !(target instanceof HTMLElement)) {
+        target = window.MathLabUtils?.getMountContainer ? window.MathLabUtils.getMountContainer(container) : document.getElementById('mathlab-view');
+      }
+      if (!target) target = document.getElementById('game-rubiks-2d-app') || document.getElementById('new-root') || document.getElementById('game-container');
+
+      if (!target || target === document.body) {
+        let host = document.getElementById('rubiks-2d-force-host');
+        if (!host) {
+          host = document.createElement('div'); host.id = 'rubiks-2d-force-host';
+          host.style.cssText = 'width:100%; max-width:960px; margin:0 auto; padding:20px 10px; box-sizing:border-box; z-index:999; position:relative; background:#0f172a; border-radius:24px;';
+          const footer = document.querySelector('footer, #footer, .app-footer, #legacy-footer, .mathlab-footer');
+          if (footer && footer.parentNode) footer.parentNode.insertBefore(host, footer);
+          else document.body.appendChild(host);
+        }
+        target = host;
+      }
+
+      if (target) target.style.display = '';
+      this.container = target;
+
+      const level = context?.level || '3×3 초급 모드';
+      this.initGame(level);
+    },
+
+    goHome() {
+      if (typeof window.MathLabCleanup?.clearTimers === 'function') {
+        window.MathLabCleanup.clearTimers(this.timers);
+      }
+      this.timers.forEach(clearTimeout);
+      if (this.timerInterval) clearInterval(this.timerInterval);
+      this.timers = [];
+      this.timerInterval = null;
+
+      if (window.LegacyBridge && typeof window.LegacyBridge.backHome === 'function') {
+        try { window.LegacyBridge.backHome(); return; } catch(e) {}
+      }
+      if (typeof window.renderLegacyDashboardHome === 'function') {
+        try { window.renderLegacyDashboardHome(); return; } catch(e) {}
+      }
+      if (typeof window.MathLabRenderHome === 'function') {
+        try { window.MathLabRenderHome(); return; } catch(e) {}
+      }
+
+      const mathlabRoot = document.getElementById('mathlab-root');
+      const legacyRoot = document.getElementById('legacy-root');
+      if (mathlabRoot) mathlabRoot.classList.add('hidden');
+      if (legacyRoot) legacyRoot.classList.remove('hidden');
+
+      const dashboard = document.getElementById('dashboard-screen');
+      if (dashboard) {
+        dashboard.classList.add('active');
+        dashboard.style.display = '';
+      }
+      window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+    },
+
+    switchMode(mode) {
+      this.initGame(mode);
+    },
+
+    initGame(level) {
+      this.state.difficulty = level;
+      this.state.size = (level.includes('4×4') || level === '4x4 마스터 모드') ? 4 : 3;
+      this.state.stage = 1;
+      this.state.score = 0;
+      this.state.timeElapsed = 0;
+      this.state.isGameOver = false;
+      this.state.startTime = Date.now();
+      
+      this.startStage();
+      this.startTimer();
+    },
+
+    startStage() {
+      const baseMoves = (this.state.size === 3) ? 20 : 35;
+      this.state.maxMoves = baseMoves + Math.floor((this.state.stage - 1) * 3);
+      this.state.moveCount = 0;
+      this.state.hintMove = null;
+      
+      this.generateTargetPattern(this.state.stage);
+      
+      this.state.board = JSON.parse(JSON.stringify(this.state.goalBoard));
+      this.state.solutionPath = [];
+      
+      const shuffleCount = Math.min(30, (this.state.size === 3 ? 6 : 10) + this.state.stage * 2);
+      this.shuffleBoard(shuffleCount);
+      
+      this.render();
+    },
+
+    generateTargetPattern(stage) {
+      const n = this.state.size;
+      this.state.goalBoard = [];
+      const patternType = (stage - 1) % 4; 
+      
+      for (let r = 0; r < n; r++) {
+        const row = [];
+        for (let c = 0; c < n; c++) {
+          if (patternType === 0) row.push(r % COLORS.length);
+          else if (patternType === 1) row.push(c % COLORS.length);
+          else if (patternType === 2) row.push((r + c) % (n === 3 ? 3 : 4));
+          else row.push((r * 2 + c) % (n === 3 ? 3 : 4));
+        }
+        this.state.goalBoard.push(row);
+      }
+    },
+
+    shuffleBoard(moves) {
+      for (let i = 0; i < moves; i++) {
+        const isRow = Math.random() < 0.5;
+        const index = Math.floor(Math.random() * this.state.size);
+        const dir = Math.random() < 0.5 ? 1 : -1;
+        this.applyMove(isRow, index, dir, true);
+      }
+      this.state.moveCount = 0;
+      this.state.hintMove = null;
+    },
+
+    applyMove(isRow, index, dir, isShuffle = false) {
+      if (isRow) {
+        const row = [...this.state.board[index]];
+        if (dir === 1) row.unshift(row.pop());
+        else row.push(row.shift());
+        this.state.board[index] = row;
+      } else {
+        const col = [];
+        for (let r = 0; r < this.state.size; r++) col.push(this.state.board[r][index]);
+        if (dir === 1) col.unshift(col.pop());
+        else col.push(col.shift());
+        for (let r = 0; r < this.state.size; r++) this.state.board[r][index] = col[r];
+      }
+      
+      const invMove = { isRow, index, dir: -dir };
+      
+      if (this.state.solutionPath.length > 0) {
+        const last = this.state.solutionPath[0];
+        if (last.isRow === isRow && last.index === index && last.dir === dir) {
+          this.state.solutionPath.shift();
+        } else {
+          this.state.solutionPath.unshift(invMove);
+        }
+      } else {
+        this.state.solutionPath.unshift(invMove);
+      }
+      
+      if (!isShuffle) {
+        this.state.moveCount++;
+        this.state.hintMove = null;
+        this.updateUI();
+        this.checkWin();
+      }
+    },
+
+    handleArrowClick(isRow, index, dir) {
+      if (this.state.isGameOver || this.state.isAnimating) return;
+      if (this.state.moveCount >= this.state.maxMoves) {
+        this.gameOver(false);
+        return;
+      }
+      this.applyMove(isRow, index, dir);
+    },
+
+    undoMove() {
+      if (this.state.isGameOver || this.state.isAnimating || this.state.moveCount === 0) return;
+      if (this.state.solutionPath.length === 0) return;
+      
+      const move = this.state.solutionPath[0];
+      this.applyMove(move.isRow, move.index, move.dir, true);
+      
+      this.state.solutionPath.shift();
+      this.state.moveCount--;
+      this.state.score = Math.max(0, this.state.score - 20);
+      
+      this.state.hintMove = null;
+      this.updateUI();
+    },
+    
+    showHint() {
+      if (this.state.isGameOver || this.state.isAnimating) return;
+      if (this.state.solutionPath.length === 0) return;
+      
+      this.state.score = Math.max(0, this.state.score - 50);
+      this.state.hintMove = this.state.solutionPath[0];
+      this.updateUI();
+      if (window.showToast) window.showToast('💡 정답으로 가는 화살표가 노란색으로 반짝입니다! (-50점)');
+    },
+
+    isBoardSolved() {
+      for (let r = 0; r < this.state.size; r++) {
+        for (let c = 0; c < this.state.size; c++) {
+          if (this.state.board[r][c] !== this.state.goalBoard[r][c]) return false;
+        }
+      }
+      return true;
+    },
+
+    checkWin() {
+      if (this.isBoardSolved()) {
+        this.stageClear();
+      } else if (this.state.moveCount >= this.state.maxMoves) {
+        this.gameOver(false);
+      }
+    },
+
+    stageClear() {
+      this.state.isAnimating = true;
+      const movesLeft = this.state.maxMoves - this.state.moveCount;
+      const stageBonus = 500 + movesLeft * 30;
+      this.state.score += stageBonus;
+      
+      this.updateStatsOnly();
+      
+      const overlay = document.createElement('div');
+      overlay.className = 'rb-overlay';
+      overlay.innerHTML = `
+        <h2 style="color:#34d399; font-size:2.4rem; margin:0 0 10px;">🎉 STAGE ${this.state.stage} CLEAR!</h2>
+        <p style="font-size:1.25rem; color:white; margin: 0 0 4px;">현재 누적 점수: <strong style="color:#38bdf8;">${this.state.score}</strong>점</p>
+        <p style="font-size:0.95rem; color:#94a3b8; margin:0 0 20px;">이동 절약 보너스: +${stageBonus}점</p>
+        <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
+          <button class="btn-primary" id="rb-next-btn" style="background:#10b981;">다음 스테이지 도전 ➔</button>
+          <button class="btn-primary" id="rb-stage-home-btn" style="background:#3b82f6;">🏠 홈으로</button>
+        </div>
+      `;
+      
+      this.container.querySelector('.rb-play-area').appendChild(overlay);
+      
+      overlay.querySelector('#rb-next-btn').addEventListener('click', () => {
+        this.state.stage++;
+        this.state.isAnimating = false;
+        this.startStage();
+      });
+
+      overlay.querySelector('#rb-stage-home-btn')?.addEventListener('click', () => this.goHome());
+    },
+
+    gameOver(success) {
+      this.state.isGameOver = true;
+      if (this.timerInterval) clearInterval(this.timerInterval);
+      
+      const overlay = document.createElement('div');
+      overlay.className = 'rb-overlay';
+      
+      const canSubmitRank = typeof window.submitRanking === 'function' && this.state.score > 0;
+      
+      overlay.innerHTML = `
+        <h2 style="color:#ef4444; font-size:2.4rem; margin:0 0 5px;">GAME OVER</h2>
+        <p style="font-size:1.05rem; color:#cbd5e1; margin: 0 0 4px;">도달 스테이지: <strong style="color:white;">Stage ${this.state.stage} (${this.state.size}×${this.state.size})</strong></p>
+        <p style="font-size:1.4rem; color:#38bdf8; font-weight:900; margin: 0 0 16px;">최종 점수: ${this.state.score}점</p>
+        
+        ${canSubmitRank ? `
+        <div class="rb-rank-card">
+          <h3 style="margin:0 0 8px 0; color:#fbbf24; font-size:1.05rem; display:flex; align-items:center; justify-content:center; gap:6px;">
+            <span>🏆</span> 명예의 전당 기록 등록
+          </h3>
+          <p style="font-size:0.85rem; color:#94a3b8; margin:0 0 12px 0;">멋진 도전이었습니다! 이름을 남겨주세요.</p>
+          <div style="display:flex; gap:8px;">
+            <input type="text" id="rb-nick-input" placeholder="학교/학년/반 닉네임" maxlength="15" style="flex:1; padding:10px; border-radius:8px; border:1px solid #475569; background:#0f172a; color:white; font-size:0.95rem; font-weight:bold; text-align:center; outline:none;">
+            <button id="rb-submit-btn" style="background:#fbbf24; color:#0f172a; font-weight:800; border:none; padding:0 16px; border-radius:8px; cursor:pointer; font-size:0.95rem;">등록</button>
+          </div>
+          <div id="rb-rank-msg" style="font-size:0.85rem; color:#10b981; margin-top:8px; height:1.2em; font-weight:bold;"></div>
+        </div>
+        ` : ''}
+
+        <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
+          <button class="btn-primary" id="rb-restart-btn">🔄 다시 도전하기</button>
+          <button class="btn-primary" id="rb-gameover-home-btn" style="background:#3b82f6;">🏠 홈으로</button>
+        </div>
+      `;
+      
+      this.container.querySelector('.rb-play-area').appendChild(overlay);
+      
+      overlay.querySelector('#rb-restart-btn').addEventListener('click', () => {
+        this.initGame(this.state.difficulty);
+      });
+
+      overlay.querySelector('#rb-gameover-home-btn')?.addEventListener('click', () => this.goHome());
+
+      if (canSubmitRank) {
+        const inputEl = overlay.querySelector('#rb-nick-input');
+        const submitBtn = overlay.querySelector('#rb-submit-btn');
+        const msgEl = overlay.querySelector('#rb-rank-msg');
+
+        const doSubmit = () => {
+          const nick = inputEl.value.trim();
+          if (!nick) {
+            msgEl.textContent = '⚠️ 닉네임을 입력해주세요!';
+            msgEl.style.color = '#f87171';
+            inputEl.focus();
+            return;
+          }
+          submitBtn.disabled = true;
+          inputEl.disabled = true;
+          submitBtn.style.opacity = '0.5';
+          msgEl.style.color = '#38bdf8';
+          msgEl.textContent = '⏳ 서버에 랭킹 등록 중...';
+          
+          window.submitRanking('2D 루빅스 펼치기', this.state.score, true, nick, 'rb-leaderboard-container');
+          
+          try {
+            let ranks = JSON.parse(localStorage.getItem('rank_rb-leaderboard-container') || '[]');
+            ranks.push({ nickname: nick, score: this.state.score, date: new Date().toLocaleDateString('ko-KR') });
+            ranks.sort((a, b) => (b.score || 0) - (a.score || 0));
+            localStorage.setItem('rank_rb-leaderboard-container', JSON.stringify(ranks.slice(0, 50)));
+          } catch(e) {}
+          
+          setTimeout(() => {
+            msgEl.style.color = '#10b981';
+            msgEl.textContent = '✅ 명예의 전당 등록 완료!';
+            this.loadLeaderboard();
+          }, 600);
+        };
+
+        submitBtn.addEventListener('click', doSubmit);
+        inputEl.addEventListener('keypress', (e) => { if (e.key === 'Enter') doSubmit(); });
+        setTimeout(() => inputEl.focus(), 100);
+      }
+    },
+
+    destroy() {
+      if (window.MathLabCleanup) window.MathLabCleanup.clearTimers(this.timers);
+      this.timers.forEach(clearTimeout);
+      if (this.timerInterval) clearInterval(this.timerInterval);
+      const host = document.getElementById('rubiks-2d-force-host'); if (host) host.remove();
+      if (this.container) this.container.innerHTML = '';
+      this.container = null;
+    },
+
+    startTimer() {
+      if (this.timerInterval) clearInterval(this.timerInterval);
+      this.timerInterval = setInterval(() => {
+        if (!document.querySelector('.game-rubiks-2d')) {
+          this.destroy();
+          return;
+        }
+        if (this.state.isGameOver || this.state.isAnimating) return;
+        this.state.timeElapsed = Math.floor((Date.now() - this.state.startTime) / 1000);
+        this.updateStatsOnly();
+      }, 1000);
+    },
+
+    render() {
+      const is3x3 = this.state.size === 3;
+      let html = `
+        <div class="game-rubiks-2d">
+          <!-- 🌟 [시인성 1000% 방어막] 글로벌 어두운 스타일을 완전히 이기는 순백색 헤더 -->
+          <div class="rb-top-bar">
+            <div class="rb-title">
+              <h1>${this.icon} ${this.title}</h1>
+              <span class="rb-diff-badge">Stage ${this.state.stage} (${this.state.size}×${this.state.size})</span>
+            </div>
+            <button class="btn-manual" id="rb-btn-manual">📖 게임 방법</button>
+          </div>
+
+          <!-- 🌟 [신설] 3×3 초급 모드 vs 4×4 마스터 모드 선택 탭 -->
+          <div class="mission-tabs">
+            <button class="tab-btn ${is3x3 ? 'active' : ''}" id="rb-tab-3x3">🟢 3×3 초급 모드</button>
+            <button class="tab-btn ${!is3x3 ? 'active' : ''}" id="rb-tab-4x4">🔵 4×4 마스터 모드</button>
+          </div>
+
+          <div class="rb-header">
+            <div style="font-size:1.15rem; font-weight:800; color:#fbbf24;">
+              🏆 누적 점수: <span id="rb-score" style="color:white; font-size:1.45rem;">${this.state.score}</span>
+            </div>
+            <div class="rb-stats">
+              <div>진행 시간: <strong id="rb-time">0:00</strong></div>
+              <div style="font-size:0.95rem; color:#94a3b8;">남은 이동: <span id="rb-moves" style="color:#38bdf8;font-weight:bold;font-size:1.2rem;">${this.state.maxMoves - this.state.moveCount}</span>회</div>
+            </div>
+          </div>
+          
+          <div class="rb-play-area">
+            <!-- 🌟 [겹침 완벽 해결] 상단 독립 패널로 배치된 목표 패턴 -->
+            <div class="rb-target-box">
+              <div class="rb-target-title">🎯 목표 패턴 (Stage ${this.state.stage})</div>
+              <div class="rb-target-grid" style="grid-template-columns: repeat(${this.state.size}, 1fr);">
+                ${this.generateTargetHTML()}
+              </div>
+            </div>
+            
+            <div class="rb-grid-wrapper" id="rb-grid-wrapper"></div>
+          </div>
+          
+          <div class="rb-controls">
+            <button class="btn-ctrl btn-undo" id="rb-btn-undo">↩ 되돌리기 (-20점)</button>
+            <button class="btn-ctrl btn-hint" id="rb-btn-hint">💡 힌트 보기 (-50점)</button>
+            <button class="btn-ctrl btn-shuffle" id="rb-btn-shuffle">🎲 현재 판 섞기</button>
+            <button class="btn-ctrl btn-home" id="rb-btn-home">🏠 대시보드 홈으로</button>
+          </div>
+          
+          <div class="rb-leaderboard-card" style="width: 100%; max-width: 580px; background: #1e293b; padding: 20px; border-radius: 16px; margin-bottom: 20px; border: 1px solid #334155;">
+            <h3 style="margin:0 0 12px 0; font-size:1.15rem; color:#f8fafc; text-align: center;">🏆 명예의 전당 (최고 누적 점수)</h3>
+            <div id="rb-leaderboard-container">
+              <p style="color:#64748b; font-size:0.9rem; text-align:center;">로딩 중...</p>
+            </div>
+          </div>
+
+          <!-- Strategy Manual Modal -->
+          <div class="rb-modal-overlay" id="rb-manual-modal">
+            <div class="rb-modal">
+              <h3>📖 2D 루빅스 펼치기 게임 방법</h3>
+              
+              <h4>🎮 1. 기본 조작 및 목표</h4>
+              <p>• 보드 가장자리의 <strong>화살표(◀▶▲▼)</strong>를 클릭하면 해당 줄이 통째로 순환 이동합니다.</p>
+              <p>• <strong>순환 이동(Wrap-around):</strong> 오른쪽 끝으로 나간 블록은 사라지지 않고 반대편 끝으로 다시 들어옵니다!</p>
+              <p>• 상단의 <strong>[🎯 목표 패턴]</strong> 미니맵과 똑같은 색상 배치를 만들면 스테이지를 클리어합니다.</p>
+
+              <h4>🧠 2. 핵심 수학 원리 (역연산과 군론)</h4>
+              <p>• <strong>역연산의 법칙:</strong> 어떤 줄을 오른쪽(▶)으로 1번 밀었다면, 반대 방향인 왼쪽(◀)으로 1번 밀면 정확히 원래 상태로 돌아옵니다.</p>
+              <p>• <strong>무한 스테이지:</strong> 스테이지가 오를수록 가로/세로 일치, 체크무늬, 대각선 등 다채로운 목표 패턴이 등장하며 이동 횟수가 충전됩니다.</p>
+
+              <h4>💡 3. 고득점 팁</h4>
+              <p>• 실수를 했을 땐 이동 횟수를 아끼기 위해 <strong>[↩ 되돌리기]</strong>를 적극 활용하세요.</p>
+              <p>• 도저히 막힐 땐 <strong>[💡 힌트 보기]</strong>를 누르면 정답으로 가는 화살표가 노란색으로 반짝입니다.</p>
+
+              <button class="btn-close-modal" id="rb-close-modal">확인 (게임으로 돌아가기)</button>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      this.container.innerHTML = html;
+      this.bindEvents();
+      this.updateUI();
+      this.loadLeaderboard();
+    },
+
+    generateTargetHTML() {
+      let html = '';
+      for (let r = 0; r < this.state.size; r++) {
+        for (let c = 0; c < this.state.size; c++) {
+          const color = COLORS[this.state.goalBoard[r][c]];
+          html += `<div class="rb-target-cell" style="background:${color}"></div>`;
+        }
+      }
+      return html;
+    },
+
+    updateUI() {
+      const wrapper = this.container.querySelector('#rb-grid-wrapper');
+      if (!wrapper) return;
+      
+      // 🌟 [모바일 반응형 자동 감지 및 3×3 / 4×4 지능형 스케일링]
+      const isMobile = window.innerWidth <= 480;
+      const cellSize = isMobile ? (this.state.size === 3 ? 54 : 44) : (this.state.size === 3 ? 64 : 54);
+      const arrowSize = isMobile ? 38 : 44;
+      const gap = 5;
+      const padding = 5;
+      
+      let html = `<div class="rb-grid" style="grid-template-columns: repeat(${this.state.size}, ${cellSize}px); grid-template-rows: repeat(${this.state.size}, ${cellSize}px);">`;
+      
+      for (let r = 0; r < this.state.size; r++) {
+        for (let c = 0; c < this.state.size; c++) {
+          const color = COLORS[this.state.board[r][c]];
+          html += `<div class="rb-cell" style="background:${color}"></div>`;
+        }
+      }
+      html += `</div>`;
+      
+      const wrapperOffset = isMobile ? 34 : 42;
+      
+      for (let i = 0; i < this.state.size; i++) {
+        const offset = wrapperOffset + padding + i * (cellSize + gap) + cellSize / 2;
+        
+        const isColUpHint = this.state.hintMove && !this.state.hintMove.isRow && this.state.hintMove.index === i && this.state.hintMove.dir === -1;
+        const isColDnHint = this.state.hintMove && !this.state.hintMove.isRow && this.state.hintMove.index === i && this.state.hintMove.dir === 1;
+        
+        html += `<div class="rb-arrow rb-arrow-col ${isColUpHint ? 'hinted' : ''}" data-type="col" data-index="${i}" data-dir="-1" style="width:${arrowSize}px; height:26px; left: ${offset - arrowSize/2}px; top: 4px;">▲</div>`;
+        html += `<div class="rb-arrow rb-arrow-col ${isColDnHint ? 'hinted' : ''}" data-type="col" data-index="${i}" data-dir="1" style="width:${arrowSize}px; height:26px; left: ${offset - arrowSize/2}px; bottom: 4px;">▼</div>`;
+        
+        const isRowLHint = this.state.hintMove && this.state.hintMove.isRow && this.state.hintMove.index === i && this.state.hintMove.dir === -1;
+        const isRowRHint = this.state.hintMove && this.state.hintMove.isRow && this.state.hintMove.index === i && this.state.hintMove.dir === 1;
+        
+        html += `<div class="rb-arrow rb-arrow-row ${isRowLHint ? 'hinted' : ''}" data-type="row" data-index="${i}" data-dir="-1" style="width:26px; height:${arrowSize}px; top: ${offset - arrowSize/2}px; left: 4px;">◀</div>`;
+        html += `<div class="rb-arrow rb-arrow-row ${isRowRHint ? 'hinted' : ''}" data-type="row" data-index="${i}" data-dir="1" style="width:26px; height:${arrowSize}px; top: ${offset - arrowSize/2}px; right: 4px;">▶</div>`;
+      }
+      
+      wrapper.innerHTML = html;
+      this.updateStatsOnly();
+      
+      const undoBtn = this.container.querySelector('#rb-btn-undo');
+      if (undoBtn) undoBtn.disabled = this.state.moveCount === 0;
+      
+      const arrows = wrapper.querySelectorAll('.rb-arrow');
+      arrows.forEach(arrow => {
+        arrow.addEventListener('click', () => {
+          const isRow = arrow.dataset.type === 'row';
+          const index = parseInt(arrow.dataset.index);
+          const dir = parseInt(arrow.dataset.dir);
+          this.handleArrowClick(isRow, index, dir);
+        });
+      });
+    },
+
+    updateStatsOnly() {
+      const timeEl = this.container.querySelector('#rb-time');
+      const scoreEl = this.container.querySelector('#rb-score');
+      const movesEl = this.container.querySelector('#rb-moves');
+      
+      if (timeEl) {
+        const m = Math.floor(this.state.timeElapsed / 60);
+        const s = this.state.timeElapsed % 60;
+        timeEl.textContent = `${m}:${s.toString().padStart(2, '0')}`;
+      }
+      if (scoreEl) scoreEl.textContent = this.state.score;
+      if (movesEl) {
+        const left = this.state.maxMoves - this.state.moveCount;
+        movesEl.textContent = left;
+        movesEl.style.color = left <= 5 ? '#ef4444' : '#38bdf8';
+      }
+    },
+
+    bindEvents() {
+      this.container.querySelector('#rb-tab-3x3')?.addEventListener('click', () => this.switchMode('3×3 초급 모드'));
+      this.container.querySelector('#rb-tab-4x4')?.addEventListener('click', () => this.switchMode('4×4 마스터 모드'));
+
+      this.container.querySelector('#rb-btn-undo').addEventListener('click', () => this.undoMove());
+      this.container.querySelector('#rb-btn-hint').addEventListener('click', () => this.showHint());
+      this.container.querySelector('#rb-btn-shuffle').addEventListener('click', () => {
+        if(confirm('진행 상황이 초기화되고 보드를 다시 섞습니다. 계속하시겠습니까?')) {
+          this.startStage();
+        }
+      });
+      
+      this.container.querySelector('#rb-btn-home')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.goHome();
+      });
+
+      const modal = this.container.querySelector('#rb-manual-modal');
+      this.container.querySelector('#rb-btn-manual').addEventListener('click', () => { modal.style.display = 'flex'; });
+      this.container.querySelector('#rb-close-modal').addEventListener('click', () => { modal.style.display = 'none'; });
+      
+      window.addEventListener('resize', () => {
+        if (this.container && this.container.querySelector('#rb-grid-wrapper')) {
+          this.updateUI();
+        }
+      });
+    },
+
+    loadLeaderboard() {
+      try {
+        if (typeof window.loadGameLeaderboard === 'function') {
+          window.loadGameLeaderboard('2D 루빅스 펼치기', true, 'rb-leaderboard-container');
+        } else {
+          const localRanks = JSON.parse(localStorage.getItem('rank_rb-leaderboard-container') || '[]');
+          this.renderRankList(localRanks.slice(0, 5));
+        }
+      } catch (e) {
+        const localRanks = JSON.parse(localStorage.getItem('rank_rb-leaderboard-container') || '[]');
+        this.renderRankList(localRanks.slice(0, 5));
+      }
+    },
+
+    renderRankList(ranks) {
+      const el = this.container?.querySelector('#rb-leaderboard-container');
+      if (!el) return;
+
+      if (!ranks || ranks.length === 0) {
+        el.innerHTML = '<div style="text-align:center; color:#94a3b8; padding: 14px 0;">아직 등록된 랭킹이 없습니다. 첫 주인공이 되어보세요!</div>';
+        return;
+      }
+
+      el.innerHTML = ranks.map((r, i) => `
+        <div class="rank-item">
+          <div><span class="rank-num">${i + 1}위</span> ${r.nickname || '익명'}</div>
+          <div class="rank-score">${r.score || 0}점</div>
+        </div>
+      `).join('');
+    }
+  };
+
+  // =================================================================
+  // 🌟 Gen-3 및 Legacy(openApp) 완벽 상호 연결 브리지
+  // =================================================================
+  window.Rubiks2DGame = Rubiks2DGame;
+
+  window.initRubiks2DGame = function() {
+    const targetEl = document.getElementById('game-rubiks-2d-app');
+    if (targetEl) Rubiks2DGame.mount(targetEl);
+    else Rubiks2DGame.mount();
+  };
+
+  window.launchRubiks2DGame = function() {
+    if (typeof window.openApp === 'function') window.openApp('game-rubiks-2d-app');
+    else Rubiks2DGame.mount();
+  };
+
+  function registerRubiks2DGame() {
+    if (typeof window.MathLabGames !== 'undefined' && typeof window.MathLabGames.register === 'function') {
+      window.MathLabGames.register(Rubiks2DGame);
+    }
+  }
+
+  registerRubiks2DGame();
+  window.addEventListener('DOMContentLoaded', registerRubiks2DGame);
+  setTimeout(registerRubiks2DGame, 100);
+  setTimeout(registerRubiks2DGame, 500);
+})();
+</script>

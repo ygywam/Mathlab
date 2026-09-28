@@ -1,0 +1,111 @@
+<script>
+window.MathLabUtils = {
+  /**
+   * 항상 안전하게 렌더링할 루트 컨테이너를 찾습니다.
+   * mount() 내부의 중복 코드를 제거합니다.
+   */
+  getMountContainer(container) {
+    const modalContent = document.getElementById('mathlab-global-modal-content');
+    if (modalContent) return modalContent;
+
+    const view = document.getElementById('mathlab-view');
+    if (view) return view;
+    
+    if (container && typeof container.innerHTML !== 'undefined') {
+      return container;
+    }
+    
+    console.error(`[MathLab] 렌더링할 컨테이너를 찾을 수 없습니다.`, container);
+    return null;
+  },
+
+  /**
+   * bindEvents() 시 실제 렌더링된 DOM 요소 안에서만 이벤트를 걸도록 강제합니다.
+   * "Cannot access 'root' before initialization" 방지용 유틸입니다.
+   */
+  getRootElement(container, selector) {
+    if (container && typeof container.querySelector === 'function') {
+      const root = container.querySelector(selector);
+      if (root) return root;
+    }
+    return document.querySelector(selector);
+  },
+
+  /**
+   * 앱 실행 후 홈으로 돌아가는 공통 로직입니다.
+   */
+  goHome() {
+    if (window.MathLabGames && typeof window.MathLabGames.destroyCurrent === 'function') {
+      window.MathLabGames.destroyCurrent();
+    }
+    if (typeof window.MathLabRenderLegacyDashboard === 'function') {
+      window.MathLabRenderLegacyDashboard();
+      return;
+    }
+    if (typeof window.MathLabRenderHome === 'function') {
+      window.MathLabRenderHome();
+      return;
+    }
+    if (typeof window.openApp === 'function') {
+      window.openApp('home');
+    }
+  }
+};
+
+window.MathLabScoreRules = {
+  calculate({
+    correctCount = 0,
+    wrongCount = 0,
+    hintCount = 0,
+    timeBonus = 0,
+    streakBonus = 0,
+    baseScore = 100,
+    wrongPenalty = 30,
+    hintPenalty = 20
+  }) {
+    return Math.max(
+      0,
+      correctCount * baseScore
+      - wrongCount * wrongPenalty
+      - hintCount * hintPenalty
+      + timeBonus
+      + streakBonus
+    );
+  }
+};
+
+window.MathLabLeaderboard = {
+  createPayload({
+    boardId,
+    playerName,
+    score,
+    gameTitle,
+    difficulty = '보통',
+    playTime = 0,
+    extra = {}
+  }) {
+    return {
+      boardId,
+      playerName,
+      score,
+      gameTitle,
+      difficulty,
+      playTime,
+      createdAt: new Date().toISOString(),
+      sheetId: localStorage.getItem('math_lab_sheet_id') || '',
+      extra
+    };
+  }
+};
+
+window.MathLabCleanup = {
+  clearTimers(timers) {
+    if (!Array.isArray(timers)) return;
+    timers.forEach((timerId) => clearInterval(timerId));
+  },
+  cancelFrames(frameIds) {
+    if (!Array.isArray(frameIds)) return;
+    frameIds.forEach((frameId) => cancelAnimationFrame(frameId));
+  }
+};
+</script>

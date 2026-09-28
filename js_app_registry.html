@@ -1,0 +1,28 @@
+<script>
+  window.MathLabApps = (function () {
+    const apps = new Map();
+
+    return {
+      register(app) {
+        if (!app || !app.id) {
+          throw new Error('앱 id가 없습니다.');
+        }
+
+        if (apps.has(app.id)) {
+          apps.set(app.id, app);
+          return;
+        }
+
+        apps.set(app.id, app);
+      },
+
+      get(id) {
+        return apps.get(id);
+      },
+
+      all() {
+        return Array.from(apps.values());
+      }
+    };
+  })();
+</script>

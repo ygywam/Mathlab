@@ -1,0 +1,1015 @@
+<!-- 로마 숫자 퍼즐 (Roman Numeral Puzzle) Gen-3 표준 완결판 -->
+<style>
+  .game-roman-puzzle {
+    width: 100%;
+    min-height: 100%;
+    padding: 24px;
+    box-sizing: border-box;
+    color: #f8fafc;
+    background: linear-gradient(135deg, #1e1b18 0%, #291d12 50%, #17120e 100%);
+    border-radius: 24px;
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+    user-select: none;
+    -webkit-user-select: none;
+    border: 2px solid #b45309;
+    box-shadow: inset 0 0 40px rgba(0,0,0,0.6);
+  }
+
+  .game-roman-puzzle * { box-sizing: border-box; }
+  
+  .game-roman-puzzle .rp-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
+  .game-roman-puzzle .title-area h2 { margin: 0 0 6px; font-size: clamp(1.6rem, 3vw, 2.3rem); color: #fbbf24; font-weight: 900; display: flex; align-items: center; gap: 10px; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+  .game-roman-puzzle .title-area p { margin: 0; color: #fde68a; font-size: 1.05rem; font-weight: 600; opacity: 0.9; }
+  .game-roman-puzzle .stats-bar { display: flex; gap: 12px; font-weight: 800; font-size: 1.05rem; flex-wrap: wrap; align-items: center; }
+  
+  .game-roman-puzzle .stat-badge { background: #271c14; padding: 8px 16px; border-radius: 14px; box-shadow: 0 4px 8px rgba(0,0,0,0.3); border: 2px solid #92400e; color: #fde68a; display: flex; align-items: center; gap: 6px; }
+  .game-roman-puzzle .stat-badge.score { color: #fbbf24; border-color: #d97706; background: #3b2512; }
+  .game-roman-puzzle .stat-badge.combo { color: #fdba74; border-color: #ea580c; background: #3f1d0b; }
+  .game-roman-puzzle .stat-badge.life { color: #fca5a5; border-color: #ef4444; background: #451a1a; }
+  .game-roman-puzzle .stat-badge.timer { color: #fecaca; border-color: #f87171; background: #4c1d1d; animation: pulseTimer 1s infinite; display: none; }
+  @keyframes pulseTimer { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+  
+  @keyframes howtoPulse {
+    0% { transform: scale(1); box-shadow: 0 4px 10px rgba(245, 158, 11, 0.3); }
+    50% { transform: scale(1.05); box-shadow: 0 6px 18px rgba(245, 158, 11, 0.6); }
+    100% { transform: scale(1); box-shadow: 0 4px 10px rgba(245, 158, 11, 0.3); }
+  }
+  .game-roman-puzzle .btn-howto {
+    background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 14px;
+    font-size: 1.05rem;
+    font-weight: 900;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(217, 119, 6, 0.3);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+    animation: howtoPulse 2.5s infinite;
+  }
+  .game-roman-puzzle .btn-howto:hover {
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 8px 20px rgba(217, 119, 6, 0.5);
+    background: linear-gradient(135deg, #b45309 0%, #92400e 100%);
+    animation: none;
+  }
+
+  .game-roman-puzzle .main-layout { display: flex; gap: 24px; flex-wrap: wrap; }
+  
+  .game-roman-puzzle .game-area { flex: 1; min-width: 320px; display: flex; flex-direction: column; gap: 20px; }
+  .game-roman-puzzle .card { background: #271c14; border-radius: 20px; padding: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.4); border: 2px solid #78350f; }
+  
+  /* 금고 자물쇠 영역 */
+  .game-roman-puzzle .vault-box {
+    background: linear-gradient(135deg, #3b2512 0%, #1f140a 100%);
+    border: 4px solid #d97706;
+    border-radius: 24px;
+    padding: 30px 20px;
+    text-align: center;
+    position: relative;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.5), inset 0 0 20px rgba(245, 158, 11, 0.1);
+  }
+  
+  .game-roman-puzzle .mission-tag { font-size: 0.9rem; font-weight: 800; background: #92400e; color: #fef3c7; padding: 6px 16px; border-radius: 20px; display: inline-block; margin-bottom: 14px; text-transform: uppercase; letter-spacing: 1px; border: 1px solid #fbbf24; }
+  
+  .game-roman-puzzle .puzzle-question {
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 900;
+    color: #fbbf24;
+    font-family: 'Times New Roman', Times, serif;
+    letter-spacing: 2px;
+    margin: 10px 0 20px;
+    text-shadow: 0 0 15px rgba(251, 191, 36, 0.4);
+    padding: 15px;
+    background: rgba(0,0,0,0.3);
+    border-radius: 16px;
+    border: 1px solid #78350f;
+  }
+  
+  /* LED 자물쇠 디스플레이 */
+  .game-roman-puzzle .lock-display {
+    background: #0f172a;
+    border: 3px solid #64748b;
+    border-radius: 16px;
+    padding: 14px 24px;
+    font-size: 2.2rem;
+    font-weight: 900;
+    color: #38bdf8;
+    font-family: monospace;
+    letter-spacing: 6px;
+    min-height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: inset 0 0 15px rgba(0,0,0,0.8);
+    margin: 10px auto 24px;
+    max-width: 320px;
+  }
+  .game-roman-puzzle .lock-display.empty { color: #475569; letter-spacing: 2px; font-size: 1.4rem; }
+
+  /* 숫자 키패드 (아라비아 숫자 입력용) */
+  .game-roman-puzzle .numpad-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    max-width: 320px;
+    margin: 0 auto;
+  }
+  
+  .game-roman-puzzle .btn-num {
+    background: #3f2e21;
+    border: 2px solid #92400e;
+    color: #fde68a;
+    font-size: 1.5rem;
+    font-weight: 900;
+    padding: 16px 0;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: all 0.15s;
+    box-shadow: 0 4px 0 #5c2b0b;
+  }
+  .game-roman-puzzle .btn-num:hover:not(:disabled) { background: #5c3d28; transform: translateY(-2px); box-shadow: 0 6px 0 #5c2b0b; }
+  .game-roman-puzzle .btn-num:active:not(:disabled) { transform: translateY(2px); box-shadow: 0 2px 0 #5c2b0b; }
+  .game-roman-puzzle .btn-num:disabled { opacity: 0.4; cursor: not-allowed; }
+  
+  .game-roman-puzzle .btn-num.action { font-size: 1.1rem; background: #78350f; color: white; }
+  .game-roman-puzzle .btn-num.action:hover:not(:disabled) { background: #92400e; }
+  
+  .game-roman-puzzle .btn-num.submit {
+    grid-column: span 3;
+    background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+    color: white;
+    font-size: 1.3rem;
+    padding: 18px 0;
+    border-color: #fbbf24;
+    box-shadow: 0 6px 0 #78350f;
+  }
+  .game-roman-puzzle .btn-num.submit:hover:not(:disabled) { background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%); color: #1e1b18; }
+
+  /* 4지선다 보기 (로마 숫자 선택용) */
+  .game-roman-puzzle .choice-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-top: 10px;
+  }
+  @media (max-width: 500px) { .game-roman-puzzle .choice-grid { grid-template-columns: 1fr; } }
+  
+  .game-roman-puzzle .btn-choice {
+    background: #3b2512;
+    border: 3px solid #d97706;
+    color: #fbbf24;
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 1.8rem;
+    font-weight: 900;
+    padding: 20px 10px;
+    border-radius: 18px;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+    letter-spacing: 2px;
+  }
+  .game-roman-puzzle .btn-choice:hover:not(:disabled) { background: #5c3d28; transform: translateY(-3px); box-shadow: 0 10px 20px rgba(245, 158, 11, 0.3); border-color: #fbbf24; }
+  .game-roman-puzzle .btn-choice:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .game-roman-puzzle .btn-secondary { background: #3f2e21; color: #fde68a; border: 1px solid #78350f; padding: 12px 20px; font-size: 1rem; border-radius: 12px; cursor: pointer; font-weight: 700; transition: all 0.15s; }
+  .game-roman-puzzle .btn-secondary:hover:not(:disabled) { background: #5c3d28; }
+
+  .game-roman-puzzle .result-area { text-align: center; margin-top: 16px; padding: 18px; border-radius: 16px; display: none; font-weight: 800; font-size: 1.15rem; }
+  .game-roman-puzzle .result-area.show { display: block; animation: fadeIn 0.4s; }
+  .game-roman-puzzle .result-area.success { background: #064e3b; border: 2px solid #34d399; color: #a7f3d0; }
+  .game-roman-puzzle .result-area.error { background: #7f1d1d; border: 2px solid #f87171; color: #fecaca; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* 대응표 힌트 박스 */
+  .game-roman-puzzle .hint-box { background: #271c14; border: 2px solid #d97706; padding: 18px; border-radius: 16px; margin-top: 16px; display: none; text-align: left; }
+  .game-roman-puzzle .hint-box h4 { margin: 0 0 10px; color: #fbbf24; font-size: 1.1rem; font-weight: 900; border-bottom: 1px solid #78350f; padding-bottom: 8px; }
+  .game-roman-puzzle .hint-table { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; font-size: 0.95rem; font-weight: 800; margin-bottom: 12px; }
+  .game-roman-puzzle .hint-item { background: #3f2e21; padding: 6px 10px; border-radius: 8px; text-align: center; color: #fde68a; border: 1px solid #92400e; }
+  .game-roman-puzzle .hint-item span { color: #fbbf24; font-family: serif; font-size: 1.1rem; }
+  .game-roman-puzzle .hint-desc { margin: 0; color: #fcd34d; font-size: 0.9rem; line-height: 1.5; font-weight: 600; }
+  
+  .game-roman-puzzle .sidebar { width: 320px; display: flex; flex-direction: column; gap: 16px; flex-shrink: 0; }
+  @media (max-width: 768px) { .game-roman-puzzle .sidebar { width: 100%; } }
+
+  .game-roman-puzzle .diff-selector { display: flex; gap: 6px; background: #1a130d; p: 6px; border-radius: 14px; padding: 6px; border: 1px solid #5c2b0b; }
+  .game-roman-puzzle .diff-btn { flex: 1; padding: 10px 8px; border: none; border-radius: 10px; font-weight: 800; font-size: 0.95rem; cursor: pointer; color: #a8a29e; background: transparent; transition: all 0.2s; }
+  .game-roman-puzzle .diff-btn.active { background: #d97706; color: #ffffff; box-shadow: 0 2px 6px rgba(0,0,0,0.3); }
+
+  .game-roman-puzzle .rank-item {
+    display: flex; justify-content: space-between; align-items: center;
+    background: #3f2e21; border: 1px solid #78350f;
+    padding: 10px 14px; border-radius: 12px; margin-bottom: 8px;
+    font-size: 0.95rem; color: #fde68a; font-weight: 700;
+  }
+  .game-roman-puzzle .rank-num { color: #fbbf24; font-weight: 900; margin-right: 8px; }
+  .game-roman-puzzle .rank-score { color: #fcd34d; font-weight: 900; }
+</style>
+<script>
+(function() {
+  const ROMAN_MAP = [
+    { val: 1000, sym: 'M' }, { val: 900, sym: 'CM' },
+    { val: 500, sym: 'D' }, { val: 400, sym: 'CD' },
+    { val: 100, sym: 'C' }, { val: 90, sym: 'XC' },
+    { val: 50, sym: 'L' }, { val: 40, sym: 'XL' },
+    { val: 10, sym: 'X' }, { val: 9, sym: 'IX' },
+    { val: 5, sym: 'V' }, { val: 4, sym: 'IV' },
+    { val: 1, sym: 'I' }
+  ];
+
+  function toRoman(num) {
+    let res = '';
+    let n = num;
+    for (let item of ROMAN_MAP) {
+      while (n >= item.val) {
+        res += item.sym;
+        n -= item.val;
+      }
+    }
+    return res;
+  }
+
+  function fromRoman(str) {
+    const map = { I: 1, V: 5, X: 10, L: 50, C: 100, D: 500, M: 1000 };
+    let res = 0;
+    for (let i = 0; i < str.length; i++) {
+      const curr = map[str[i]] || 0;
+      const next = map[str[i + 1]] || 0;
+      if (curr < next) {
+        res += (next - curr);
+        i++;
+      } else {
+        res += curr;
+      }
+    }
+    return res;
+  }
+
+  function isValidRoman(str) {
+    if (!str || typeof str !== 'string') return false;
+    const val = fromRoman(str);
+    if (val <= 0 || val > 3999) return false;
+    return toRoman(val) === str;
+  }
+
+  const RomanPuzzle = {
+    id: 'roman-puzzle',
+    container: null,
+    state: {
+      difficulty: 'easy', // 'easy', 'normal', 'hard'
+      roundIdx: 0,
+      maxRounds: 10,
+      score: 0,
+      combo: 0,
+      lives: 3,
+      missionType: 'to_arabic', // 'to_arabic', 'to_roman', 'equation', 'find_invalid'
+      questionText: '',
+      correctAnswer: '',
+      choices: [], // For multiple choice
+      userInput: '', // For keypad input
+      timer: 60,
+      isAnswered: false,
+      isGameOver: false,
+      hintUsed: false,
+      startTime: 0
+    },
+    timers: [],
+    timerId: null,
+
+    mount(container, context) {
+      let target = null;
+      if (typeof container === 'string') target = document.querySelector(container);
+      else if (container instanceof HTMLElement) target = container;
+      if (!target) target = document.getElementById('mathlab-view') || document.getElementById('new-root') || document.getElementById('game-container');
+
+      // 💡 [자가 복구 엔진] 컨테이너가 없거나 가려져 있다면, 100% 보이는 전용 도화지 생성!
+      if (!target || target === document.body) {
+        let host = document.getElementById('roman-puzzle-force-host');
+        if (!host) {
+          host = document.createElement('div'); host.id = 'roman-puzzle-force-host';
+          host.style.cssText = 'width:100%; max-width:960px; margin:0 auto; padding:20px 10px; box-sizing:border-box; z-index:999; position:relative; background:#17120e; min-height:650px; display:block; border-radius:24px;';
+          const header = document.querySelector('header, .navbar, #app-header, .top-bar');
+          if (header && header.parentNode) header.parentNode.insertBefore(host, header.nextSibling);
+          else document.body.appendChild(host);
+        }
+        target = host;
+      }
+
+      this.container = target;
+      this.container.style.display = 'block'; this.container.style.visibility = 'visible'; this.container.style.opacity = '1'; this.container.style.minHeight = '650px';
+
+      let parent = this.container.parentElement;
+      while (parent && parent !== document.body && parent !== document.documentElement) {
+        if (parent.style && parent.style.display === 'none') parent.style.display = 'block';
+        if (parent.style && parent.style.visibility === 'hidden') parent.style.visibility = 'visible';
+        parent = parent.parentElement;
+      }
+
+      this.restoreGlobalNavigation();
+      this.resetGame();
+    },
+
+    restoreGlobalNavigation() {
+      const navElements = document.querySelectorAll('header, .navbar, #app-header, .top-bar, #floating-home-btn, .floating-home, [id*="home"], [class*="floating"]');
+      navElements.forEach(el => { if (el && el.style && el.style.display === 'none') el.style.display = ''; });
+    },
+
+    setDifficulty(diff) {
+      if (this.state.difficulty === diff && !this.state.isGameOver && this.state.roundIdx === 0) return;
+      this.state.difficulty = diff;
+      this.resetGame();
+    },
+
+    resetGame() {
+      if (window.MathLabCleanup && typeof window.MathLabCleanup.clearTimers === 'function') {
+        window.MathLabCleanup.clearTimers(this.timers);
+      }
+      this.timers.forEach(clearTimeout);
+      this.timers = [];
+      if (this.timerId) { clearInterval(this.timerId); this.timerId = null; }
+      
+      this.state.roundIdx = 0;
+      this.state.score = 0;
+      this.state.combo = 0;
+      this.state.lives = 3;
+      this.state.isGameOver = false;
+      
+      this.setupRound();
+    },
+    
+    setupRound() {
+      if (this.state.roundIdx >= this.state.maxRounds || this.state.lives <= 0) {
+        this.gameOver(this.state.lives > 0);
+        return;
+      }
+
+      if (this.timerId) { clearInterval(this.timerId); this.timerId = null; }
+
+      this.state.userInput = '';
+      this.state.choices = [];
+      this.state.hintUsed = false;
+      this.state.isAnswered = false;
+      this.state.startTime = Date.now();
+
+      // 난이도별 문제 범위 및 유형 선택
+      let maxVal = 50;
+      let types = ['to_arabic', 'to_roman'];
+      if (this.state.difficulty === 'normal') {
+        maxVal = 500;
+        types = ['to_arabic', 'to_roman', 'equation'];
+      } else if (this.state.difficulty === 'hard') {
+        maxVal = 3999;
+        types = ['to_arabic', 'to_roman', 'equation', 'find_invalid'];
+        
+        // 타이머 시작
+        this.state.timer = 45;
+        this.timerId = setInterval(() => {
+          if (this.state.isAnswered || this.state.isGameOver) return;
+          this.state.timer--;
+          this.updateTimerUI();
+          if (this.state.timer <= 0) {
+            clearInterval(this.timerId); this.timerId = null;
+            this.handleTimeout();
+          }
+        }, 1000);
+      }
+
+      this.state.missionType = types[Math.floor(Math.random() * types.length)];
+
+      if (this.state.missionType === 'to_arabic') {
+        // 로마 -> 아라비아 변환
+        const targetNum = Math.floor(Math.random() * (maxVal - 1)) + 1;
+        this.state.correctAnswer = String(targetNum);
+        this.state.questionText = `${toRoman(targetNum)} = ?`;
+      } 
+      else if (this.state.missionType === 'to_roman') {
+        // 아라비아 -> 로마 변환 (4지선다)
+        const targetNum = Math.floor(Math.random() * (maxVal - 1)) + 1;
+        const correctRoman = toRoman(targetNum);
+        this.state.correctAnswer = correctRoman;
+        this.state.questionText = `${targetNum} = ?`;
+        
+        // 보기 생성 (오답 3개)
+        const choiceSet = new Set([correctRoman]);
+        while (choiceSet.size < 4) {
+          const offset = Math.floor(Math.random() * 21) - 10;
+          const fakeNum = targetNum + offset;
+          if (fakeNum > 0 && fakeNum <= 3999 && fakeNum !== targetNum) {
+            choiceSet.add(toRoman(fakeNum));
+          } else {
+            // 임의 로마 숫자
+            choiceSet.add(toRoman(Math.floor(Math.random() * maxVal) + 1));
+          }
+        }
+        this.state.choices = Array.from(choiceSet).sort(() => Math.random() - 0.5);
+      } 
+      else if (this.state.missionType === 'equation') {
+        // 로마 숫자 수식
+        const isPlus = Math.random() > 0.4;
+        let a = Math.floor(Math.random() * Math.min(maxVal / 2, 500)) + 1;
+        let b = Math.floor(Math.random() * Math.min(maxVal / 2, 500)) + 1;
+        if (!isPlus && a < b) [a, b] = [b, a]; // 뺄셈 시 음수 방지
+        if (!isPlus && a === b) a++; // 0 방지 (로마 숫자에 0 없음)
+        
+        const ansNum = isPlus ? (a + b) : (a - b);
+        this.state.correctAnswer = String(ansNum);
+        this.state.questionText = `${toRoman(a)} ${isPlus ? '+' : '-'} ${toRoman(b)} = ?`;
+      } 
+      else if (this.state.missionType === 'find_invalid') {
+        // 틀린 표기 찾기
+        const validNums = [
+          Math.floor(Math.random() * 500) + 1,
+          Math.floor(Math.random() * 500) + 10,
+          Math.floor(Math.random() * 500) + 20
+        ];
+        const validRomans = validNums.map(n => toRoman(n));
+        
+        // 잘못된 표기 생성
+        const invalidPool = ['IIII', 'VV', 'XXXX', 'LL', 'IC', 'IXX', 'DM', 'DD', 'CMM', 'VIV', 'LIL'];
+        const invalidStr = invalidPool[Math.floor(Math.random() * invalidPool.length)];
+        
+        this.state.correctAnswer = invalidStr;
+        this.state.questionText = '다음 중 잘못된(규칙에 어긋난) 로마 숫자를 고르세요!';
+        
+        const choiceSet = new Set([...validRomans, invalidStr]);
+        this.state.choices = Array.from(choiceSet).sort(() => Math.random() - 0.5);
+      }
+
+      this.render();
+    },
+
+    updateTimerUI() {
+      const el = this.container?.querySelector('.stat-badge.timer');
+      const valEl = el?.querySelector('.timer-val');
+      if (valEl) valEl.textContent = `${this.state.timer}초`;
+    },
+
+    handleTimeout() {
+      this.state.isAnswered = true;
+      this.state.combo = 0;
+      this.state.lives--;
+      this.state.score = Math.max(0, this.state.score - 5);
+
+      const resArea = this.container?.querySelector('.result-area');
+      if (resArea) {
+        resArea.className = 'result-area show error';
+        resArea.innerHTML = `⏰ <strong>시간 초과! 자물쇠가 굳어버렸습니다! (생명 -1)</strong><br>제한 시간 내에 암호를 입력해야 합니다.`;
+      }
+      this.updateStatsUI();
+
+      const t = setTimeout(() => {
+        if (this.state.lives <= 0) this.gameOver(false);
+        else this.setupRound();
+      }, 2000);
+      this.timers.push(t);
+    },
+
+    appendDigit(d) {
+      if (this.state.isAnswered || this.state.isGameOver) return;
+      if (this.state.userInput.length >= 6) return;
+      this.state.userInput += d;
+      this.updateDisplayUI();
+    },
+
+    backspaceDigit() {
+      if (this.state.isAnswered || this.state.isGameOver || !this.state.userInput) return;
+      this.state.userInput = this.state.userInput.slice(0, -1);
+      this.updateDisplayUI();
+    },
+
+    clearInput() {
+      if (this.state.isAnswered || this.state.isGameOver) return;
+      this.state.userInput = '';
+      this.updateDisplayUI();
+    },
+
+    updateDisplayUI() {
+      const disp = this.container?.querySelector('.lock-display');
+      if (!disp) return;
+      if (!this.state.userInput) {
+        disp.className = 'lock-display empty';
+        disp.textContent = '암호 입력...';
+      } else {
+        disp.className = 'lock-display';
+        disp.textContent = this.state.userInput;
+      }
+    },
+
+    checkAnswer(ans) {
+      if (this.state.isAnswered || this.state.isGameOver) return;
+      const submitted = (typeof ans === 'string' ? ans.trim() : this.state.userInput.trim());
+      if (!submitted) return;
+
+      this.state.isAnswered = true;
+      if (this.timerId) { clearInterval(this.timerId); this.timerId = null; }
+
+      const isCorrect = (submitted === this.state.correctAnswer);
+      const resArea = this.container.querySelector('.result-area');
+      
+      if (isCorrect) {
+        let pts = 10;
+        const timeDiff = (Date.now() - this.state.startTime) / 1000;
+        if (timeDiff <= 5) pts += 5; // 스피드 보너스
+        if (this.state.hintUsed) pts = Math.max(3, pts - 5);
+        
+        this.state.combo++;
+        if (this.state.combo >= 3) pts += 5;
+        this.state.score += pts;
+
+        if (resArea) {
+          resArea.className = 'result-area show success';
+          let explain = `정답 [ ${this.state.correctAnswer} ] 정확합니다!`;
+          if (this.state.missionType === 'find_invalid') {
+            explain = `정답! [ ${submitted} ]는 로마 숫자 표기 규칙(같은 숫자 3번 초과 금지 또는 잘못된 감산 표기)에 위배됩니다!`;
+          } else if (this.state.missionType === 'to_arabic' || this.state.missionType === 'equation') {
+            explain = `🎉 <strong>철컥! 자물쇠가 열렸습니다! (+${pts}점)</strong><br>입력하신 암호 [ ${submitted} ]이(가) 일치합니다!`;
+          } else {
+            explain = `🎉 <strong>철컥! 자물쇠가 열렸습니다! (+${pts}점)</strong><br>아라비아 숫자를 로마 숫자 [ ${submitted} ](으)로 완벽하게 변환했습니다!`;
+          }
+          resArea.innerHTML = explain;
+        }
+
+        const t = setTimeout(() => {
+          this.state.roundIdx++;
+          this.setupRound();
+        }, 1600);
+        this.timers.push(t);
+      } else {
+        this.state.combo = 0;
+        this.state.lives--;
+        this.state.score = Math.max(0, this.state.score - 5);
+        
+        if (resArea) {
+          resArea.className = 'result-area show error';
+          let errorMsg = `❌ <strong>삐버빅! 자물쇠 해제 실패! (생명 -1)</strong><br>올바른 정답은 <strong>[ ${this.state.correctAnswer} ]</strong> 입니다.`;
+          if (this.state.missionType === 'find_invalid') {
+            errorMsg = `❌ <strong>틀렸습니다! (생명 -1)</strong><br>선택하신 숫자는 표준 규칙에 맞는 유효한 표기입니다. 규칙에 위배된 표기는 <strong>[ ${this.state.correctAnswer} ]</strong> 입니다.`;
+          }
+          resArea.innerHTML = errorMsg;
+        }
+
+        const t = setTimeout(() => {
+          if (this.state.lives <= 0) {
+            this.gameOver(false);
+          } else {
+            this.state.isAnswered = false;
+            this.render();
+          }
+        }, 2200);
+        this.timers.push(t);
+      }
+
+      this.updateStatsUI();
+    },
+
+    gameOver(cleared) {
+      if (cleared && !this.state.isGameOver) {
+        this.state.score += 50; // 클리어 보너스
+      }
+      this.state.isGameOver = true;
+      if (this.timerId) { clearInterval(this.timerId); this.timerId = null; }
+      this.render();
+      
+      if (this.state.score > 0) {
+        const t = setTimeout(() => {
+          this.showInlineRankingModal('board-roman-puzzle', this.state.score, { cleared: cleared, difficulty: this.state.difficulty });
+        }, 600);
+        this.timers.push(t);
+      }
+    },
+
+    showHowToPlayModal() {
+      document.getElementById('mathlab-rp-howto-modal')?.remove();
+      const modalHtml = `
+        <div id="mathlab-rp-howto-modal" style="position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(15,23,42,0.8); backdrop-filter:blur(8px); display:flex; align-items:center; justify-content:center; z-index:999999; padding:20px; box-sizing:border-box; font-family:'Pretendard',sans-serif; animation: fadeIn 0.3s;">
+          <div style="background:#271c14; border-radius:28px; padding:32px 28px; max-width:620px; width:100%; max-height:85vh; overflow-y:auto; box-shadow:0 25px 50px -12px rgba(0,0,0,0.6); border:4px solid #d97706; position:relative; color:#f8fafc;">
+            
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #78350f; padding-bottom:16px; margin-bottom:20px;">
+              <div style="display:flex; align-items:center; gap:10px;">
+                <span style="font-size:36px;">🏛️</span>
+                <div>
+                  <h2 style="margin:0; font-size:24px; font-weight:900; color:#fbbf24;">로마 숫자 퍼즐 게임 방법</h2>
+                  <p style="margin:4px 0 0; font-size:13px; color:#fde68a; font-weight:700;">고대 금고의 비밀 암호를 해독하는 고고학 탐험가 되기!</p>
+                </div>
+              </div>
+              <button id="rp-howto-close-top" style="background:#3f2e21; border:none; width:40px; height:40px; border-radius:50%; font-size:20px; cursor:pointer; color:#fde68a; font-weight:bold; display:flex; align-items:center; justify-content:center; transition:background 0.2s;">✕</button>
+            </div>
+
+            <div style="display:flex; flex-direction:column; gap:16px; text-align:left; color:#f8fafc;">
+              <div style="background:#3b2512; border-left:5px solid #d97706; padding:16px; border-radius:12px;">
+                <h3 style="margin:0 0 6px; font-size:16px; color:#fbbf24; font-weight:900;">🎯 1. 게임의 목표</h3>
+                <p style="margin:0; font-size:14px; line-height:1.5; font-weight:600; color:#fde68a;">고대 금고에 제시된 <strong>로마 숫자 문제(변환 또는 수식)</strong>를 해독하고 알맞은 암호를 입력하여 자물쇠를 여는 퍼즐 게임입니다.</p>
+              </div>
+
+              <div style="background:#1f140a; border:2px solid #92400e; padding:18px; border-radius:16px;">
+                <h3 style="margin:0 0 10px; font-size:16px; color:#fbbf24; font-weight:900;">🏛️ 2. 로마 숫자 기본 기호</h3>
+                <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:8px; font-size:13px; font-weight:800; text-align:center; margin-bottom:10px;">
+                  <div style="background:#3f2e21; p:6px; border-radius:6px; padding:6px;"><span style="color:#fbbf24;">I</span> = 1</div>
+                  <div style="background:#3f2e21; p:6px; border-radius:6px; padding:6px;"><span style="color:#fbbf24;">V</span> = 5</div>
+                  <div style="background:#3f2e21; p:6px; border-radius:6px; padding:6px;"><span style="color:#fbbf24;">X</span> = 10</div>
+                  <div style="background:#3f2e21; p:6px; border-radius:6px; padding:6px;"><span style="color:#fbbf24;">L</span> = 50</div>
+                  <div style="background:#3f2e21; p:6px; border-radius:6px; padding:6px;"><span style="color:#fbbf24;">C</span> = 100</div>
+                  <div style="background:#3f2e21; p:6px; border-radius:6px; padding:6px;"><span style="color:#fbbf24;">D</span> = 500</div>
+                  <div style="background:#3f2e21; p:6px; border-radius:6px; padding:6px; grid-column:span 2;"><span style="color:#fbbf24;">M</span> = 1,000</div>
+                </div>
+                <p style="margin:0; font-size:13px; line-height:1.5; color:#fcd34d; font-weight:600;">
+                  💡 큰 기호 뒤에 작은 기호가 오면 <strong style="color:#34d399;">덧셈</strong> (예: VI = 5+1 = 6)<br>
+                  💡 큰 기호 앞에 작은 기호가 오면 <strong style="color:#f87171;">뺄셈</strong> (예: IV = 5-1 = 4, IX = 10-1 = 9)
+                </p>
+              </div>
+
+              <div style="background:#3f1d0b; border-left:5px solid #ea580c; padding:16px; border-radius:12px;">
+                <h3 style="margin:0 0 6px; font-size:16px; color:#fdba74; font-weight:900;">🔥 3. 중요 표기 규칙 (틀린 표기 찾기 팁)</h3>
+                <ul style="margin:0; padding-left:20px; font-size:13.5px; line-height:1.6; font-weight:600; color:#fed7aa;">
+                  <li>같은 기호(I, X, C, M)는 <strong>최대 3번까지만</strong> 연속해서 쓸 수 있습니다. (예: 4는 IIII가 아니라 <strong style="color:#fbbf24;">IV</strong>)</li>
+                  <li>V, L, D(5 단위)는 연속해서 쓸 수 없고, 감산(뺄셈) 앞자리로도 쓰지 않습니다. (예: 10은 VV가 아니라 <strong style="color:#fbbf24;">X</strong>)</li>
+                </ul>
+              </div>
+
+              <div style="background:#291d12; border:1px solid #78350f; padding:16px; border-radius:12px;">
+                <h3 style="margin:0 0 6px; font-size:16px; color:#fbbf24; font-weight:900;">🕹️ 4. 조작 방법 및 보너스</h3>
+                <ul style="margin:0; padding-left:20px; font-size:13.5px; line-height:1.6; font-weight:600; color:#e7e5e4;">
+                  <li>아라비아 숫자 정답은 화면의 <strong>숫자 다이얼 키패드</strong>로 입력 후 <strong style="color:#d97706;">[🔓 자물쇠 열기]</strong>를 누르세요.</li>
+                  <li>로마 숫자 보기 문제나 틀린 표기 찾기는 <strong>4개의 카드 중 정답을 바로 클릭</strong>하세요!</li>
+                  <li>⚡ 5초 이내 빠른 정답 시 스피드 보너스(+5점), 3연속 정답 시 콤보 보너스(+5점)가 부여됩니다!</li>
+                </ul>
+              </div>
+            </div>
+
+            <button id="rp-howto-close-btn" style="width:100%; margin-top:24px; padding:16px; border-radius:16px; font-size:16px; font-weight:900; background:linear-gradient(135deg, #d97706 0%, #b45309 100%); color:#ffffff; border:none; cursor:pointer; box-shadow:0 8px 16px rgba(217,119,6,0.4); transition:transform 0.15s;">
+              🚀 이해했습니다! 금고 탐험 시작하기
+            </button>
+
+          </div>
+        </div>
+      `;
+      document.body.insertAdjacentHTML('beforeend', modalHtml);
+      
+      const closeModal = () => document.getElementById('mathlab-rp-howto-modal')?.remove();
+      document.getElementById('rp-howto-close-top')?.addEventListener('click', closeModal);
+      document.getElementById('rp-howto-close-btn')?.addEventListener('click', closeModal);
+      document.getElementById('mathlab-rp-howto-modal')?.addEventListener('click', (e) => {
+        if (e.target.id === 'mathlab-rp-howto-modal') closeModal();
+      });
+    },
+
+    showInlineRankingModal(boardId, score, metadata) {
+      document.getElementById('mathlab-inline-ranking-modal')?.remove();
+      const gameName = '로마 숫자 퍼즐';
+      const modalHtml = `
+        <div id="mathlab-inline-ranking-modal" style="position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(15,23,42,0.8); backdrop-filter:blur(6px); display:flex; align-items:center; justify-content:center; z-index:999999; padding:20px; box-sizing:border-box; font-family:'Pretendard',sans-serif;">
+          <div style="background:#271c14; border-radius:24px; padding:28px 24px; max-width:400px; width:100%; box-shadow:0 20px 40px rgba(0,0,0,0.6); text-align:center; border:3px solid #d97706; color:#f8fafc;">
+            <div style="font-size:42px; margin-bottom:10px;">🏛️🏆</div>
+            <h2 style="margin:0 0 8px; font-size:24px; font-weight:900; color:#fbbf24;">명예의 전당 등록</h2>
+            <p style="margin:0 0 20px; font-size:14px; color:#fde68a;">고대 금고 10개 스테이지 도전을 마쳤습니다!<br>이름을 남겨 Top 5 랭킹에 도전하세요!</p>
+            <div style="background:#3b2512; border:1px solid #92400e; border-radius:16px; padding:14px; margin-bottom:20px;">
+              <div style="font-size:13px; color:#fcd34d; font-weight:800; margin-bottom:4px;">🏆 최종 달성 점수</div>
+              <div style="font-size:32px; font-weight:900; color:#fbbf24;">${score} <span style="font-size:18px;">점</span></div>
+            </div>
+            <input type="text" id="inline-rank-nickname" placeholder="탐험가 닉네임 입력 (예: 로마마스터)" maxlength="10" style="width:100%; padding:14px 16px; font-size:16px; font-weight:700; border:2px solid #78350f; background:#1a130d; color:#ffffff; border-radius:14px; outline:none; text-align:center; margin-bottom:20px; box-sizing:border-box;">
+            <div style="display:flex; gap:10px;">
+              <button id="inline-rank-cancel" style="flex:1; padding:14px; border-radius:14px; font-size:15px; font-weight:800; background:#3f2e21; color:#fde68a; border:1px solid #78350f; cursor:pointer;">건너뛰기</button>
+              <button id="inline-rank-submit" style="flex:2; padding:14px; border-radius:14px; font-size:15px; font-weight:800; background:linear-gradient(135deg, #d97706 0%, #b45309 100%); color:#ffffff; border:none; cursor:pointer; box-shadow:0 4px 8px rgba(217,119,6,0.4);">🚀 등록하기</button>
+            </div>
+          </div>
+        </div>
+      `;
+      document.body.insertAdjacentHTML('beforeend', modalHtml);
+      const inputEl = document.getElementById('inline-rank-nickname'); if (inputEl) inputEl.focus();
+      const closeAndClean = () => document.getElementById('mathlab-inline-ranking-modal')?.remove();
+      document.getElementById('inline-rank-cancel')?.addEventListener('click', closeAndClean);
+      const doSubmit = () => {
+        let nickname = (inputEl?.value.trim() || '로마마스터');
+        
+        if (typeof window.submitRanking === 'function') {
+          try { window.submitRanking(gameName, score, true, nickname, boardId); } catch(e){}
+        } else if (typeof google !== 'undefined' && google.script && google.script.run && typeof google.script.run.saveGameScore === 'function') {
+          try {
+            const sheetId = (typeof getLeaderboardSheetId === 'function') ? getLeaderboardSheetId() : '';
+            const meta = (typeof getLeaderboardMeta === 'function') ? getLeaderboardMeta() : {};
+            google.script.run.withSuccessHandler(() => { this.loadLeaderboard(); }).saveGameScore(sheetId, gameName, nickname, score, true, meta);
+          } catch(e){}
+        }
+
+        let ranks = JSON.parse(localStorage.getItem(`rank_${boardId}`) || '[]');
+        ranks.push({ ...(metadata || {}), nickname: nickname, score: score, date: new Date().toISOString() });
+        ranks.sort((a, b) => (b.score || 0) - (a.score || 0));
+        localStorage.setItem(`rank_${boardId}`, JSON.stringify(ranks.slice(0, 50)));
+        closeAndClean(); this.loadLeaderboard();
+      };
+      document.getElementById('inline-rank-submit')?.addEventListener('click', doSubmit);
+      inputEl?.addEventListener('keydown', (e) => { if (e.key === 'Enter') doSubmit(); });
+    },
+
+    updateStatsUI() {
+      const root = this.container?.querySelector('.game-roman-puzzle');
+      if (!root) return;
+      
+      const scoreEl = root.querySelector('.score-val'); if (scoreEl) scoreEl.textContent = `${this.state.score}점`;
+      const comboEl = root.querySelector('.combo-val'); if (comboEl) comboEl.textContent = `${this.state.combo}연속`;
+      const lifeEl = root.querySelector('.life-val'); if (lifeEl) lifeEl.textContent = '❤️'.repeat(Math.max(0, this.state.lives));
+    },
+
+    render() {
+      const isCleared = this.state.roundIdx >= this.state.maxRounds;
+      const isChoiceMode = (this.state.missionType === 'to_roman' || this.state.missionType === 'find_invalid');
+      
+      let tagText = '아라비아 숫자 변환';
+      if (this.state.missionType === 'to_roman') tagText = '로마 숫자 변환 (보기 선택)';
+      else if (this.state.missionType === 'equation') tagText = '로마 숫자 수식 연산';
+      else if (this.state.missionType === 'find_invalid') tagText = '틀린 표기 규칙 찾기';
+
+      const html = `
+        <div class="game-roman-puzzle">
+          <div class="rp-header">
+            <div class="title-area">
+              <h2>🏛️ 로마 숫자 퍼즐</h2>
+              <p>고대 금고의 로마 숫자 암호를 해독하여 자물쇠를 여는 고고학 탐험!</p>
+            </div>
+            <div class="stats-bar">
+              <button class="btn-howto" id="rp-btn-howto-top">❓ 게임 방법 가이드</button>
+              <div class="stat-badge">🚩 스테이지: ${Math.min(this.state.roundIdx + 1, this.state.maxRounds)}/${this.state.maxRounds}</div>
+              <div class="stat-badge score"><span class="score-val">${this.state.score}점</span></div>
+              <div class="stat-badge combo">🔥 콤보: <span class="combo-val">${this.state.combo}연속</span></div>
+              <div class="stat-badge life">생명: <span class="life-val">${'❤️'.repeat(Math.max(0, this.state.lives))}</span></div>
+              <div class="stat-badge timer" style="display: ${this.state.difficulty === 'hard' ? 'flex' : 'none'};">⏱️ <span class="timer-val">${this.state.timer}초</span></div>
+            </div>
+          </div>
+          
+          <div class="main-layout">
+            <div class="game-area">
+              ${this.state.isGameOver ? `
+                <div class="card" style="text-align:center; padding: 40px;">
+                  <h3 style="font-size: 2rem; color: #fbbf24; margin-top: 0;">${isCleared ? '🏆 고대 금고 최종 마스터 완료!' : '💥 탐험 실패! 다시 도전하세요!'}</h3>
+                  <p style="font-size: 1.2rem; color: #fde68a;">최종 달성 점수: <strong>${this.state.score}점</strong></p>
+                  <button class="btn-num submit" id="rp-btn-restart-big" style="margin: 24px auto 0; max-width: 260px; border-radius: 16px;">🔄 새 탐험 시작하기</button>
+                </div>
+              ` : `
+                <div class="vault-box">
+                  <div class="mission-tag">🔒 금고 암호 해독: ${tagText}</div>
+                  <div class="puzzle-question">${this.state.questionText}</div>
+                  
+                  ${!isChoiceMode ? `
+                    <div class="lock-display empty">암호 입력...</div>
+                    <div class="numpad-grid">
+                      <button class="btn-num" data-num="1">1</button>
+                      <button class="btn-num" data-num="2">2</button>
+                      <button class="btn-num" data-num="3">3</button>
+                      <button class="btn-num" data-num="4">4</button>
+                      <button class="btn-num" data-num="5">5</button>
+                      <button class="btn-num" data-num="6">6</button>
+                      <button class="btn-num" data-num="7">7</button>
+                      <button class="btn-num" data-num="8">8</button>
+                      <button class="btn-num" data-num="9">9</button>
+                      <button class="btn-num action" id="rp-btn-clear">지우기</button>
+                      <button class="btn-num" data-num="0">0</button>
+                      <button class="btn-num action" id="rp-btn-bs">⌫</button>
+                      <button class="btn-num submit" id="rp-btn-submit" ${this.state.isAnswered ? 'disabled' : ''}>🔓 자물쇠 열기 (정답 제출)</button>
+                    </div>
+                  ` : `
+                    <div style="color: #fde68a; font-weight: 700; font-size: 1.05rem; margin-bottom: 12px;">💡 아래 4개의 로마 숫자 중 알맞은 정답 카드를 클릭하세요!</div>
+                    <div class="choice-grid">
+                      ${this.state.choices.map(c => `
+                        <button class="btn-choice" data-choice="${c}" ${this.state.isAnswered ? 'disabled' : ''}>${c}</button>
+                      `).join('')}
+                    </div>
+                  `}
+                </div>
+                
+                <div class="result-area"></div>
+
+                <div class="hint-box" style="display: ${this.state.hintUsed ? 'block' : 'none'};">
+                  <h4>💡 로마 숫자 대응표 힌트 (-5점 페널티)</h4>
+                  <div class="hint-table">
+                    <div class="hint-item"><span>I</span> = 1</div>
+                    <div class="hint-item"><span>V</span> = 5</div>
+                    <div class="hint-item"><span>X</span> = 10</div>
+                    <div class="hint-item"><span>L</span> = 50</div>
+                    <div class="hint-item"><span>C</span> = 100</div>
+                    <div class="hint-item"><span>D</span> = 500</div>
+                    <div class="hint-item" style="grid-column: span 2;"><span>M</span> = 1,000</div>
+                  </div>
+                  <p class="hint-desc">
+                    ⚡ <strong>감산(뺄셈) 규칙</strong>: 작은 단위가 큰 단위 앞에 오면 뺍니다!<br>
+                    <strong>IV</strong> = 4, <strong>IX</strong> = 9, <strong>XL</strong> = 40, <strong>XC</strong> = 90, <strong>CD</strong> = 400, <strong>CM</strong> = 900
+                  </p>
+                </div>
+                
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
+                  <button class="btn-secondary" id="rp-btn-hint" ${this.state.isAnswered ? 'disabled' : ''}>💡 로마 숫자 대응표 힌트 (-5점)</button>
+                  <button class="btn-secondary" id="rp-btn-reset-round" ${this.state.isAnswered ? 'disabled' : ''}>🔄 문제 다시 받기</button>
+                </div>
+              `}
+            </div>
+            
+            <div class="sidebar">
+              <div class="card" style="padding:16px;">
+                <h3 style="margin-top:0; font-size:1.05rem; color:#fbbf24; margin-bottom:10px;">⚙️ 난이도 선택</h3>
+                <div class="diff-selector">
+                  <button class="diff-btn ${this.state.difficulty === 'easy' ? 'active' : ''}" data-diff="easy">쉬움 (1~50)</button>
+                  <button class="diff-btn ${this.state.difficulty === 'normal' ? 'active' : ''}" data-diff="normal">보통 (1~500)</button>
+                  <button class="diff-btn ${this.state.difficulty === 'hard' ? 'active' : ''}" data-diff="hard">도전 (~3999)</button>
+                </div>
+              </div>
+
+              <div class="card" style="padding:16px;">
+                <h3 style="margin-top:0; font-size:1.1rem; border-bottom:1px solid #78350f; padding-bottom:12px; color:#fbbf24; text-align:center;">🏆 명예의 전당 (Top 5)</h3>
+                <div id="board-roman-puzzle">
+                  <p style="color:#a8a29e; font-size:0.95rem; text-align:center; margin:16px 0;">로딩 중...</p>
+                </div>
+              </div>
+              
+              <div class="card" style="padding:16px;">
+                <button class="btn-secondary" style="width:100%; margin-bottom:12px; padding:12px;" id="rp-btn-restart-side">🔄 처음부터 다시 시작</button>
+                <button class="btn-secondary" style="width:100%; padding:12px; background:#d97706; color:#ffffff; border:none;" id="rp-btn-home">🏠 홈으로</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      this.container.innerHTML = html;
+      this.bindEvents();
+      this.updateDisplayUI();
+      this.loadLeaderboard();
+    },
+
+    bindEvents() {
+      const root = this.container?.querySelector('.game-roman-puzzle');
+      if (!root) return;
+      
+      const btnHowToTop = root.querySelector('#rp-btn-howto-top');
+      if (btnHowToTop) btnHowToTop.addEventListener('click', () => this.showHowToPlayModal());
+
+      root.querySelectorAll('.diff-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const diff = btn.getAttribute('data-diff');
+          this.setDifficulty(diff);
+        });
+      });
+
+      root.querySelectorAll('.btn-num[data-num]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const d = btn.getAttribute('data-num');
+          this.appendDigit(d);
+        });
+      });
+
+      const btnClear = root.querySelector('#rp-btn-clear');
+      if (btnClear) btnClear.addEventListener('click', () => this.clearInput());
+      
+      const btnBs = root.querySelector('#rp-btn-bs');
+      if (btnBs) btnBs.addEventListener('click', () => this.backspaceDigit());
+
+      const btnSubmit = root.querySelector('#rp-btn-submit');
+      if (btnSubmit) btnSubmit.addEventListener('click', () => this.checkAnswer());
+
+      root.querySelectorAll('.btn-choice').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const choice = btn.getAttribute('data-choice');
+          this.checkAnswer(choice);
+        });
+      });
+
+      const btnHint = root.querySelector('#rp-btn-hint');
+      if (btnHint) btnHint.addEventListener('click', () => {
+        this.state.hintUsed = true;
+        const hintEl = root.querySelector('.hint-box');
+        if (hintEl) hintEl.style.display = 'block';
+        btnHint.disabled = true;
+      });
+      
+      const btnResetRound = root.querySelector('#rp-btn-reset-round');
+      if (btnResetRound) btnResetRound.addEventListener('click', () => this.setupRound());
+
+      const btnRestartBig = root.querySelector('#rp-btn-restart-big');
+      if (btnRestartBig) btnRestartBig.addEventListener('click', () => this.resetGame());
+      
+      const btnRestartSide = root.querySelector('#rp-btn-restart-side');
+      if (btnRestartSide) btnRestartSide.addEventListener('click', () => this.resetGame());
+
+      // 키보드 숫자 입력 지원
+      const keyHandler = (e) => {
+        if (!this.container || !document.body.contains(this.container)) {
+          window.removeEventListener('keydown', keyHandler);
+          return;
+        }
+        if (this.state.isAnswered || this.state.isGameOver) return;
+        if (this.state.missionType === 'to_roman' || this.state.missionType === 'find_invalid') return;
+
+        if (e.key >= '0' && e.key <= '9') {
+          this.appendDigit(e.key);
+        } else if (e.key === 'Backspace') {
+          this.backspaceDigit();
+        } else if (e.key === 'Enter') {
+          this.checkAnswer();
+        } else if (e.key === 'Escape' || e.key === 'Delete') {
+          this.clearInput();
+        }
+      };
+      window.removeEventListener('keydown', this._keyHandler);
+      this._keyHandler = keyHandler;
+      window.addEventListener('keydown', this._keyHandler);
+
+      const btnHome = root.querySelector('#rp-btn-home');
+      if (btnHome) {
+        btnHome.addEventListener('click', (e) => {
+          e.preventDefault();
+          const topBottomHome = document.getElementById('mathlab-floating-home') || document.querySelector('#legacy-back-home-btn') || document.querySelector('.floating-home');
+          if (topBottomHome) topBottomHome.click();
+          else if (typeof window.MathLabRenderHome === 'function') window.MathLabRenderHome();
+          else if (typeof window.goHome === 'function') window.goHome();
+          else location.reload();
+        });
+      }
+    },
+    
+    loadLeaderboard() {
+      try {
+        if (typeof window.loadGameLeaderboard === 'function') {
+          window.loadGameLeaderboard('로마 숫자 퍼즐', true, 'board-roman-puzzle');
+        } else {
+          const localRanks = JSON.parse(localStorage.getItem('rank_board-roman-puzzle') || '[]');
+          this.renderRankList(localRanks.slice(0, 5));
+        }
+      } catch (e) {
+        console.error('[RomanPuzzle] 명예의 전당 로드 오류:', e);
+        const localRanks = JSON.parse(localStorage.getItem('rank_board-roman-puzzle') || '[]');
+        this.renderRankList(localRanks.slice(0, 5));
+      }
+    },
+
+    renderRankList(ranks) {
+      const el = this.container?.querySelector('#board-roman-puzzle');
+      if (!el) return;
+
+      if (!ranks || ranks.length === 0) {
+        el.innerHTML = '<div style="text-align:center; color:#a8a29e; padding: 12px 0;">아직 등록된 랭킹이 없습니다. 첫 주인공이 되어보세요!</div>';
+        return;
+      }
+
+      const escapeHTML = (str) => {
+        if (!str) return '';
+        return String(str).replace(/[&<>"']/g, function(match) {
+          const escape = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+          return escape[match];
+        });
+      };
+      el.innerHTML = ranks.map((r, i) => `
+        <div class="rank-item">
+          <div><span class="rank-num">${i + 1}위</span> ${escapeHTML(r.nickname || '익명')}</div>
+          <div class="rank-score">${r.score || 0}점</div>
+        </div>
+      `).join('');
+    },
+
+    destroy() {
+      if (window.MathLabCleanup && typeof window.MathLabCleanup.clearTimers === 'function') {
+        window.MathLabCleanup.clearTimers(this.timers);
+      }
+      this.timers.forEach(clearTimeout);
+      this.timers = [];
+      if (this.timerId) { clearInterval(this.timerId); this.timerId = null; }
+      if (this._keyHandler) window.removeEventListener('keydown', this._keyHandler);
+      document.getElementById('mathlab-inline-ranking-modal')?.remove();
+      document.getElementById('mathlab-rp-howto-modal')?.remove();
+      const host = document.getElementById('roman-puzzle-force-host'); if (host) host.remove();
+      if (this.container) this.container.innerHTML = '';
+      this.container = null;
+    }
+  };
+
+  if (!window.MathLabGames) {
+    window.MathLabGames = {
+      registry: {},
+      register(app) { this.registry[app.id] = app; },
+      get(id) { return this.registry[id]; },
+      mount(id, container, context) {
+        if (this.registry[id]) this.registry[id].mount(container, context);
+      }
+    };
+  }
+  
+  if (typeof window.MathLabGames.register === 'function') {
+    if (!window.MathLabGames.get?.('roman-puzzle')) {
+      window.MathLabGames.register(RomanPuzzle);
+    }
+  }
+
+  window.launchRomanPuzzleGame = function() {
+    if (typeof window.MathLabGames !== 'undefined' && typeof window.MathLabGames.mount === 'function') {
+      try {
+        window.MathLabGames.mount('roman-puzzle');
+        return;
+      } catch(e) {
+        console.warn('MathLabGames mount 실패, 직접 마운트 시도:', e);
+      }
+    }
+    const target = document.getElementById('mathlab-view') || document.getElementById('new-root') || document.body;
+    RomanPuzzle.mount(target);
+  };
+})();
+</script>

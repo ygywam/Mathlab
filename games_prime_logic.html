@@ -1,0 +1,1107 @@
+
+<style>
+  .game-prime-logic {
+    width: 100%; min-height: 100%; padding: 20px; box-sizing: border-box;
+    background: #0f172a; color: #f8fafc; font-family: 'Pretendard', sans-serif;
+    border-radius: 20px; text-align: center;
+    position: relative;
+  }
+  .game-prime-logic * { box-sizing: border-box; }
+  .prime-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+  .prime-title { display: flex; align-items: center; gap: 10px; }
+  .prime-title h2 { margin: 0; font-size: 2rem; color: #f8fafc; }
+  .prime-badge { background: #ef4444; color: #fff; padding: 4px 10px; border-radius: 12px; font-weight: bold; font-size: 0.9rem; }
+  .prime-btn-guide { background: #38bdf8; color: #0f172a; padding: 6px 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+  .prime-btn-home { background: #ef4444; color: #fff; padding: 6px 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-right: 8px; }
+  .prime-top-info { display: flex; justify-content: space-between; margin-bottom: 15px; font-weight: 700; font-size: 1.1rem; background: #1e293b; padding:10px 15px; border-radius:12px; border: 2px solid #334155; }
+  #prime-score-1p-box { color: #38bdf8; width: 48%; text-align:left; }
+  #prime-score-2p-box { color: #f87171; width: 48%; text-align:right; border-left: 2px dashed #475569; display:none; }
+  .prime-info-label { font-size:0.8rem; color:#94a3b8; margin-bottom:4px; }
+  .prime-board-wrap { position: relative; width: 100%; height: 500px; background: #1e293b; border-radius: 16px; overflow: hidden; border: 2px solid #334155; }
+  #prime-divider { position:absolute; left:50%; top:0; bottom:0; width:0px; display:none; border-left: 3px dashed rgba(255,255,255,0.2); z-index: 1; }
+  .btn { border: none; cursor: pointer; border-radius: 8px; font-weight: bold; }
+  
+  /* Bottom ranking */
+  .bottom-ranking-card { margin-top: 20px; background: #1e293b; border-radius: 16px; border: 1px solid #334155; padding: 16px; text-align:left; }
+  .ranking-title { color: #facc15; font-weight: bold; font-size: 1.1rem; margin-bottom: 10px; }
+</style>
+
+<script>
+(function() {
+  // --- Old Global Variables and Logic ---
+    // ==========================================
+  
+  // 16. 🪓 [앱 16] 소수 헌터
+  
+  // 분리 파일: games_prime_logic.html
+  
+  // 수정 내용:
+  
+  // - primeInterval1 / primeInterval2 정리
+  
+  // - 홈 복귀 후 재진입 시 시작 overlay 복구
+  
+  // - 떨어지는 숫자 잔류 제거
+  
+  // ==========================================
+  
+  
+  
+  let primePlayerCount = 1;
+  
+  let primeState = {
+  
+    1: {
+  
+      score: 0,
+  
+      life: 3
+  
+    },
+  
+    2: {
+  
+      score: 0,
+  
+      life: 3
+  
+    }
+  
+  };
+  
+  let primeDrops = [];
+  
+  let primeDropSpeed = 1500;
+  
+  let primeInterval1 = null;
+  
+  let primeInterval2 = null;
+  
+  
+  
+  function isPrime(num) {  
+    if(num <= 1) return false;  
+    if(num <= 3) return true;  
+    if(num % 2 === 0 || num % 3 === 0) return false;  
+    
+    for(let i = 5; i * i <= num; i += 6) {  
+      if(num % i === 0 || num % (i + 2) === 0) {  
+        return false;  
+      }  
+    }  
+    
+    return true;  
+  }  
+    
+  function initPrimeGame(players = 1) {  
+    cleanupPrimeGame(false);  
+    
+    primePlayerCount = players;  
+    
+    primeState[1] = {  
+      score: 0,  
+      life: 3  
+    };  
+    
+    primeState[2] = {  
+      score: 0,  
+      life: 3  
+    };  
+    
+    primeDropSpeed = 1500;
+  
+    primeDrops = [];
+  
+  
+  
+    const startOverlay = document.getElementById('prime-start-overlay');
+  
+    const score1 = document.getElementById('prime-score');
+  
+    const life1 = document.getElementById('prime-life');
+  
+    const score2Box = document.getElementById('prime-score-2p-box');
+  
+    const score2 = document.getElementById('prime-score-2p');
+  
+    const life2 = document.getElementById('prime-life-2p');
+  
+    const divider = document.getElementById('prime-divider');
+  
+  
+  
+    if(startOverlay) {
+  
+      startOverlay.style.display = 'none';
+  
+    }
+  
+  
+  
+    if(score1) {
+  
+      score1.innerText = primeState[1].score;
+  
+    }
+  
+  
+  
+    if(life1) {
+  
+      life1.innerText = primeState[1].life;
+  
+    }
+  
+  
+  
+    if(players === 2) {
+  
+      if(score2Box) {
+  
+        score2Box.style.display = 'block';
+  
+      }
+  
+  
+  
+      if(score2) {
+  
+        score2.innerText = primeState[2].score;
+  
+      }
+  
+  
+  
+      if(life2) {
+  
+        life2.innerText = primeState[2].life;
+  
+      }
+  
+  
+  
+      if(divider) {
+  
+        divider.style.display = 'block';
+  
+      }
+  
+    } else {
+  
+      if(score2Box) {
+  
+        score2Box.style.display = 'none';
+  
+      }
+  
+  
+  
+      if(divider) {
+  
+        divider.style.display = 'none';
+  
+      }
+  
+    }
+  
+  
+  
+    primeInterval1 = setInterval(function() {
+  
+      spawnPrimeTarget(1);
+  
+    }, primeDropSpeed);
+  
+  
+  
+    if(players === 2) {
+  
+      primeInterval2 = setInterval(function() {
+  
+        spawnPrimeTarget(2);
+  
+      }, primeDropSpeed);
+  
+    }
+  
+  
+  
+    if (typeof window.loadGameLeaderboard === 'function') window.loadGameLeaderboard('소수헌터', true, 'board-prime-bottom');
+  
+  }
+  
+  
+  
+  function spawnPrimeTarget(player) {
+  
+    if(!primeState[player]) return;
+  
+    if(primeState[player].life <= 0) return;
+  
+  
+  
+    const board = document.getElementById('prime-board');
+  
+    if(!board) return;
+  
+  
+  
+    const el = document.createElement('div');
+  
+    el.className = 'prime-target-el';
+  
+  
+  
+    const num = Math.floor(Math.random() * 90) + 10;
+  
+    const isP = isPrime(num);
+  
+  
+  
+    let leftMin = 0;
+  
+    let leftMax = 0;
+  
+  
+  
+    if(primePlayerCount === 1) {
+  
+      leftMin = 0;
+  
+      leftMax = board.clientWidth - 60;
+  
+    } else {
+  
+      if(player === 1) {
+  
+        leftMin = 0;
+  
+        leftMax = (board.clientWidth / 2) - 60;
+  
+      } else {
+  
+        leftMin = board.clientWidth / 2;
+  
+        leftMax = board.clientWidth - 60;
+  
+      }
+  
+    }
+  
+  
+  
+    if(leftMax < leftMin) {
+  
+      leftMax = leftMin;
+  
+    }
+  
+  
+  
+    el.innerText = num;
+  
+    el.style.position = 'absolute';
+  
+    el.style.top = '-50px';
+  
+    el.style.left = (Math.random() * (leftMax - leftMin) + leftMin) + 'px';
+  
+    el.style.width = '60px';
+  
+    el.style.height = '60px';
+  
+    el.style.background = primePlayerCount === 1
+  
+      ? '#f39c12'
+  
+      : player === 1
+  
+        ? '#3498db'
+  
+        : '#e74c3c';
+  
+    el.style.color = '#fff';
+  
+    el.style.borderRadius = '50%';
+  
+    el.style.display = 'flex';
+  
+    el.style.justifyContent = 'center';
+  
+    el.style.alignItems = 'center';
+  
+    el.style.fontSize = '1.5rem';
+  
+    el.style.fontWeight = 'bold';
+  
+    el.style.cursor = 'pointer';
+  
+    el.style.transition = 'top 0.1s linear';
+  
+    el.style.zIndex = '3';
+  
+  
+  
+    const hitAction = function(e) {
+  
+      e.preventDefault();
+  
+      handlePrimeClick(e, el, num, isP, player);
+  
+    };
+  
+  
+  
+    el.onmousedown = hitAction;
+  
+  
+  
+    el.ontouchstart = function(e) {
+  
+      e.preventDefault();
+  
+      handlePrimeClick(e.touches[0], el, num, isP, player);
+  
+    };
+  
+  
+  
+    board.appendChild(el);
+  
+  
+  
+    let dropY = -50;
+  
+  
+  
+    const fallInterval = setInterval(function() {
+  
+      if(
+  
+        !primeState[player] ||
+  
+        primeState[player].life <= 0 ||
+  
+        !el.parentNode
+  
+      ) {
+  
+        clearInterval(fallInterval);
+  
+        return;
+  
+      }
+  
+  
+  
+      dropY += 2;
+  
+      el.style.top = dropY + 'px';
+  
+  
+  
+      if(dropY > board.clientHeight) {
+  
+        clearInterval(fallInterval);
+  
+  
+  
+        if(el.parentNode) {
+  
+          el.remove();
+  
+        }
+  
+  
+  
+        if(isP) {
+  
+          primeState[player].life--;
+  
+          updatePrimeUI(player);
+  
+          showToast(`P${player} 소수를 놓쳤습니다!`, true);
+  
+          checkPrimeGameOver();
+  
+        }
+  
+      }
+  
+    }, 20);
+  
+  }
+  
+  
+  
+  function handlePrimeClick(e, el, num, isP, player) {
+  
+    if(!primeState[player]) return;
+  
+    if(primeState[player].life <= 0) return;
+  
+  
+  
+    const sword = document.getElementById('prime-sword');
+  
+    const board = document.getElementById('prime-board');
+  
+  
+  
+    if(sword && board) {
+  
+      const boardRect = board.getBoundingClientRect();
+  
+  
+  
+      sword.style.left = (e.clientX - boardRect.left - 20) + 'px';
+  
+      sword.style.top = (e.clientY - boardRect.top - 20) + 'px';
+  
+      sword.style.background = player === 1
+  
+        ? 'rgba(52,152,219,0.8)'
+  
+        : 'rgba(231,76,60,0.8)';
+  
+      sword.style.opacity = 1;
+  
+  
+  
+      setTimeout(function() {
+  
+        sword.style.opacity = 0;
+  
+      }, 150);
+  
+    }
+  
+  
+  
+    if(el && el.parentNode) {
+  
+      el.remove();
+  
+    }
+  
+  
+  
+    if(isP) {
+  
+      primeState[player].score += 10;
+  
+      updatePrimeUI(player);
+  
+  
+  
+      if(primeState[player].score % 50 === 0) {
+  
+        primeDropSpeed *= 0.85;
+  
+  
+  
+        if(player === 1) {
+  
+          if(primeInterval1) {
+  
+            clearInterval(primeInterval1);
+  
+            primeInterval1 = null;
+  
+          }
+  
+  
+  
+          primeInterval1 = setInterval(function() {
+  
+            spawnPrimeTarget(1);
+  
+          }, primeDropSpeed);
+  
+        }
+  
+  
+  
+        if(player === 2) {
+  
+          if(primeInterval2) {
+  
+            clearInterval(primeInterval2);
+  
+            primeInterval2 = null;
+  
+          }
+  
+  
+  
+          primeInterval2 = setInterval(function() {
+  
+            spawnPrimeTarget(2);
+  
+          }, primeDropSpeed);
+  
+        }
+  
+      }
+  
+    } else {
+  
+      primeState[player].life--;
+  
+      updatePrimeUI(player);
+  
+      showToast(`P${player} 오답! ${num}은 합성수입니다.`, true);
+  
+      checkPrimeGameOver();
+  
+    }
+  
+  }
+  
+  
+  
+  function updatePrimeUI(player) {
+  
+    if(player === 1) {
+  
+      const score1 = document.getElementById('prime-score');
+  
+      const life1 = document.getElementById('prime-life');
+  
+  
+  
+      if(score1) {
+  
+        score1.innerText = primeState[1].score;
+  
+      }
+  
+  
+  
+      if(life1) {
+  
+        life1.innerText = primeState[1].life;
+  
+      }
+  
+    } else {
+  
+      const score2 = document.getElementById('prime-score-2p');
+  
+      const life2 = document.getElementById('prime-life-2p');
+  
+  
+  
+      if(score2) {
+  
+        score2.innerText = primeState[2].score;
+  
+      }
+  
+  
+  
+      if(life2) {
+  
+        life2.innerText = primeState[2].life;
+  
+      }
+  
+    }
+  
+  }
+  
+  
+  
+  function checkPrimeGameOver() {
+  
+    if(primePlayerCount === 1) {
+  
+      if(primeState[1].life <= 0) {
+  
+        displayPrimeResult(
+  
+          `최종 점수: ${primeState[1].score}점`,
+  
+          primeState[1].score
+  
+        );
+  
+      }
+  
+  
+  
+      return;
+  
+    }
+  
+  
+  
+    if(primeState[1].life <= 0 && primeState[2].life > 0) {
+  
+      primeState[2].life = 0;
+  
+  
+  
+      displayPrimeResult(
+  
+        `🎉 2P 승리! (1P 생명 소진)<br><br>1P: ${primeState[1].score}점 / 2P: <span style="color:#e74c3c;">${primeState[2].score}점</span>`,
+  
+        Math.max(primeState[1].score, primeState[2].score)
+  
+      );
+  
+    } else if(primeState[2].life <= 0 && primeState[1].life > 0) {
+  
+      primeState[1].life = 0;
+  
+  
+  
+      displayPrimeResult(
+  
+        `🎉 1P 승리! (2P 생명 소진)<br><br>1P: <span style="color:#3498db;">${primeState[1].score}점</span> / 2P: ${primeState[2].score}점`,
+  
+        Math.max(primeState[1].score, primeState[2].score)
+  
+      );
+  
+    } else if(primeState[1].life <= 0 && primeState[2].life <= 0) {
+  
+      displayPrimeResult(
+  
+        `🤝 무승부! 둘 다 동시에 생명이 다했습니다.<br><br>1P: ${primeState[1].score}점 / 2P: ${primeState[2].score}점`,
+  
+        Math.max(primeState[1].score, primeState[2].score)
+  
+      );
+  
+    }
+  
+  }
+  
+  
+  
+  function displayPrimeResult(msg, bestScore) {
+  
+    if(primeInterval1) {
+  
+      clearInterval(primeInterval1);
+  
+      primeInterval1 = null;
+  
+    }
+  
+  
+  
+    if(primeInterval2) {
+  
+      clearInterval(primeInterval2);
+  
+      primeInterval2 = null;
+  
+    }
+  
+  
+  
+    document.querySelectorAll('.prime-target-el').forEach(function(el) {
+  
+      el.remove();
+  
+    });
+  
+  
+  
+    const overlay = document.getElementById('prime-start-overlay');
+  
+  
+  
+    if(!overlay) return;
+  
+  
+  
+    overlay.style.display = 'flex';
+  
+    overlay.innerHTML = `
+  
+      <div style="background:rgba(0,0,0,0.85); padding:30px; border-radius:15px; text-align:center; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+  
+        <h3 style="font-size:2rem; margin-bottom:15px; color:#f1c40f;">게임 오버!</h3>
+  
+        <p style="font-size:1.2rem; margin-bottom:20px; line-height:1.6;">${msg}</p>
+  
+        <input type="text" id="input-prime" placeholder="닉네임 입력 (최고점 랭킹용)" style="padding:12px; border-radius:8px; border:none; text-align:center; margin-bottom:15px; width:80%; font-weight:bold; color:#2c3e50;">
+  
+        <button class="btn save-btn" onclick="window.submitRanking('소수헌터', ${bestScore}, true, 'input-prime', 'board-prime')" style="width:100%; margin-bottom:15px; padding:12px;">🏆 최고 점수 명예의 전당 등록</button>
+  
+        <div style="display:flex; gap:10px; justify-content:center;">
+  
+          <button class="btn retry-btn" onclick="initPrimeGame(1)" style="flex:1; background:#3498db; margin:0;">👤 1인용</button>
+  
+          <button class="btn retry-btn" onclick="initPrimeGame(2)" style="flex:1; background:#e74c3c; margin:0; border:none;">👥 2인용 대결</button>
+  
+        </div>
+  
+      </div>
+  
+    `;
+  
+  }
+  
+  
+  
+  function restorePrimeStartOverlay() {
+  
+    const overlay = document.getElementById('prime-start-overlay');
+  
+  
+  
+    if(!overlay) return;
+  
+  
+  
+    overlay.style.display = 'flex';
+  
+    overlay.innerHTML = `
+  
+      <button class="btn save-btn" onclick="initPrimeGame(1)" style="width: 80%; max-width: 300px; padding: 15px; font-size: 1.2rem; margin-bottom:15px; background:#3498db;">
+  
+        👤 1인용 연습 시작
+  
+      </button>
+  
+      <button class="btn" onclick="initPrimeGame(2)" style="width: 80%; max-width: 300px; padding: 15px; font-size: 1.2rem; background:#e74c3c; margin:0; border:none; color:#fff; border-radius:8px; font-weight:bold;">
+  
+        👥 2인용 대결 시작
+  
+      </button>
+  
+    `;
+  
+  }
+  
+  
+  
+  function cleanupPrimeGame(showStartOverlay = true) {
+  
+    if(primeInterval1) {
+  
+      clearInterval(primeInterval1);
+  
+      primeInterval1 = null;
+  
+    }
+  
+  
+  
+    if(primeInterval2) {
+  
+      clearInterval(primeInterval2);
+  
+      primeInterval2 = null;
+  
+    }
+  
+  
+  
+    document.querySelectorAll('.prime-target-el').forEach(function(el) {
+  
+      el.remove();
+  
+    });
+  
+  
+  
+    primeDrops = [];
+  
+    primePlayerCount = 1;
+  
+    primeDropSpeed = 1500;
+  
+  
+  
+    primeState[1] = {
+  
+      score: 0,
+  
+      life: 3
+  
+    };
+  
+  
+  
+    primeState[2] = {
+  
+      score: 0,
+  
+      life: 3
+  
+    };
+  
+  
+  
+    const score1 = document.getElementById('prime-score');
+  
+    const life1 = document.getElementById('prime-life');
+  
+    const score2 = document.getElementById('prime-score-2p');
+  
+    const life2 = document.getElementById('prime-life-2p');
+  
+    const score2Box = document.getElementById('prime-score-2p-box');
+  
+    const divider = document.getElementById('prime-divider');
+  
+    const sword = document.getElementById('prime-sword');
+  
+  
+  
+    if(score1) {
+  
+      score1.innerText = '0';
+  
+    }
+  
+  
+  
+    if(life1) {
+  
+      life1.innerText = '3';
+  
+    }
+  
+  
+  
+    if(score2) {
+  
+      score2.innerText = '0';
+  
+    }
+  
+  
+  
+    if(life2) {
+  
+      life2.innerText = '3';
+  
+    }
+  
+  
+  
+    if(score2Box) {
+  
+      score2Box.style.display = 'none';
+  
+    }
+  
+  
+  
+    if(divider) {
+  
+      divider.style.display = 'none';
+  
+    }
+  
+  
+  
+    if(sword) {
+  
+      sword.style.opacity = 0;
+  
+    }
+  
+  
+  
+    if(showStartOverlay) {
+  
+      restorePrimeStartOverlay();
+  
+    }
+  
+  }
+
+  // --- Gen-3 Module Definition ---
+  const PrimeLogicGame = {
+    mount(container, context) {
+      const view = document.getElementById('mathlab-view');
+      let host = (container && typeof container.innerHTML !== 'undefined') ? container : view;
+      if (!host) return;
+      
+      host.style.display = '';
+      host.style.visibility = 'visible';
+      host.style.opacity = '1';
+      let parent = host.parentElement;
+      while (parent && parent !== document.body && parent !== document.documentElement) {
+        if (parent.style && parent.style.display === 'none') parent.style.display = 'block';
+        if (parent.style && parent.style.visibility === 'hidden') parent.style.visibility = 'visible';
+        parent = parent.parentElement;
+      }
+      
+      host.innerHTML = `
+        <div class="game-prime-logic" id="prime-logic-container">
+          <div class="prime-header">
+            <div class="prime-title">
+              <h2>🪓 소수 헌터</h2>
+              <span class="prime-badge">👥 1~2인용</span>
+            </div>
+            <div>
+              <button class="prime-btn-home" id="prime-btn-home">🏠 홈으로</button>
+              <button class="prime-btn-guide" id="prime-btn-guide">📖 게임 방법</button>
+            </div>
+          </div>
+
+          <div class="prime-top-info">
+            <div id="prime-score-1p-box">
+              <div class="prime-info-label">1P (왼쪽)</div>
+              💯 점수: <span id="prime-score">0</span> <br> ❤️ 생명: <span id="prime-life">3</span>
+            </div>
+            <div id="prime-score-2p-box">
+              <div class="prime-info-label">2P (오른쪽)</div>
+              <span id="prime-score-2p">0</span> :점수 💯 <br> <span id="prime-life-2p">3</span> :생명 ❤️
+            </div>
+          </div>
+
+          <div id="prime-board" class="prime-board-wrap">
+            <div id="prime-divider"></div>
+            <div id="prime-sword" style="position:absolute; width:40px; height:40px; background:rgba(239,68,68,0.8); border-radius:50%; pointer-events:none; opacity:0; transition:opacity 0.1s; z-index:5;"></div>
+            <div id="prime-start-overlay" style="position: absolute; top:0; left:0; right:0; bottom:0; background: rgba(15,23,42,0.8); display: flex; flex-direction:column; justify-content: center; align-items: center; z-index: 10; color:#fff;">
+              <button class="btn" onclick="initPrimeGame(1)" style="width: 80%; max-width: 300px; padding: 15px; font-size: 1.2rem; margin-bottom:15px; background:#38bdf8; color:#0f172a;">👤 1인용 연습 시작</button>
+              <button class="btn" onclick="initPrimeGame(2)" style="width: 80%; max-width: 300px; padding: 15px; font-size: 1.2rem; background:#ef4444; color:#fff;">👥 2인용 대결 시작</button>
+            </div>
+          </div>
+
+          <!-- 하단 상시 명예의 전당 보드 -->
+          <div class="bottom-ranking-card" id="prime-bottom-ranking-sec">
+            <div class="ranking-title">🏆 명예의 전당 (실시간 랭킹 보드)</div>
+            <div id="board-prime-bottom">
+              <p style="text-align:center; color:#94a3b8; padding:12px 0;">랭킹 데이터를 불러오는 중...</p>
+            </div>
+          </div>
+
+          <!-- Guide Modal -->
+          <div id="prime-guide-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15,23,42,0.8); z-index:99999; justify-content:center; align-items:center; backdrop-filter:blur(4px);">
+            <div style="background:#fff; width:90%; max-width:500px; border-radius:24px; padding:28px; text-align:left; color:#1e2937; box-shadow:0 20px 40px rgba(0,0,0,0.4);">
+              <h3 style="margin-top:0; color:#0f172a; border-bottom:1px solid #e2e8f0; padding-bottom:12px; font-size:1.4rem;">📖 게임 방법 (소수 헌터)</h3>
+              <div style="color:#475569; font-size:1.05rem; line-height:1.6; margin-bottom:20px;">
+                위에서 떨어지는 숫자들 중 <strong>소수(Prime Number)</strong>를 재빨리 터치하세요!<br><br>
+                ⚠️ <strong>주의:</strong><br>
+                - 소수를 바닥에 떨어뜨리면 생명(❤️)이 깎입니다.<br>
+                - <strong>합성수</strong>를 터치해도 오답으로 생명이 깎입니다.<br>
+                - 1인용 연습 모드와 2인용 화면 분할 대결 모드를 지원합니다.
+              </div>
+              <div style="text-align:right;">
+                <button id="prime-close-guide" style="background:#10b981; color:#fff; border:none; padding:10px 24px; border-radius:12px; cursor:pointer; font-weight:bold; font-size:1.05rem;">확인</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      // Bind Guide Events
+      const btnGuide = host.querySelector('#prime-btn-guide');
+      const btnCloseGuide = host.querySelector('#prime-close-guide');
+      const guideModal = host.querySelector('#prime-guide-modal');
+      const btnHome = host.querySelector('#prime-btn-home');
+      if (btnGuide && guideModal) btnGuide.addEventListener('click', () => guideModal.style.display = 'flex');
+      if (btnCloseGuide && guideModal) btnCloseGuide.addEventListener('click', () => guideModal.style.display = 'none');
+      if (btnHome) btnHome.addEventListener('click', () => gameMeta.goHome());
+
+      cleanupPrimeGame(true);
+      if (typeof window.loadGameLeaderboard === 'function') {
+        window.loadGameLeaderboard('소수헌터', true, 'board-prime-bottom');
+      }
+    },
+
+    reset() {
+      cleanupPrimeGame(true);
+    },
+
+    destroy() {
+      cleanupPrimeGame(false);
+      const container = document.getElementById('prime-logic-container');
+      if (container) container.parentElement.innerHTML = '';
+    }
+  };
+
+  // Modify overlay submission to target the bottom ranking board too
+  const originalDisplayPrimeResult = displayPrimeResult;
+  displayPrimeResult = function(msg, bestScore) {
+    originalDisplayPrimeResult(msg, bestScore);
+    const overlay = document.getElementById('prime-start-overlay');
+    if (overlay) {
+      // Replace the submit function call in the HTML string injected by original function
+      overlay.innerHTML = overlay.innerHTML.replace(
+        /'board-prime'/g,
+        "'board-prime-bottom'"
+      );
+    }
+  };
+
+  const gameMeta = {
+    id: 'prime-logic',
+    title: '소수 헌터',
+    icon: '🪓',
+    description: '떨어지는 숫자 중 소수만 터치하여 생존하는 1~2인용 순발력 게임',
+    appType: 'game',
+    topApp: '수학 게임',
+    activityType: ['게임', '수학', '소수', '연산'],
+    schoolLevel: ['middle'],
+    gradeBand: ['중1'],
+    curriculumArea: ['수와 연산'],
+    unit: ['소인수분해'],
+    concepts: ['소수', '합성수'],
+    category: '수와 연산',
+    level: '중',
+    concept: '소수와 합성수 판별',
+    classroomUse: ['단원 마무리', '팀전', '전자칠판'],
+    difficulty: '보통',
+    duration: '10분',
+    renderMode: 'DOM',
+    sourceType: 'new',
+    playModes: ['single', 'versus'],
+    tags: ['소수', '합성수', '헌터', '수학', '게임'],
+    keywords: ['소수', '합성수', '헌터'],
+    mount(container, context) { PrimeLogicGame.mount(container, context); },
+    reset() { PrimeLogicGame.reset(); },
+    destroy() { PrimeLogicGame.destroy(); },
+    goHome() { 
+        const topBottomHome = document.getElementById('mathlab-floating-home') || document.querySelector('#legacy-back-home-btn');
+        if (topBottomHome) topBottomHome.click();
+        else if (typeof window.MathLabRenderHome === 'function') window.MathLabRenderHome();
+        else if (typeof window.goHome === 'function') window.goHome();
+        else location.reload();
+    }
+  };
+
+  window.initPrimeGame = initPrimeGame;
+
+  function registerPrimeGameApp() {
+    if (typeof window.MathLabGames !== 'undefined' && typeof window.MathLabGames.register === 'function') {
+      if (!window.MathLabGames.get || !window.MathLabGames.get('prime-logic')) {
+        try { window.MathLabGames.register(gameMeta); } catch (e) { console.warn('prime register error', e); }
+      }
+    } else {
+      if (typeof window.MathLabGames === 'undefined') {
+        window.MathLabGames = { _registry: {}, register(game) { this._registry[game.id] = game; } };
+      }
+      if (window.MathLabGames._registry) window.MathLabGames._registry['prime-logic'] = gameMeta;
+    }
+  }
+
+  registerPrimeGameApp();
+  window.addEventListener('DOMContentLoaded', registerPrimeGameApp);
+  setTimeout(registerPrimeGameApp, 100);
+  setTimeout(registerPrimeGameApp, 500);
+
+  window.launchPrimeGame = function() {
+    registerPrimeGameApp();
+    if (window.LegacyBridge && typeof window.LegacyBridge.hideAllLegacySections === 'function') {
+      window.LegacyBridge.hideAllLegacySections();
+      window.LegacyBridge.showNewRoot();
+    }
+    if (typeof window.MathLabGames !== 'undefined' && typeof window.MathLabGames.mount === 'function') {
+      try { window.MathLabGames.mount('prime-logic'); return; } catch(e) {}
+    }
+    const targetEl = document.getElementById('mathlab-view') || document.getElementById('new-root');
+    PrimeLogicGame.mount(targetEl);
+  };
+})();
+</script>

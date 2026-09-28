@@ -1,0 +1,13 @@
+{
+  "name": "mathlab-games",
+  "version": "3.0.0",
+  "description": "Gen-3 MathLabGames Platform for Vercel Deployment",
+  "main": "dist/index.html",
+  "scripts": {
+    "build": "node build.js",
+    "start": "node build.js"
+  },
+  "keywords": ["mathlab", "education", "math-games", "vercel"],
+  "author": "RecordTuner",
+  "license": "MIT"
+}

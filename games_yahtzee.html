@@ -1,0 +1,1046 @@
+<style>
+.game-yahtzee {
+  width: 100%;
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 20px;
+  box-sizing: border-box;
+  color: #1f2937;
+}
+
+.game-yahtzee * {
+  box-sizing: border-box;
+}
+
+.game-yahtzee .yahtzee-header {
+  margin-bottom: 18px;
+  padding: 18px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #fef3c7, #fee2e2);
+  border: 1px solid rgba(251, 191, 36, 0.4);
+}
+
+.game-yahtzee .yahtzee-title {
+  margin: 0 0 8px;
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.game-yahtzee .yahtzee-desc {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.6;
+  color: #4b5563;
+}
+
+/* AI 모드 선택 버튼 스타일 */
+.game-yahtzee .yahtzee-modes {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+
+.game-yahtzee .mode-btn {
+  background: #ffffff;
+  border: 2px solid #e2e8f0;
+  padding: 10px 20px;
+  border-radius: 14px;
+  font-weight: 800;
+  font-size: 15px;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  touch-action: manipulation;
+  user-select: none;
+}
+
+.game-yahtzee .mode-btn:hover {
+  border-color: #cbd5e1;
+  background: #f8fafc;
+}
+
+.game-yahtzee .mode-btn.active {
+  border-color: #f59e0b;
+  background: #fffbeb;
+  color: #b45309;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.15);
+}
+
+/* AI 턴 전광판 스타일 */
+.game-yahtzee .turn-board {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 18px;
+  padding: 14px;
+  background: #f8fafc;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+}
+
+.game-yahtzee .players-badge {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.game-yahtzee .p-tag {
+  padding: 6px 16px;
+  border-radius: 9999px;
+  font-weight: 800;
+  font-size: 14px;
+  background: #e2e8f0;
+  color: #64748b;
+  transition: all 0.3s ease;
+}
+
+.game-yahtzee .p-tag.p1.active {
+  background: #3b82f6;
+  color: #ffffff;
+  box-shadow: 0 4px 10px rgba(59, 130, 246, 0.35);
+}
+
+.game-yahtzee .p-tag.p2.active {
+  background: #ef4444;
+  color: #ffffff;
+  box-shadow: 0 4px 10px rgba(239, 68, 68, 0.35);
+}
+
+.game-yahtzee .ai-status-text {
+  color: #ef4444;
+  font-weight: 700;
+  font-size: 14px;
+  margin-top: 8px;
+  min-height: 20px;
+}
+
+.game-yahtzee .yahtzee-panel {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 16px;
+  align-items: start;
+}
+
+.game-yahtzee .yahtzee-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+  padding: 16px;
+}
+
+.game-yahtzee .turn-box {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 14px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: #f9fafb;
+}
+
+.game-yahtzee .turn-player {
+  font-weight: 800;
+  font-size: 18px;
+}
+
+.game-yahtzee .roll-count {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.game-yahtzee .dice-area {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(52px, 1fr));
+  gap: 10px;
+  margin: 16px 0;
+}
+
+.game-yahtzee .die {
+  min-height: 64px;
+  border: 2px solid #e5e7eb;
+  border-radius: 16px;
+  background: #ffffff;
+  font-size: 34px;
+  font-weight: 900;
+  cursor: pointer;
+  transition: transform 0.12s ease, border-color 0.12s ease, background 0.12s ease;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.game-yahtzee .die:hover {
+  transform: translateY(-2px);
+}
+
+.game-yahtzee .die.is-held {
+  border-color: #f59e0b;
+  background: #fffbeb;
+  box-shadow: inset 0 0 0 2px rgba(245, 158, 11, 0.15);
+}
+
+.game-yahtzee .die:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.game-yahtzee .actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.game-yahtzee .yahtzee-btn {
+  border: 0;
+  border-radius: 999px;
+  padding: 11px 16px;
+  font-weight: 800;
+  cursor: pointer;
+  background: #111827;
+  color: #ffffff;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.game-yahtzee .yahtzee-btn.secondary {
+  background: #e5e7eb;
+  color: #111827;
+}
+
+.game-yahtzee .yahtzee-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.game-yahtzee .notice {
+  margin-top: 12px;
+  min-height: 24px;
+  color: #b45309;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.game-yahtzee .score-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 8px;
+}
+
+.game-yahtzee .score-table th {
+  font-size: 13px;
+  color: #6b7280;
+  text-align: center;
+  padding: 4px;
+}
+
+.game-yahtzee .score-table th:first-child {
+  text-align: left;
+}
+
+.game-yahtzee .score-row td {
+  background: #f9fafb;
+  padding: 9px 8px;
+  text-align: center;
+  border-top: 1px solid #e5e7eb;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.game-yahtzee .score-row td:first-child {
+  border-left: 1px solid #e5e7eb;
+  border-radius: 12px 0 0 12px;
+  text-align: left;
+  font-weight: 800;
+}
+
+.game-yahtzee .score-row td:last-child {
+  border-right: 1px solid #e5e7eb;
+  border-radius: 0 12px 12px 0;
+}
+
+.game-yahtzee .score-cell {
+  min-width: 52px;
+  border: 0;
+  border-radius: 10px;
+  padding: 7px 8px;
+  background: #ffffff;
+  color: #111827;
+  font-weight: 800;
+  cursor: pointer;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.game-yahtzee .score-cell.available {
+  outline: 2px solid #f59e0b;
+  background: #fffbeb;
+}
+
+.game-yahtzee .score-cell.used {
+  background: transparent;
+  cursor: default;
+}
+
+.game-yahtzee .score-cell:disabled {
+  cursor: not-allowed;
+}
+
+.game-yahtzee .total-box {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.game-yahtzee .total-item {
+  padding: 12px;
+  border-radius: 14px;
+  background: #f3f4f6;
+  text-align: center;
+}
+
+.game-yahtzee .total-label {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.game-yahtzee .total-score {
+  font-size: 24px;
+  font-weight: 900;
+}
+
+.game-yahtzee .rule-list {
+  margin: 12px 0 0;
+  padding-left: 18px;
+  color: #4b5563;
+  line-height: 1.6;
+  font-size: 14px;
+}
+
+.game-yahtzee .yahtzee-guide {
+  margin-top: 14px;
+  border: 1px solid #fde68a;
+  border-radius: 16px;
+  background: #fffbeb;
+  overflow: hidden;
+}
+
+.game-yahtzee .yahtzee-guide summary {
+  padding: 13px 14px;
+  font-weight: 900;
+  cursor: pointer;
+  color: #92400e;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.game-yahtzee .guide-content {
+  padding: 0 14px 14px;
+  color: #374151;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.game-yahtzee .guide-content h3 {
+  margin: 16px 0 6px;
+  font-size: 16px;
+  color: #111827;
+}
+
+.game-yahtzee .guide-content p {
+  margin: 6px 0;
+}
+
+.game-yahtzee .guide-content ol,
+.game-yahtzee .guide-content ul {
+  margin: 8px 0;
+  padding-left: 20px;
+}
+
+.game-yahtzee .guide-content table {
+  width: 100%;
+  margin-top: 8px;
+  border-collapse: collapse;
+  font-size: 13px;
+  background: #ffffff;
+}
+
+.game-yahtzee .guide-content th,
+.game-yahtzee .guide-content td {
+  border: 1px solid #f3e8c3;
+  padding: 8px;
+  vertical-align: top;
+  text-align: left;
+}
+
+.game-yahtzee .guide-content th {
+  background: #fef3c7;
+  color: #78350f;
+}
+
+@media (max-width: 760px) {
+  .game-yahtzee .guide-content table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .game-yahtzee {
+    padding: 14px;
+  }
+
+  .game-yahtzee .yahtzee-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .game-yahtzee .yahtzee-title {
+    font-size: 24px;
+  }
+
+  .game-yahtzee .dice-area {
+    gap: 8px;
+  }
+
+  .game-yahtzee .die {
+    min-height: 56px;
+    font-size: 28px;
+  }
+
+  .game-yahtzee .score-table {
+    font-size: 13px;
+  }
+}
+</style>
+
+<script>
+(function () {
+  window.YahtzeeGame = {
+
+    container: null,
+    dice: [1, 1, 1, 1, 1],
+    held: [false, false, false, false, false],
+    rollCount: 0,
+    currentPlayer: 0,
+    players: ['1팀', '2팀'],
+    message: '',
+    gameOver: false,
+    mode: 'single', // 'single': 1팀 vs 2팀, 'ai': 플레이어 vs AI
+    aiThinking: false,
+    categories: [
+      { id: 'ones', name: '1의 합', desc: '1만 모두 더하기' },
+      { id: 'twos', name: '2의 합', desc: '2만 모두 더하기' },
+      { id: 'threes', name: '3의 합', desc: '3만 모두 더하기' },
+      { id: 'fours', name: '4의 합', desc: '4만 모두 더하기' },
+      { id: 'fives', name: '5의 합', desc: '5만 모두 더하기' },
+      { id: 'sixes', name: '6의 합', desc: '6만 모두 더하기' },
+      { id: 'threeKind', name: '트리플', desc: '같은 눈 3개 이상이면 전체 합' },
+      { id: 'fourKind', name: '포카드', desc: '같은 눈 4개 이상이면 전체 합' },
+      { id: 'fullHouse', name: '풀하우스', desc: '3개+2개 조합이면 25점' },
+      { id: 'smallStraight', name: '스몰 스트레이트', desc: '연속 4개면 30점' },
+      { id: 'largeStraight', name: '라지 스트레이트', desc: '연속 5개면 40점' },
+      { id: 'yahtzee', name: '야추', desc: '같은 눈 5개면 50점' },
+      { id: 'chance', name: '찬스', desc: '전체 합' }
+    ],
+    scores: [{}, {}],
+
+    mount(container, context) {
+      const view = document.getElementById('mathlab-view');
+
+      if (container && typeof container.innerHTML !== 'undefined') { this.container = container; } else if (view) { this.container = view; } else {
+        console.error('[Yahtzee] 렌더링할 #mathlab-view를 찾을 수 없습니다.', container);
+        return;
+      }
+
+      this.reset();
+      this.render();
+    },
+
+    goHome() {
+      const container = this.container;
+      if (container) {
+        container.innerHTML = '';
+        container.style.display = 'none';
+      }
+      if (typeof window.LegacyBridge !== 'undefined' && typeof window.LegacyBridge.backHome === 'function') {
+        window.LegacyBridge.backHome();
+      } else if (typeof window.MathLabUtils !== 'undefined' && typeof window.MathLabUtils.goHome === 'function') {
+        window.MathLabUtils.goHome();
+      } else {
+        const db = document.getElementById('dashboard-screen');
+        if (db) db.style.display = 'block';
+      }
+    },
+    reset() {
+      this.dice = [1, 1, 1, 1, 1];
+      this.held = [false, false, false, false, false];
+      this.rollCount = 0;
+      this.currentPlayer = 0;
+      this.message = '주사위를 굴려 게임을 시작하세요.';
+      this.gameOver = false;
+      this.scores = [{}, {}];
+      this.aiThinking = false;
+    },
+
+    destroy() {
+      this.gameOver = true; // AI 연산 및 setTimeout 대기 상태 강제 종료
+      this.aiThinking = false;
+      if (this.container) {
+        this.container.innerHTML = '';
+      }
+      this.container = null;
+    },
+
+    setMode(newMode) {
+      if (this.mode === newMode) return;
+      this.mode = newMode;
+      this.players = newMode === 'ai' ? ['플레이어', '🤖 AI'] : ['1팀', '2팀'];
+      this.reset();
+      this.render();
+    },
+
+    rollDice() {
+      if (this.gameOver) return;
+      if (this.mode === 'ai' && this.currentPlayer === 1 && !this.aiThinking) return;
+
+      if (this.rollCount >= 3) {
+        this.message = '이번 턴에는 더 이상 굴릴 수 없습니다. 점수 칸을 선택하세요.';
+        this.render();
+        return;
+      }
+
+      for (let i = 0; i < this.dice.length; i++) {
+        if (!this.held[i]) {
+          this.dice[i] = Math.floor(Math.random() * 6) + 1;
+        }
+      }
+
+      this.rollCount += 1;
+      this.message = this.rollCount === 3
+        ? '마지막 굴림입니다. 점수 칸을 선택하세요.'
+        : '원하는 주사위를 고정한 뒤 다시 굴릴 수 있습니다.';
+
+      this.render();
+    },
+
+    toggleHold(index) {
+      if (this.gameOver) return;
+      if (this.mode === 'ai' && this.currentPlayer === 1 || this.aiThinking) return;
+
+      if (this.rollCount === 0) {
+        this.message = '먼저 주사위를 굴린 뒤 고정할 수 있습니다.';
+        this.render();
+        return;
+      }
+
+      this.held[index] = !this.held[index];
+      this.render();
+    },
+
+    scoreCategory(categoryId) {
+      if (this.gameOver) return;
+      if (this.mode === 'ai' && this.currentPlayer === 1 && !this.aiThinking) return;
+
+      if (this.rollCount === 0) {
+        this.message = '먼저 주사위를 한 번 이상 굴려야 점수를 기록할 수 있습니다.';
+        this.render();
+        return;
+      }
+
+      const playerScores = this.scores[this.currentPlayer];
+
+      if (playerScores[categoryId] !== undefined) {
+        this.message = '이미 사용한 점수 칸입니다.';
+        this.render();
+        return;
+      }
+
+      playerScores[categoryId] = this.calculateScore(categoryId);
+      this.advanceTurn();
+      this.render();
+    },
+
+    advanceTurn() {
+      if (this.isGameFinished()) {
+        this.gameOver = true;
+        const totalA = this.getTotal(0);
+        const totalB = this.getTotal(1);
+
+        if (totalA > totalB) {
+          this.message = this.mode === 'ai' ? '🎉 게임 종료! 플레이어의 승리입니다!' : '게임 종료! 1팀 승리입니다.';
+        } else if (totalB > totalA) {
+          this.message = this.mode === 'ai' ? '🤖 게임 종료! AI의 승리입니다!' : '게임 종료! 2팀 승리입니다.';
+        } else {
+          this.message = '게임 종료! 무승부입니다.';
+        }
+
+        return;
+      }
+
+      this.currentPlayer = this.currentPlayer === 0 ? 1 : 0;
+      this.dice = [1, 1, 1, 1, 1];
+      this.held = [false, false, false, false, false];
+      this.rollCount = 0;
+      this.message = this.players[this.currentPlayer] + ' 차례입니다. 주사위를 굴리세요.';
+
+      if (this.mode === 'ai' && this.currentPlayer === 1) {
+        this.triggerAITurn();
+      }
+    },
+
+    triggerAITurn() {
+      if (this.aiThinking || this.gameOver) return;
+      this.aiThinking = true;
+      this.message = '🤖 AI가 최적의 수를 연산하고 주사위를 굴리고 있습니다...';
+      this.render();
+
+      setTimeout(() => {
+        if (this.rollCount < 3 && Math.random() < 0.75) {
+          this.rollDice();
+          setTimeout(() => {
+            if (this.rollCount < 3 && Math.random() < 0.6) {
+              this.rollDice();
+              setTimeout(() => this.makeAIDecision(), 700);
+            } else {
+              this.makeAIDecision();
+            }
+          }, 800);
+        } else {
+          this.makeAIDecision();
+        }
+      }, 800);
+    },
+
+    makeAIDecision() {
+      if (this.gameOver) return;
+      let bestCat = null;
+      let maxVal = -1;
+      this.categories.forEach(c => {
+        if (this.scores[1][c.id] === undefined) {
+          const val = this.calculateScore(c.id);
+          if (val > maxVal) {
+            maxVal = val;
+            bestCat = c.id;
+          }
+        }
+      });
+      this.aiThinking = false;
+      if (bestCat) {
+        this.scores[1][bestCat] = maxVal;
+        this.advanceTurn();
+        this.render();
+      }
+    },
+
+    isGameFinished() {
+      return this.categories.every(category => {
+        return this.scores[0][category.id] !== undefined &&
+          this.scores[1][category.id] !== undefined;
+      });
+    },
+
+    getCounts() {
+      const counts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 };
+      this.dice.forEach(value => {
+        counts[value] += 1;
+      });
+      return counts;
+    },
+
+    getDiceSum() {
+      return this.dice.reduce((sum, value) => sum + value, 0);
+    },
+
+    calculateScore(categoryId) {
+      const counts = this.getCounts();
+      const values = Object.values(counts);
+      const sum = this.getDiceSum();
+      const unique = Array.from(new Set(this.dice)).sort((a, b) => a - b).join('');
+
+      if (categoryId === 'ones') return counts[1] * 1;
+      if (categoryId === 'twos') return counts[2] * 2;
+      if (categoryId === 'threes') return counts[3] * 3;
+      if (categoryId === 'fours') return counts[4] * 4;
+      if (categoryId === 'fives') return counts[5] * 5;
+      if (categoryId === 'sixes') return counts[6] * 6;
+      if (categoryId === 'threeKind') return values.some(count => count >= 3) ? sum : 0;
+      if (categoryId === 'fourKind') return values.some(count => count >= 4) ? sum : 0;
+      if (categoryId === 'fullHouse') return values.includes(3) && values.includes(2) ? 25 : 0;
+      if (categoryId === 'smallStraight') {
+        return unique.includes('1234') ||
+          unique.includes('2345') ||
+          unique.includes('3456') ? 30 : 0;
+      }
+      if (categoryId === 'largeStraight') {
+        return unique === '12345' || unique === '23456' ? 40 : 0;
+      }
+      if (categoryId === 'yahtzee') return values.some(count => count === 5) ? 50 : 0;
+      if (categoryId === 'chance') return sum;
+
+      return 0;
+    },
+
+    getTotal(playerIndex) {
+      return Object.values(this.scores[playerIndex]).reduce((sum, value) => sum + value, 0);
+    },
+
+    getDieFace(value) {
+      const faces = {
+        1: '⚀',
+        2: '⚁',
+        3: '⚂',
+        4: '⚃',
+        5: '⚄',
+        6: '⚅'
+      };
+      return faces[value] || value;
+    },
+
+    render() {
+      if (!this.container) return;
+
+      const canScore = this.rollCount > 0 && !this.gameOver;
+
+      this.container.innerHTML = `
+        <div class="game-yahtzee">
+          <div class="yahtzee-header" style="display:flex; justify-content:space-between; align-items:center; gap:20px;">
+            <div style="flex:1;">
+            <h2 class="yahtzee-title">🎲 야추 다이스</h2>
+            <p class="yahtzee-desc">
+              주사위를 최대 3번 굴리고, 가장 유리한 점수 칸을 선택하는 턴제 확률·전략 게임입니다.
+              같은 결과라도 어느 칸에 기록할지에 따라 최종 점수가 달라집니다.
+            </p>
+            </div>
+            <button class="home-btn" style="background:#4b5563;color:white;padding:12px 24px;border-radius:12px;border:none;cursor:pointer;font-weight:bold;white-space:nowrap;font-size:1rem;" onclick="if(window.YahtzeeGame) window.YahtzeeGame.goHome();">🏠 홈</button>
+          </div>
+
+          <div class="yahtzee-modes">
+            <button class="mode-btn ${this.mode === 'single' ? 'active' : ''}" data-action="mode" data-mode="single">👤 혼자 하기 (1팀 vs 2팀)</button>
+            <button class="mode-btn ${this.mode === 'ai' ? 'active' : ''}" data-action="mode" data-mode="ai">🤖 AI와 대결 (턴방식 대결)</button>
+          </div>
+
+          ${this.mode === 'ai' ? `
+          <div class="turn-board">
+            <div style="font-weight: 800; color: #475569; font-size: 15px;">
+              ${this.gameOver ? '🏆 게임이 종료되었습니다' : (this.currentPlayer === 0 ? '👤 플레이어 차례입니다 (주사위를 굴리세요!)' : '🤖 AI 차례입니다 (잠시만 기다려주세요)')}
+            </div>
+            <div class="players-badge">
+              <div class="p-tag p1 ${this.currentPlayer === 0 ? 'active' : ''}">👤 플레이어</div>
+              <div class="p-tag p2 ${this.currentPlayer === 1 ? 'active' : ''}">🤖 AI (도전자)</div>
+            </div>
+            <div class="ai-status-text" style="visibility: ${this.aiThinking ? 'visible' : 'hidden'};">
+              🤖 AI가 기대 점수를 계산하고 최적의 족보 칸을 선택 중입니다...
+            </div>
+          </div>
+          ` : ''}
+
+          <div class="yahtzee-panel">
+            <section class="yahtzee-card">
+              <div class="turn-box">
+                <div>
+                  <div class="turn-player">${this.gameOver ? '게임 종료' : this.players[this.currentPlayer] + ' 차례'}</div>
+                  <div class="roll-count">굴림 횟수: ${this.rollCount} / 3</div>
+                </div>
+                <button class="yahtzee-btn secondary" data-action="reset">처음부터</button>
+              </div>
+
+              <div class="dice-area">
+                ${this.dice.map((value, index) => `
+                  <button
+                    class="die ${this.held[index] ? 'is-held' : ''}"
+                    data-action="hold"
+                    data-index="${index}"
+                    ${this.gameOver || (this.mode === 'ai' && this.currentPlayer === 1) ? 'disabled' : ''}
+                    aria-label="${index + 1}번 주사위"
+                  >
+                    ${this.getDieFace(value)}
+                  </button>
+                `).join('')}
+              </div>
+
+              <div class="actions">
+                <button
+                  class="yahtzee-btn"
+                  data-action="roll"
+                  ${this.rollCount >= 3 || this.gameOver || (this.mode === 'ai' && this.currentPlayer === 1) ? 'disabled' : ''}
+                >
+                  주사위 굴리기
+                </button>
+              </div>
+
+              <div class="notice">${this.message}</div>
+
+              <details class="yahtzee-guide">
+                <summary>🎲 야추 다이스 사용설명서</summary>
+
+                <div class="guide-content">
+                  <h3>1. 야추 다이스는 어떤 게임인가요?</h3>
+                  <p>
+                    야추 다이스는 주사위 5개를 굴려 나온 결과를 점수판의 알맞은 칸에 기록하는 게임입니다.
+                    한 턴에 최대 3번까지 주사위를 굴릴 수 있고, 원하는 주사위는 고정해 둔 채 나머지만 다시 굴릴 수 있습니다.
+                    모든 점수 칸을 채운 뒤 총점이 높은 팀이 이깁니다.
+                  </p>
+
+                  <h3>2. 한 턴은 어떻게 진행되나요?</h3>
+                  <ol>
+                    <li>현재 차례의 팀이 <strong>주사위 굴리기</strong>를 누릅니다.</li>
+                    <li>결과를 보고 남기고 싶은 주사위를 누르면 고정됩니다.</li>
+                    <li>고정하지 않은 주사위만 다시 굴릴 수 있습니다.</li>
+                    <li>최대 3번까지 굴린 뒤, 점수판에서 기록할 칸을 하나 선택합니다.</li>
+                    <li>점수를 기록하면 다음 팀 차례로 넘어갑니다.</li>
+                  </ol>
+
+                  <h3>3. 주사위를 고정한다는 뜻</h3>
+                  <p>
+                    주사위를 고정한다는 것은 “이 주사위 눈은 마음에 드니 그대로 두겠다”는 뜻입니다.
+                    고정된 주사위는 다음에 <strong>주사위 굴리기</strong>를 눌러도 바뀌지 않습니다.
+                  </p>
+                  <p>
+                    예를 들어 주사위가 <strong>6, 6, 6, 2, 4</strong>로 나왔다면,
+                    6 세 개를 고정하고 2와 4만 다시 굴려서 6을 더 노릴 수 있습니다.
+                    이렇게 하면 <strong>포카드</strong>나 <strong>야추</strong>를 만들 가능성이 생깁니다.
+                  </p>
+
+                  <h3>4. 점수 칸은 어떻게 활용하나요?</h3>
+                  <p>
+                    점수 칸은 한 번만 사용할 수 있습니다. 그래서 지금 높은 점수를 얻을지,
+                    아니면 나중을 위해 좋은 칸을 아껴 둘지 선택해야 합니다.
+                  </p>
+                  <p>
+                    예를 들어 주사위가 <strong>1, 1, 1, 5, 6</strong>이라면
+                    <strong>1의 합</strong>에 기록하면 3점이고,
+                    <strong>트리플</strong>에 기록하면 전체 합인 14점을 얻을 수 있습니다.
+                    하지만 트리플 칸은 한 번 쓰면 다시 사용할 수 없으므로 전략적으로 선택해야 합니다.
+                  </p>
+
+                  <h3>5. 어떻게 이기나요?</h3>
+                  <p>
+                    1팀과 2팀(또는 AI)이 번갈아 가며 모든 점수 칸을 채웁니다.
+                    마지막에 각 팀의 점수를 모두 더해서 총점이 높은 팀이 승리합니다.
+                  </p>
+
+                  <h3>6. 주요 용어</h3>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>용어</th>
+                        <th>뜻</th>
+                        <th>예시</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>1의 합~6의 합</td>
+                        <td>해당 숫자만 골라 더하는 칸</td>
+                        <td>6, 6, 2, 3, 4 → 6의 합은 12점</td>
+                      </tr>
+                      <tr>
+                        <td>트리플</td>
+                        <td>같은 눈이 3개 이상이면 전체 합</td>
+                        <td>4, 4, 4, 2, 6 → 20점</td>
+                      </tr>
+                      <tr>
+                        <td>포카드</td>
+                        <td>같은 눈이 4개 이상이면 전체 합</td>
+                        <td>5, 5, 5, 5, 1 → 21점</td>
+                      </tr>
+                      <tr>
+                        <td>풀하우스</td>
+                        <td>같은 눈 3개와 같은 눈 2개 조합</td>
+                        <td>3, 3, 3, 6, 6 → 25점</td>
+                      </tr>
+                      <tr>
+                        <td>스몰 스트레이트</td>
+                        <td>연속된 숫자 4개</td>
+                        <td>1, 2, 3, 4, 6 → 30점</td>
+                      </tr>
+                      <tr>
+                        <td>라지 스트레이트</td>
+                        <td>연속된 숫자 5개</td>
+                        <td>1, 2, 3, 4, 5 → 40점</td>
+                      </tr>
+                      <tr>
+                        <td>야추</td>
+                        <td>주사위 5개가 모두 같은 눈</td>
+                        <td>6, 6, 6, 6, 6 → 50점</td>
+                      </tr>
+                      <tr>
+                        <td>찬스</td>
+                        <td>조건 없이 전체 합을 기록하는 칸</td>
+                        <td>2, 3, 4, 5, 6 → 20점</td>
+                      </tr>
+                    </tbody>
+                  </table>
+
+                  <h3>7. 초보자를 위한 선택 팁</h3>
+                  <ul>
+                    <li>같은 숫자가 3개 이상 나오면 트리플, 포카드, 야추 가능성을 봅니다.</li>
+                    <li>숫자가 1, 2, 3, 4처럼 이어지면 스트레이트 가능성을 봅니다.</li>
+                    <li>조건이 좋은 칸이 없을 때는 찬스를 활용합니다.</li>
+                    <li>점수 칸은 한 번만 쓰므로, 높은 점수를 낼 수 있는 칸을 너무 빨리 낭비하지 않습니다.</li>
+                  </ul>
+                </div>
+              </details>
+            </section>
+
+            <section class="yahtzee-card">
+              <table class="score-table">
+                <thead>
+                  <tr>
+                    <th>점수 칸</th>
+                    <th>${this.players[0]}</th>
+                    <th>${this.players[1]}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${this.categories.map(category => {
+                    const scoreA = this.scores[0][category.id];
+                    const scoreB = this.scores[1][category.id];
+                    const preview = this.calculateScore(category.id);
+
+                    return `
+                      <tr class="score-row">
+                        <td title="${category.desc}">${category.name}</td>
+                        <td>
+                          ${this.renderScoreCell(0, category.id, scoreA, preview, canScore)}
+                        </td>
+                        <td>
+                          ${this.renderScoreCell(1, category.id, scoreB, preview, canScore)}
+                        </td>
+                      </tr>
+                    `;
+                  }).join('')}
+                </tbody>
+              </table>
+
+              <div class="total-box">
+                <div class="total-item">
+                  <div class="total-label">${this.players[0]} 총점</div>
+                  <div class="total-score">${this.getTotal(0)}</div>
+                </div>
+                <div class="total-item">
+                  <div class="total-label">${this.players[1]} 총점</div>
+                  <div class="total-score">${this.getTotal(1)}</div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      `;
+
+      this.bindEvents();
+    },
+
+    renderScoreCell(playerIndex, categoryId, savedScore, preview, canScore) {
+      if (savedScore !== undefined) {
+        return `<button class="score-cell used" disabled>${savedScore}</button>`;
+      }
+
+      if (playerIndex !== this.currentPlayer || !canScore) {
+        return `<button class="score-cell" disabled>-</button>`;
+      }
+
+      return `
+        <button
+          class="score-cell available"
+          data-action="score"
+          data-category="${categoryId}"
+          title="현재 주사위로 ${preview}점 기록"
+        >
+          ${preview}
+        </button>
+      `;
+    },
+
+    bindEvents() {
+      const root =
+        this.container && typeof this.container.querySelector === 'function'
+          ? this.container.querySelector('.game-yahtzee')
+          : document.querySelector('.game-yahtzee');
+
+      if (!root) {
+        console.error('[Yahtzee] .game-yahtzee root를 찾을 수 없습니다.', this.container);
+        return;
+      }
+
+      root.querySelectorAll('[data-action="mode"]').forEach(button => {
+        button.addEventListener('click', () => {
+          const newMode = button.getAttribute('data-mode');
+          this.setMode(newMode);
+        });
+      });
+
+      root.querySelectorAll('[data-action="roll"]').forEach(button => {
+        button.addEventListener('click', () => this.rollDice());
+      });
+
+      root.querySelectorAll('[data-action="reset"]').forEach(button => {
+        button.addEventListener('click', () => {
+          this.reset();
+          this.render();
+        });
+      });
+
+      root.querySelectorAll('[data-action="hold"]').forEach(button => {
+        button.addEventListener('click', () => {
+          const index = Number(button.getAttribute('data-index'));
+          this.toggleHold(index);
+        });
+      });
+
+      root.querySelectorAll('[data-action="score"]').forEach(button => {
+        button.addEventListener('click', () => {
+          const categoryId = button.getAttribute('data-category');
+          this.scoreCategory(categoryId);
+        });
+      });
+    }
+  };
+
+  window.MathLabGames = window.MathLabGames || {
+    registry: {},
+    register(game) {
+      if (!game || !game.id) return;
+      this.registry[game.id] = game;
+    },
+    mount(id, container, context) {
+      const game = this.registry[id];
+      if (!game || typeof game.mount !== 'function') {
+        throw new Error('Unknown game: ' + id);
+      }
+      game.mount(container, context || {});
+    }
+  };
+
+  window.YahtzeeGame = YahtzeeGame;
+  window.MathLabGames.register({
+    id: 'yahtzee',
+    title: '야추 다이스',
+    icon: '🎲',
+    sourceType: 'new',
+
+    mount(container, context) {
+      YahtzeeGame.mount(container, context);
+    },
+    reset() {
+      YahtzeeGame.reset();
+      YahtzeeGame.render();
+    },
+    destroy() {
+      YahtzeeGame.destroy();
+    }
+  });
+})();
+</script>

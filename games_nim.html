@@ -1,0 +1,471 @@
+<!-- 님 게임 (Nim Game: 21개 돌 턴제 & AI 대결) Gen-3 마이그레이션 및 XSS 방어 패치 -->
+<script>
+(function () {
+  function cleanupNimGame(resetUi = true) {
+    // No interval in this game, but good practice
+  }
+
+  const NimGame = {
+    mode: 'ai',
+    aiLevel: 'master',
+    rule: 'misere',
+    totalStones: 21,
+    currentStones: 21,
+    maxTake: 3,
+    turn: 'player',
+    selectedStones: 0,
+    gameOver: false,
+    historyLog: [],
+    containerEl: null,
+
+    mount(container, context = {}) {
+      let host = null;
+      if (typeof container === 'string') host = document.querySelector(container);
+      else if (container instanceof HTMLElement) host = container;
+      if (!host) host = window.MathLabUtils?.getMountContainer ? window.MathLabUtils.getMountContainer(container) : document.getElementById('mathlab-view');
+      if (!host || !(host instanceof HTMLElement)) host = document.getElementById('new-root') || document.getElementById('game-container') || document.getElementById('mathlab-view');
+
+      if (!host || !(host instanceof HTMLElement) || host === document.body) {
+        let createdHost = document.getElementById('nim-force-host');
+        if (!createdHost) {
+          createdHost = document.createElement('div');
+          createdHost.id = 'nim-force-host';
+          document.body.appendChild(createdHost);
+        }
+        host = createdHost;
+      }
+
+      const footerEl = document.querySelector('footer, #footer, .app-footer') || 
+                       Array.from(document.querySelectorAll('div, p, span')).find(el => el.textContent && el.textContent.includes('2026 기록조율사'));
+      if (footerEl && host && typeof host.compareDocumentPosition === 'function' && (host.compareDocumentPosition(footerEl) & Node.DOCUMENT_POSITION_PRECEDING)) {
+        footerEl.parentNode.insertBefore(host, footerEl);
+      }
+
+      host.style.display = '';
+      host.style.visibility = 'visible';
+      host.style.opacity = '1';
+
+      let parent = host.parentElement;
+      while (parent && parent !== document.body && parent !== document.documentElement) {
+        if (parent.style && parent.style.display === 'none') parent.style.display = 'block';
+        if (parent.style && parent.style.visibility === 'hidden') parent.style.visibility = 'visible';
+        parent = parent.parentElement;
+      }
+
+      document.querySelectorAll('header, .navbar, #app-header, .top-bar, #floating-home-btn, .floating-home').forEach(el => {
+        if (el && el.style && el.style.display === 'none') el.style.display = '';
+      });
+
+      this.containerEl = host;
+      this.renderStyleAndDOM();
+      this.bindEvents();
+      this.resetGame();
+      
+      this.renderBottomLeaderboard();
+    },
+
+    renderStyleAndDOM() {
+      if (!this.containerEl) return;
+      this.containerEl.innerHTML = `
+        <style>
+          .game-nim {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px 14px;
+            color: #1e293b;
+            user-select: none;
+            -webkit-user-select: none;
+            box-sizing: border-box;
+            width: 100%;
+            overflow-x: hidden;
+            position: relative;
+          }
+          .game-nim * { box-sizing: border-box; }
+
+          .game-nim .nim-header {
+            text-align: center;
+            background: linear-gradient(135deg, #fef3c7, #fffbeb);
+            border: 2px solid #fde68a;
+            border-radius: 24px;
+            padding: 24px 18px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.08);
+            position: relative;
+          }
+          .game-nim .title-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 8px;
+          }
+          .game-nim .title-icon { font-size: 32px; }
+          .game-nim .title-text { font-size: 30px; font-weight: 900; color: #b45309; margin: 0; }
+          .game-nim .title-badge { background: #d97706; color: #ffffff; padding: 4px 14px; border-radius: 20px; font-size: 13px; font-weight: 800; }
+          .game-nim .desc-text { color: #475569; font-size: 15px; margin: 0 0 16px; line-height: 1.5; word-break: keep-all; }
+          
+          .nim-btn-home {
+            background: #ef4444; color: #fff; font-size: 14px; font-weight: bold; padding: 6px 12px; border: none; border-radius: 8px; cursor: pointer;
+            margin-top: 10px;
+          }
+
+          .game-nim .config-panel { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 20px; padding: 16px; margin-bottom: 20px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
+          .game-nim .config-row { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; }
+          .game-nim .config-label { font-weight: 800; font-size: 14px; color: #475569; min-width: 70px; text-align: right; }
+          .game-nim .tab-btn { padding: 8px 16px; border-radius: 12px; font-weight: 800; font-size: 13px; border: 1px solid #cbd5e1; background: #f8fafc; color: #64748b; cursor: pointer; transition: all 0.2s; }
+          .game-nim .tab-btn.active { background: #d97706; color: #ffffff; border-color: #b45309; box-shadow: 0 2px 8px rgba(217, 119, 6, 0.25); }
+
+          .game-nim .status-banner { background: #f1f5f9; border: 2px solid #cbd5e1; border-radius: 18px; padding: 16px; text-align: center; font-size: 18px; font-weight: 900; color: #1e293b; margin-bottom: 20px; transition: all 0.3s; }
+          .game-nim .status-banner.turn-player { background: #dbeafe; border-color: #60a5fa; color: #1e40af; }
+          .game-nim .status-banner.turn-ai { background: #fee2e2; border-color: #f87171; color: #991b1b; }
+          .game-nim .status-banner.turn-win { background: #dcfce7; border-color: #4ade80; color: #16a34a; font-size: 20px; }
+
+          .game-nim .stones-board { background: #ffffff; border: 2px solid #e2e8f0; border-radius: 24px; padding: 24px 16px; margin-bottom: 20px; display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; min-height: 180px; align-items: center; box-shadow: inset 0 2px 8px rgba(0,0,0,0.03); }
+          .game-nim .stone-item { width: 54px; height: 54px; background: linear-gradient(135deg, #64748b, #334155); border: 3px solid #94a3b8; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; cursor: pointer; box-shadow: 0 4px 8px rgba(0,0,0,0.2); transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+          @media (max-width: 500px) { .game-nim .stone-item { width: 44px; height: 44px; font-size: 20px; gap: 8px; } }
+          .game-nim .stone-item:hover:not(.removed) { transform: translateY(-4px) scale(1.08); border-color: #f59e0b; background: linear-gradient(135deg, #f59e0b, #d97706); }
+          .game-nim .stone-item.selected { background: linear-gradient(135deg, #3b82f6, #1d4ed8) !important; border-color: #93c5fd !important; transform: translateY(-8px) scale(1.12); box-shadow: 0 8px 16px rgba(59, 130, 246, 0.4); }
+          .game-nim .stone-item.removed { opacity: 0.15; transform: scale(0.6); background: #cbd5e1; border-color: #e2e8f0; cursor: not-allowed; }
+
+          .game-nim .control-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 20px; padding: 18px; text-align: center; margin-bottom: 20px; }
+          .game-nim .take-info { font-size: 15px; font-weight: 800; color: #475569; margin-bottom: 14px; }
+          .game-nim .take-info strong { color: #2563eb; font-size: 18px; }
+          .game-nim .btn-row { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+          .game-nim .btn-take { padding: 14px 28px; border-radius: 16px; font-size: 16px; font-weight: 900; background: #2563eb; color: #ffffff; border: none; cursor: pointer; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); transition: all 0.2s; }
+          .game-nim .btn-take:hover:not(:disabled) { background: #1d4ed8; transform: translateY(-2px); }
+          .game-nim .btn-take:disabled { background: #cbd5e1; cursor: not-allowed; box-shadow: none; }
+          .game-nim .btn-sub { padding: 14px 20px; border-radius: 16px; font-size: 15px; font-weight: 800; border: 2px solid #cbd5e1; background: #ffffff; color: #475569; cursor: pointer; transition: all 0.2s; }
+          .game-nim .btn-sub:hover { background: #f1f5f9; }
+
+          .game-nim .log-box { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 18px; padding: 16px; max-height: 160px; overflow-y: auto; font-size: 14px; color: #64748b; line-height: 1.6; margin-bottom: 20px; }
+          .game-nim .log-item { border-bottom: 1px dashed #f1f5f9; padding: 4px 0; font-weight: 700; }
+
+          /* 하단 랭킹 보드 */
+          .game-nim .bottom-ranking-card {
+            background: rgba(30, 41, 59, 0.95);
+            border: 1px solid #475569;
+            border-radius: 20px;
+            padding: 20px;
+            margin-top: 30px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+          }
+          .game-nim .ranking-title { text-align: center; color: #facc15; font-size: 1.1rem; font-weight: 900; margin-bottom: 12px; }
+        </style>
+
+        <div class="game-nim">
+          <div class="nim-header">
+            <div class="title-row">
+              <span class="title-icon">🪨</span>
+              <h1 class="title-text">님 게임 (Nim Game)</h1>
+              <span class="title-badge">21개 돌 가져가기 턴제 대결</span>
+            </div>
+            <p class="desc-text">한 턴에 돌을 <strong>1개에서 최대 3개</strong>까지 가져갈 수 있습니다.<br>마지막 남은 돌 1개를 가져가는 사람이 <strong>패배(또는 승리)</strong>합니다!</p>
+            <button class="nim-btn-home" id="nim-btn-home">🏠 홈으로</button>
+          </div>
+
+          <!-- 모드 및 룰 설정 바 -->
+          <div class="config-panel">
+            <div class="config-row">
+              <span class="config-label">🤖 대결 모드:</span>
+              <button class="tab-btn active" data-group="mode" data-val="ai">🤖 AI 대결 모드</button>
+              <button class="tab-btn" data-group="mode" data-val="pvp">👥 2인 친구 대결</button>
+            </div>
+            <div class="config-row" id="row-ai-level">
+              <span class="config-label">🔥 AI 난이도:</span>
+              <button class="tab-btn" data-group="ai" data-val="easy">🌱 초보 (랜덤)</button>
+              <button class="tab-btn" data-group="ai" data-val="normal">⚡ 고수 (분석)</button>
+              <button class="tab-btn active" data-group="ai" data-val="master">👑 마스터 (4의 배수 필승)</button>
+            </div>
+            <div class="config-row">
+              <span class="config-label">📜 승패 규칙:</span>
+              <button class="tab-btn active" data-group="rule" data-val="misere">☠️ 독돌 룰 (마지막 가져가면 패배)</button>
+              <button class="tab-btn" data-group="rule" data-val="normal">🏆 일반 룰 (마지막 가져가면 승리)</button>
+            </div>
+          </div>
+
+          <!-- 턴 상태 안내 -->
+          <div class="status-banner turn-player" id="nim-status">🙋 내가 돌을 고를 차례입니다! (1~3개 선택 후 버튼 클릭)</div>
+
+          <!-- 21개 돌 보드 -->
+          <div class="stones-board" id="nim-stones-board"></div>
+
+          <!-- 컨트롤 바 -->
+          <div class="control-box">
+            <div class="take-info">현재 선택한 돌: <strong id="nim-selected-count">0</strong>개 / (남은 돌: <span id="nim-rem-count">21</span>개)</div>
+            <div class="btn-row">
+              <button class="btn-take" id="nim-btn-take" disabled>✊ 선택한 돌 가져오기 (턴 넘기기)</button>
+              <button class="btn-sub" id="nim-btn-restart">🔄 판 다시하기</button>
+            </div>
+          </div>
+
+          <!-- 기록 로그 -->
+          <div class="log-box" id="nim-log-box">
+            <div class="log-item" style="text-align: center; color: #94a3b8;">게임 진행 기록이 여기에 표시됩니다.</div>
+          </div>
+
+          <!-- 명예의 전당 보드 -->
+          <div class="bottom-ranking-card">
+            <div class="ranking-title">🏆 명예의 전당 (누적 승수 순위)</div>
+            <div id="board-nim-bottom"><p style="text-align:center; color:#94a3b8; padding:12px 0;">랭킹 데이터를 불러오는 중...</p></div>
+          </div>
+        </div>
+      `;
+    },
+
+    bindEvents() {
+      if (!this.containerEl) return;
+      this.containerEl.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const group = e.target.getAttribute('data-group');
+          const val = e.target.getAttribute('data-val');
+          this.containerEl.querySelectorAll(`.tab-btn[data-group="${group}"]`).forEach(b => b.classList.remove('active'));
+          e.target.classList.add('active');
+          if (group === 'mode') {
+            this.mode = val;
+            const aiRow = this.containerEl.querySelector('#row-ai-level');
+            if (aiRow) aiRow.style.display = (val === 'ai') ? 'flex' : 'none';
+          } else if (group === 'ai') {
+            this.aiLevel = val;
+          } else if (group === 'rule') {
+            this.rule = val;
+          }
+          this.resetGame();
+        });
+      });
+
+      const takeBtn = this.containerEl.querySelector('#nim-btn-take');
+      if (takeBtn) takeBtn.addEventListener('click', () => this.confirmTake());
+      const restartBtn = this.containerEl.querySelector('#nim-btn-restart');
+      if (restartBtn) restartBtn.addEventListener('click', () => this.resetGame());
+      
+      const homeBtn = this.containerEl.querySelector('#nim-btn-home');
+      if (homeBtn) homeBtn.addEventListener('click', () => this.goHome());
+    },
+
+    resetGame() {
+      this.currentStones = this.totalStones;
+      this.selectedStones = 0;
+      this.turn = 'player';
+      this.gameOver = false;
+      this.historyLog = [];
+      this.updateUI();
+      this.showStatus('🙋 내 차례입니다! 돌을 클릭해서 1개~3개를 선택하세요.', 'turn-player');
+      this.addLog(`🚩 새 게임 시작! (룰: ${this.rule === 'misere' ? '독돌 룰' : '일반 룰'})`);
+    },
+
+    handleStoneClick(index) {
+      if (this.gameOver || (this.mode === 'ai' && this.turn === 'ai')) return;
+      if (index >= this.currentStones) return;
+      if (this.selectedStones < this.maxTake && index >= this.currentStones - this.selectedStones - 1) {
+        this.selectedStones = (this.currentStones - index);
+        if (this.selectedStones > this.maxTake) this.selectedStones = 1;
+      } else {
+        this.selectedStones = 1;
+      }
+      this.updateUI();
+    },
+
+    confirmTake() {
+      if (this.selectedStones <= 0 || this.selectedStones > this.maxTake || this.gameOver) return;
+      const takerName = (this.turn === 'player') ? '🙋 플레이어 1' : '👥 플레이어 2';
+      this.takeStones(this.selectedStones, takerName);
+      if (!this.gameOver) {
+        if (this.mode === 'ai') {
+          this.turn = 'ai';
+          this.showStatus('🤖 AI가 생각하고 있습니다...', 'turn-ai');
+          this.updateUI();
+          setTimeout(() => this.aiTurn(), 800);
+        } else {
+          this.turn = (this.turn === 'player') ? 'player2' : 'player';
+          const nextName = (this.turn === 'player') ? '🙋 플레이어 1' : '👥 플레이어 2';
+          this.showStatus(`${nextName}의 차례입니다! 돌을 선택하세요.`, 'turn-player');
+          this.updateUI();
+        }
+      }
+    },
+
+    takeStones(count, whoName) {
+      this.currentStones -= count;
+      this.addLog(`${whoName}이(가) 돌을 <strong>${count}개</strong> 가져갔습니다. (남은 돌: ${this.currentStones}개)`);
+      this.selectedStones = 0;
+      if (this.currentStones <= 0) {
+        this.currentStones = 0;
+        this.gameOver = true;
+        this.updateUI();
+        let winMsg = '';
+        if (this.rule === 'misere') {
+          winMsg = (whoName.includes('AI') || whoName.includes('플레이어 2')) ? '🎉 축하합니다! 상대방이 독돌을 쥐었습니다. 승리!' : '💔 아차! 마지막 돌을 가져와 패배했습니다...';
+        } else {
+          winMsg = (whoName.includes('플레이어 1')) ? '🏆 축하합니다! 마지막 돌을 차지하여 승리!' : '💔 상대방이 마지막 돌을 차지했습니다.';
+        }
+        this.showStatus(winMsg, 'turn-win');
+        this.addLog(`🏁 게임 종료! — ${winMsg}`);
+
+        if (winMsg.includes('승리')) {
+          setTimeout(() => {
+            const score = this.mode === 'ai' && this.aiLevel === 'master' ? 300 : (this.mode === 'ai' && this.aiLevel === 'normal' ? 200 : 100);
+            const metadata = { nickname: '님게임승리자', score: score, mode: this.mode, rule: this.rule };
+            const bridge = window.LegacyBridge || {};
+            const saveFunc = bridge.saveRanking || window.saveRanking;
+            if (typeof saveFunc === 'function') saveFunc('board-nim', '님게임승자', score, metadata);
+            this.renderBottomLeaderboard();
+          }, 1000);
+        }
+      }
+    },
+
+    aiTurn() {
+      if (this.gameOver) return;
+      let take = 1;
+      if (this.aiLevel === 'easy') {
+        take = Math.floor(Math.random() * Math.min(this.maxTake, this.currentStones)) + 1;
+      } else {
+        if (this.rule === 'misere') {
+          const targetRem = (this.currentStones - 1) % 4;
+          take = targetRem === 0 ? (Math.floor(Math.random() * Math.min(this.maxTake, this.currentStones)) + 1) : targetRem;
+        } else {
+          const targetRem = this.currentStones % 4;
+          take = targetRem === 0 ? (Math.floor(Math.random() * Math.min(this.maxTake, this.currentStones)) + 1) : targetRem;
+        }
+      }
+      take = Math.max(1, Math.min(take, this.currentStones));
+      this.takeStones(take, '🤖 AI(컴퓨터)');
+      if (!this.gameOver) {
+        this.turn = 'player';
+        this.showStatus('🙋 내 차례입니다! 돌을 선택하세요.', 'turn-player');
+        this.updateUI();
+      }
+    },
+
+    updateUI() {
+      if (!this.containerEl) return;
+      const boardEl = this.containerEl.querySelector('#nim-stones-board');
+      if (boardEl) {
+        boardEl.innerHTML = '';
+        for (let i = 0; i < this.totalStones; i++) {
+          const div = document.createElement('div');
+          div.className = 'stone-item';
+          if (i >= this.currentStones) {
+            div.classList.add('removed');
+            div.innerText = '•';
+          } else if (i >= this.currentStones - this.selectedStones) {
+            div.classList.add('selected');
+            div.innerText = '✊';
+          } else {
+            div.innerText = '🪨';
+          }
+          div.addEventListener('click', () => this.handleStoneClick(i));
+          boardEl.appendChild(div);
+        }
+      }
+      const selCountEl = this.containerEl.querySelector('#nim-selected-count');
+      const remCountEl = this.containerEl.querySelector('#nim-rem-count');
+      const takeBtn = this.containerEl.querySelector('#nim-btn-take');
+      if (selCountEl) selCountEl.innerText = this.selectedStones;
+      if (remCountEl) remCountEl.innerText = this.currentStones;
+      if (takeBtn) takeBtn.disabled = (this.selectedStones <= 0 || this.gameOver || (this.mode === 'ai' && this.turn === 'ai'));
+    },
+
+    showStatus(msg, className) {
+      if (!this.containerEl) return;
+      const statusEl = this.containerEl.querySelector('#nim-status');
+      if (statusEl) {
+        statusEl.className = 'status-banner ' + (className || '');
+        statusEl.innerHTML = msg;
+      }
+    },
+
+    addLog(msg) {
+      this.historyLog.unshift(msg);
+      if (!this.containerEl) return;
+      const logBox = this.containerEl.querySelector('#nim-log-box');
+      if (logBox) logBox.innerHTML = this.historyLog.map(m => `<div class="log-item">${m}</div>`).join('');
+    },
+
+    renderBottomLeaderboard() {
+      if (typeof window.loadGameLeaderboard === 'function') {
+        window.loadGameLeaderboard('님게임', true, 'board-nim-bottom');
+      } else {
+        try {
+          let list = JSON.parse(localStorage.getItem('mathlab_lb_nim') || '[]');
+          const bottomEl = document.getElementById('board-nim-bottom');
+          if (bottomEl) {
+            if (list.length === 0) {
+              bottomEl.innerHTML = '<p style="text-align:center; color:#94a3b8; padding:12px 0;">아직 등록된 기록이 없습니다.</p>';
+            } else {
+              bottomEl.innerHTML = list.slice(0, 5).map((item, idx) => {
+                const safeName = item.nickname.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+                return `
+                <div style="display:flex; justify-content:space-between; align-items:center; background:#0f172a; padding:10px 14px; border-radius:10px; border:1px solid #334155; margin-bottom:6px;">
+                  <span style="font-weight:800; color:${idx === 0 ? '#facc15' : '#cbd5e1'};">${idx === 0 ? '👑 1위' : `${idx + 1}위`} - ${safeName}</span>
+                  <span style="color:#38bdf8; font-weight:900;">${item.score}점</span>
+                </div>
+              `;}).join('');
+            }
+          }
+        } catch(e) {}
+      }
+    },
+
+    destroy() {
+      cleanupNimGame(false);
+      this.gameOver = true;
+      if (this.containerEl) this.containerEl.innerHTML = '';
+    },
+
+    goHome() {
+      const topBottomHome = document.getElementById('mathlab-floating-home') || document.querySelector('#legacy-back-home-btn');
+      if (topBottomHome) topBottomHome.click();
+      else if (typeof window.MathLabRenderHome === 'function') window.MathLabRenderHome();
+      else if (typeof window.goHome === 'function') window.goHome();
+      else location.reload();
+    }
+  };
+
+  window.cleanupNimGame = cleanupNimGame;
+  window.NimGame = NimGame;
+
+  function registerNimGame() {
+    if (typeof window.MathLabGames !== 'undefined' && typeof window.MathLabGames.register === 'function') {
+      if (!window.MathLabGames.get('nim')) {
+        try {
+          const gameObj = {
+            id: 'nim',
+            title: '님 게임 (Nim Game)',
+            icon: '🪨',
+            sourceType: 'new',
+            players: '1~2인',
+            isMultiplayer: true,
+            mount(container, context) { NimGame.mount(container, context); },
+            reset() { NimGame.resetGame(); },
+            destroy() { NimGame.destroy(); },
+            goHome() { NimGame.goHome(); }
+          };
+          window.MathLabGames.register(gameObj);
+        } catch (e) { console.warn('nim game register error:', e); }
+      }
+    }
+  }
+
+  registerNimGame();
+  window.addEventListener('DOMContentLoaded', registerNimGame);
+  setTimeout(registerNimGame, 100);
+  setTimeout(registerNimGame, 500);
+
+  window.initNimGame = function() {
+    registerNimGame();
+    if (window.LegacyBridge && typeof window.LegacyBridge.hideAllLegacySections === 'function') {
+      window.LegacyBridge.hideAllLegacySections();
+      window.LegacyBridge.showNewRoot();
+    }
+    if (typeof window.MathLabGames !== 'undefined' && typeof window.MathLabGames.mount === 'function') {
+      try { window.MathLabGames.mount('nim'); return; } catch(e) {}
+    }
+    const targetEl = document.getElementById('mathlab-view') || document.getElementById('new-root');
+    NimGame.mount(targetEl);
+  };
+  window.launchNimGame = window.initNimGame;
+})();
+</script>

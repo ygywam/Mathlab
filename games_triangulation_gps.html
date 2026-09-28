@@ -1,0 +1,1387 @@
+<!--
+  Gen-3 수학 실험실 수학게임 앱: 삼각측량 GPS 탐정 (triangulation-gps)
+  오로지 스타일((style))과 스크립트((script))로만 구성된 표준 템플릿
+  (스마트 좌표 지도 렌더링, 실시간 기지국 반경 조절 원, 두 원 교점 힌트, 난이도별 오차 및 차등 배점 완벽 구현)
+-->
+<style>
+  /* ==========================================================================
+     Gen-3 전용 스코프 스타일 (.game-triangulation-gps)
+     ========================================================================== */
+  .game-triangulation-gps {
+    --bg-primary: #0f172a;
+    --bg-surface: #1e293b;
+    --bg-card: rgba(30, 41, 59, 0.92);
+    --accent-color: #38bdf8;
+    --station1-color: #38bdf8;
+    --station2-color: #34d399;
+    --station3-color: #f59e0b;
+    --danger-color: #ef4444;
+    --text-main: #f8fafc;
+    --text-sub: #cbd5e1;
+    --border-color: #3b82f6;
+
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #172554 100%);
+    color: var(--text-main);
+    min-height: 100%;
+    width: 100%;
+    padding: 24px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    user-select: none;
+    -webkit-user-select: none;
+    border-radius: 24px;
+    border: 3px solid var(--border-color);
+    box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.8);
+    position: relative;
+  }
+
+  .game-triangulation-gps * {
+    box-sizing: border-box;
+  }
+
+  /* 상단 헤더 */
+  .game-triangulation-gps .app-header {
+    width: 100%;
+    max-width: 1040px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #0f172a;
+    padding: 16px 22px;
+    border-radius: 20px;
+    border: 2px solid var(--border-color);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+
+  .game-triangulation-gps .title-area {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .game-triangulation-gps .app-title {
+    font-size: clamp(1.4rem, 2.4vw, 2.0rem);
+    font-weight: 900;
+    margin: 0;
+    color: #ffffff !important;
+    text-shadow: 0 0 15px rgba(255, 255, 255, 0.7);
+  }
+
+  .game-triangulation-gps .app-badge {
+    background: #1e1b4b;
+    color: #38bdf8;
+    font-size: 0.88rem;
+    font-weight: 800;
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1.5px solid #3b82f6;
+    box-shadow: 0 0 10px rgba(59, 130, 246, 0.25);
+  }
+
+  .game-triangulation-gps .stats-bar {
+    display: flex;
+    gap: 10px;
+    font-weight: 800;
+    font-size: 0.95rem;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    flex: 1 1 auto;
+  }
+
+  .game-triangulation-gps .stat-badge {
+    background: #0f172a;
+    padding: 8px 14px;
+    border-radius: 14px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    border: 2px solid #60a5fa;
+    color: #ffffff;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 900;
+    font-size: 0.95rem;
+    white-space: nowrap;
+  }
+  .game-triangulation-gps .stat-badge.round { color: #fef08a; border-color: #f59e0b; background: #271c14; }
+  .game-triangulation-gps .stat-badge.timer { color: #f87171; border-color: #ef4444; background: #2b1414; }
+  .game-triangulation-gps .stat-badge.score { color: #86efac; border-color: #22c55e; background: #062313; }
+
+  /* 헤더 균등 버튼 */
+  .game-triangulation-gps .header-btn {
+    padding: 9px 15px;
+    border-radius: 14px;
+    font-size: 0.95rem;
+    font-weight: 900;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: all 0.2s;
+    border: 2px solid transparent;
+    white-space: nowrap;
+    flex: 1 1 126px;
+  }
+
+  .game-triangulation-gps .btn-howto {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: #ffffff !important;
+    border-color: #93c5fd;
+    box-shadow: 0 4px 10px rgba(59, 130, 246, 0.4);
+  }
+  .game-triangulation-gps .btn-howto:hover { transform: translateY(-2px); background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); }
+
+  .game-triangulation-gps .btn-rank {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: #ffffff !important;
+    border-color: #fde68a;
+    box-shadow: 0 4px 10px rgba(245, 158, 11, 0.4);
+  }
+  .game-triangulation-gps .btn-rank:hover { transform: translateY(-2px); background: linear-gradient(135deg, #d97706 0%, #b45309 100%); }
+
+  .game-triangulation-gps .btn-reset {
+    background: #1e293b;
+    color: #ffffff !important;
+    border-color: #60a5fa;
+  }
+  .game-triangulation-gps .btn-reset:hover { background: #334155; border-color: #93c5fd; transform: translateY(-2px); }
+
+  .game-triangulation-gps .btn-home {
+    background: #475569;
+    color: #ffffff !important;
+    border-color: #94a3b8;
+  }
+  .game-triangulation-gps .btn-home:hover { background: #64748b; transform: translateY(-2px); }
+
+  /* 메인 영역 */
+  .game-triangulation-gps .main-container {
+    width: 100%;
+    max-width: 1040px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  /* 옵션 및 난이도 바 */
+  .game-triangulation-gps .option-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    background: #090d16;
+    padding: 10px 16px;
+    border-radius: 18px;
+    border: 2px solid #3b82f6;
+    flex-wrap: wrap;
+  }
+
+  .game-triangulation-gps .diff-group {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    flex: 1;
+  }
+
+  .game-triangulation-gps .opt-btn {
+    flex: 1;
+    min-width: 130px;
+    padding: 9px 12px;
+    border-radius: 12px;
+    background: transparent;
+    color: #cbd5e1;
+    border: 1.5px solid #475569;
+    font-weight: 800;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+  }
+  .game-triangulation-gps .opt-btn.active {
+    background: #3b82f6;
+    color: #ffffff !important;
+    border-color: #93c5fd;
+    box-shadow: 0 4px 10px rgba(59, 130, 246, 0.4);
+  }
+
+  /* 작업 영역 */
+  .game-triangulation-gps .workspace {
+    display: grid;
+    grid-template-columns: 1.5fr 1.1fr;
+    gap: 20px;
+  }
+
+  @media (max-width: 860px) {
+    .game-triangulation-gps .workspace {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* 캔버스 카드 */
+  .game-triangulation-gps .canvas-card {
+    background: #0f172a;
+    border: 3px solid var(--border-color);
+    border-radius: 20px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+  }
+
+  .game-triangulation-gps .mission-banner {
+    width: 100%;
+    background: #1e293b;
+    border: 2px solid #f59e0b;
+    border-radius: 14px;
+    padding: 12px 18px;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .game-triangulation-gps .mission-text {
+    font-size: 1.1rem;
+    font-weight: 900;
+    color: #fef08a;
+    word-break: keep-all;
+  }
+
+  .game-triangulation-gps .canvas-wrapper {
+    width: 100%;
+    position: relative;
+    background: #060913;
+    border-radius: 14px;
+    border: 2px solid #334155;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: crosshair;
+  }
+
+  .game-triangulation-gps canvas {
+    max-width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* 돋보기 조준경 커서 */
+  .game-triangulation-gps .scope-pointer {
+    position: absolute;
+    width: 46px;
+    height: 46px;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    display: none;
+    z-index: 10;
+  }
+  .game-triangulation-gps .scope-pointer::before, .game-triangulation-gps .scope-pointer::after {
+    content: '';
+    position: absolute;
+    background: #ef4444;
+    box-shadow: 0 0 8px #ffffff;
+  }
+  .game-triangulation-gps .scope-pointer::before { top: 22px; left: 0; width: 46px; height: 2px; }
+  .game-triangulation-gps .scope-pointer::after { top: 0; left: 22px; width: 2px; height: 46px; }
+  .game-triangulation-gps .scope-circle {
+    position: absolute;
+    top: 5px; left: 5px; width: 36px; height: 36px;
+    border: 2px.dashed #ef4444;
+    border-radius: 50%;
+    box-shadow: 0 0 8px rgba(239, 68, 68, 0.6);
+  }
+
+  /* 우측 제어 및 정보 카드 */
+  .game-triangulation-gps .control-card {
+    background: #1e293b;
+    border: 3px solid var(--border-color);
+    border-radius: 20px;
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    justify-content: space-between;
+  }
+
+  .game-triangulation-gps .station-tabs {
+    display: flex;
+    gap: 8px;
+  }
+
+  .game-triangulation-gps .station-tab {
+    flex: 1;
+    padding: 10px 6px;
+    border-radius: 12px;
+    background: #0f172a;
+    border: 2px solid #475569;
+    color: #cbd5e1;
+    font-weight: 900;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+  }
+  .game-triangulation-gps .station-tab[data-st="0"].active { border-color: var(--station1-color); background: rgba(56, 189, 248, 0.18); color: #fff; }
+  .game-triangulation-gps .station-tab[data-st="1"].active { border-color: var(--station2-color); background: rgba(52, 211, 153, 0.18); color: #fff; }
+  .game-triangulation-gps .station-tab[data-st="2"].active { border-color: var(--station3-color); background: rgba(245, 158, 11, 0.18); color: #fff; }
+
+  .game-triangulation-gps .slider-box {
+    background: #0f172a;
+    border: 2px solid #3b82f6;
+    border-radius: 16px;
+    padding: 16px;
+  }
+
+  .game-triangulation-gps .slider-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 900;
+    font-size: 1.05rem;
+    margin-bottom: 12px;
+  }
+
+  .game-triangulation-gps input[type="range"] {
+    width: 100%;
+    height: 8px;
+    border-radius: 4px;
+    background: #334155;
+    outline: none;
+    cursor: pointer;
+    margin: 8px 0;
+  }
+
+  .game-triangulation-gps .station-info-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    margin-top: 4px;
+  }
+
+  .game-triangulation-gps .station-chip {
+    background: #090d16;
+    border: 1.5px solid #334155;
+    border-radius: 12px;
+    padding: 10px 8px;
+    text-align: center;
+    font-weight: 800;
+    font-size: 0.88rem;
+  }
+  .game-triangulation-gps .station-chip.st1 { border-color: var(--station1-color); color: var(--station1-color); }
+  .game-triangulation-gps .station-chip.st2 { border-color: var(--station2-color); color: var(--station2-color); }
+  .game-triangulation-gps .station-chip.st3 { border-color: var(--station3-color); color: var(--station3-color); }
+
+  .game-triangulation-gps .feedback-msg {
+    min-height: 76px;
+    background: #090d16;
+    border-radius: 14px;
+    border: 2px solid #475569;
+    padding: 16px;
+    display: block;
+    font-weight: 900;
+    font-size: 1.0rem;
+    text-align: center;
+    line-height: 1.6;
+    word-break: keep-all;
+  }
+  .game-triangulation-gps .feedback-msg.hit { border-color: #22c55e; color: #86efac; background: rgba(34, 197, 94, 0.12); }
+  .game-triangulation-gps .feedback-msg.miss { border-color: #ef4444; color: #fca5a5; background: rgba(239, 68, 68, 0.12); }
+
+  .game-triangulation-gps .action-bar {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .game-triangulation-gps .btn-action {
+    width: 100%;
+    padding: 14px;
+    border-radius: 14px;
+    font-size: 1.08rem;
+    font-weight: 900;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 2px solid transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .game-triangulation-gps .btn-fire {
+    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+    color: white;
+    border-color: #86efac;
+    box-shadow: 0 4px 14px rgba(34, 197, 94, 0.4);
+  }
+  .game-triangulation-gps .btn-fire:hover:not(:disabled) { transform: translateY(-2px); background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); }
+  .game-triangulation-gps .btn-fire:disabled { background: #475569; border-color: #64748b; color: #94a3b8; cursor: not-allowed; }
+
+  .game-triangulation-gps .btn-hint {
+    background: #271c14;
+    color: #fef08a !important;
+    border: 2px solid #f59e0b;
+    font-size: 0.95rem;
+  }
+  .game-triangulation-gps .btn-hint:hover:not(:disabled) { background: #451a1a; border-color: #ef4444; color: white !important; }
+  .game-triangulation-gps .btn-hint:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .game-triangulation-gps .btn-next {
+    background: linear-gradient(135deg, #38bdf8 0%, #2563eb 100%);
+    color: white;
+    border-color: #93c5fd;
+    display: none;
+  }
+  .game-triangulation-gps .btn-next:hover { transform: translateY(-2px); }
+
+  /* 독립 모달 공통 */
+  .game-triangulation-gps .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.88);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  .game-triangulation-gps .modal-overlay.active { opacity: 1; pointer-events: auto; }
+
+  .game-triangulation-gps .modal-card {
+    background: #0f172a;
+    border: 3px solid #3b82f6;
+    border-radius: 24px;
+    padding: 28px;
+    width: 90%;
+    max-width: 580px;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.8);
+    text-align: center;
+    transform: scale(0.9);
+    transition: transform 0.3s ease;
+    color: #ffffff;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  .game-triangulation-gps .modal-overlay.active .modal-card { transform: scale(1); }
+
+  .game-triangulation-gps .modal-title {
+    font-size: 1.6rem;
+    font-weight: 900;
+    margin: 0 0 16px 0;
+    color: #ffffff;
+    text-shadow: 0 0 15px rgba(255,255,255,0.7);
+  }
+
+  .game-triangulation-gps .modal-desc {
+    font-size: 0.95rem;
+    color: #cbd5e1;
+    line-height: 1.6;
+    margin-bottom: 24px;
+    text-align: left;
+    font-weight: 700;
+  }
+</style>
+
+<script>
+(function() {
+  // 🌟 [보안] XSS 방어용 HTML 특수기호 이스케이프 함수
+  function escapeHTML(str) {
+    if (!str) return '';
+    return String(str).replace(/[&<>"']/g, function(match) {
+      const escape = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+      return escape[match];
+    });
+  }
+
+  // 난이도별 설정
+  const DIFF_CFG = {
+    easy: {
+      name: '쉬움', badgeLabel: '🟢 쉬움', autoRadius: true, allowDist: 0.85, maxRounds: 6, timer: 0,
+      hitScore: 20, hintCost: 5, missPenalty: 3, gridStep: 1
+    },
+    normal: {
+      name: '보통', badgeLabel: '🟡 보통', autoRadius: false, allowDist: 0.70, maxRounds: 8, timer: 0,
+      hitScore: 35, hintCost: 8, missPenalty: 3, gridStep: 1
+    },
+    hard: {
+      name: '도전', badgeLabel: '🔴 도전', autoRadius: false, allowDist: 1.05, maxRounds: 10, timer: 180,
+      hitScore: 60, hintCost: 12, missPenalty: 5, gridStep: 1, hasNoise: true
+    }
+  };
+
+  const state = {
+    difficulty: 'normal',
+    round: 1,
+    score: 0,
+    activeStationIdx: 0,
+    hintUsed: false,
+    roundEnded: false,
+    timerSeconds: 0,
+    timerInterval: null,
+    aimPos: null, // { x, y } (단위: km)
+    targetPos: null, // { x, y } (단위: km)
+    stations: [], // [ { id, name, color, x, y, trueR, currentR, errorNoise } ]
+    unitToPx: 26, // 1km = 26px
+    originX: 320,
+    originY: 240
+  };
+
+  const TriangulationGps = {
+    container: null,
+    canvas: null,
+    ctx: null,
+
+    showToast(msg, isError = false) {
+      if (!this.container) return;
+      let toast = this.container.querySelector('#tg-toast');
+      if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'tg-toast';
+        toast.style.cssText = 'position:absolute; top:20px; left:50%; transform:translateX(-50%); padding:12px 24px; border-radius:12px; font-weight:800; font-size:1rem; z-index:99999; box-shadow:0 10px 25px rgba(0,0,0,0.5); transition:all 0.3s; text-align:center; min-width:300px; pointer-events:none; opacity:0;';
+        this.container.appendChild(toast);
+      }
+      toast.style.background = isError ? '#ef4444' : '#10b981';
+      toast.style.color = isError ? '#ffffff' : '#0f172a';
+      toast.textContent = msg;
+      
+      void toast.offsetWidth;
+      toast.style.opacity = '1';
+      toast.style.top = '20px';
+      
+      if (this._toastTimer) clearTimeout(this._toastTimer);
+      this._toastTimer = setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.top = '0px';
+      }, 3000);
+    },
+
+    mount(container, context = {}) {
+      let target = typeof container === 'string' ? document.querySelector(container) : container;
+      if (!target || !(target instanceof HTMLElement)) {
+        target = window.MathLabUtils?.getMountContainer ? window.MathLabUtils.getMountContainer(container) : document.getElementById('mathlab-view');
+      }
+      if (!target) target = document.getElementById('new-root') || document.getElementById('game-container');
+
+      // 🌟 푸터 아래로 밀려나지 않도록 안전 마운트 보장
+      if (!target || target === document.body) {
+        let host = document.getElementById('triangulation-gps-force-host');
+        if (!host) {
+          host = document.createElement('div');
+          host.id = 'triangulation-gps-force-host';
+          host.style.cssText = 'width:100%; max-width:1040px; margin:0 auto; padding:16px; box-sizing:border-box; z-index:999; position:relative; background:#0f172a; border-radius:24px;';
+          const footer = document.querySelector('footer, #footer, .app-footer, #legacy-footer, .mathlab-footer');
+          if (footer && footer.parentNode) {
+            footer.parentNode.insertBefore(host, footer);
+          } else {
+            document.body.appendChild(host);
+          }
+        }
+        target = host;
+      }
+      this.container = target;
+
+      if (this.container.style) {
+        this.container.style.display = '';
+        this.container.style.visibility = '';
+        this.container.style.opacity = '1';
+      }
+
+      let parent = this.container.parentElement;
+      while (parent && parent !== document.body && parent !== document.documentElement) {
+        if (parent.style && parent.style.display === 'none') parent.style.display = '';
+        if (parent.style && parent.style.visibility === 'hidden') parent.style.visibility = '';
+        parent = parent.parentElement;
+      }
+
+      this.restoreGlobalNavigation();
+      window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+
+      target.innerHTML = `
+        <div class="game-triangulation-gps" id="triangulation-gps-root">
+          <header class="app-header">
+            <div class="title-area">
+              <span style="font-size: 32px;">📡</span>
+              <div>
+                <h1 class="app-title">삼각측량 GPS 탐정</h1>
+              </div>
+              <span class="app-badge">중3·고1 좌표기하 게임</span>
+            </div>
+            <div class="stats-bar">
+              <div class="stat-badge round">🎯 라운드: <span id="tg-round-cnt">1 / 8</span></div>
+              <div class="stat-badge timer" id="tg-timer-badge" style="display:none;">⏱️ 남은 시간: <span id="tg-timer">180</span>초</div>
+              <div class="stat-badge score">⭐ 점수: <span id="tg-score">0</span>점</div>
+              <button class="header-btn btn-howto" id="tg-btn-howto">❓ 탐구 안내</button>
+              <button class="header-btn btn-rank" id="tg-btn-rank">🏆 명예의 전당</button>
+              <button class="header-btn btn-reset" id="tg-btn-reset">🔄 처음부터</button>
+              <button class="header-btn btn-home" id="tg-btn-home">🏠 홈으로</button>
+            </div>
+          </header>
+
+          <main class="main-container">
+            <div class="option-bar">
+              <div class="diff-group">
+                <button class="opt-btn" data-diff="easy">🟢 쉬움 (자동반경 · 20점/회)</button>
+                <button class="opt-btn active" data-diff="normal">🟡 보통 (반경 직접조절 · 35점/회)</button>
+                <button class="opt-btn" data-diff="hard">🔴 도전 (거리오차+타임어택 · 60점/회)</button>
+              </div>
+              <div style="color:#cbd5e1; font-weight:800; font-size:0.9rem;">
+                💡 3개 기지국의 거리 원이 교차하는 지점을 클릭하고 범인을 지목하세요!
+              </div>
+            </div>
+
+            <div class="workspace">
+              <div class="canvas-card">
+                <div class="mission-banner">
+                  <div class="mission-text" id="tg-mission-text">📡 사건 브리핑: 세 기지국 거리 정보를 보고 범인 은신처를 찾아내세요!</div>
+                  <span id="tg-diff-badge" style="background:#0f172a; padding:6px 12px; border-radius:10px; border:1px solid #60a5fa; font-size:0.85rem; font-weight:900;">보통</span>
+                </div>
+                <div class="canvas-wrapper" id="tg-canvas-wrapper">
+                  <canvas id="tg-canvas" width="640" height="480"></canvas>
+                  <div class="scope-pointer" id="tg-scope-pointer">
+                    <div class="scope-circle"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="control-card">
+                <div class="station-tabs" id="tg-station-tabs">
+                  <button class="station-tab active" data-st="0">📡 기지국 S1</button>
+                  <button class="station-tab" data-st="1">📡 기지국 S2</button>
+                  <button class="station-tab" data-st="2">📡 기지국 S3</button>
+                </div>
+
+                <div class="slider-box" id="tg-slider-box">
+                  <div class="slider-label">
+                    <span id="tg-active-station-name" style="color:var(--station1-color);">기지국 S1 반지름 조절</span>
+                    <span id="tg-active-station-dist" style="color:#fef08a; font-size:1.2rem;">0.0 km</span>
+                  </div>
+                  <input type="range" id="tg-radius-slider" min="0" max="18" step="0.1" value="0">
+                  <div style="display:flex; justify-content:space-between; font-size:0.82rem; color:#94a3b8; margin-top:4px;">
+                    <span>0 km</span><span>9 km</span><span>18 km</span>
+                  </div>
+                </div>
+
+                <div class="station-info-row">
+                  <div class="station-chip st1">
+                    <div style="font-size:0.8rem; opacity:0.8;">S1 목표 거리</div>
+                    <div id="tg-info-st1" style="font-size:1.05rem; margin-top:2px;">5.0 km</div>
+                  </div>
+                  <div class="station-chip st2">
+                    <div style="font-size:0.8rem; opacity:0.8;">S2 목표 거리</div>
+                    <div id="tg-info-st2" style="font-size:1.05rem; margin-top:2px;">5.0 km</div>
+                  </div>
+                  <div class="station-chip st3">
+                    <div style="font-size:0.8rem; opacity:0.8;">S3 목표 거리</div>
+                    <div id="tg-info-st3" style="font-size:1.05rem; margin-top:2px;">5.0 km</div>
+                  </div>
+                </div>
+
+                <div class="feedback-msg" id="tg-feedback-box">
+                  🔍 3개 원의 교점이 한 점에서 만날 때까지 반지름 바를 맞추고 캔버스를 클릭하세요!
+                </div>
+
+                <div class="action-bar">
+                  <button class="btn-action btn-fire" id="tg-btn-fire" disabled>🕵️ 이 위치로 범인 체포! (사격 지목)</button>
+                  <button class="btn-action btn-hint" id="tg-btn-hint">💡 두 원의 교점 2개 힌트 보기 (-8점)</button>
+                  <button class="btn-action btn-next" id="tg-btn-next">👉 다음 사건 브리핑으로 이동</button>
+                </div>
+              </div>
+            </div>
+          </main>
+
+          <!-- 탐구 안내 독립 모달 -->
+          <div class="modal-overlay" id="tg-howto-modal">
+            <div class="modal-card">
+              <h2 class="modal-title">📡 삼각측량 GPS 탐정 안내</h2>
+              <div class="modal-desc">
+                <p>GPS와 휴대전화 위치 추적의 핵심 원리인 <strong>삼각측량법(Triangulation)</strong>을 체험하는 탐정 게임입니다!</p>
+                <ul style="padding-left: 18px; margin: 12px 0; line-height: 1.8;">
+                  <li><strong>거리 조건 = 원:</strong> "기지국 A에서 5km 떨어져 있다"는 것은 A를 중심으로 반지름 5km인 <strong>원 위의 모든 점</strong>을 의미합니다.</li>
+                  <li><strong>원의 교점 축소:</strong> 기지국 1개(원 위 수많은 점) ➔ 기지국 2개(두 원의 교점 2개) ➔ <strong>기지국 3개(세 원이 겹치는 단 1개의 교점!)</strong></li>
+                  <li><strong>실생활 오차(도전 모드):</strong> 실제 측정에는 미세한 오차가 존재합니다. 세 원이 완벽히 한 점에서 만나지 않고 작은 삼각형 영역을 이룰 때 <strong>최적의 무게중심 위치</strong>를 추론하세요!</li>
+                </ul>
+                <p><strong>🏆 난이도별 배점 (도전 난이도 고득점 우대):</strong><br>
+                - 🟢 <strong>쉬움:</strong> 반지름 자동 설정, 정수 격자 (명중 +20점)<br>
+                - 🟡 <strong>보통:</strong> 반지름 직접 조절 (명중 +35점)<br>
+                - 🔴 <strong>도전:</strong> 측정 오차 ± 포함, 타임어택 (명중 +60점 + 남은 시간 보너스!)</p>
+              </div>
+              <button class="btn-action btn-fire" id="tg-howto-close" style="width:100%;">이해했습니다! GPS 탐정 수사 시작</button>
+            </div>
+          </div>
+
+          <!-- 명예의 전당 모달 -->
+          <div class="modal-overlay" id="tg-leaderboard-modal">
+            <div class="modal-card">
+              <h2 class="modal-title">🏆 삼각측량 GPS 탐정 명예의 전당 (Top 20)</h2>
+              <div id="tg-leaderboard-content" style="background:#1e293b; border-radius:14px; border:2px solid #3b82f6; max-height:320px; overflow-y:auto; margin-bottom:18px; text-align:left;"></div>
+              <button class="btn-action btn-fire" id="tg-leaderboard-close" style="width:100%;">닫기</button>
+            </div>
+          </div>
+
+          <!-- 완료 축하 모달 -->
+          <div class="modal-overlay" id="tg-complete-modal">
+            <div class="modal-card">
+              <div style="font-size:52px; margin-bottom:8px;">🏆📡</div>
+              <h2 class="modal-title" id="tg-complete-title">수사 완료!</h2>
+              <div class="modal-desc" style="text-align:center;">
+                <p id="tg-complete-summary" style="color:#fef08a; font-size:1.1rem; margin-bottom:16px;"></p>
+                <div style="background:#1e1b4b; border:2px solid #3b82f6; border-radius:16px; padding:16px; margin-bottom:16px;">
+                  <div style="font-size:0.9rem; color:#cbd5e1; margin-bottom:4px;">최종 획득 점수</div>
+                  <div style="font-size:2.4rem; font-weight:900; color:#38bdf8;" id="tg-final-score">0점</div>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:10px;">
+                  <input type="text" id="tg-nickname-input" placeholder="명예의 전당 등록 닉네임" style="padding:12px; border-radius:12px; border:2px solid #60a5fa; background:#0f172a; color:white; font-size:1rem; text-align:center;">
+                  <button class="header-btn btn-rank" id="tg-btn-submit-score" style="width:100%; padding:12px; font-size:1.05rem;">🏆 점수 명예의 전당 등록</button>
+                </div>
+              </div>
+              <div style="display:flex; gap:10px; margin-top:14px;">
+                <button class="header-btn btn-reset" id="tg-complete-retry" style="flex:1;">🔄 다시 도전</button>
+                <button class="header-btn btn-home" id="tg-complete-home" style="flex:1;">🏠 홈으로 이동</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      this.canvas = document.getElementById('tg-canvas');
+      this.ctx = this.canvas ? this.canvas.getContext('2d') : null;
+
+      this.bindEvents();
+      this.startNewGame();
+    },
+
+    restoreGlobalNavigation() {
+      const navElements = document.querySelectorAll('header, .navbar, #app-header, .top-bar, #floating-home-btn, .floating-home, [id*="home"], [class*="floating"]');
+      navElements.forEach(el => { if (el && el.style && el.style.display === 'none') el.style.display = ''; });
+    },
+
+    bindEvents() {
+      document.querySelectorAll('.game-triangulation-gps .opt-btn[data-diff]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          document.querySelectorAll('.game-triangulation-gps .opt-btn[data-diff]').forEach(b => b.classList.remove('active'));
+          e.target.classList.add('active');
+          state.difficulty = e.target.getAttribute('data-diff');
+          this.startNewGame();
+        });
+      });
+
+      document.querySelectorAll('.game-triangulation-gps .station-tab').forEach(tab => {
+        tab.addEventListener('click', (e) => {
+          document.querySelectorAll('.game-triangulation-gps .station-tab').forEach(t => t.classList.remove('active'));
+          e.target.classList.add('active');
+          state.activeStationIdx = parseInt(e.target.getAttribute('data-st'), 10);
+          this.updateSliderUI();
+        });
+      });
+
+      const slider = document.getElementById('tg-radius-slider');
+      if (slider) {
+        slider.addEventListener('input', (e) => {
+          if (state.roundEnded) return;
+          const val = parseFloat(e.target.value);
+          if (state.stations[state.activeStationIdx]) {
+            state.stations[state.activeStationIdx].currentR = val;
+          }
+          const distEl = document.getElementById('tg-active-station-dist');
+          if (distEl) distEl.textContent = `${val.toFixed(1)} km`;
+          this.renderCanvas();
+        });
+      }
+
+      const wrapper = document.getElementById('tg-canvas-wrapper');
+      if (wrapper && this.canvas) {
+        wrapper.addEventListener('click', (e) => {
+          if (state.roundEnded) return;
+          const rect = this.canvas.getBoundingClientRect();
+          const scaleX = this.canvas.width / rect.width;
+          const scaleY = this.canvas.height / rect.height;
+          const pxX = (e.clientX - rect.left) * scaleX;
+          const pxY = (e.clientY - rect.top) * scaleY;
+
+          const kmX = (pxX - state.originX) / state.unitToPx;
+          const kmY = (state.originY - pxY) / state.unitToPx;
+
+          state.aimPos = { x: kmX, y: kmY };
+
+          const scope = document.getElementById('tg-scope-pointer');
+          if (scope) {
+            scope.style.display = 'block';
+            scope.style.left = `${pxX / scaleX}px`;
+            scope.style.top = `${pxY / scaleY}px`;
+          }
+
+          const fireBtn = document.getElementById('tg-btn-fire');
+          if (fireBtn) fireBtn.disabled = false;
+        });
+      }
+
+      document.getElementById('tg-btn-fire')?.addEventListener('click', () => this.evaluateAim());
+      document.getElementById('tg-btn-hint')?.addEventListener('click', () => this.useHint());
+      document.getElementById('tg-btn-next')?.addEventListener('click', () => this.nextRound());
+
+      document.getElementById('tg-btn-howto')?.addEventListener('click', () => openModal('tg-howto-modal'));
+      document.getElementById('tg-howto-close')?.addEventListener('click', () => closeModal('tg-howto-modal'));
+      document.getElementById('tg-btn-rank')?.addEventListener('click', () => this.showLeaderboardModal());
+      document.getElementById('tg-leaderboard-close')?.addEventListener('click', () => closeModal('tg-leaderboard-modal'));
+      document.getElementById('tg-btn-reset')?.addEventListener('click', () => this.startNewGame());
+      document.getElementById('tg-btn-home')?.addEventListener('click', () => this.goHome());
+
+      document.getElementById('tg-complete-retry')?.addEventListener('click', () => {
+        closeModal('tg-complete-modal');
+        this.startNewGame();
+      });
+      document.getElementById('tg-complete-home')?.addEventListener('click', () => {
+        closeModal('tg-complete-modal');
+        this.goHome();
+      });
+      document.getElementById('tg-btn-submit-score')?.addEventListener('click', () => this.submitRankScore());
+
+      document.querySelectorAll('.game-triangulation-gps .modal-overlay').forEach(modal => {
+        modal.addEventListener('click', (e) => {
+          if (e.target === modal) modal.classList.remove('active');
+        });
+      });
+    },
+
+    startNewGame() {
+      if (state.timerInterval) clearInterval(state.timerInterval);
+      state.round = 1;
+      state.score = 0;
+      const cfg = DIFF_CFG[state.difficulty];
+      state.timerSeconds = cfg.timer;
+
+      const hintBtn = document.getElementById('tg-btn-hint');
+      if (hintBtn) hintBtn.textContent = `💡 두 원의 교점 2개 힌트 보기 (-${cfg.hintCost}점)`;
+
+      const timerBadge = document.getElementById('tg-timer-badge');
+      if (timerBadge) {
+        timerBadge.style.display = cfg.timer > 0 ? 'inline-flex' : 'none';
+      }
+
+      if (cfg.timer > 0) {
+        state.timerInterval = setInterval(() => {
+          state.timerSeconds--;
+          const el = document.getElementById('tg-timer');
+          if (el) el.textContent = state.timerSeconds;
+          if (state.timerSeconds <= 0) {
+            clearInterval(state.timerInterval);
+            this.endGame('타임 오버!');
+          }
+        }, 1000);
+      }
+
+      this.initRound();
+    },
+
+    initRound() {
+      state.roundEnded = false;
+      state.hintUsed = false;
+      state.aimPos = null;
+      state.activeStationIdx = 0;
+
+      const cfg = DIFF_CFG[state.difficulty];
+
+      const diffBadge = document.getElementById('tg-diff-badge');
+      if (diffBadge) diffBadge.textContent = cfg.name;
+
+      const roundCnt = document.getElementById('tg-round-cnt');
+      if (roundCnt) roundCnt.textContent = `${state.round} / ${cfg.maxRounds}`;
+
+      const scoreEl = document.getElementById('tg-score');
+      if (scoreEl) scoreEl.textContent = state.score;
+
+      const scope = document.getElementById('tg-scope-pointer');
+      if (scope) scope.style.display = 'none';
+
+      const fireBtn = document.getElementById('tg-btn-fire');
+      const hintBtn = document.getElementById('tg-btn-hint');
+      const nextBtn = document.getElementById('tg-btn-next');
+      if (fireBtn) { fireBtn.disabled = true; fireBtn.style.display = 'flex'; }
+      if (hintBtn) { hintBtn.disabled = false; hintBtn.style.display = 'flex'; }
+      if (nextBtn) { nextBtn.style.display = 'none'; }
+
+      const fbBox = document.getElementById('tg-feedback-box');
+      if (fbBox) {
+        fbBox.className = 'feedback-msg';
+        fbBox.textContent = '🔍 3개 원의 교점이 한 점에서 만날 때까지 반지름 바를 맞추고 캔버스를 클릭하세요!';
+      }
+
+      document.querySelectorAll('.game-triangulation-gps .station-tab').forEach((t, idx) => {
+        if (idx === 0) t.classList.add('active');
+        else t.classList.remove('active');
+      });
+
+      this.generateIncident();
+      this.updateSliderUI();
+      this.renderCanvas();
+    },
+
+    // 🌟 역산 생성 엔진: 범인 위치부터 결정한 뒤 일직선이 되지 않는 기지국 3곳 배치
+    generateIncident() {
+      const cfg = DIFF_CFG[state.difficulty];
+      const isEasy = state.difficulty === 'easy';
+
+      let tx, ty;
+      if (isEasy) {
+        tx = Math.floor(Math.random() * 11) - 5; // -5 ~ 5
+        ty = Math.floor(Math.random() * 9) - 4;  // -4 ~ 4
+      } else {
+        tx = Math.round((Math.random() * 14 - 7) * 10) / 10;
+        ty = Math.round((Math.random() * 10 - 5) * 10) / 10;
+      }
+      state.targetPos = { x: tx, y: ty };
+
+      let valid = false;
+      let s1, s2, s3;
+      let attempts = 0;
+
+      while (!valid && attempts < 500) {
+        attempts++;
+        if (isEasy) {
+          s1 = { x: Math.floor(Math.random() * 17) - 8, y: Math.floor(Math.random() * 13) - 6 };
+          s2 = { x: Math.floor(Math.random() * 17) - 8, y: Math.floor(Math.random() * 13) - 6 };
+          s3 = { x: Math.floor(Math.random() * 17) - 8, y: Math.floor(Math.random() * 13) - 6 };
+        } else {
+          s1 = { x: Math.round((Math.random() * 18 - 9) * 10) / 10, y: Math.round((Math.random() * 14 - 7) * 10) / 10 };
+          s2 = { x: Math.round((Math.random() * 18 - 9) * 10) / 10, y: Math.round((Math.random() * 14 - 7) * 10) / 10 };
+          s3 = { x: Math.round((Math.random() * 18 - 9) * 10) / 10, y: Math.round((Math.random() * 14 - 7) * 10) / 10 };
+        }
+
+        const d12 = Math.hypot(s1.x - s2.x, s1.y - s2.y);
+        const d23 = Math.hypot(s2.x - s3.x, s2.y - s3.y);
+        const d31 = Math.hypot(s3.x - s1.x, s3.y - s1.y);
+
+        if (d12 < 3.5 || d23 < 3.5 || d31 < 3.5) continue;
+
+        const area = Math.abs((s1.x*(s2.y-s3.y) + s2.x*(s3.y-s1.y) + s3.x*(s1.y-s2.y)) / 2);
+        if (area < 8) continue; // 일직선 배제
+
+        const r1 = Math.hypot(tx - s1.x, ty - s1.y);
+        const r2 = Math.hypot(tx - s2.x, ty - s2.y);
+        const r3 = Math.hypot(tx - s3.x, ty - s3.y);
+
+        if (r1 < 1.5 || r1 > 14 || r2 < 1.5 || r2 > 14 || r3 < 1.5 || r3 > 14) continue;
+        valid = true;
+      }
+
+      const colors = ['#38bdf8', '#34d399', '#f59e0b'];
+      const stationsData = [s1, s2, s3].map((s, idx) => {
+        let trueR = Math.hypot(tx - s.x, ty - s.y);
+        if (isEasy) trueR = Math.round(trueR * 10) / 10;
+
+        let reportedR = trueR;
+        if (cfg.hasNoise) {
+          const noise = (Math.random() - 0.5) * 0.8; // -0.4 ~ +0.4 km 오차
+          reportedR = Math.max(1.0, Math.round((trueR + noise) * 10) / 10);
+        } else {
+          reportedR = Math.round(reportedR * 10) / 10;
+        }
+
+        return {
+          id: idx,
+          name: `기지국 S${idx + 1}`,
+          color: colors[idx],
+          x: s.x,
+          y: s.y,
+          trueR: trueR,
+          reportedR: reportedR,
+          currentR: cfg.autoRadius ? reportedR : 0
+        };
+      });
+
+      state.stations = stationsData;
+
+      document.getElementById('tg-info-st1').textContent = `${stationsData[0].reportedR.toFixed(1)} km`;
+      document.getElementById('tg-info-st2').textContent = `${stationsData[1].reportedR.toFixed(1)} km`;
+      document.getElementById('tg-info-st3').textContent = `${stationsData[2].reportedR.toFixed(1)} km`;
+    },
+
+    updateSliderUI() {
+      const st = state.stations[state.activeStationIdx];
+      if (!st) return;
+
+      const slider = document.getElementById('tg-radius-slider');
+      const nameEl = document.getElementById('tg-active-station-name');
+      const distEl = document.getElementById('tg-active-station-dist');
+      const box = document.getElementById('tg-slider-box');
+
+      if (slider) {
+        slider.value = st.currentR;
+        slider.disabled = DIFF_CFG[state.difficulty].autoRadius || state.roundEnded;
+      }
+      if (nameEl) {
+        nameEl.textContent = `${st.name} 반지름 조절`;
+        nameEl.style.color = st.color;
+      }
+      if (distEl) {
+        distEl.textContent = `${st.currentR.toFixed(1)} km`;
+      }
+      if (box) {
+        box.style.borderColor = st.color;
+      }
+    },
+
+    useHint() {
+      if (state.hintUsed || state.roundEnded) return;
+      const cfg = DIFF_CFG[state.difficulty];
+      state.hintUsed = true;
+      state.score = Math.max(0, state.score - cfg.hintCost);
+      const scoreEl = document.getElementById('tg-score');
+      if (scoreEl) scoreEl.textContent = state.score;
+
+      const hintBtn = document.getElementById('tg-btn-hint');
+      if (hintBtn) hintBtn.disabled = true;
+
+      // 힌트: S1과 S2의 정확한 반경을 자동 설정하고 두 교점을 강조
+      state.stations[0].currentR = state.stations[0].reportedR;
+      state.stations[1].currentR = state.stations[1].reportedR;
+      this.updateSliderUI();
+      this.renderCanvas();
+    },
+
+    evaluateAim() {
+      if (!state.aimPos || state.roundEnded) return;
+      const cfg = DIFF_CFG[state.difficulty];
+
+      const dist = Math.hypot(state.aimPos.x - state.targetPos.x, state.aimPos.y - state.targetPos.y);
+      const isHit = dist <= cfg.allowDist;
+
+      const fbBox = document.getElementById('tg-feedback-box');
+
+      if (isHit) {
+        state.roundEnded = true;
+        const addScore = cfg.hitScore;
+        state.score += addScore;
+        const scoreEl = document.getElementById('tg-score');
+        if (scoreEl) scoreEl.textContent = state.score;
+
+        fbBox.className = 'feedback-msg hit';
+        fbBox.innerHTML = `🎉 <strong>범인 체포 성공!</strong> 은신처 정확도: 오차 ${dist.toFixed(2)} km<br>(+${addScore}점 획득)`;
+
+        const fireBtn = document.getElementById('tg-btn-fire');
+        const hintBtn = document.getElementById('tg-btn-hint');
+        const nextBtn = document.getElementById('tg-btn-next');
+        if (fireBtn) fireBtn.style.display = 'none';
+        if (hintBtn) hintBtn.style.display = 'none';
+        if (nextBtn) nextBtn.style.display = 'flex';
+
+        this.renderCanvas();
+      } else {
+        state.score = Math.max(0, state.score - cfg.missPenalty);
+        const scoreEl = document.getElementById('tg-score');
+        if (scoreEl) scoreEl.textContent = state.score;
+
+        fbBox.className = 'feedback-msg miss';
+        fbBox.innerHTML = `⚠️ <strong>체포 실패!</strong> 지목한 위치는 실제 은신처와 ${dist.toFixed(2)} km 떨어져 있습니다.<br>(-${cfg.missPenalty}점 감점, 원의 반지름을 다시 확인하고 다시 지목하세요!)`;
+      }
+    },
+
+    nextRound() {
+      const cfg = DIFF_CFG[state.difficulty];
+      if (state.round >= cfg.maxRounds) {
+        this.endGame('모든 사건 수사 종결!');
+      } else {
+        state.round++;
+        this.initRound();
+      }
+    },
+
+    endGame(reason) {
+      if (state.timerInterval) clearInterval(state.timerInterval);
+      state.roundEnded = true;
+
+      const cfg = DIFF_CFG[state.difficulty];
+      if (state.difficulty === 'hard' && state.timerSeconds > 0) {
+        const timeBonus = state.timerSeconds;
+        state.score += timeBonus;
+        reason += ` (타임 보너스 +${timeBonus}점 추가!)`;
+      }
+
+      const titleEl = document.getElementById('tg-complete-title');
+      const sumEl = document.getElementById('tg-complete-summary');
+      const scoreEl = document.getElementById('tg-final-score');
+
+      if (titleEl) titleEl.textContent = `🎉 ${reason}`;
+      if (sumEl) sumEl.textContent = `난이도(${cfg.name})에서 총 ${state.round}개의 삼각측량 사건을 훌륭하게 해결했습니다!`;
+      if (scoreEl) scoreEl.textContent = `${state.score}점`;
+
+      openModal('tg-complete-modal');
+      this.renderCanvas();
+    },
+
+    renderCanvas() {
+      if (!this.ctx || !this.canvas) return;
+      const w = this.canvas.width;
+      const h = this.canvas.height;
+
+      this.ctx.clearRect(0, 0, w, h);
+
+      // 격자 및 축 그리기
+      this.ctx.strokeStyle = '#1e293b';
+      this.ctx.lineWidth = 1;
+      const stepPx = state.unitToPx;
+
+      for (let x = state.originX % stepPx; x < w; x += stepPx) {
+        this.ctx.beginPath();
+        this.ctx.moveTo(x, 0);
+        this.ctx.lineTo(x, h);
+        this.ctx.stroke();
+      }
+      for (let y = state.originY % stepPx; y < h; y += stepPx) {
+        this.ctx.beginPath();
+        this.ctx.moveTo(0, y);
+        this.ctx.lineTo(w, y);
+        this.ctx.stroke();
+      }
+
+      // X축, Y축
+      this.ctx.strokeStyle = '#475569';
+      this.ctx.lineWidth = 2;
+      this.ctx.beginPath();
+      this.ctx.moveTo(0, state.originY);
+      this.ctx.lineTo(w, state.originY);
+      this.ctx.moveTo(state.originX, 0);
+      this.ctx.lineTo(state.originX, h);
+      this.ctx.stroke();
+
+      // 기지국 원 그리기
+      state.stations.forEach((st, idx) => {
+        const pxX = state.originX + st.x * state.unitToPx;
+        const pxY = state.originY - st.y * state.unitToPx;
+        const pxR = st.currentR * state.unitToPx;
+
+        if (st.currentR > 0) {
+          this.ctx.strokeStyle = st.color;
+          this.ctx.lineWidth = idx === state.activeStationIdx ? 3 : 2;
+          this.ctx.beginPath();
+          this.ctx.arc(pxX, pxY, pxR, 0, Math.PI * 2);
+          this.ctx.stroke();
+
+          this.ctx.fillStyle = st.color.replace(')', ', 0.06)').replace('rgb', 'rgba').replace('#38bdf8', 'rgba(56,189,248,0.06)').replace('#34d399', 'rgba(52,211,153,0.06)').replace('#f59e0b', 'rgba(245,158,11,0.06)');
+          this.ctx.fill();
+        }
+      });
+
+      // 힌트 사용 시 S1, S2 교점 표시
+      if (state.hintUsed && state.stations.length >= 2) {
+        const s1 = state.stations[0];
+        const s2 = state.stations[1];
+        const ix = this.findCircleIntersections(s1.x, s1.y, s1.reportedR, s2.x, s2.y, s2.reportedR);
+        ix.forEach(pt => {
+          const pxX = state.originX + pt.x * state.unitToPx;
+          const pxY = state.originY - pt.y * state.unitToPx;
+          this.ctx.strokeStyle = '#ef4444';
+          this.ctx.lineWidth = 3;
+          this.ctx.beginPath();
+          this.ctx.arc(pxX, pxY, 9, 0, Math.PI * 2);
+          this.ctx.stroke();
+          this.ctx.fillStyle = '#fef08a';
+          this.ctx.font = 'bold 12px Pretendard';
+          this.ctx.fillText('💡 교점 후보', pxX + 12, pxY - 8);
+        });
+      }
+
+      // 기지국 아이콘 및 라벨
+      state.stations.forEach((st, idx) => {
+        const pxX = state.originX + st.x * state.unitToPx;
+        const pxY = state.originY - st.y * state.unitToPx;
+
+        this.ctx.beginPath();
+        this.ctx.arc(pxX, pxY, 12, 0, Math.PI * 2);
+        this.ctx.fillStyle = idx === state.activeStationIdx ? st.color : '#1e293b';
+        this.ctx.fill();
+        this.ctx.strokeStyle = st.color;
+        this.ctx.lineWidth = 2.5;
+        this.ctx.stroke();
+
+        this.ctx.fillStyle = '#ffffff';
+        this.ctx.font = 'bold 11px Pretendard';
+        this.ctx.textAlign = 'center';
+        this.ctx.textBaseline = 'middle';
+        this.ctx.fillText(`S${idx + 1}`, pxX, pxY);
+
+        this.ctx.font = 'bold 12px Pretendard';
+        this.ctx.fillStyle = st.color;
+        this.ctx.fillText(`(${st.x}, ${st.y})`, pxX, pxY + 22);
+      });
+
+      // 라운드 종료 시 정답 위치(범인) 표시
+      if (state.roundEnded && state.targetPos) {
+        const pxX = state.originX + state.targetPos.x * state.unitToPx;
+        const pxY = state.originY - state.targetPos.y * state.unitToPx;
+
+        this.ctx.font = '26px sans-serif';
+        this.ctx.textAlign = 'center';
+        this.ctx.textBaseline = 'middle';
+        this.ctx.fillText('🏃‍♂️', pxX, pxY);
+
+        this.ctx.strokeStyle = '#22c55e';
+        this.ctx.lineWidth = 3;
+        this.ctx.beginPath();
+        this.ctx.arc(pxX, pxY, 18, 0, Math.PI * 2);
+        this.ctx.stroke();
+      }
+    },
+
+    findCircleIntersections(x0, y0, r0, x1, y1, r1) {
+      const d = Math.hypot(x1 - x0, y1 - y0);
+      if (d > r0 + r1 || d < Math.abs(r0 - r1) || d === 0) return [];
+      const a = (r0 * r0 - r1 * r1 + d * d) / (2 * d);
+      const h = Math.sqrt(Math.max(0, r0 * r0 - a * a));
+      const x2 = x0 + a * (x1 - x0) / d;
+      const y2 = y0 + a * (y1 - y0) / d;
+      const rx = -h * (y1 - y0) / d;
+      const ry = h * (x1 - x0) / d;
+      return [ { x: x2 + rx, y: y2 + ry }, { x: x2 - rx, y: y2 - ry } ];
+    },
+
+    submitRankScore() {
+      const input = document.getElementById('tg-nickname-input');
+      const nickname = input ? input.value.trim() : '';
+      if (!nickname) { this.showToast('⚠️ 닉네임을 입력해 주세요!', true); input.focus(); return; }
+
+      const diffBadgeLabel = DIFF_CFG[state.difficulty].badgeLabel;
+
+      try {
+        let list = JSON.parse(localStorage.getItem('mathlab_lb_triangulation-gps') || '[]');
+        const dateStr = new Date().toLocaleDateString('ko-KR', { month: '2-digit', day: '2-digit' });
+        list.push({ nickname, score: state.score, diff: diffBadgeLabel, date: dateStr });
+        list.sort((a, b) => b.score - a.score);
+        localStorage.setItem('mathlab_lb_triangulation-gps', JSON.stringify(list.slice(0, 20)));
+      } catch (e) {}
+
+      const formattedName = `삼각측량 GPS 탐정 (${diffBadgeLabel})`;
+      if (typeof window.submitRanking === 'function') {
+        window.submitRanking(formattedName, state.score, true, 'tg-nickname-input', 'board-triangulation-gps');
+        this.showToast('✅ 명예의 전당 등록이 서버로 요청되었습니다.');
+        setTimeout(() => closeModal('tg-complete-modal'), 1200);
+      } else if (typeof window.parent?.submitRanking === 'function') {
+        window.parent.submitRanking(formattedName, state.score, true, 'tg-nickname-input', 'board-triangulation-gps');
+        this.showToast('✅ 명예의 전당 등록이 서버로 요청되었습니다.');
+        setTimeout(() => closeModal('tg-complete-modal'), 1200);
+      } else {
+        this.showToast('🎉 명예의 전당 기록이 로컬에 안전하게 등록되었습니다!');
+        if (input) input.value = '';
+        setTimeout(() => closeModal('tg-complete-modal'), 1200);
+      }
+    },
+
+    showLeaderboardModal() {
+      let list = [];
+      try {
+        list = JSON.parse(localStorage.getItem('mathlab_lb_triangulation-gps') || '[]');
+      } catch(e) {}
+
+      let rowsHtml = list.map((item, idx) => `
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 14px; border-bottom:1px solid #334155;">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="font-weight:900; color:#38bdf8;">${idx+1}위</span>
+            <span style="font-weight:800;">${escapeHTML(item.nickname)}</span>
+            <span style="font-size:0.8rem; background:#090d16; padding:2px 8px; border-radius:6px; border:1px solid #475569;">${escapeHTML(item.diff) || '🟡 보통'}</span>
+          </div>
+          <span style="color:#fef08a; font-weight:900; font-size:1.05rem;">${item.score}점</span>
+        </div>
+      `).join('');
+
+      if (!rowsHtml) rowsHtml = '<div style="padding:24px; text-align:center; color:#94a3b8;">아직 등록된 명예의 전당 기록이 없습니다! 첫 GPS 탐정 수사 기록을 남겨보세요.</div>';
+
+      const contentBox = document.getElementById('tg-leaderboard-content');
+      if (contentBox) contentBox.innerHTML = rowsHtml;
+      openModal('tg-leaderboard-modal');
+    },
+
+    resetGame() {
+      this.startNewGame();
+    },
+
+    goHome() {
+      this.destroy();
+
+      if (window.LegacyBridge && typeof window.LegacyBridge.backHome === 'function') {
+        try { window.LegacyBridge.backHome(); return; } catch(e) {}
+      }
+      if (typeof window.renderLegacyDashboardHome === 'function') {
+        try { window.renderLegacyDashboardHome(); return; } catch(e) {}
+      }
+      if (typeof window.MathLabRenderHome === 'function') {
+        try { window.MathLabRenderHome(); return; } catch(e) {}
+      }
+
+      const mathlabRoot = document.getElementById('mathlab-root');
+      const legacyRoot = document.getElementById('legacy-root');
+      if (mathlabRoot) mathlabRoot.classList.add('hidden');
+      if (legacyRoot) legacyRoot.classList.remove('hidden');
+
+      const dashboard = document.getElementById('dashboard-screen') || document.getElementById('dashboard-view');
+      if (dashboard) {
+        dashboard.classList.add('active');
+        if (dashboard.style) dashboard.style.display = '';
+      }
+      window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+    },
+
+    destroy() {
+      if (state.timerInterval) clearInterval(state.timerInterval);
+      if (this.container) this.container.innerHTML = '';
+    }
+  };
+
+  function openModal(id) {
+    document.getElementById(id)?.classList.add('active');
+  }
+  function closeModal(id) {
+    document.getElementById(id)?.classList.remove('active');
+  }
+
+  window.TriangulationGps = TriangulationGps;
+
+/* games_triangulation_gps.html 맨 밑부분 교체 */
+function registerTriangulationGps() {
+  if (typeof window.MathLabGames !== 'undefined' && typeof window.MathLabGames.register === 'function') {
+    if (!window.MathLabGames.get('triangulation-gps')) { // 🌟 핵심 방어벽!
+      try {
+        window.MathLabGames.register({
+          id: 'triangulation-gps',
+          title: 'GPS 탐정',
+          icon: '🛰️',
+          sourceType: 'new',
+          mount(container, context) { TriangulationGps.mount(container, context); },
+          reset() { TriangulationGps.resetGame(); },
+          destroy() { TriangulationGps.destroy(); }
+        });
+      } catch (e) {
+        console.warn('GPS 탐정 중복 등록 방어:', e);
+      }
+    }
+  }
+}
+
+registerTriangulationGps();
+window.addEventListener('DOMContentLoaded', registerTriangulationGps);
+setTimeout(registerTriangulationGps, 100);
+setTimeout(registerTriangulationGps, 500);
+
+  window.launchTriangulationGpsGame = function() {
+    if (typeof window.MathLabGames !== 'undefined' && typeof window.MathLabGames.mount === 'function') {
+      try {
+        window.MathLabGames.mount('triangulation-gps');
+        return;
+      } catch(e) {}
+    }
+    TriangulationGps.mount();
+  };
+})();
+</script>

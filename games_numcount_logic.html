@@ -1,0 +1,567 @@
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;700;800;900&display=swap');
+  
+  .game-nc-master {
+    font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+    background: #f8fafc; color: #0f172a;
+    min-height: 100vh; padding: 20px; box-sizing: border-box;
+    border-radius: 20px; text-align: center; position: relative;
+    max-width: 600px; margin: 0 auto;
+  }
+  .game-nc-master * { box-sizing: border-box; }
+  
+  .nc-header {
+    display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;
+  }
+  .nc-title { display: flex; align-items: center; gap: 10px; }
+  .nc-title h2 { margin: 0; font-size: 1.6rem; font-weight: 900; background: linear-gradient(135deg, #0369a1, #4338ca); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .nc-badge { background: #e0f2fe; color: #0369a1; padding: 4px 10px; border-radius: 12px; font-weight: 800; font-size: 0.85rem; }
+  
+  .btn { border: none; border-radius: 12px; font-weight: 800; cursor: pointer; transition: all 0.15s; }
+  .btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
+  .btn-guide { background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: #fff; padding: 8px 14px; font-size: 0.9rem; }
+  .btn-home { background: linear-gradient(135deg, #475569, #334155); color: #fff; padding: 8px 14px; font-size: 0.9rem; margin-left: 8px; }
+  
+  .nc-status-bar {
+    display: flex; justify-content: space-between; margin-bottom: 12px; font-weight: 800; font-size: 1.1rem; color: #475569;
+  }
+  
+  .nc-target-box {
+    background: #ffffff; color: #2563eb; font-size: 3.5rem; font-weight: 900; padding: 20px;
+    border-radius: 18px; margin-bottom: 20px; border: 3px dashed #93c5fd;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  }
+  
+  .nc-cards {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 24px;
+  }
+  
+  .nc-card {
+    background: #ffffff; color: #0f172a; font-size: 2.2rem; font-weight: 900; height: 90px;
+    display: flex; justify-content: center; align-items: center; border-radius: 14px;
+    cursor: pointer; transition: all 0.2s; border: 3px solid #cbd5e1;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+  }
+  .nc-card:active { transform: scale(0.95); }
+  .nc-card.used { opacity: 0.2; pointer-events: none; background: #e2e8f0; border-color: #e2e8f0; }
+  .nc-card.selected { border-color: #3b82f6; transform: scale(1.05); background: #eff6ff; box-shadow: 0 8px 16px rgba(59,130,246,0.2); }
+  
+  .nc-ops {
+    display: flex; justify-content: center; gap: 12px; margin-bottom: 24px;
+  }
+  
+  .nc-op {
+    background: #ffffff; color: #334155; font-size: 2rem; font-weight: 900; width: 64px; height: 64px;
+    display: flex; justify-content: center; align-items: center; border-radius: 14px;
+    cursor: pointer; border: 3px solid #cbd5e1; transition: all 0.2s;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+  }
+  .nc-op:active { transform: scale(0.92); }
+  .nc-op.selected { background: #f59e0b; color: #fff; border-color: #f59e0b; transform: scale(1.1); box-shadow: 0 8px 16px rgba(245,158,11,0.3); }
+  
+  .nc-msg {
+    font-weight: 800; color: #8b5cf6; font-size: 1.1rem; min-height: 28px; margin-bottom: 20px;
+  }
+  
+  .nc-actions {
+    display: flex; gap: 10px; margin-bottom: 16px;
+  }
+  
+  .nc-bottom-board {
+    margin-top: 24px; background: #ffffff; border-radius: 18px; border: 1px solid #e2e8f0;
+    padding: 20px; text-align: left; box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  }
+  .nc-bottom-board h3 { color: #0f172a; font-weight: 900; font-size: 1.1rem; margin: 0 0 14px 0; }
+  
+  .nc-toast {
+    position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-80px);
+    background: #ffffff; color: #0f172a; padding: 12px 24px; border-radius: 12px; font-weight: 800; font-size: 1rem;
+    z-index: 1000000; transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15); border: 1px solid #e2e8f0; pointer-events: none; white-space: nowrap;
+  }
+  .nc-toast.show { transform: translateX(-50%) translateY(0); }
+  .nc-toast.success { border-color: #34d399; color: #059669; background: #ecfdf5; }
+  .nc-toast.error { border-color: #ef4444; color: #dc2626; background: #fef2f2; }
+  .nc-toast.info { border-color: #38bdf8; color: #0369a1; background: #f0f9ff; }
+  
+  .nc-modal-backdrop {
+    display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.5); backdrop-filter: blur(4px);
+    z-index: 999998; align-items: center; justify-content: center; padding: 20px;
+  }
+  .nc-modal-backdrop.show { display: flex; }
+  .nc-modal-box {
+    background: #ffffff; border: 2px solid #3b82f6; border-radius: 24px; padding: 28px 24px;
+    max-width: 500px; width: 100%; box-shadow: 0 24px 48px rgba(0,0,0,0.15); text-align: center;
+  }
+  .nc-modal-box h2 { margin: 0 0 16px; font-size: 2rem; font-weight: 900; color: #0f172a; }
+  .nc-modal-box p { color: #334155; line-height: 1.6; font-size: 1.1rem; margin-bottom: 20px; font-weight: 700; }
+  .nc-rank-row { display: flex; justify-content: space-between; align-items: center; background: #f8fafc; padding: 10px 14px; border-radius: 10px; border: 1px solid #e2e8f0; margin-bottom: 6px; font-size: 0.9rem; }
+</style>
+
+<script>
+(function() {
+  'use strict';
+
+  function escapeHTML(str) {
+    return String(str || '').replace(/[&<>'"]/g, function(s) {
+      return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[s]);
+    });
+  }
+
+  var MathLabUtils = window.MathLabUtils || {
+    getMountContainer: function(c) {
+      if (!c) return document.getElementById('mathlab-view') || document.getElementById('new-root') || document.body;
+      if (typeof c === 'string') return document.querySelector(c);
+      return c;
+    },
+    goHome: function() {
+      if (window.LegacyBridge && typeof window.LegacyBridge.backHome === 'function') {
+        try { window.LegacyBridge.backHome(); return; } catch(e) {}
+      }
+      var h = document.getElementById('mathlab-floating-home') || document.querySelector('.floating-home');
+      if (h) h.click();
+      else if (typeof window.MathLabRenderHome === 'function') window.MathLabRenderHome();
+      else location.reload();
+    }
+  };
+
+  var APP_ID = 'game-numcount';
+  var APP_TITLE = '넘버카운트';
+
+  var NumCountApp = {
+    host: null,
+    target: 0,
+    cards: [],
+    origCards: [],
+    selCardIdx: -1,
+    selOp: null,
+    timerId: null,
+    timeLeft: 60,
+    isActive: false,
+    toastTimer: null,
+
+    mount: function(container) {
+      var host = null;
+      if (typeof container === 'string') host = document.querySelector(container);
+      else if (container instanceof HTMLElement) host = container;
+      if (!host) host = MathLabUtils.getMountContainer(container);
+      
+      if (!host || host === document.body) {
+        var fh = document.getElementById('nc-force-host');
+        if (!fh) {
+          fh = document.createElement('div');
+          fh.id = 'nc-force-host';
+          var footer = document.querySelector('footer, #footer, .app-footer');
+          if (footer && footer.parentNode) footer.parentNode.insertBefore(fh, footer);
+          else document.body.appendChild(fh);
+        }
+        host = fh;
+      }
+      
+      host.style.display = ''; host.style.visibility = 'visible'; host.style.opacity = '1';
+      var par = host.parentElement;
+      while (par && par !== document.body && par !== document.documentElement) {
+        if (par.style && par.style.display === 'none') par.style.display = 'block';
+        if (par.style && par.style.visibility === 'hidden') par.style.visibility = 'visible';
+        par = par.parentElement;
+      }
+      
+      this.host = host;
+      this.render();
+      this.loadLeaderboard();
+      this.startRound();
+    },
+
+    render: function() {
+      var h = '';
+      h += '<div class="game-nc-master" id="nc-root">';
+      
+      h += '  <div class="nc-header">';
+      h += '    <div class="nc-title"><h2>&#127918; 넘버 카운트다운</h2><span class="nc-badge">연산 퍼즐</span></div>';
+      h += '    <div>';
+      h += '      <button class="btn btn-guide" id="nc-btn-guide">&#128214; 설명서</button>';
+      h += '      <button class="btn btn-home" id="nc-btn-home">&#127968; 홈</button>';
+      h += '    </div>';
+      h += '  </div>';
+
+      h += '  <div class="nc-status-bar">';
+      h += '    <div>&#128374; 목표 숫자</div>';
+      h += '    <div>&#9201;&#65039; 남은 시간: <span id="nc-time-el" style="color:#ef4444;font-size:1.3rem;">60</span>초</div>';
+      h += '  </div>';
+
+      h += '  <div class="nc-target-box" id="nc-target-el">???</div>';
+      h += '  <div class="nc-cards" id="nc-cards-el"></div>';
+
+      h += '  <div class="nc-ops">';
+      h += '    <div class="nc-op" id="nc-op-add" data-op="+">&#65291;</div>';
+      h += '    <div class="nc-op" id="nc-op-sub" data-op="-">&#65293;</div>';
+      h += '    <div class="nc-op" id="nc-op-mul" data-op="*">&#215;</div>';
+      h += '    <div class="nc-op" id="nc-op-div" data-op="/">&#247;</div>';
+      h += '  </div>';
+
+      h += '  <div class="nc-msg" id="nc-msg-el">게임을 시작하면 숫자 타일이 생성됩니다.</div>';
+
+      h += '  <div class="nc-actions">';
+      h += '    <button class="btn" id="nc-btn-reset" style="background:#64748b; color:#fff; padding:14px; flex:1;">&#128260; 되돌리기</button>';
+      h += '    <button class="btn" id="nc-btn-submit" style="background:#3b82f6; color:#fff; padding:14px; flex:1.5; font-size:1.1rem;">&#9989; 결과 제출하기</button>';
+      h += '  </div>';
+
+      h += '  <button class="btn" id="nc-btn-new" style="background:linear-gradient(135deg,#f59e0b,#d97706); color:#fff; padding:16px; width:100%; font-size:1.2rem;">&#128640; 새로운 라운드 시작</button>';
+
+      h += '  <div class="nc-bottom-board">';
+      h += '    <h3>&#127942; 명예의 전당 (실시간 Top 5)</h3>';
+      h += '    <div id="board-nc-bottom"><p style="color:#94a3b8;text-align:center;">랭킹 로딩 중...</p></div>';
+      h += '  </div>';
+
+      h += '</div>';
+
+      this.host.innerHTML = h;
+      this.bindUI();
+    },
+
+    bindUI: function() {
+      var _this = this;
+      var byId = function(id) { return document.getElementById(id); };
+      
+      if(byId('nc-btn-home')) byId('nc-btn-home').onclick = function() { _this.destroy(); MathLabUtils.goHome(); };
+      if(byId('nc-btn-guide')) byId('nc-btn-guide').onclick = function() { _this.showManual(); };
+      if(byId('nc-btn-reset')) byId('nc-btn-reset').onclick = function() { _this.resetLocally(); };
+      if(byId('nc-btn-submit')) byId('nc-btn-submit').onclick = function() { _this.submitScore(); };
+      if(byId('nc-btn-new')) byId('nc-btn-new').onclick = function() { _this.startRound(); };
+
+      var ops = document.querySelectorAll('.nc-op');
+      for(var i = 0; i < ops.length; i++) {
+        ops[i].onclick = function() {
+          var op = this.getAttribute('data-op');
+          _this.selectOp(op);
+        };
+      }
+    },
+
+    startRound: function() {
+      if (this.timerId) { clearInterval(this.timerId); this.timerId = null; }
+      
+      this.timeLeft = 60;
+      this.isActive = true;
+      var tEl = document.getElementById('nc-time-el');
+      if(tEl) tEl.textContent = this.timeLeft;
+
+      var _this = this;
+      this.timerId = setInterval(function() {
+        if(!_this.isActive) return;
+        _this.timeLeft--;
+        if(tEl) tEl.textContent = _this.timeLeft;
+        
+        if(_this.timeLeft <= 0) {
+          _this.isActive = false;
+          clearInterval(_this.timerId);
+          _this.timerId = null;
+          _this.showToast('&#9201;&#65039; 시간 초과! 서둘러 결과를 제출하세요.', 'error');
+          var mEl = document.getElementById('nc-msg-el');
+          if(mEl) { mEl.textContent = "시간 초과! 제출 버튼을 눌러주세요."; mEl.style.color = '#ef4444'; }
+        }
+      }, 1000);
+
+      var largePool = [25, 50, 75, 100];
+      var smallPool = [1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10];
+
+      var selL = [];
+      for(var i=0; i<2; i++) {
+        var idx = Math.floor(Math.random() * largePool.length);
+        selL.push(largePool.splice(idx, 1)[0]);
+      }
+      var selS = [];
+      for(var j=0; j<4; j++) {
+        var idx2 = Math.floor(Math.random() * smallPool.length);
+        selS.push(smallPool.splice(idx2, 1)[0]);
+      }
+
+      this.origCards = selL.concat(selS).sort(function() { return Math.random() - 0.5; });
+      this.target = Math.floor(Math.random() * 900) + 100;
+      
+      var targetEl = document.getElementById('nc-target-el');
+      if(targetEl) targetEl.textContent = this.target;
+
+      this.resetLocally();
+    },
+
+    resetLocally: function() {
+      if(!this.isActive && this.timeLeft <= 0) return;
+      this.cards = [];
+      for(var i=0; i<this.origCards.length; i++) {
+        this.cards.push({ val: this.origCards[i], used: false });
+      }
+      this.selCardIdx = -1;
+      this.selOp = null;
+      
+      this.updateOpUI();
+      this.renderCards();
+      
+      var mEl = document.getElementById('nc-msg-el');
+      if(mEl) { mEl.textContent = "조합할 첫 번째 타일을 선택하세요."; mEl.style.color = '#8b5cf6'; }
+    },
+
+    renderCards: function() {
+      var container = document.getElementById('nc-cards-el');
+      if(!container) return;
+      container.innerHTML = '';
+      
+      var _this = this;
+      for(var i=0; i<this.cards.length; i++) {
+        var c = this.cards[i];
+        var div = document.createElement('div');
+        div.className = 'nc-card';
+        if(c.used) div.className += ' used';
+        if(i === this.selCardIdx) div.className += ' selected';
+        div.textContent = c.val;
+        
+        (function(idx) {
+          div.onclick = function() { _this.handleCardClick(idx); };
+        })(i);
+        
+        container.appendChild(div);
+      }
+    },
+
+    handleCardClick: function(idx) {
+      if(!this.isActive || this.cards[idx].used) return;
+      var mEl = document.getElementById('nc-msg-el');
+
+      if(this.selCardIdx === -1) {
+        this.selCardIdx = idx;
+        if(mEl) { mEl.textContent = "연산자(＋,－,×,÷)를 선택하세요."; mEl.style.color = '#f59e0b'; }
+      } else if(this.selCardIdx === idx) {
+        this.selCardIdx = -1;
+        this.selOp = null;
+        this.updateOpUI();
+        if(mEl) { mEl.textContent = "조합할 첫 번째 타일을 선택하세요."; mEl.style.color = '#8b5cf6'; }
+      } else {
+        if(!this.selOp) {
+          this.showToast('먼저 연산자를 선택해 주세요.', 'error');
+          return;
+        }
+        
+        var v1 = this.cards[this.selCardIdx].val;
+        var v2 = this.cards[idx].val;
+        var res = 0;
+        
+        if(this.selOp === '+') res = v1 + v2;
+        else if(this.selOp === '-') {
+          if(v1 - v2 < 0) { this.showToast('음수는 만들 수 없습니다.', 'error'); return; }
+          res = v1 - v2;
+        }
+        else if(this.selOp === '*') res = v1 * v2;
+        else if(this.selOp === '/') {
+          if(v2 === 0 || v1 % v2 !== 0) { this.showToast('나누어 떨어지지 않습니다.', 'error'); return; }
+          res = v1 / v2;
+        }
+        
+        this.cards[this.selCardIdx].used = true;
+        this.cards[idx].val = res;
+        this.selCardIdx = -1;
+        this.selOp = null;
+        
+        this.updateOpUI();
+        if(mEl) { mEl.textContent = "병합 완료! 다음 타일을 선택하세요."; mEl.style.color = '#10b981'; }
+      }
+      this.renderCards();
+    },
+
+    selectOp: function(op) {
+      if(!this.isActive || this.selCardIdx === -1) return;
+      this.selOp = op;
+      this.updateOpUI();
+      var mEl = document.getElementById('nc-msg-el');
+      if(mEl) { mEl.textContent = "병합할 두 번째 타일을 선택하세요."; mEl.style.color = '#3b82f6'; }
+    },
+
+    updateOpUI: function() {
+      var ops = document.querySelectorAll('.nc-op');
+      for(var i=0; i<ops.length; i++) {
+        if(ops[i].getAttribute('data-op') === this.selOp) ops[i].classList.add('selected');
+        else ops[i].classList.remove('selected');
+      }
+    },
+
+    submitScore: function() {
+      this.isActive = false;
+      if(this.timerId) { clearInterval(this.timerId); this.timerId = null; }
+      
+      var bestVal = -1;
+      var minDiff = Infinity;
+      
+      for(var i=0; i<this.cards.length; i++) {
+        var c = this.cards[i];
+        if(!c.used) {
+          var diff = Math.abs(this.target - c.val);
+          if(diff < minDiff) {
+            minDiff = diff;
+            bestVal = c.val;
+          }
+        }
+      }
+      
+      var score = Math.max(0, 100 - (minDiff * 2));
+      
+      var html = '';
+      html += '<h2>&#127918; 게임 종료!</h2>';
+      html += '<p>목표 숫자: <strong style="color:#2563eb;">' + this.target + '</strong></p>';
+      html += '<p>내가 만든 수: <strong style="color:#10b981;">' + bestVal + '</strong></p>';
+      html += '<p style="color:#ef4444;">오차: ' + minDiff + '</p>';
+      html += '<p style="font-size:1.4rem; color:#0f172a; border-top:2px solid #e2e8f0; padding-top:16px; margin-top:16px;">최종 점수: <strong>' + score + '점</strong></p>';
+      
+      html += '<input type="text" id="nc-nick-input" placeholder="닉네임 입력" maxlength="10" ';
+      html += 'style="width:80%; padding:12px; border-radius:10px; border:2px solid #3b82f6; text-align:center; font-size:1.1rem; font-weight:800; margin-bottom:16px; outline:none;">';
+      
+      html += '<button class="btn" id="nc-modal-rank-btn" style="background:#10b981; color:#fff; padding:14px; width:80%; font-size:1.1rem; margin-bottom:8px;">&#127942; 명예의 전당 등록</button>';
+      html += '<button class="btn" id="nc-modal-close-btn" style="background:#64748b; color:#fff; padding:12px; width:80%;">닫기</button>';
+
+      var _this = this;
+      this.showModal(html, function(div) {
+        var rBtn = div.querySelector('#nc-modal-rank-btn');
+        var cBtn = div.querySelector('#nc-modal-close-btn');
+        if(rBtn) rBtn.onclick = function() {
+          var nickEl = div.querySelector('#nc-nick-input');
+          var nick = (nickEl && nickEl.value.trim()) || '익명';
+          _this.registerRanking(score, nick);
+          div.remove();
+        };
+        if(cBtn) cBtn.onclick = function() { div.remove(); };
+      });
+    },
+
+    registerRanking: function(score, nick) {
+      try {
+        if (typeof window.submitRanking === 'function') {
+          var nickArg = { value: nick, trim: function(){ return nick; } };
+          window.submitRanking(APP_TITLE, score, true, nickArg, 'board-nc-bottom');
+        }
+        var key = 'mathlab_lb_numcount';
+        var list = JSON.parse(localStorage.getItem(key) || '[]');
+        list.push({ nickname: nick, score: score });
+        list.sort(function(a, b){ return b.score - a.score; });
+        localStorage.setItem(key, JSON.stringify(list.slice(0, 10)));
+        this.loadLeaderboard();
+        this.showToast('랭킹 등록 완료!', 'success');
+      } catch(e) {}
+    },
+
+    loadLeaderboard: function() {
+      try {
+        if (typeof window.loadGameLeaderboard === 'function') {
+          window.loadGameLeaderboard(APP_TITLE, true, 'board-nc-bottom');
+          return;
+        }
+        var el = document.getElementById('board-nc-bottom');
+        if (!el) return;
+        var list = JSON.parse(localStorage.getItem('mathlab_lb_numcount') || '[]');
+        if (!list.length) { el.innerHTML = '<p style="color:#64748b;text-align:center;padding:12px 0;">아직 기록이 없습니다!</p>'; return; }
+        var h = '';
+        for (var i=0; i<Math.min(5, list.length); i++) {
+          var r = list[i];
+          h += '<div class="nc-rank-row">';
+          h += '  <span style="font-weight:800;color:' + (i===0?'#f59e0b':'#475569') + ';">' + (i===0?'&#128081;':'') + (i+1) + '위 ' + escapeHTML(r.nickname) + '</span>';
+          h += '  <span style="color:#0284c7;font-weight:900;">' + r.score + '점</span>';
+          h += '</div>';
+        }
+        el.innerHTML = h;
+      } catch(e) {}
+    },
+
+    showManual: function() {
+      var h = '';
+      h += '<h2>&#128214; 게임 방법</h2>';
+      h += '<p style="text-align:left; font-size:1rem; font-weight:500;">';
+      h += '<strong>1.</strong> 6개의 숫자 카드가 주어집니다.<br><br>';
+      h += '<strong>2.</strong> 목표 숫자에 최대한 가까운 수를 만들어야 합니다.<br><br>';
+      h += '<strong>3.</strong> 2개의 숫자와 사칙연산(＋,－,×,÷)을 조합해 하나의 숫자로 병합합니다. (음수나 분수는 불가능)<br><br>';
+      h += '<strong>4.</strong> 시간 안에 카드를 합치고 <strong>결과 제출하기</strong>를 누르세요.<br><br>';
+      h += '<strong>5.</strong> 오차가 적을수록 높은 점수를 받습니다. 오차가 0이면 100점!';
+      h += '</p>';
+      h += '<button class="btn" id="nc-guide-close" style="background:#3b82f6; color:#fff; width:100%; padding:14px;">확인</button>';
+      
+      this.showModal(h, function(div) {
+        var btn = div.querySelector('#nc-guide-close');
+        if(btn) btn.onclick = function() { div.remove(); };
+      });
+    },
+
+    showModal: function(innerHtml, callback) {
+      var existing = document.getElementById('nc-modal-backdrop');
+      if(existing) existing.remove();
+      
+      var div = document.createElement('div');
+      div.id = 'nc-modal-backdrop';
+      div.className = 'nc-modal-backdrop show';
+      
+      var box = document.createElement('div');
+      box.className = 'nc-modal-box';
+      box.innerHTML = innerHtml;
+      
+      div.appendChild(box);
+      document.body.appendChild(div);
+      
+      div.onclick = function(e) { if(e.target === div) div.remove(); };
+      if(typeof callback === 'function') callback(div);
+    },
+
+    showToast: function(msg, type) {
+      if(!type) type = 'info';
+      var t = document.getElementById('nc-toast');
+      if (!t) { t = document.createElement('div'); t.id = 'nc-toast'; document.body.appendChild(t); }
+      t.textContent = msg; t.className = 'nc-toast ' + type;
+      void t.offsetWidth; t.classList.add('show');
+      clearTimeout(this.toastTimer);
+      var _this = this;
+      this.toastTimer = setTimeout(function(){ t.classList.remove('show'); }, 2400);
+    },
+
+    destroy: function() {
+      if (this.timerId) { clearInterval(this.timerId); this.timerId = null; }
+      var m = document.getElementById('nc-modal-backdrop'); if(m) m.remove();
+      var t = document.getElementById('nc-toast'); if(t) t.remove();
+      if (this.host) this.host.innerHTML = '';
+      this.host = null;
+    }
+  };
+
+  function registerNumCount() {
+    if (window.MathLabGames && typeof window.MathLabGames.register === 'function') {
+      if (!window.MathLabGames.get || !window.MathLabGames.get(APP_ID)) {
+        try {
+          window.MathLabGames.register({
+            id: APP_ID,
+            title: APP_TITLE,
+            icon: '&#127918;',
+            sourceType: 'new',
+            players: '1인',
+            mount: function(container, context) { NumCountApp.mount(container, context); },
+            reset: function() { NumCountApp.startRound(); },
+            destroy: function() { NumCountApp.destroy(); }
+          });
+        } catch(e) {}
+      }
+    }
+  }
+
+  registerNumCount();
+  document.addEventListener('DOMContentLoaded', registerNumCount);
+  setTimeout(registerNumCount, 100);
+  setTimeout(registerNumCount, 500);
+
+  window.NumCountApp = NumCountApp;
+  window.initNumCountGame = function() {
+    registerNumCount();
+    if (window.LegacyBridge && typeof window.LegacyBridge.hideAllLegacySections === 'function') {
+      window.LegacyBridge.hideAllLegacySections();
+      window.LegacyBridge.showNewRoot();
+    }
+    if (window.MathLabGames && typeof window.MathLabGames.mount === 'function') {
+      try { window.MathLabGames.mount(APP_ID); return; } catch(e) {}
+    }
+    var t = document.getElementById('mathlab-view') || document.getElementById('new-root');
+    NumCountApp.mount(t);
+  };
+
+})();
+</script>

@@ -1,0 +1,396 @@
+<style>
+.nr,.nr *{box-sizing:border-box}
+.nr{max-width:1100px;margin:0 auto;padding:14px 16px 22px;font-family:'Pretendard','Noto Sans KR',system-ui,sans-serif;background:#f8fafc;color:#0f172a;border-radius:16px}
+.nr .h{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+.nr .t{font-size:1.25rem;font-weight:900;margin:0}
+.nr .btn{border:1px solid #cbd5e1;background:#fff;color:#1e293b;border-radius:10px;padding:8px 12px;font-weight:700;cursor:pointer;font-size:.9rem}
+.nr .btn:hover{background:#f1f5f9}
+.nr .btn.p{background:#0284c7;border-color:#0284c7;color:#fff}
+.nr .btn.g{background:#059669;border-color:#059669;color:#fff}
+.nr .btn:disabled{opacity:.45;cursor:not-allowed}
+.nr .chip{background:#fff;border:1px solid #e2e8f0;border-radius:999px;padding:5px 12px;font-size:.86rem;font-weight:700;color:#475569}
+.nr .chip b{color:#0284c7}
+.nr .bar{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0;align-items:center}
+.nr .diff{flex:1;min-width:86px;padding:8px;border-radius:10px;border:1px solid #cbd5e1;background:#fff;font-weight:800;cursor:pointer}
+.nr .diff.on{background:#e0f2fe;border-color:#0284c7;color:#0369a1}
+.nr .main{display:grid;grid-template-columns:1.25fr 1fr;gap:12px}
+@media(max-width:860px){.nr .main{grid-template-columns:1fr}}
+.nr .box{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:12px}
+.nr .box canvas{width:100%;display:block;border-radius:8px;background:#fff;touch-action:none}
+.nr .msg{font-size:.92rem;line-height:1.55;color:#334155;min-height:2.6em}
+.nr .note{background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:10px;font-size:.86rem;margin-top:8px;line-height:1.5}
+.nr .eq{font-family:'STIX Two Math',serif,monospace;background:#f1f5f9;border-radius:8px;padding:12px;font-size:1.15rem;font-weight:700;margin:6px 0;text-align:center;color:#0f172a;min-height:2.4em;display:flex;align-items:center;justify-content:center}
+.nr .inp{width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:8px;font-size:1rem;font-weight:700}
+.nr .sl{width:100%;accent-color:#0284c7;touch-action:none}
+.nr .toast{position:fixed;top:18px;left:50%;transform:translateX(-50%) translateY(-12px);background:#0f172a;color:#fff;padding:10px 18px;border-radius:12px;font-weight:700;z-index:9600;opacity:0;pointer-events:none;transition:.25s;max-width:92vw}
+.nr .toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+.nr .toast.ok{background:#059669}.nr .toast.err{background:#dc2626}.nr .toast.info{background:#0369a1}
+.nr .modal{position:fixed;inset:0;background:rgba(15,23,42,.48);display:none;align-items:center;justify-content:center;z-index:9400;padding:14px}
+.nr .modal.on{display:flex}
+.nr .modal .mbox{background:#fff;border-radius:16px;max-width:580px;width:100%;padding:20px;max-height:88vh;overflow:auto;box-shadow:0 20px 50px rgba(15,23,42,.25)}
+.nr .modal h3{margin:0 0 8px;font-size:1.12rem}
+.nr .modal p,.nr .modal li{font-size:.93rem;line-height:1.62;color:#334155}
+.nr .modal ul{padding-left:1.15em;margin:8px 0}
+.nr .dots{display:flex;gap:6px;justify-content:center;margin:12px 0 4px}
+.nr .dot{width:8px;height:8px;border-radius:50%;background:#cbd5e1}
+.nr .dot.on{background:#0284c7}
+.nr .g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.nr .gauge{height:12px;background:#e2e8f0;border-radius:999px;overflow:hidden;margin:6px 0}
+.nr .gauge>i{display:block;height:100%;background:linear-gradient(90deg,#38bdf8,#059669);width:0%;transition:width .25s}
+.nr .leg{display:flex;gap:12px;flex-wrap:wrap;font-size:.82rem;font-weight:700;color:#475569;margin-top:6px}
+.nr .leg span{display:inline-flex;align-items:center;gap:4px}
+</style>
+
+<script>
+(function(){
+'use strict';
+var APP_ID="newton-raphson", APP_TITLE="뉴턴-랩슨 루트 파인더", ICON="⚗️", FORCE="newton-raphson-force-host";
+var GUIDE_PAGES=[
+  {"title": "⚗️ 뉴턴-랩슨 루트 파인더", "html": "<p>방정식 <b>f(x)=0</b>의 <b>실근</b>을 찾는 대표적인 수치해석 방법 <b>뉴턴-랩슨법</b>의 미분 시각화 교과 개념 탐구 앱입니다.</p><ul><li>시작점 x₀를 선택하면 접선과 x절편이 실시간으로 형성됩니다.</li><li>[다음 턴]을 누르면 접선의 x절편으로 이동하며 근으로 다가갑니다.</li></ul><p>핵심 공식: <b>x<sub>n+1</sub> = x<sub>n</sub> − f(x<sub>n</sub>)/f′(x<sub>n</sub>)</b></p>"},
+  {"title": "📐 교과 개념 — 접선과 근사 (미적분)", "html": "<p><b>학교급</b> 고등학교 · <b>교과</b> 미적분 · <b>단원</b> 미분법 / 도함수의 활용</p><ul><li>점 (a, f(a))에서 접선 기울기 = f′(a)</li><li>접선 방정식: y − f(a) = f′(a)(x − a)</li><li>y=0일 때 x절편을 구하면 뉴턴-랩슨 공식이 됩니다.</li><li>f′(x) ≈ 0 (수평 접선) 근처에서는 근이 크게 발산하거나 멀어질 수 있습니다.</li></ul>"},
+  {"title": "🎮 탐구 방법", "html": "<ol><li>난이도(쉬움·보통·도전)에 따라 다양하고 극적인 다항함수 곡선이 등장합니다.</li><li>캔버스를 클릭하거나 슬라이더를 움직여 시작점을 다르게 지정해 보세요.</li><li>시작 위치에 따라 서로 다른 실근으로 수렴하는 과정을 관찰하세요.</li></ol>"}
+];
+
+var S={mounted:false,host:null,diff:'normal',round:1,finished:false,guidePage:0,raf:0,timers:[],pending:[],demo:false};
+
+function $(id){return document.getElementById(id)}
+function setT(id,v){var el=$(id);if(el)el.textContent=String(v)}
+
+var toastT=null;
+function toast(m,t){var el=$('nr-toast');if(!el)return;el.textContent=m;el.className='toast on'+(t?' '+t:'');if(toastT)clearTimeout(toastT);toastT=setTimeout(function(){el.className='toast'},2400)}
+function clearTimers(){S.timers.forEach(function(t){clearInterval(t);clearTimeout(t)});S.timers=[];if(S.raf){cancelAnimationFrame(S.raf);S.raf=0}S.pending.forEach(clearTimeout);S.pending=[]}
+function later(fn,ms){var id=setTimeout(fn,ms);S.pending.push(id);return id}
+
+function openGuide(start){S.guidePage=typeof start==='number'?start:0;renderGuide();var m=$('nr-modal');if(m)m.className='modal on'}
+function renderGuide(){
+  var m=$('nr-modal');if(!m)return;
+  var pg=GUIDE_PAGES[S.guidePage]||GUIDE_PAGES[0];
+  var dots=GUIDE_PAGES.map(function(_,i){return '<span class="dot'+(i===S.guidePage?' on':'')+'"></span>'}).join('');
+  var isLast=S.guidePage>=GUIDE_PAGES.length-1;
+  m.innerHTML='<div class="mbox"><div style="font-size:.78rem;font-weight:800;color:#0284c7;margin-bottom:4px">개념 탐구 '+(S.guidePage+1)+' / '+GUIDE_PAGES.length+'</div><h3>'+pg.title+'</h3><div class="gbody">'+pg.html+'</div><div class="dots">'+dots+'</div><div class="g2" style="margin-top:12px"><button type="button" class="btn" id="nr-gprev"'+(S.guidePage===0?' disabled':'')+'>← 이전</button><button type="button" class="btn p" id="nr-gnext">'+(isLast?'탐구 시작하기':'다음 →')+'</button></div><button type="button" class="btn" id="nr-gskip" style="width:100%;margin-top:8px">닫기</button></div>';
+  $('nr-gprev').onclick=function(){if(S.guidePage>0){S.guidePage--;renderGuide()}};
+  $('nr-gnext').onclick=function(){if(isLast){m.className='modal';toast('개념 탐구를 시작합니다','ok')}else{S.guidePage++;renderGuide()}};
+  $('nr-gskip').onclick=function(){m.className='modal'};
+}
+
+function chrome(){
+  return '<div class="nr" id="nr-root">'+
+  '<div class="h"><h2 class="t">'+ICON+' '+APP_TITLE+'</h2><div style="display:flex;gap:6px;flex-wrap:wrap">'+
+  '<button type="button" class="btn" id="nr-guide">📖 교과 개념 설명</button></div></div>'+
+  '<div class="bar"><button type="button" class="diff" data-d="easy">쉬움 (삼차함수)</button><button type="button" class="diff on" data-d="normal">보통 (사차 W곡선)</button><button type="button" class="diff" data-d="hard">도전 (복합 사차)</button></div>'+
+  '<div class="bar"><span class="chip">탐구 단계 <b id="nr-round">1</b></span><span class="chip" id="nr-extra">턴 0/12</span></div>'+
+  GAME_BODY()+
+  '<div class="toast" id="nr-toast"></div><div class="modal" id="nr-modal"></div></div>';
+}
+
+function bindChrome(){
+  $('nr-guide').onclick=function(){openGuide(0)};
+  document.querySelectorAll('#nr-root .diff').forEach(function(btn){btn.onclick=function(){S.diff=btn.getAttribute('data-d');document.querySelectorAll('#nr-root .diff').forEach(function(b){b.classList.toggle('on',b===btn)});resetRun();}});
+  bindGame();
+}
+
+function updateHUD(){setT('nr-round',S.round)}
+function destroy(){clearTimers();S.mounted=false;if(S.host)try{S.host.innerHTML=''}catch(e){}S.host=null}
+function goHome(){destroy();try{if(window.LegacyBridge&&window.LegacyBridge.backHome){window.LegacyBridge.backHome();return}}catch(e){}var fh=document.getElementById(FORCE);if(fh){fh.style.display='none';fh.innerHTML=''}var mv=document.getElementById('mathlab-view');if(mv){mv.style.display='none';mv.innerHTML=''}var ag=document.querySelector('.app-grid'),ds=document.getElementById('dashboard-screen');if(ag)ag.style.display='';if(ds)ds.style.display='';if(typeof window.goHome==='function')try{window.goHome()}catch(e){}}
+
+function mount(container){
+  var host=null;
+  if(typeof container==='string'){try{host=document.querySelector(container)}catch(e){}}
+  else if(container instanceof HTMLElement)host=container;
+  if(!host&&window.MathLabUtils&&window.MathLabUtils.getMountContainer){try{host=window.MathLabUtils.getMountContainer(container)}catch(e){}}
+  if(!host||!(host instanceof HTMLElement))host=document.getElementById('mathlab-view')||document.getElementById('new-root');
+  if(!host||!(host instanceof HTMLElement)||host===document.body){
+    host=document.getElementById(FORCE);
+    if(!host){host=document.createElement('div');host.id=FORCE;document.body.appendChild(host)}
+  }
+  var footerEl=document.querySelector('footer,#footer,.app-footer');
+  if(footerEl&&host&&typeof host.compareDocumentPosition==='function'&&(host.compareDocumentPosition(footerEl)&Node.DOCUMENT_POSITION_PRECEDING)){
+    try{footerEl.parentNode.insertBefore(host,footerEl)}catch(e){}
+  }
+  host.style.display='';host.style.visibility='visible';host.style.opacity='1';host.style.minHeight=host.style.minHeight||'60vh';
+  var parent=host.parentElement;while(parent&&parent!==document.body&&parent!==document.documentElement){if(parent.style&&parent.style.display==='none')parent.style.display='block';if(parent.style&&parent.style.visibility==='hidden')parent.style.visibility='visible';parent=parent.parentElement}
+  document.querySelectorAll('header,.navbar,#app-header,.top-bar,#floating-home-btn,.floating-home').forEach(function(el){if(el&&el.style&&el.style.display==='none')el.style.display=''});
+  S.host=host;S.mounted=true;host.innerHTML=chrome();bindChrome();resetRun();
+}
+
+var CW=700,CH=420,TOTAL=5;
+var G={fn:null,df:null,latex:'',x:0,path:[],turns:0,maxTurns:12,tol:0.04,bounds:[-2.5,2.5]};
+
+function makeProblem(){
+  var d=S.diff;
+  if(d==='easy'){
+    G.fn=function(x){return x*x*x-3*x};
+    G.df=function(x){return 3*x*x-3};
+    G.latex='f(x) = x^3 - 3x';
+    G.tol=0.05; G.maxTurns=10; G.bounds=[-2.5,2.5];
+  }else if(d==='normal'){
+    G.fn=function(x){return Math.pow(x,4)-4*x*x+1};
+    G.df=function(x){return 4*x*x*x-8*x};
+    G.latex='f(x) = x^4 - 4x^2 + 1';
+    G.tol=0.05; G.maxTurns=12; G.bounds=[-2.6,2.6];
+  }else{
+    G.fn=function(x){return Math.pow(x,4)-5*x*x+2*x+1};
+    G.df=function(x){return 4*x*x*x-10*x+2};
+    G.latex='f(x) = x^4 - 5x^2 + 2x + 1';
+    G.tol=0.04; G.maxTurns=12; G.bounds=[-2.8,2.8];
+  }
+  G.x=(G.bounds[0]+G.bounds[1])/2 + 0.35; G.path=[G.x]; G.turns=0;
+  
+  updateLatexDisplay(G.latex);
+  setT('nr-x',G.x.toFixed(3)); updateErr(); draw();
+  setT('nr-extra','턴 0/'+G.maxTurns);
+  setT('nr-msg','시작점 x₀를 선택하면 접선과 절편이 접선 힌트로 표시됩니다. [▶ 다음 턴]을 눌러 근 탐구를 진행하세요.');
+  var sl=$('nr-sl'); if(sl){sl.min=G.bounds[0]; sl.max=G.bounds[1]; sl.value=String(G.x)}
+}
+
+function updateLatexDisplay(latexStr){
+  var el=$('nr-eq'); if(!el)return;
+  // 1. KaTeX 엔진 우선 지원
+  if(typeof window.katex !== 'undefined'){
+    try{
+      window.katex.render(latexStr, el, { throwOnError: false });
+      return;
+    }catch(e){}
+  }
+  // 2. MathJax 엔진 지원
+  if(window.MathJax){
+    try{
+      el.innerHTML='\\(' + latexStr + '\\)';
+      if(typeof window.MathJax.typesetPromise==='function'){window.MathJax.typesetPromise([el])}
+      else if(window.MathJax.Hub&&typeof window.MathJax.Hub.Queue==='function'){window.MathJax.Hub.Queue(['Typeset',window.MathJax.Hub,el])}
+      return;
+    }catch(e){}
+  }
+  // 3. 수식 라이브러리가 없을 때 Fallback (기호 태그 노출 방지)
+  el.textContent = latexStr;
+}
+
+function f(x){return G.fn(x)} function df(x){return G.df(x)}
+function updateErr(){var e=Math.abs(f(G.x)); var pct=Math.max(0,Math.min(100,(1-Math.min(e,2)/2)*100)); var g=$('nr-gauge'); if(g)g.style.width=pct+'%'; setT('nr-err',e.toFixed(4)); setT('nr-x',G.x.toFixed(4))}
+function worldX(px,pad){return G.bounds[0]+(px-pad)/(CW-pad*2)*(G.bounds[1]-G.bounds[0])}
+
+function draw(){
+  var cv=$('nr-cv'); if(!cv)return; var ctx=cv.getContext('2d'); ctx.clearRect(0,0,CW,CH);
+  ctx.fillStyle='#fff'; ctx.fillRect(0,0,CW,CH); var pad=42;
+  var i,xs=[],ys=[],n=300; 
+  for(i=0;i<=n;i++){
+    var x=G.bounds[0]+(G.bounds[1]-G.bounds[0])*i/n; 
+    xs.push(x); ys.push(f(x));
+  }
+  var ymin=Math.min.apply(null,ys), ymax=Math.max.apply(null,ys); 
+  var dy=ymax-ymin||1; ymin-=dy*.15; ymax+=dy*.15; dy=ymax-ymin;
+
+  function X(x){return pad+(x-G.bounds[0])/(G.bounds[1]-G.bounds[0])*(CW-pad*2)}
+  function Y(y){return CH-pad-(y-ymin)/dy*(CH-pad*2)}
+
+  ctx.strokeStyle='#f1f5f9'; ctx.lineWidth=1;
+  for(var gx=Math.ceil(G.bounds[0]); gx<=Math.floor(G.bounds[1]); gx++){
+    ctx.beginPath(); ctx.moveTo(X(gx),pad); ctx.lineTo(X(gx),CH-pad); ctx.stroke();
+  }
+
+  ctx.strokeStyle='#1e293b'; ctx.lineWidth=2.5;
+
+  if(ymin<=0 && ymax>=0){
+    ctx.beginPath(); ctx.moveTo(pad-10,Y(0)); ctx.lineTo(CW-pad+10,Y(0)); ctx.stroke();
+    ctx.fillStyle='#475569'; ctx.font='bold 11px sans-serif'; ctx.textAlign='center'; ctx.textBaseline='top';
+    for(var tx=Math.ceil(G.bounds[0]); tx<=Math.floor(G.bounds[1]); tx++){
+      if(tx===0) continue;
+      var px=X(tx);
+      ctx.beginPath(); ctx.moveTo(px,Y(0)-4); ctx.lineTo(px,Y(0)+4); ctx.stroke();
+      ctx.fillText(tx.toString(),px,Y(0)+6);
+    }
+    ctx.fillStyle='#1e293b'; ctx.beginPath(); ctx.moveTo(CW-pad+14,Y(0)); ctx.lineTo(CW-pad+6,Y(0)-4); ctx.lineTo(CW-pad+6,Y(0)+4); ctx.fill();
+    ctx.fillText('x',CW-pad+18,Y(0)-6);
+  }
+
+  if(G.bounds[0]<=0 && G.bounds[1]>=0){
+    ctx.beginPath(); ctx.moveTo(X(0),pad-10); ctx.lineTo(X(0),CH-pad+10); ctx.stroke();
+    ctx.fillStyle='#475569'; ctx.font='bold 11px sans-serif'; ctx.textAlign='right'; ctx.textBaseline='middle';
+    ctx.fillText('0',X(0)-6,Y(0)+10);
+    ctx.fillStyle='#1e293b'; ctx.beginPath(); ctx.moveTo(X(0),pad-12); ctx.lineTo(X(0)-4,pad-4); ctx.lineTo(X(0)+4,pad-4); ctx.fill();
+    ctx.fillText('y',X(0)+12,pad-12);
+  }
+
+  ctx.strokeStyle='#0284c7'; ctx.lineWidth=3; ctx.beginPath();
+  for(i=0;i<=n;i++){
+    var xx=xs[i], yy=ys[i];
+    if(i===0) ctx.moveTo(X(xx),Y(yy)); else ctx.lineTo(X(xx),Y(yy));
+  }
+  ctx.stroke();
+
+  var xp=G.x, d=df(xp);
+  if(Math.abs(d)>1e-6){
+    var y0=f(xp); var x1=xp-y0/d;
+    ctx.strokeStyle='#ea580c'; ctx.setLineDash([6,4]); ctx.lineWidth=2; ctx.beginPath();
+    var xa=G.bounds[0], xb=G.bounds[1];
+    ctx.moveTo(X(xa),Y(y0+d*(xa-xp))); ctx.lineTo(X(xb),Y(y0+d*(xb-xp))); ctx.stroke(); ctx.setLineDash([]);
+
+    ctx.strokeStyle='#94a3b8'; ctx.setLineDash([2,2]); ctx.beginPath();
+    ctx.moveTo(X(xp),Y(y0)); ctx.lineTo(X(xp),Y(0)); ctx.stroke(); ctx.setLineDash([]);
+
+    ctx.fillStyle='#dc2626'; ctx.beginPath(); ctx.arc(X(xp),Y(y0),6,0,Math.PI*2); ctx.fill();
+
+    ctx.fillStyle='#ea580c'; ctx.beginPath(); ctx.arc(X(x1),Y(0),6,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle='#c2410c'; ctx.font='bold 11px sans-serif'; ctx.textAlign='center';
+    var textPos = Math.max(pad+30, Math.min(X(x1), CW-pad-30));
+    ctx.fillText('다음 x ≈ '+x1.toFixed(3), textPos, Y(0)-10);
+  }
+
+  for(i=0;i<G.path.length-1;i++){
+    ctx.fillStyle='#94a3b8'; ctx.beginPath(); ctx.arc(X(G.path[i]),Y(f(G.path[i])),4,0,Math.PI*2); ctx.fill();
+  }
+}
+
+function setStart(x){
+  if(S.finished) return;
+  G.x=Math.max(G.bounds[0],Math.min(G.bounds[1],x));
+  G.path=[G.x]; G.turns=0;
+  updateErr(); draw();
+  var sl=$('nr-sl'); if(sl)sl.value=String(G.x);
+  setT('nr-extra','턴 0/'+G.maxTurns);
+  setT('nr-msg','시작점 x₀ = '+G.x.toFixed(3)+' 선택됨. [▶ 다음 턴]을 누르세요.');
+}
+
+function step(){
+  if(S.finished||S.demo)return;
+  var d=df(G.x);
+  if(Math.abs(d)<1e-4){
+    toast('f′(x) ≈ 0 수평 접선 영역입니다! 근처의 다른 시작점을 선택해 보세요.','err');
+    return;
+  }
+  var nx=G.x-f(G.x)/d;
+  if(!isFinite(nx)||Math.abs(nx)>50){
+    toast('접선이 멀리 발산했습니다 — 새로운 시작점을 설정해 보세요.','err');
+    G.turns=0; G.path=[G.x]; updateErr(); draw(); return;
+  }
+  G.x=nx; G.path.push(G.x); G.turns++; updateErr(); draw(); setT('nr-extra','턴 '+G.turns+'/'+G.maxTurns);
+  
+  if(Math.abs(f(G.x))<=G.tol){
+    toast('🎉 실근 근사 성공! |f(x)| ≤ '+G.tol,'ok');
+    setT('nr-msg','🎉 근사 성공! |f(x)|='+Math.abs(f(G.x)).toFixed(5)+' (총 '+G.turns+'턴 소요)');
+    return;
+  }
+  if(G.turns>=G.maxTurns){
+    toast('최대 탐구 턴에 도달했습니다.','info');
+  } else {
+    setT('nr-msg','접선 x절편으로 이동 → 현재 x = '+G.x.toFixed(4)+', |f(x)| = '+Math.abs(f(G.x)).toFixed(4));
+  }
+}
+
+function resetRun(){clearTimers(); S.finished=false; S.round=1; S.demo=false; updateHUD(); makeProblem()}
+
+function GAME_BODY(){
+  return '<div class="main"><div class="box"><canvas id="nr-cv" width="'+CW+'" height="'+CH+'"></canvas>'+
+  '<div class="leg"><span><i style="display:inline-block;width:10px;height:10px;background:#0284c7;border-radius:50%"></i> 곡선 f(x)</span><span><i style="display:inline-block;width:10px;height:2px;background:#ea580c"></i> 주황 접선</span><span><i style="display:inline-block;width:10px;height:10px;background:#dc2626;border-radius:50%"></i> 현재 (x<sub>n</sub>, f(x<sub>n</sub>))</span></div>'+
+  '<div class="note">오차 |f(x)| 근사 게이지 · 게이지가 가득 찰수록 f(x)=0의 실근에 가깝습니다.<div class="gauge"><i id="nr-gauge"></i></div><b>|f(x)| = <span id="nr-err">—</span></b></div></div>'+
+  '<div><div class="box"><div class="eq" id="nr-eq">f(x) = ...</div><div class="msg" id="nr-msg"></div>'+
+  '<div style="font-weight:800;margin:10px 0 4px">시작점 / 현재 x = <span id="nr-x" style="color:#0284c7">0</span></div>'+
+  '<input type="range" class="sl" id="nr-sl" min="-2.5" max="2.5" step="0.01" value="0">'+
+  '<div class="bar" style="margin-top:12px"><button type="button" class="btn g" id="nr-step" style="flex:1">▶ 다음 턴 (접선 이동)</button>'+
+  '<button type="button" class="btn" id="nr-reset">🔄 다시 시작</button></div>'+
+  '<div class="bar"><button type="button" class="btn p" id="nr-demo" style="width:100%">이분법 vs 뉴턴법 비교 시연</button></div>'+
+  '<div class="note">💡 <b>교과 탐구 Tip</b>: 그래프 상의 극솟값/극댓값 부근(수평 접선)을 시작점으로 잡으면 x절편이 어떻게 뛰어넘는지 관찰해 보세요.</div></div></div></div>';
+}
+
+function bindGame(){
+  var cv=$('nr-cv');
+  if(cv){
+    cv.onclick=function(ev){
+      var r=cv.getBoundingClientRect(); var pad=42; 
+      var x=worldX((ev.clientX-r.left)/r.width*CW,pad); 
+      setStart(x);
+    }
+  };
+  $('nr-sl').oninput=function(){setStart(parseFloat($('nr-sl').value))};
+  $('nr-step').onclick=step;
+  $('nr-reset').onclick=function(){G.turns=0; makeProblem()};
+  $('nr-demo').onclick=function(){
+    S.demo=true; toast('이분법 vs 뉴턴-랩슨 비교 시연 시작','info');
+    var a=G.bounds[0], b=G.bounds[1]; if(f(a)*f(b)>0){a=-1.8; b=1.8}
+    var xn=G.x, steps=0;
+    function tick(){
+      if(steps>10||!S.demo){S.demo=false; toast('비교 시연 종료','ok'); return}
+      var mid=(a+b)/2; if(f(a)*f(mid)<=0)b=mid; else a=mid;
+      var d=df(xn); if(Math.abs(d)>1e-6)xn=xn-f(xn)/d;
+      G.x=xn; G.path.push(xn); updateErr(); draw();
+      setT('nr-msg','시연 진행 중… [이분법 구간: ['+a.toFixed(2)+', '+b.toFixed(2)+']] VS [뉴턴법 x = '+xn.toFixed(3)+']');
+      steps++; later(tick,600);
+    } tick();
+  };
+}
+
+var API={mount:mount,resetGame:resetRun,destroy:destroy,goHome:goHome};
+
+const gameMeta = {
+  id: 'newton-raphson',
+  title: APP_TITLE,
+  icon: ICON,
+  description: '접선과 도함수를 활용하여 방정식 f(x)=0의 실근을 찾는 뉴턴-랩슨 시각화 교과 개념 탐구',
+  appType: 'concept',
+  topApp: '교과 수학 개념',
+  activityType: ['시뮬레이션', '개념 탐구', '시각화'],
+  schoolLevel: ['high'],
+  gradeBand: ['고2', '고3'],
+  curriculumArea: ['미적분', '도함수의 활용'],
+  unit: ['미분법', '접선의 방정식'],
+  concepts: ['뉴턴-랩슨법', '접선', '수치해석', '실근 근사'],
+  category: '미적분',
+  level: '고등',
+  concept: '뉴턴-랩슨법, 접선, 실근 근사',
+  classroomUse: ['개념 제시', '수업 시연', '탐구 활동'],
+  difficulty: '보통',
+  duration: '5분',
+  renderMode: 'DOM',
+  sourceType: 'new',
+  playModes: ['single'],
+  tags: ['뉴턴랩슨', '미적분', '접선', '실근', '수치해석'],
+  keywords: ['뉴턴-랩슨', '미적분', '도함수', '접선'],
+  mount(container, context) {
+    API.mount(container, context);
+  },
+  reset() {
+    API.resetGame();
+  },
+  destroy() {
+    API.destroy();
+  },
+  goHome() {
+    API.goHome();
+  }
+};
+
+function registerNewtonRaphson() {
+  if (typeof window.MathLabGames !== 'undefined' && typeof window.MathLabGames.register === 'function') {
+    if (!window.MathLabGames.get || !window.MathLabGames.get('newton-raphson')) {
+      try {
+        window.MathLabGames.register(gameMeta);
+      } catch (e) {
+        console.warn('newton-raphson 등록 실패:', e);
+      }
+    }
+  }
+}
+
+registerNewtonRaphson();
+window.addEventListener('DOMContentLoaded', registerNewtonRaphson);
+setTimeout(registerNewtonRaphson, 100);
+setTimeout(registerNewtonRaphson, 500);
+
+window.NewtonRaphson = API;
+
+window.initNewtonRaphson = function() {
+  registerNewtonRaphson();
+  if (window.LegacyBridge && typeof window.LegacyBridge.hideAllLegacySections === 'function') {
+    window.LegacyBridge.hideAllLegacySections();
+    if (window.LegacyBridge.showNewRoot) window.LegacyBridge.showNewRoot();
+  }
+  if (typeof window.MathLabGames !== 'undefined' && typeof window.MathLabGames.mount === 'function') {
+    try { window.MathLabGames.mount('newton-raphson'); return; } catch(e){}
+  }
+  const targetEl = document.getElementById('mathlab-view') || document.getElementById('new-root') || document.getElementById('game-container');
+  API.mount(targetEl);
+};
+
+window.launchNewtonRaphson = window.initNewtonRaphson;
+})();
+</script>

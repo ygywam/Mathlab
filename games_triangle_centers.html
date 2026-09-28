@@ -1,0 +1,1536 @@
+<!--
+  Gen-3 수학 실험실 수학게임 앱: 삼각형의 중심 조준경 (triangle-centers)
+  오로지 스타일((style))과 스크립트((script))로만 구성된 표준 템플릿
+  (애니메이션 버튼 100% 즉시 재생, 스마트 카메라 & 조준경 동기화, 난이도별 차등 고득점 배점 시스템)
+-->
+<style>
+  /* ==========================================================================
+     Gen-3 전용 스코프 스타일 (.game-triangle-centers)
+     ========================================================================== */
+  .game-triangle-centers {
+    --bg-primary: #0f172a;
+    --bg-surface: #1e293b;
+    --bg-card: rgba(30, 41, 59, 0.92);
+    --accent-color: #38bdf8;
+    --accent-glow: rgba(56, 189, 248, 0.35);
+    --success-color: #22c55e;
+    --warning-color: #f59e0b;
+    --danger-color: #ef4444;
+    --text-main: #f8fafc;
+    --text-sub: #cbd5e1;
+    --border-color: #3b82f6;
+
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #172554 100%);
+    color: var(--text-main);
+    min-height: 100%;
+    width: 100%;
+    padding: 24px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    user-select: none;
+    -webkit-user-select: none;
+    border-radius: 24px;
+    border: 3px solid var(--border-color);
+    box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.8);
+    position: relative;
+  }
+
+  .game-triangle-centers * {
+    box-sizing: border-box;
+  }
+
+  /* 반응형 상단 헤더 */
+  .game-triangle-centers .app-header {
+    width: 100%;
+    max-width: 1040px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #0f172a;
+    padding: 16px 22px;
+    border-radius: 20px;
+    border: 2px solid var(--border-color);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+
+  .game-triangle-centers .title-area {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .game-triangle-centers .app-title {
+    font-size: clamp(1.4rem, 2.4vw, 2.0rem);
+    font-weight: 900;
+    margin: 0;
+    color: #ffffff !important;
+    text-shadow: 0 0 15px rgba(255, 255, 255, 0.7);
+  }
+
+  .game-triangle-centers .app-badge {
+    background: #1e1b4b;
+    color: #38bdf8;
+    font-size: 0.88rem;
+    font-weight: 800;
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1.5px solid #3b82f6;
+    box-shadow: 0 0 10px rgba(59, 130, 246, 0.25);
+  }
+
+  .game-triangle-centers .stats-bar {
+    display: flex;
+    gap: 10px;
+    font-weight: 800;
+    font-size: 0.95rem;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    flex: 1 1 auto;
+  }
+
+  .game-triangle-centers .stat-badge {
+    background: #0f172a;
+    padding: 8px 14px;
+    border-radius: 14px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    border: 2px solid #60a5fa;
+    color: #ffffff;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 900;
+    font-size: 0.95rem;
+    white-space: nowrap;
+  }
+  .game-triangle-centers .stat-badge.round { color: #fef08a; border-color: #f59e0b; background: #271c14; }
+  .game-triangle-centers .stat-badge.timer { color: #f87171; border-color: #ef4444; background: #2b1414; }
+  .game-triangle-centers .stat-badge.score { color: #86efac; border-color: #22c55e; background: #062313; }
+
+  /* 헤더 균등 버튼 */
+  .game-triangle-centers .header-btn {
+    padding: 9px 15px;
+    border-radius: 14px;
+    font-size: 0.95rem;
+    font-weight: 900;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: all 0.2s;
+    border: 2px solid transparent;
+    white-space: nowrap;
+    flex: 1 1 126px;
+  }
+
+  .game-triangle-centers .btn-howto {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: #ffffff !important;
+    border-color: #93c5fd;
+    box-shadow: 0 4px 10px rgba(59, 130, 246, 0.4);
+  }
+  .game-triangle-centers .btn-howto:hover { transform: translateY(-2px); background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); }
+
+  .game-triangle-centers .btn-rank {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: #ffffff !important;
+    border-color: #fde68a;
+    box-shadow: 0 4px 10px rgba(245, 158, 11, 0.4);
+  }
+  .game-triangle-centers .btn-rank:hover { transform: translateY(-2px); background: linear-gradient(135deg, #d97706 0%, #b45309 100%); }
+
+  .game-triangle-centers .btn-reset {
+    background: #1e293b;
+    color: #ffffff !important;
+    border-color: #60a5fa;
+  }
+  .game-triangle-centers .btn-reset:hover { background: #334155; border-color: #93c5fd; transform: translateY(-2px); }
+
+  .game-triangle-centers .btn-home {
+    background: #475569;
+    color: #ffffff !important;
+    border-color: #94a3b8;
+  }
+  .game-triangle-centers .btn-home:hover { background: #64748b; transform: translateY(-2px); }
+
+  /* 메인 영역 */
+  .game-triangle-centers .main-container {
+    width: 100%;
+    max-width: 1040px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  /* 옵션 및 난이도 바 */
+  .game-triangle-centers .option-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    background: #090d16;
+    padding: 10px 16px;
+    border-radius: 18px;
+    border: 2px solid #3b82f6;
+    flex-wrap: wrap;
+  }
+
+  .game-triangle-centers .diff-group {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    flex: 1;
+  }
+
+  .game-triangle-centers .opt-btn {
+    flex: 1;
+    min-width: 130px;
+    padding: 9px 12px;
+    border-radius: 12px;
+    background: transparent;
+    color: #cbd5e1;
+    border: 1.5px solid #475569;
+    font-weight: 800;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+  }
+  .game-triangle-centers .opt-btn.active {
+    background: #3b82f6;
+    color: #ffffff !important;
+    border-color: #93c5fd;
+    box-shadow: 0 4px 10px rgba(59, 130, 246, 0.4);
+  }
+
+  /* 작업 영역 */
+  .game-triangle-centers .workspace {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr;
+    gap: 20px;
+  }
+
+  @media (max-width: 860px) {
+    .game-triangle-centers .workspace {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* 캔버스 카드 (조준경 뷰) */
+  .game-triangle-centers .canvas-card {
+    background: #0f172a;
+    border: 3px solid var(--border-color);
+    border-radius: 20px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+  }
+
+  .game-triangle-centers .mission-banner {
+    width: 100%;
+    background: #1e293b;
+    border: 2px solid #f59e0b;
+    border-radius: 14px;
+    padding: 12px 18px;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .game-triangle-centers .mission-text {
+    font-size: 1.15rem;
+    font-weight: 900;
+    color: #fef08a;
+    word-break: keep-all;
+  }
+
+  .game-triangle-centers .canvas-wrapper {
+    width: 100%;
+    position: relative;
+    background: #060913;
+    border-radius: 14px;
+    border: 2px solid #334155;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: crosshair;
+  }
+
+  .game-triangle-centers canvas {
+    max-width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* 조준경 커서 (카메라와 실시간 동기화) */
+  .game-triangle-centers .scope-pointer {
+    position: absolute;
+    width: 44px;
+    height: 44px;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    display: none;
+    z-index: 10;
+  }
+  .game-triangle-centers .scope-pointer::before, .game-triangle-centers .scope-pointer::after {
+    content: '';
+    position: absolute;
+    background: #ef4444;
+    box-shadow: 0 0 8px #ffffff;
+  }
+  .game-triangle-centers .scope-pointer::before { top: 21px; left: 0; width: 44px; height: 2px; }
+  .game-triangle-centers .scope-pointer::after { top: 0; left: 21px; width: 2px; height: 44px; }
+  .game-triangle-centers .scope-circle {
+    position: absolute;
+    top: 6px; left: 6px; width: 32px; height: 32px;
+    border: 2px dashed #ef4444;
+    border-radius: 50%;
+    box-shadow: 0 0 8px rgba(239, 68, 68, 0.6);
+  }
+
+  /* 우측 제어 및 설명 패널 */
+  .game-triangle-centers .control-card {
+    background: #1e293b;
+    border: 3px solid var(--border-color);
+    border-radius: 20px;
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    justify-content: space-between;
+  }
+
+  .game-triangle-centers .info-box {
+    background: #0f172a;
+    border: 2px solid #60a5fa;
+    border-radius: 16px;
+    padding: 16px;
+    text-align: left;
+  }
+
+  .game-triangle-centers .info-title {
+    font-size: 1.05rem;
+    color: #38bdf8;
+    font-weight: 900;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .game-triangle-centers .info-desc {
+    font-size: 0.92rem;
+    color: #cbd5e1;
+    line-height: 1.6;
+    font-weight: 700;
+  }
+
+  .game-triangle-centers .feedback-msg {
+    min-height: 76px;
+    background: #090d16;
+    border-radius: 14px;
+    border: 2px solid #475569;
+    padding: 16px;
+    display: block;
+    font-weight: 900;
+    font-size: 1.05rem;
+    text-align: center;
+    line-height: 1.6;
+    word-break: keep-all;
+  }
+  .game-triangle-centers .feedback-msg.hit { border-color: #22c55e; color: #86efac; background: rgba(34, 197, 94, 0.12); }
+  .game-triangle-centers .feedback-msg.miss { border-color: #ef4444; color: #fca5a5; background: rgba(239, 68, 68, 0.12); }
+
+  .game-triangle-centers .action-bar {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .game-triangle-centers .btn-action {
+    width: 100%;
+    padding: 14px;
+    border-radius: 14px;
+    font-size: 1.08rem;
+    font-weight: 900;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 2px solid transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .game-triangle-centers .btn-fire {
+    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+    color: white;
+    border-color: #86efac;
+    box-shadow: 0 4px 14px rgba(34, 197, 94, 0.4);
+  }
+  .game-triangle-centers .btn-fire:hover:not(:disabled) { transform: translateY(-2px); background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); }
+  .game-triangle-centers .btn-fire:disabled { background: #475569; border-color: #64748b; color: #94a3b8; cursor: not-allowed; }
+
+  .game-triangle-centers .btn-hint {
+    background: #271c14;
+    color: #fef08a !important;
+    border: 2px solid #f59e0b;
+    font-size: 0.95rem;
+  }
+  .game-triangle-centers .btn-hint:hover:not(:disabled) { background: #451a1a; border-color: #ef4444; color: white !important; }
+  .game-triangle-centers .btn-hint:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .game-triangle-centers .btn-anim {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: #ffffff !important;
+    border-color: #fde68a;
+    box-shadow: 0 4px 14px rgba(245, 158, 11, 0.4);
+    display: none;
+  }
+  .game-triangle-centers .btn-anim:hover { transform: translateY(-2px); background: linear-gradient(135deg, #d97706 0%, #b45309 100%); }
+
+  .game-triangle-centers .btn-next {
+    background: linear-gradient(135deg, #38bdf8 0%, #2563eb 100%);
+    color: white;
+    border-color: #93c5fd;
+    display: none;
+  }
+  .game-triangle-centers .btn-next:hover { transform: translateY(-2px); }
+
+  /* 독립 모달 공통 */
+  .game-triangle-centers .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.88);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  .game-triangle-centers .modal-overlay.active { opacity: 1; pointer-events: auto; }
+
+  .game-triangle-centers .modal-card {
+    background: #0f172a;
+    border: 3px solid #3b82f6;
+    border-radius: 24px;
+    padding: 28px;
+    width: 90%;
+    max-width: 580px;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.8);
+    text-align: center;
+    transform: scale(0.9);
+    transition: transform 0.3s ease;
+    color: #ffffff;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  .game-triangle-centers .modal-overlay.active .modal-card { transform: scale(1); }
+
+  .game-triangle-centers .modal-title {
+    font-size: 1.6rem;
+    font-weight: 900;
+    margin: 0 0 16px 0;
+    color: #ffffff;
+    text-shadow: 0 0 15px rgba(255,255,255,0.7);
+  }
+
+  .game-triangle-centers .modal-desc {
+    font-size: 0.95rem;
+    color: #cbd5e1;
+    line-height: 1.6;
+    margin-bottom: 24px;
+    text-align: left;
+    font-weight: 700;
+  }
+</style>
+
+<script>
+(function() {
+  // 🌟 [보안] XSS 방어용 HTML 특수기호 이스케이프 함수
+  function escapeHTML(str) {
+    if (!str) return '';
+    return String(str).replace(/[&<>"']/g, function(match) {
+      const escape = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+      return escape[match];
+    });
+  }
+
+  const CENTERS_META = {
+    circumcenter: {
+      name: '외심 (Circumcenter)',
+      shortName: '외심',
+      hintProp: '세 꼭짓점에서 같은 거리에 있는 점',
+      desc: '세 변의 수직이등분선의 교점입니다. 외심에서 세 꼭짓점에 이르는 거리는 외접원의 반지름으로 모두 같습니다.',
+      color: '#38bdf8'
+    },
+    incenter: {
+      name: '내심 (Incenter)',
+      shortName: '내심',
+      hintProp: '세 변에서 같은 거리에 있는 점',
+      desc: '세 내각의 이등분선의 교점입니다. 내심에서 세 변에 이르는 거리는 내접원의 반지름으로 모두 같습니다.',
+      color: '#22c55e'
+    },
+    centroid: {
+      name: '무게중심 (Centroid)',
+      shortName: '무게중심',
+      hintProp: '세 중선이 만나는 삼각형의 균형점',
+      desc: '세 중선의 교점이며 삼각형을 넓이와 무게 면에서 완벽히 균형잡는 점입니다. 각 중선을 꼭짓점으로부터 2:1로 나눕니다.',
+      color: '#f59e0b'
+    },
+    orthocenter: {
+      name: '수심 (Orthocenter)',
+      shortName: '수심',
+      hintProp: '세 꼭짓점에서 대변에 내린 수선이 만나는 점',
+      desc: '세 꼭짓점에서 마주 보는 각 대변(또는 그 연장선)에 내린 세 수선이 한 점에서 만나는 교점입니다.',
+      color: '#ef4444'
+    },
+    excenter: {
+      name: '방심 (Excenter)',
+      shortName: '방심',
+      hintProp: '한 내각의 이등분선과 두 외각의 이등분선이 만나는 점',
+      desc: '삼각형 외부에 3개가 존재하며, 한 변과 연장된 두 변에 동시에 접하는 방접원의 중심입니다. 3곳 중 어디든 맞추면 정답입니다.',
+      color: '#a855f7'
+    }
+  };
+
+  // 🌟 난이도별 차등 점수 배점 (도전 난이도 고득점 우대)
+  const DIFF_CFG = {
+    easy: {
+      name: '쉬움', badgeLabel: '🟢 쉬움', centers: ['circumcenter', 'incenter', 'centroid'],
+      allowRadius: 36, maxRounds: 8, timer: 0,
+      hitScore: 20, hintCost: 5, missBase: 12, missSlope: 0.1
+    },
+    normal: {
+      name: '보통', badgeLabel: '🟡 보통', centers: ['circumcenter', 'incenter', 'centroid', 'orthocenter', 'excenter'],
+      allowRadius: 26, maxRounds: 10, timer: 0,
+      hitScore: 35, hintCost: 8, missBase: 20, missSlope: 0.15
+    },
+    hard: {
+      name: '도전', badgeLabel: '🔴 도전', centers: ['circumcenter', 'incenter', 'centroid', 'orthocenter', 'excenter'],
+      allowRadius: 20, maxRounds: 12, timer: 180,
+      hitScore: 60, hintCost: 12, missBase: 30, missSlope: 0.2
+    }
+  };
+
+  const state = {
+    difficulty: 'normal',
+    round: 1,
+    score: 0,
+    targetCenterType: 'circumcenter',
+    hintUsed: false,
+    roundEnded: false,
+    timerSeconds: 0,
+    timerInterval: null,
+    aimPos: null,
+    triangle: null,
+    centers: {},
+    animProgress: 0,
+    animFrame: null,
+    camera: { scale: 1.0, offsetX: 0, offsetY: 0, targetScale: 1.0, targetOffsetX: 0, targetOffsetY: 0 }
+  };
+
+  const TriangleCenters = {
+    container: null,
+    canvas: null,
+    ctx: null,
+
+    showToast(msg, isError = false) {
+      if (!this.container) return;
+      let toast = this.container.querySelector('#tc-toast');
+      if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'tc-toast';
+        toast.style.cssText = 'position:absolute; top:20px; left:50%; transform:translateX(-50%); padding:12px 24px; border-radius:12px; font-weight:800; font-size:1rem; z-index:99999; box-shadow:0 10px 25px rgba(0,0,0,0.5); transition:all 0.3s; text-align:center; min-width:300px; pointer-events:none; opacity:0;';
+        this.container.appendChild(toast);
+      }
+      toast.style.background = isError ? '#ef4444' : '#10b981';
+      toast.style.color = isError ? '#ffffff' : '#0f172a';
+      toast.textContent = msg;
+      
+      void toast.offsetWidth;
+      toast.style.opacity = '1';
+      toast.style.top = '20px';
+      
+      if (this._toastTimer) clearTimeout(this._toastTimer);
+      this._toastTimer = setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.top = '0px';
+      }, 3000);
+    },
+
+    mount(container, context = {}) {
+      let target = typeof container === 'string' ? document.querySelector(container) : container;
+      if (!target || !(target instanceof HTMLElement)) {
+        target = window.MathLabUtils?.getMountContainer ? window.MathLabUtils.getMountContainer(container) : document.getElementById('mathlab-view');
+      }
+      if (!target) target = document.getElementById('new-root') || document.getElementById('game-container');
+
+      if (!target || target === document.body) {
+        let host = document.getElementById('triangle-centers-force-host');
+        if (!host) {
+          host = document.createElement('div');
+          host.id = 'triangle-centers-force-host';
+          host.style.cssText = 'width:100%; max-width:1040px; margin:0 auto; padding:16px; box-sizing:border-box; z-index:999; position:relative; background:#0f172a; border-radius:24px;';
+          const footer = document.querySelector('footer, #footer, .app-footer, #legacy-footer, .mathlab-footer');
+          if (footer && footer.parentNode) {
+            footer.parentNode.insertBefore(host, footer);
+          } else {
+            document.body.appendChild(host);
+          }
+        }
+        target = host;
+      }
+      this.container = target;
+
+      if (this.container.style) {
+        this.container.style.display = '';
+        this.container.style.visibility = '';
+        this.container.style.opacity = '1';
+      }
+
+      let parent = this.container.parentElement;
+      while (parent && parent !== document.body && parent !== document.documentElement) {
+        if (parent.style && parent.style.display === 'none') parent.style.display = '';
+        if (parent.style && parent.style.visibility === 'hidden') parent.style.visibility = '';
+        parent = parent.parentElement;
+      }
+
+      this.restoreGlobalNavigation();
+      window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+
+      target.innerHTML = `
+        <div class="game-triangle-centers" id="triangle-centers-root">
+          <header class="app-header">
+            <div class="title-area">
+              <span style="font-size: 32px;">🔺</span>
+              <div>
+                <h1 class="app-title">삼각형의 중심 조준경</h1>
+              </div>
+              <span class="app-badge">중2·중3 교과수학 게임</span>
+            </div>
+            <div class="stats-bar">
+              <div class="stat-badge round">🎯 라운드: <span id="tc-round-cnt">1 / 10</span></div>
+              <div class="stat-badge timer" id="tc-timer-badge" style="display:none;">⏱️ 남은 시간: <span id="tc-timer">180</span>초</div>
+              <div class="stat-badge score">⭐ 점수: <span id="tc-score">0</span>점</div>
+              <button class="header-btn btn-howto" id="tc-btn-howto">❓ 탐구 안내</button>
+              <button class="header-btn btn-rank" id="tc-btn-rank">🏆 명예의 전당</button>
+              <button class="header-btn btn-reset" id="tc-btn-reset">🔄 처음부터</button>
+              <button class="header-btn btn-home" id="tc-btn-home">🏠 홈으로</button>
+            </div>
+          </header>
+
+          <main class="main-container">
+            <div class="option-bar">
+              <div class="diff-group">
+                <button class="opt-btn" data-diff="easy">🟢 쉬움 (3심 기본 · 20점/회)</button>
+                <button class="opt-btn active" data-diff="normal">🟡 보통 (5심 전체 · 35점/회)</button>
+                <button class="opt-btn" data-diff="hard">🔴 도전 (5심+타임어택 · 60점/회)</button>
+              </div>
+              <div style="color:#cbd5e1; font-weight:800; font-size:0.9rem;">
+                💡 캔버스를 탭/클릭하여 조준경을 맞춘 후 [이 위치로 사격!]을 누르세요.
+              </div>
+            </div>
+
+            <div class="workspace">
+              <div class="canvas-card">
+                <div class="mission-banner">
+                  <div class="mission-text" id="tc-mission-text">🎯 미션: 세 꼭짓점에서 같은 거리에 있는 점을 찾으세요!</div>
+                  <span id="tc-diff-badge" style="background:#0f172a; padding:6px 12px; border-radius:10px; border:1px solid #60a5fa; font-size:0.85rem; font-weight:900;">보통</span>
+                </div>
+                <div class="canvas-wrapper" id="tc-canvas-wrapper">
+                  <canvas id="tc-canvas" width="640" height="460"></canvas>
+                  <div class="scope-pointer" id="tc-scope-pointer">
+                    <div class="scope-circle"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="control-card">
+                <div class="info-box">
+                  <div class="info-title">
+                    <span id="tc-target-icon" style="font-size:1.4rem;">💡</span>
+                    <span id="tc-target-name">목표 중심 정보</span>
+                  </div>
+                  <div class="info-desc" id="tc-target-desc">
+                    문제를 확인하고 캔버스 위에 조준경을 위치시키세요. 작도 힌트가 필요하면 아래 힌트 버튼을 누를 수 있습니다.
+                  </div>
+                </div>
+
+                <div class="feedback-msg" id="tc-feedback-box">
+                  🎯 삼각형 위의 목표 중심을 클릭하여 조준하세요!
+                </div>
+
+                <div class="action-bar">
+                  <button class="btn-action btn-fire" id="tc-btn-fire" disabled>🎯 조준 확인 (이 위치로 사격!)</button>
+                  <button class="btn-action btn-hint" id="tc-btn-hint">💡 작도선 1개 힌트 보기 (-8점)</button>
+                  <button class="btn-action btn-anim" id="tc-btn-anim">🎬 정답 및 작도 애니메이션 실행 (카메라 핏)</button>
+                  <button class="btn-action btn-next" id="tc-btn-next">👉 다음 라운드로 이동</button>
+                </div>
+              </div>
+            </div>
+          </main>
+
+          <!-- 탐구 안내 독립 모달 -->
+          <div class="modal-overlay" id="tc-howto-modal">
+            <div class="modal-card">
+              <h2 class="modal-title">🔺 삼각형의 오심 조준경 안내</h2>
+              <div class="modal-desc">
+                <p>삼각형에는 5가지 중요한 중심(오심)이 존재합니다. 성질 힌트를 보고 직관적으로 위치를 찾아보세요!</p>
+                <ul style="padding-left: 18px; margin: 12px 0; line-height: 1.8;">
+                  <li><strong style="color:#38bdf8;">외심 (O):</strong> 세 수직이등분선의 교점 ➔ <strong>세 꼭짓점까지 거리 일치 (외접원)</strong></li>
+                  <li><strong style="color:#22c55e;">내심 (I):</strong> 세 내각의 이등분선의 교점 ➔ <strong>세 변까지 거리 일치 (내접원)</strong></li>
+                  <li><strong style="color:#f59e0b;">무게중심 (G):</strong> 세 중선의 교점 ➔ <strong>균형점 (꼭짓점부터 2:1 내분)</strong></li>
+                  <li><strong style="color:#ef4444;">수심 (H):</strong> 꼭짓점에서 대변에 내린 세 수선의 교점 ➔ <strong>수직 만남점</strong></li>
+                  <li><strong style="color:#a855f7;">방심 (J):</strong> 1개 내각과 2개 외각의 이등분선의 교점 ➔ <strong>외부 방접원의 중심 (3개 존재)</strong></li>
+                </ul>
+                <p><strong>🏆 난이도별 배점 (도전 난이도 고득점 우대):</strong><br>
+                - 🟢 <strong>쉬움:</strong> 명중 시 +20점 (힌트 -5점)<br>
+                - 🟡 <strong>보통:</strong> 명중 시 +35점 (힌트 -8점)<br>
+                - 🔴 <strong>도전:</strong> 명중 시 +60점 (힌트 -12점) + 클리어 시 <strong>남은 시간당 타임 보너스</strong>까지 추가!</p>
+              </div>
+              <button class="btn-action btn-fire" id="tc-howto-close" style="width:100%;">이해했습니다! 조준경 훈련 시작</button>
+            </div>
+          </div>
+
+          <!-- 명예의 전당 랭킹 모달 -->
+          <div class="modal-overlay" id="tc-leaderboard-modal">
+            <div class="modal-card">
+              <h2 class="modal-title">🏆 삼각형의 중심 조준경 명예의 전당 (Top 20)</h2>
+              <div id="tc-leaderboard-content" style="background:#1e293b; border-radius:14px; border:2px solid #3b82f6; max-height:320px; overflow-y:auto; margin-bottom:18px; text-align:left;"></div>
+              <button class="btn-action btn-fire" id="tc-leaderboard-close" style="width:100%;">닫기</button>
+            </div>
+          </div>
+
+          <!-- 완료 축하 모달 -->
+          <div class="modal-overlay" id="tc-complete-modal">
+            <div class="modal-card">
+              <div style="font-size:52px; margin-bottom:8px;">🏆🔺</div>
+              <h2 class="modal-title" id="tc-complete-title">훈련 완료!</h2>
+              <div class="modal-desc" style="text-align:center;">
+                <p id="tc-complete-summary" style="color:#fef08a; font-size:1.1rem; margin-bottom:16px;"></p>
+                <div style="background:#1e1b4b; border:2px solid #3b82f6; border-radius:16px; padding:16px; margin-bottom:16px;">
+                  <div style="font-size:0.9rem; color:#cbd5e1; margin-bottom:4px;">최종 획득 점수</div>
+                  <div style="font-size:2.4rem; font-weight:900; color:#38bdf8;" id="tc-final-score">0점</div>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:10px;">
+                  <input type="text" id="tc-nickname-input" placeholder="명예의 전당 등록 닉네임" style="padding:12px; border-radius:12px; border:2px solid #60a5fa; background:#0f172a; color:white; font-size:1rem; text-align:center;">
+                  <button class="header-btn btn-rank" id="tc-btn-submit-score" style="width:100%; padding:12px; font-size:1.05rem;">🏆 점수 명예의 전당 등록</button>
+                </div>
+              </div>
+              <div style="display:flex; gap:10px; margin-top:14px;">
+                <button class="header-btn btn-reset" id="tc-complete-retry" style="flex:1;">🔄 다시 도전</button>
+                <button class="header-btn btn-home" id="tc-complete-home" style="flex:1;">🏠 홈으로 이동</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      this.canvas = document.getElementById('tc-canvas');
+      this.ctx = this.canvas ? this.canvas.getContext('2d') : null;
+
+      this.bindEvents();
+      this.startNewGame();
+    },
+
+    restoreGlobalNavigation() {
+      const navElements = document.querySelectorAll('header, .navbar, #app-header, .top-bar, #floating-home-btn, .floating-home, [id*="home"], [class*="floating"]');
+      navElements.forEach(el => { if (el && el.style && el.style.display === 'none') el.style.display = ''; });
+    },
+
+    bindEvents() {
+      document.querySelectorAll('.game-triangle-centers .opt-btn[data-diff]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          document.querySelectorAll('.game-triangle-centers .opt-btn[data-diff]').forEach(b => b.classList.remove('active'));
+          e.target.classList.add('active');
+          state.difficulty = e.target.getAttribute('data-diff');
+          this.startNewGame();
+        });
+      });
+
+      const wrapper = document.getElementById('tc-canvas-wrapper');
+      if (wrapper && this.canvas) {
+        wrapper.addEventListener('click', (e) => {
+          if (state.roundEnded) return;
+          const rect = this.canvas.getBoundingClientRect();
+          const scaleX = this.canvas.width / rect.width;
+          const scaleY = this.canvas.height / rect.height;
+          const x = (e.clientX - rect.left) * scaleX;
+          const y = (e.clientY - rect.top) * scaleY;
+
+          state.aimPos = { x, y };
+          const scope = document.getElementById('tc-scope-pointer');
+          if (scope) {
+            scope.style.display = 'block';
+            scope.style.left = `${(x / scaleX)}px`;
+            scope.style.top = `${(y / scaleY)}px`;
+            scope.style.transform = `translate(-50%, -50%) scale(1)`;
+          }
+
+          const fireBtn = document.getElementById('tc-btn-fire');
+          if (fireBtn) fireBtn.disabled = false;
+        });
+      }
+
+      document.getElementById('tc-btn-fire')?.addEventListener('click', () => this.evaluateAim());
+      document.getElementById('tc-btn-hint')?.addEventListener('click', () => this.useHint());
+      document.getElementById('tc-btn-anim')?.addEventListener('click', () => this.animateConstruction());
+      document.getElementById('tc-btn-next')?.addEventListener('click', () => this.nextRound());
+
+      document.getElementById('tc-btn-howto')?.addEventListener('click', () => openModal('tc-howto-modal'));
+      document.getElementById('tc-howto-close')?.addEventListener('click', () => closeModal('tc-howto-modal'));
+      document.getElementById('tc-btn-rank')?.addEventListener('click', () => this.showLeaderboardModal());
+      document.getElementById('tc-leaderboard-close')?.addEventListener('click', () => closeModal('tc-leaderboard-modal'));
+      document.getElementById('tc-btn-reset')?.addEventListener('click', () => this.startNewGame());
+      document.getElementById('tc-btn-home')?.addEventListener('click', () => this.goHome());
+
+      document.getElementById('tc-complete-retry')?.addEventListener('click', () => {
+        closeModal('tc-complete-modal');
+        this.startNewGame();
+      });
+      document.getElementById('tc-complete-home')?.addEventListener('click', () => {
+        closeModal('tc-complete-modal');
+        this.goHome();
+      });
+      document.getElementById('tc-btn-submit-score')?.addEventListener('click', () => this.submitRankScore());
+
+      document.querySelectorAll('.game-triangle-centers .modal-overlay').forEach(modal => {
+        modal.addEventListener('click', (e) => {
+          if (e.target === modal) modal.classList.remove('active');
+        });
+      });
+    },
+
+    startNewGame() {
+      if (state.timerInterval) clearInterval(state.timerInterval);
+      state.round = 1;
+      state.score = 0;
+      const cfg = DIFF_CFG[state.difficulty];
+      state.timerSeconds = cfg.timer;
+
+      const hintBtn = document.getElementById('tc-btn-hint');
+      if (hintBtn) hintBtn.textContent = `💡 작도선 1개 힌트 보기 (-${cfg.hintCost}점)`;
+
+      const timerBadge = document.getElementById('tc-timer-badge');
+      if (timerBadge) {
+        timerBadge.style.display = cfg.timer > 0 ? 'inline-flex' : 'none';
+      }
+
+      if (cfg.timer > 0) {
+        state.timerInterval = setInterval(() => {
+          state.timerSeconds--;
+          const el = document.getElementById('tc-timer');
+          if (el) el.textContent = state.timerSeconds;
+          if (state.timerSeconds <= 0) {
+            clearInterval(state.timerInterval);
+            this.endGame('타임 오버!');
+          }
+        }, 1000);
+      }
+
+      this.initRound();
+    },
+
+    initRound() {
+      state.roundEnded = false;
+      state.hintUsed = false;
+      state.aimPos = null;
+      state.animProgress = 0;
+      if (state.animFrame) cancelAnimationFrame(state.animFrame);
+
+      state.camera = { scale: 1.0, offsetX: 0, offsetY: 0, targetScale: 1.0, targetOffsetX: 0, targetOffsetY: 0 };
+
+      const cfg = DIFF_CFG[state.difficulty];
+      const centersPool = cfg.centers;
+      state.targetCenterType = centersPool[Math.floor(Math.random() * centersPool.length)];
+
+      const diffBadge = document.getElementById('tc-diff-badge');
+      if (diffBadge) diffBadge.textContent = cfg.name;
+
+      const roundCnt = document.getElementById('tc-round-cnt');
+      if (roundCnt) roundCnt.textContent = `${state.round} / ${cfg.maxRounds}`;
+
+      const scoreEl = document.getElementById('tc-score');
+      if (scoreEl) scoreEl.textContent = state.score;
+
+      const scope = document.getElementById('tc-scope-pointer');
+      if (scope) {
+        scope.style.display = 'none';
+        scope.style.transform = `translate(-50%, -50%) scale(1)`;
+      }
+
+      const fireBtn = document.getElementById('tc-btn-fire');
+      const hintBtn = document.getElementById('tc-btn-hint');
+      const animBtn = document.getElementById('tc-btn-anim');
+      const nextBtn = document.getElementById('tc-btn-next');
+      if (fireBtn) { fireBtn.disabled = true; fireBtn.style.display = 'flex'; }
+      if (hintBtn) { hintBtn.disabled = false; hintBtn.style.display = 'flex'; }
+      if (animBtn) { animBtn.style.display = 'none'; }
+      if (nextBtn) { nextBtn.style.display = 'none'; }
+
+      const fbBox = document.getElementById('tc-feedback-box');
+      if (fbBox) {
+        fbBox.className = 'feedback-msg';
+        fbBox.textContent = '🎯 삼각형 위의 목표 중심을 클릭하여 조준하세요!';
+      }
+
+      this.generateTriangle();
+      this.updateMissionInfo();
+      this.renderCanvas();
+    },
+
+    generateTriangle() {
+      const w = 640, h = 460;
+      const margin = 110;
+      let A, B, C;
+      let valid = false;
+      let attempts = 0;
+
+      while (!valid && attempts < 300) {
+        attempts++;
+        A = { x: margin + Math.random() * (w - 2 * margin), y: margin + Math.random() * (h * 0.35) };
+        B = { x: margin + Math.random() * (w * 0.4 - margin), y: h - margin - Math.random() * (h * 0.25) };
+        C = { x: w - margin - Math.random() * (w * 0.4 - margin), y: h - margin - Math.random() * (h * 0.25) };
+
+        const a = Math.hypot(B.x - C.x, B.y - C.y);
+        const b = Math.hypot(C.x - A.x, C.y - A.y);
+        const c = Math.hypot(A.x - B.x, A.y - B.y);
+
+        const s = (a + b + c) / 2;
+        const area = Math.sqrt(Math.max(0, s * (s - a) * (s - b) * (s - c)));
+        if (area < 16000) continue;
+
+        const angleA = Math.acos((b*b + c*c - a*a) / (2*b*c)) * (180 / Math.PI);
+        const angleB = Math.acos((a*a + c*c - b*b) / (2*a*c)) * (180 / Math.PI);
+        const angleC = 180 - angleA - angleB;
+
+        const minAngle = Math.min(angleA, angleB, angleC);
+        const maxAngle = Math.max(angleA, angleB, angleC);
+        if (minAngle < 28 || maxAngle > 98) continue;
+
+        state.triangle = { A, B, C };
+        this.calculateCenters();
+        valid = true;
+      }
+    },
+
+    calculateCenters() {
+      const { A, B, C } = state.triangle;
+      const a = Math.hypot(B.x - C.x, B.y - C.y);
+      const b = Math.hypot(C.x - A.x, C.y - A.y);
+      const c = Math.hypot(A.x - B.x, A.y - B.y);
+
+      const G = { x: (A.x + B.x + C.x) / 3, y: (A.y + B.y + C.y) / 3 };
+
+      const I = {
+        x: (a * A.x + b * B.x + c * C.x) / (a + b + c),
+        y: (a * A.y + b * B.y + c * C.y) / (a + b + c),
+        r: Math.sqrt(((s => s*(s-a)*(s-b)*(s-c))((a+b+c)/2)) ) / ((a+b+c)/2)
+      };
+
+      const D = 2 * (A.x * (B.y - C.y) + B.x * (C.y - A.y) + C.x * (A.y - B.y));
+      const A_sq = A.x * A.x + A.y * A.y;
+      const B_sq = B.x * B.x + B.y * B.y;
+      const C_sq = C.x * C.x + C.y * C.y;
+      const O = {
+        x: (A_sq * (B.y - C.y) + B_sq * (C.y - A.y) + C_sq * (A.y - B.y)) / D,
+        y: (A_sq * (C.x - B.x) + B_sq * (A.x - C.x) + C_sq * (B.x - A.x)) / D
+      };
+      O.R = Math.hypot(O.x - A.x, O.y - A.y);
+
+      const H = { x: 3 * G.x - 2 * O.x, y: 3 * G.y - 2 * O.y };
+
+      const s = (a + b + c) / 2;
+      const area = Math.sqrt(Math.max(0, s * (s - a) * (s - b) * (s - c)));
+
+      const J_A = {
+        x: (-a * A.x + b * B.x + c * C.x) / (-a + b + c),
+        y: (-a * A.y + b * B.y + c * C.y) / (-a + b + c),
+        r: area / (s - a)
+      };
+      const J_B = {
+        x: (a * A.x - b * B.x + c * C.x) / (a - b + c),
+        y: (a * A.y - b * B.y + c * C.y) / (a - b + c),
+        r: area / (s - b)
+      };
+      const J_C = {
+        x: (a * A.x + b * B.x - c * C.x) / (a + b - c),
+        y: (a * A.y + b * B.y - c * C.y) / (a + b - c),
+        r: area / (s - c)
+      };
+
+      state.centers = {
+        circumcenter: O,
+        incenter: I,
+        centroid: G,
+        orthocenter: H,
+        excenter: [J_A, J_B, J_C]
+      };
+    },
+
+    calculateCameraTarget() {
+      const { A, B, C } = state.triangle;
+      const type = state.targetCenterType;
+      let minX = Math.min(A.x, B.x, C.x);
+      let maxX = Math.max(A.x, B.x, C.x);
+      let minY = Math.min(A.y, B.y, C.y);
+      let maxY = Math.max(A.y, B.y, C.y);
+
+      if (type === 'excenter') {
+        state.centers.excenter.forEach(J => {
+          minX = Math.min(minX, J.x - J.r);
+          maxX = Math.max(maxX, J.x + J.r);
+          minY = Math.min(minY, J.y - J.r);
+          maxY = Math.max(maxY, J.y + J.r);
+        });
+      } else if (type === 'circumcenter') {
+        const O = state.centers.circumcenter;
+        minX = Math.min(minX, O.x - O.R);
+        maxX = Math.max(maxX, O.x + O.R);
+        minY = Math.min(minY, O.y - O.R);
+        maxY = Math.max(maxY, O.y + O.R);
+      } else {
+        const pt = state.centers[type];
+        minX = Math.min(minX, pt.x - 40);
+        maxX = Math.max(maxX, pt.x + 40);
+        minY = Math.min(minY, pt.y - 40);
+        maxY = Math.max(maxY, pt.y + 40);
+      }
+
+      const padding = 60;
+      const totalW = (maxX - minX) + padding * 2;
+      const totalH = (maxY - minY) + padding * 2;
+
+      const scaleX = 640 / totalW;
+      const scaleY = 460 / totalH;
+      const targetScale = Math.min(1.0, scaleX, scaleY);
+
+      const midX = (minX + maxX) / 2;
+      const midY = (minY + maxY) / 2;
+      const targetOffsetX = 320 - midX * targetScale;
+      const targetOffsetY = 230 - midY * targetScale;
+
+      state.camera.targetScale = targetScale;
+      state.camera.targetOffsetX = targetOffsetX;
+      state.camera.targetOffsetY = targetOffsetY;
+    },
+
+    updateMissionInfo() {
+      const meta = CENTERS_META[state.targetCenterType];
+      const missionEl = document.getElementById('tc-mission-text');
+      const nameEl = document.getElementById('tc-target-name');
+      const descEl = document.getElementById('tc-target-desc');
+
+      const usePropHint = state.round % 2 === 1;
+      if (missionEl) {
+        missionEl.textContent = usePropHint ? `🎯 미션 힌트: "${meta.hintProp}"` : `🎯 미션: [ ${meta.shortName} ] 위치를 찾아 조준하세요!`;
+      }
+      if (nameEl) {
+        nameEl.textContent = usePropHint ? '❓ 목표 중심: 성질 힌트를 보고 추정하세요!' : `목표 중심: ${meta.name}`;
+      }
+      if (descEl) {
+        descEl.textContent = meta.desc;
+      }
+    },
+
+    useHint() {
+      if (state.hintUsed || state.roundEnded) return;
+      const cfg = DIFF_CFG[state.difficulty];
+      state.hintUsed = true;
+      state.score = Math.max(0, state.score - cfg.hintCost);
+      const scoreEl = document.getElementById('tc-score');
+      if (scoreEl) scoreEl.textContent = state.score;
+
+      const hintBtn = document.getElementById('tc-btn-hint');
+      if (hintBtn) hintBtn.disabled = true;
+
+      const meta = CENTERS_META[state.targetCenterType];
+      const nameEl = document.getElementById('tc-target-name');
+      if (nameEl) nameEl.textContent = `💡 힌트 공개: [ ${meta.shortName} ] 작도선 1개 표시 중`;
+
+      this.renderCanvas();
+    },
+
+    evaluateAim() {
+      if (!state.aimPos || state.roundEnded) return;
+      state.roundEnded = true;
+
+      const type = state.targetCenterType;
+      const cfg = DIFF_CFG[state.difficulty];
+      let dist = 9999;
+      let targetPos = null;
+
+      if (type === 'excenter') {
+        state.centers.excenter.forEach(pt => {
+          const d = Math.hypot(state.aimPos.x - pt.x, state.aimPos.y - pt.y);
+          if (d < dist) { dist = d; targetPos = pt; }
+        });
+      } else {
+        targetPos = state.centers[type];
+        dist = Math.hypot(state.aimPos.x - targetPos.x, state.aimPos.y - targetPos.y);
+      }
+
+      const isHit = dist <= cfg.allowRadius;
+      const fbBox = document.getElementById('tc-feedback-box');
+      const meta = CENTERS_META[type];
+      let addScore = 0;
+
+      // 🌟 차등 배점 점수 계산
+      if (isHit) {
+        addScore = cfg.hitScore;
+        fbBox.className = 'feedback-msg hit';
+        fbBox.innerHTML = `🎉 명중입니다! 정확히 <strong>[ ${meta.shortName} ]</strong>을 조준했습니다.<br>(+${addScore}점 획득)`;
+      } else {
+        if (dist <= 110) {
+          addScore = Math.max(Math.floor(cfg.missBase * 0.25), Math.floor(cfg.missBase - (dist - cfg.allowRadius) * cfg.missSlope));
+        }
+        fbBox.className = 'feedback-msg miss';
+        fbBox.innerHTML = `⚠️ 아쉽습니다! 정답은 <strong>[ ${meta.shortName} ]</strong>이며, 오차 거리는 ${Math.round(dist)}px 입니다.<br>(+${addScore}점 부분 점수 획득)`;
+      }
+
+      state.score += addScore;
+      const scoreEl = document.getElementById('tc-score');
+      if (scoreEl) scoreEl.textContent = state.score;
+
+      const fireBtn = document.getElementById('tc-btn-fire');
+      const hintBtn = document.getElementById('tc-btn-hint');
+      const animBtn = document.getElementById('tc-btn-anim');
+      const nextBtn = document.getElementById('tc-btn-next');
+      if (fireBtn) fireBtn.style.display = 'none';
+      if (hintBtn) hintBtn.style.display = 'none';
+      if (animBtn) animBtn.style.display = 'flex';
+      if (nextBtn) nextBtn.style.display = 'flex';
+
+      // 🌟 정답 제출 시에도 즉시 1회 확실하게 재생
+      this.animateConstruction();
+    },
+
+    // 🌟 타임스탬프 오류 원천 차단: 콜백 내부 timestamp 기준으로 0초부터 확실하게 시작
+    animateConstruction() {
+      if (state.animFrame) cancelAnimationFrame(state.animFrame);
+      this.calculateCameraTarget();
+
+      state.animProgress = 0;
+      state.camera.scale = 1.0;
+      state.camera.offsetX = 0;
+      state.camera.offsetY = 0;
+
+      let startTime = null;
+      const duration = 1800;
+
+      const step = (timestamp) => {
+        if (!startTime) startTime = timestamp;
+        const elapsed = timestamp - startTime;
+        state.animProgress = Math.min(1, Math.max(0, elapsed / duration));
+
+        const p = state.animProgress;
+        const ease = p < 0.5 ? 2 * p * p : -1 + (4 - 2 * p) * p;
+        state.camera.scale = 1.0 + (state.camera.targetScale - 1.0) * ease;
+        state.camera.offsetX = state.camera.targetOffsetX * ease;
+        state.camera.offsetY = state.camera.targetOffsetY * ease;
+
+        this.renderCanvas();
+        if (state.animProgress < 1) {
+          state.animFrame = requestAnimationFrame(step);
+        }
+      };
+      state.animFrame = requestAnimationFrame(step);
+    },
+
+    nextRound() {
+      const cfg = DIFF_CFG[state.difficulty];
+      if (state.round >= cfg.maxRounds) {
+        this.endGame('모든 라운드 완수!');
+      } else {
+        state.round++;
+        this.initRound();
+      }
+    },
+
+    endGame(reason) {
+      if (state.timerInterval) clearInterval(state.timerInterval);
+      state.roundEnded = true;
+
+      const cfg = DIFF_CFG[state.difficulty];
+      // 🌟 도전 난이도 타임 보너스 부여
+      if (state.difficulty === 'hard' && state.timerSeconds > 0) {
+        const timeBonus = state.timerSeconds;
+        state.score += timeBonus;
+        reason += ` (타임 보너스 +${timeBonus}점 추가!)`;
+      }
+
+      const titleEl = document.getElementById('tc-complete-title');
+      const sumEl = document.getElementById('tc-complete-summary');
+      const scoreEl = document.getElementById('tc-final-score');
+
+      if (titleEl) titleEl.textContent = `🎉 ${reason}`;
+      if (sumEl) sumEl.textContent = `난이도(${cfg.name})에서 총 ${state.round}라운드 동안 훌륭하게 조준을 마쳤습니다!`;
+      if (scoreEl) scoreEl.textContent = `${state.score}점`;
+
+      openModal('tc-complete-modal');
+    },
+
+    updateScopePointerPosition() {
+      const scope = document.getElementById('tc-scope-pointer');
+      if (!scope || !state.aimPos || scope.style.display === 'none') return;
+
+      const rect = this.canvas.getBoundingClientRect();
+      const scaleToCssX = rect.width / this.canvas.width;
+      const scaleToCssY = rect.height / this.canvas.height;
+
+      const camScale = state.roundEnded ? state.camera.scale : 1.0;
+      const camOffX = state.roundEnded ? state.camera.offsetX : 0;
+      const camOffY = state.roundEnded ? state.camera.offsetY : 0;
+
+      const canvasX = camOffX + state.aimPos.x * camScale;
+      const canvasY = camOffY + state.aimPos.y * camScale;
+
+      scope.style.left = `${canvasX * scaleToCssX}px`;
+      scope.style.top = `${canvasY * scaleToCssY}px`;
+      scope.style.transform = `translate(-50%, -50%) scale(${camScale})`;
+    },
+
+    renderCanvas() {
+      if (!this.ctx || !this.canvas || !state.triangle) return;
+      const w = this.canvas.width;
+      const h = this.canvas.height;
+      const { A, B, C } = state.triangle;
+
+      this.ctx.clearRect(0, 0, w, h);
+      this.ctx.save();
+
+      if (state.roundEnded) {
+        this.ctx.translate(state.camera.offsetX, state.camera.offsetY);
+        this.ctx.scale(state.camera.scale, state.camera.scale);
+      }
+
+      this.updateScopePointerPosition();
+
+      // 삼각형 그리기
+      this.ctx.strokeStyle = '#38bdf8';
+      this.ctx.lineWidth = 3.5 / (state.roundEnded ? state.camera.scale : 1);
+      this.ctx.lineJoin = 'round';
+      this.ctx.beginPath();
+      this.ctx.moveTo(A.x, A.y);
+      this.ctx.lineTo(B.x, B.y);
+      this.ctx.lineTo(C.x, C.y);
+      this.ctx.closePath();
+      this.ctx.stroke();
+
+      this.ctx.fillStyle = 'rgba(56, 189, 248, 0.08)';
+      this.ctx.fill();
+
+      const pts = [ { p: A, l: 'A' }, { p: B, l: 'B' }, { p: C, l: 'C' } ];
+      this.ctx.font = `bold ${Math.round(16 / (state.roundEnded ? Math.max(0.6, state.camera.scale) : 1))}px sans-serif`;
+      this.ctx.fillStyle = '#ffffff';
+      pts.forEach(({ p, l }) => {
+        this.ctx.beginPath();
+        this.ctx.arc(p.x, p.y, 6 / (state.roundEnded ? state.camera.scale : 1), 0, Math.PI * 2);
+        this.ctx.fill();
+        this.ctx.fillText(l, p.x + 12, p.y - 12);
+      });
+
+      if (state.hintUsed && !state.roundEnded) {
+        this.drawSingleConstructionHint();
+      }
+
+      if (state.roundEnded) {
+        this.drawFullConstructionFeedback();
+
+        if (state.aimPos) {
+          this.ctx.strokeStyle = '#f87171';
+          this.ctx.lineWidth = 2.5 / state.camera.scale;
+          this.ctx.beginPath();
+          this.ctx.arc(state.aimPos.x, state.aimPos.y, 8 / state.camera.scale, 0, Math.PI * 2);
+          this.ctx.stroke();
+        }
+      }
+
+      this.ctx.restore();
+    },
+
+    drawSingleConstructionHint() {
+      const { A, B, C } = state.triangle;
+      const type = state.targetCenterType;
+      this.ctx.strokeStyle = 'rgba(245, 158, 11, 0.8)';
+      this.ctx.lineWidth = 2.5;
+      this.ctx.setLineDash([6, 4]);
+
+      if (type === 'circumcenter') {
+        const mid = { x: (A.x + B.x)/2, y: (A.y + B.y)/2 };
+        const O = state.centers.circumcenter;
+        this.drawExtendedLine(mid, O, 1.5);
+      } else if (type === 'incenter') {
+        const I = state.centers.incenter;
+        this.drawExtendedLine(A, I, 1.3);
+      } else if (type === 'centroid') {
+        const midBC = { x: (B.x + C.x)/2, y: (B.y + C.y)/2 };
+        this.drawDashLine(A.x, A.y, midBC.x, midBC.y);
+      } else if (type === 'orthocenter') {
+        const H = state.centers.orthocenter;
+        this.drawExtendedLine(A, H, 1.3);
+      } else if (type === 'excenter') {
+        const J = state.centers.excenter[0];
+        this.drawDashLine(A.x, A.y, J.x, J.y);
+      }
+      this.ctx.setLineDash([]);
+    },
+
+    drawFullConstructionFeedback() {
+      const { A, B, C } = state.triangle;
+      const type = state.targetCenterType;
+      const meta = CENTERS_META[type];
+      const prog = state.animProgress || 1;
+      const scale = Math.max(0.4, state.camera.scale);
+
+      this.ctx.strokeStyle = meta.color;
+      this.ctx.lineWidth = 2.5 / scale;
+      this.ctx.setLineDash([5, 5]);
+
+      let targets = type === 'excenter' ? state.centers.excenter : [ state.centers[type] ];
+
+      if (type === 'circumcenter') {
+        const center = targets[0];
+        const M_AB = { x: (A.x+B.x)/2, y: (A.y+B.y)/2 };
+        const M_BC = { x: (B.x+C.x)/2, y: (B.y+C.y)/2 };
+        const M_CA = { x: (C.x+A.x)/2, y: (C.y+A.y)/2 };
+        this.drawAnimSegment(M_AB, center, prog);
+        this.drawAnimSegment(M_BC, center, prog);
+        this.drawAnimSegment(M_CA, center, prog);
+
+        const R = center.R * prog;
+        this.ctx.beginPath();
+        this.ctx.arc(center.x, center.y, R, 0, Math.PI * 2);
+        this.ctx.stroke();
+      } else if (type === 'incenter') {
+        const center = targets[0];
+        this.drawAnimSegment(A, center, prog);
+        this.drawAnimSegment(B, center, prog);
+        this.drawAnimSegment(C, center, prog);
+
+        const r = center.r * prog;
+        this.ctx.beginPath();
+        this.ctx.arc(center.x, center.y, r, 0, Math.PI * 2);
+        this.ctx.stroke();
+      } else if (type === 'centroid') {
+        const M_AB = { x: (A.x+B.x)/2, y: (A.y+B.y)/2 };
+        const M_BC = { x: (B.x+C.x)/2, y: (B.y+C.y)/2 };
+        const M_CA = { x: (C.x+A.x)/2, y: (C.y+A.y)/2 };
+        this.drawAnimSegment(A, M_BC, prog);
+        this.drawAnimSegment(B, M_CA, prog);
+        this.drawAnimSegment(C, M_AB, prog);
+      } else if (type === 'orthocenter') {
+        const center = targets[0];
+        this.drawAnimSegment(A, center, prog);
+        this.drawAnimSegment(B, center, prog);
+        this.drawAnimSegment(C, center, prog);
+      } else if (type === 'excenter') {
+        targets.forEach(J => {
+          this.drawAnimSegment(A, J, prog);
+          this.drawAnimSegment(B, J, prog);
+          this.drawAnimSegment(C, J, prog);
+
+          const r = J.r * prog;
+          this.ctx.beginPath();
+          this.ctx.arc(J.x, J.y, r, 0, Math.PI * 2);
+          this.ctx.stroke();
+        });
+      }
+
+      this.ctx.setLineDash([]);
+
+      targets.forEach((center, idx) => {
+        this.ctx.beginPath();
+        this.ctx.arc(center.x, center.y, (16 / scale) * prog, 0, Math.PI * 2);
+        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.25)';
+        this.ctx.fill();
+
+        this.ctx.beginPath();
+        this.ctx.arc(center.x, center.y, (9 / scale) * prog, 0, Math.PI * 2);
+        this.ctx.fillStyle = meta.color;
+        this.ctx.fill();
+        this.ctx.strokeStyle = '#ffffff';
+        this.ctx.lineWidth = 3 / scale;
+        this.ctx.stroke();
+
+        const label = targets.length > 1 ? `${meta.shortName}${idx+1}` : meta.shortName;
+        this.ctx.font = `900 ${Math.round(15 / scale)}px Pretendard, sans-serif`;
+        this.ctx.strokeStyle = '#000000';
+        this.ctx.lineWidth = 4 / scale;
+        this.ctx.strokeText(label, center.x + 16 / scale, center.y + 6 / scale);
+        this.ctx.fillStyle = '#ffffff';
+        this.ctx.fillText(label, center.x + 16 / scale, center.y + 6 / scale);
+      });
+    },
+
+    drawAnimSegment(from, to, prog) {
+      const curX = from.x + (to.x - from.x) * prog;
+      const curY = from.y + (to.y - from.y) * prog;
+      this.ctx.beginPath();
+      this.ctx.moveTo(from.x, from.y);
+      this.ctx.lineTo(curX, curY);
+      this.ctx.stroke();
+    },
+
+    drawExtendedLine(from, to, scale) {
+      const dx = to.x - from.x, dy = to.y - from.y;
+      this.drawDashLine(from.x, from.y, from.x + dx * scale, from.y + dy * scale);
+    },
+
+    drawDashLine(x1, y1, x2, y2) {
+      this.ctx.beginPath();
+      this.ctx.moveTo(x1, y1);
+      this.ctx.lineTo(x2, y2);
+      this.ctx.stroke();
+    },
+
+    submitRankScore() {
+      const input = document.getElementById('tc-nickname-input');
+      const nickname = input ? input.value.trim() : '';
+      if (!nickname) { this.showToast('⚠️ 닉네임을 입력해 주세요!', true); input.focus(); return; }
+
+      const diffBadgeLabel = DIFF_CFG[state.difficulty].badgeLabel;
+
+      try {
+        let list = JSON.parse(localStorage.getItem('mathlab_lb_triangle-centers') || '[]');
+        const dateStr = new Date().toLocaleDateString('ko-KR', { month: '2-digit', day: '2-digit' });
+        list.push({ nickname, score: state.score, diff: diffBadgeLabel, date: dateStr });
+        list.sort((a, b) => b.score - a.score);
+        localStorage.setItem('mathlab_lb_triangle-centers', JSON.stringify(list.slice(0, 20)));
+      } catch (e) {}
+
+      const formattedName = `삼각형의 중심 조준경 (${diffBadgeLabel})`;
+      if (typeof window.submitRanking === 'function') {
+        window.submitRanking(formattedName, state.score, true, 'tc-nickname-input', 'board-triangle-centers');
+        this.showToast('✅ 명예의 전당 등록이 서버로 요청되었습니다.');
+        setTimeout(() => closeModal('tc-complete-modal'), 1200);
+      } else if (typeof window.parent?.submitRanking === 'function') {
+        window.parent.submitRanking(formattedName, state.score, true, 'tc-nickname-input', 'board-triangle-centers');
+        this.showToast('✅ 명예의 전당 등록이 서버로 요청되었습니다.');
+        setTimeout(() => closeModal('tc-complete-modal'), 1200);
+      } else {
+        this.showToast('🎉 명예의 전당 기록이 로컬에 안전하게 등록되었습니다!');
+        if (input) input.value = '';
+        setTimeout(() => closeModal('tc-complete-modal'), 1200);
+      }
+    },
+
+    showLeaderboardModal() {
+      let list = [];
+      try {
+        list = JSON.parse(localStorage.getItem('mathlab_lb_triangle-centers') || '[]');
+      } catch(e) {}
+
+      let rowsHtml = list.map((item, idx) => `
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 14px; border-bottom:1px solid #334155;">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="font-weight:900; color:#38bdf8;">${idx+1}위</span>
+            <span style="font-weight:800;">${escapeHTML(item.nickname)}</span>
+            <span style="font-size:0.8rem; background:#090d16; padding:2px 8px; border-radius:6px; border:1px solid #475569;">${escapeHTML(item.diff) || '🟡 보통'}</span>
+          </div>
+          <span style="color:#fef08a; font-weight:900; font-size:1.05rem;">${item.score}점</span>
+        </div>
+      `).join('');
+
+      if (!rowsHtml) rowsHtml = '<div style="padding:24px; text-align:center; color:#94a3b8;">아직 등록된 명예의 전당 기록이 없습니다! 훈련 후 첫 기록을 남겨보세요.</div>';
+
+      const contentBox = document.getElementById('tc-leaderboard-content');
+      if (contentBox) contentBox.innerHTML = rowsHtml;
+      openModal('tc-leaderboard-modal');
+    },
+
+    resetGame() {
+      this.startNewGame();
+    },
+
+    goHome() {
+      this.destroy();
+
+      if (window.LegacyBridge && typeof window.LegacyBridge.backHome === 'function') {
+        try { window.LegacyBridge.backHome(); return; } catch(e) {}
+      }
+      if (typeof window.renderLegacyDashboardHome === 'function') {
+        try { window.renderLegacyDashboardHome(); return; } catch(e) {}
+      }
+      if (typeof window.MathLabRenderHome === 'function') {
+        try { window.MathLabRenderHome(); return; } catch(e) {}
+      }
+
+      const mathlabRoot = document.getElementById('mathlab-root');
+      const legacyRoot = document.getElementById('legacy-root');
+      if (mathlabRoot) mathlabRoot.classList.add('hidden');
+      if (legacyRoot) legacyRoot.classList.remove('hidden');
+
+      const dashboard = document.getElementById('dashboard-screen') || document.getElementById('dashboard-view');
+      if (dashboard) {
+        dashboard.classList.add('active');
+        if (dashboard.style) dashboard.style.display = '';
+      }
+      window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+    },
+
+    destroy() {
+      if (state.timerInterval) clearInterval(state.timerInterval);
+      if (state.animFrame) cancelAnimationFrame(state.animFrame);
+      if (this.container) this.container.innerHTML = '';
+    }
+  };
+
+  function openModal(id) {
+    document.getElementById(id)?.classList.add('active');
+  }
+  function closeModal(id) {
+    document.getElementById(id)?.classList.remove('active');
+  }
+
+  window.TriangleCenters = TriangleCenters;
+
+  function registerTriangleCenters() {
+    if (typeof window.MathLabGames !== 'undefined' && typeof window.MathLabGames.register === 'function') {
+      window.MathLabGames.register({
+        id: 'triangle-centers',
+        title: '삼각형의 중심 조준경',
+        icon: '🔺',
+        category: 'game',
+        sourceType: 'new',
+        mount(container, context) { TriangleCenters.mount(container, context); },
+        reset() { TriangleCenters.resetGame(); },
+        destroy() { TriangleCenters.destroy(); },
+        goHome() { TriangleCenters.goHome(); }
+      });
+    }
+  }
+
+  registerTriangleCenters();
+  window.addEventListener('DOMContentLoaded', registerTriangleCenters);
+  setTimeout(registerTriangleCenters, 100);
+  setTimeout(registerTriangleCenters, 500);
+
+  window.launchTriangleCentersGame = function() {
+    if (typeof window.MathLabGames !== 'undefined' && typeof window.MathLabGames.mount === 'function') {
+      try {
+        window.MathLabGames.mount('triangle-centers');
+        return;
+      } catch(e) {}
+    }
+    TriangleCenters.mount();
+  };
+})();
+</script>

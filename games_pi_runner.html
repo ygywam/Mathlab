@@ -1,0 +1,1113 @@
+<!-- 원주율(π) 타이핑 러너 (Pi Typing Runner) - 명예의 전당 & 실시간 랭킹 보드 완결판 -->
+<style>
+  .game-pi-runner {
+    width: 100%;
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: 16px;
+    background: #0f172a;
+    color: #e2e8f0;
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    border-radius: 24px;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.45);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    position: relative;
+    box-sizing: border-box;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  .game-pi-runner * {
+    box-sizing: border-box;
+  }
+
+  /* 상단 헤더 바 */
+  .game-pi-runner .stats-bar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    background: #1e293b;
+    border: 1px solid #334155;
+    padding: 12px 18px;
+    border-radius: 14px;
+  }
+
+  .game-pi-runner .title-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .game-pi-runner .title-icon {
+    font-size: 1.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    background: rgba(56, 189, 248, 0.15);
+    border-radius: 12px;
+  }
+
+  .game-pi-runner .title-text {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: #f8fafc;
+    letter-spacing: -0.02em;
+  }
+
+  .game-pi-runner .title-badge {
+    font-size: 0.75rem;
+    font-weight: 700;
+    background: #38bdf8;
+    color: #0f172a;
+    padding: 3px 8px;
+    border-radius: 6px;
+  }
+
+  .game-pi-runner .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .game-pi-runner .btn-header {
+    background: #334155;
+    color: #e2e8f0;
+    border: 1px solid #475569;
+    padding: 7px 13px;
+    border-radius: 10px;
+    font-size: 0.86rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+  }
+
+  .game-pi-runner .btn-header:hover {
+    background: #475569;
+    color: #ffffff;
+    transform: translateY(-1px);
+  }
+
+  .game-pi-runner .btn-header.stop-save {
+    background: #f59e0b;
+    color: #0f172a;
+    border-color: #d97706;
+    font-weight: 800;
+  }
+
+  .game-pi-runner .btn-header.stop-save:hover {
+    background: #d97706;
+    color: #ffffff;
+  }
+
+  .game-pi-runner .btn-header.hof {
+    background: #10b981;
+    color: #ffffff;
+    border-color: #059669;
+  }
+
+  .game-pi-runner .btn-header.hof:hover {
+    background: #059669;
+  }
+
+  .game-pi-runner .btn-header.primary {
+    background: #0ea5e9;
+    color: #ffffff;
+    border-color: #0284c7;
+  }
+
+  .game-pi-runner .btn-header.primary:hover {
+    background: #0284c7;
+  }
+
+  .game-pi-runner .btn-header.home {
+    background: rgba(244, 63, 94, 0.18);
+    color: #fda4af;
+    border-color: rgba(244, 63, 94, 0.4);
+  }
+
+  .game-pi-runner .btn-header.home:hover {
+    background: rgba(244, 63, 94, 0.35);
+    color: #ffffff;
+  }
+
+  /* 모드 선택 탭 & 상태 정보 바 */
+  .game-pi-runner .status-panel {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    background: rgba(30, 41, 59, 0.75);
+    border: 1px solid #334155;
+    padding: 10px 16px;
+    border-radius: 12px;
+  }
+
+  .game-pi-runner .mode-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    background: #0f172a;
+    padding: 4px;
+    border-radius: 10px;
+    border: 1px solid #334155;
+  }
+
+  .game-pi-runner .mode-btn {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    padding: 6px 14px;
+    border-radius: 7px;
+    font-size: 0.86rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .game-pi-runner .mode-btn.active {
+    background: #38bdf8;
+    color: #0f172a;
+    box-shadow: 0 2px 6px rgba(56, 189, 248, 0.35);
+  }
+
+  .game-pi-runner .info-group {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    flex-wrap: wrap;
+  }
+
+  .game-pi-runner .info-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.94rem;
+    color: #cbd5e1;
+  }
+
+  .game-pi-runner .info-value {
+    font-weight: 800;
+    color: #38bdf8;
+  }
+
+  .game-pi-runner .info-value.warn {
+    color: #f87171;
+  }
+
+  /* 2D 캔버스 러너 트랙 영역 */
+  .game-pi-runner .canvas-container {
+    position: relative;
+    width: 100%;
+    height: 180px;
+    background: #090d16;
+    border: 2px solid #334155;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: inset 0 0 24px rgba(0, 0, 0, 0.8);
+  }
+
+  .game-pi-runner canvas#pi-track-canvas {
+    display: block;
+    width: 100%;
+    height: 180px;
+  }
+
+  /* 타이핑 디스플레이 보드 (현재 입력 자릿수) */
+  .game-pi-runner .display-board {
+    background: #1e293b;
+    border: 2px solid #334155;
+    border-radius: 18px;
+    padding: 20px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    position: relative;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  }
+
+  .game-pi-runner .display-label {
+    font-size: 0.92rem;
+    font-weight: 800;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .game-pi-runner .pi-stream {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+    font-size: 2.2rem;
+    font-weight: 900;
+    min-height: 60px;
+  }
+
+  .game-pi-runner .pi-part.done {
+    color: #64748b;
+  }
+
+  .game-pi-runner .pi-part.current {
+    color: #0f172a;
+    background: #facc15;
+    padding: 2px 12px;
+    border-radius: 10px;
+    box-shadow: 0 0 16px rgba(250, 204, 21, 0.6);
+    transform: scale(1.12);
+    display: inline-block;
+  }
+
+  .game-pi-runner .pi-part.next {
+    color: #38bdf8;
+  }
+
+  .game-pi-runner .pi-part.hidden {
+    color: #334155;
+    letter-spacing: 2px;
+  }
+
+  /* 피드백 알림 배너 */
+  .game-pi-runner .feedback-banner {
+    height: 28px;
+    font-size: 0.98rem;
+    font-weight: 800;
+    transition: opacity 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* 하단 0~9 숫자 입력 키패드 */
+  .game-pi-runner .keypad-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+    width: 100%;
+    max-width: 680px;
+    margin: 0 auto;
+  }
+
+  @media (max-width: 600px) {
+    .game-pi-runner .keypad-grid {
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+    }
+    .game-pi-runner .pi-stream {
+      font-size: 1.6rem;
+    }
+  }
+
+  .game-pi-runner .num-btn {
+    background: #1e293b;
+    border: 2px solid #334155;
+    color: #f8fafc;
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+    font-size: 1.6rem;
+    font-weight: 800;
+    padding: 16px 0;
+    border-radius: 16px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    transition: all 0.1s ease;
+  }
+
+  .game-pi-runner .num-btn:hover {
+    background: #334155;
+    border-color: #38bdf8;
+    color: #38bdf8;
+    transform: translateY(-2px);
+  }
+
+  .game-pi-runner .num-btn:active {
+    background: #38bdf8;
+    color: #0f172a;
+    transform: translateY(1px);
+  }
+
+  /* 🌟 하단 상시 노출 명예의 전당 보드 영역 */
+  .game-pi-runner .bottom-ranking-card {
+    background: #1e293b;
+    border: 2px solid #334155;
+    border-radius: 20px;
+    padding: 20px;
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .game-pi-runner .ranking-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #334155;
+    padding-bottom: 10px;
+  }
+
+  .game-pi-runner .ranking-title {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #f8fafc;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* 공통 모달 팝업 */
+  .game-pi-runner .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.78);
+    backdrop-filter: blur(5px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    padding: 20px;
+  }
+
+  .game-pi-runner .modal-backdrop.open {
+    display: flex;
+  }
+
+  .game-pi-runner .modal-box {
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 20px;
+    width: 100%;
+    max-width: 540px;
+    max-height: 85vh;
+    overflow-y: auto;
+    padding: 24px;
+    color: #e2e8f0;
+    box-shadow: 0 24px 50px rgba(0, 0, 0, 0.7);
+  }
+
+  .game-pi-runner .modal-title {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: #f8fafc;
+    margin: 0 0 14px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .game-pi-runner .rule-list {
+    margin: 0 0 16px 0;
+    padding-left: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 0.93rem;
+    line-height: 1.55;
+    color: #cbd5e1;
+  }
+
+  .game-pi-runner .modal-close-btn {
+    width: 100%;
+    background: #38bdf8;
+    color: #0f172a;
+    border: none;
+    padding: 12px;
+    border-radius: 12px;
+    font-size: 0.98rem;
+    font-weight: 800;
+    cursor: pointer;
+    margin-top: 18px;
+    transition: background 0.2s;
+  }
+
+  .game-pi-runner .modal-close-btn:hover {
+    background: #0284c7;
+    color: #ffffff;
+  }
+</style>
+
+<script>
+  /* ==========================================================================
+     PiRunner 모듈 - 원주율(π) 타이핑 러너 (명예의 전당 완결판)
+     ========================================================================== */
+  const PiRunner = (function () {
+    // 🌟 [보안] XSS 방어용 HTML 특수기호 이스케이프 함수
+    function escapeHTML(str) {
+      if (!str) return '';
+      return String(str).replace(/[&<>"']/g, function(match) {
+        const escape = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+        return escape[match];
+      });
+    }
+
+    const PI_DIGITS = 
+      "1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679" +
+      "8214808651328230664709384460955058223172535940812848111745028410270193852110555964462294895493038196" +
+      "4428810975665933446128475648233786783165271201909145648566923460348610454326648213393607260249141273" +
+      "7245870066063155881748815209209628292540917153643678925903600113305305488204665213841469519415116094" +
+      "3305727036575959195309218611738193261179310511854807446237996274956735188575272489122793818301194912" +
+      "9833673362440656643086021394946395224737190702179860943702770539217176293176752384674818467669405132" +
+      "0005681271452635608277857713427577896091736371787214684409012249534301465495853710507922796892589235" +
+      "4201995611212902196086403441815981362977477130996051870721134999999837297804995105973173281609631859" +
+      "5024459455346908302642522308253344685035261931188171010003137838752886587533208381420617177669147303" +
+      "5982534904287554687311595628638823537875937519577818577805321712268066130019278766111959092164201989";
+
+    let currentMode = 'PRACTICE';
+    let currentIdx = 0;
+    let score = 0;
+    let lives = 3;
+    let timeRemaining = 60;
+    let isGameOver = false;
+
+    let timerInterval = null;
+    let animId = null;
+
+    const BASE_CENTER_X = 420;
+    let runnerX = BASE_CENTER_X;
+    let targetRunnerX = BASE_CENTER_X;
+    let runnerSpeed = 0;
+    let bgOffset = 0;
+    let stumbleTime = 0;
+    let milestonePop = 0;
+    let particles = [];
+
+    /* --------------------------------------------------------------------------
+       Gen-3 동적 마운트
+       -------------------------------------------------------------------------- */
+    function mount(container, context) {
+      let host = null;
+      if (typeof container === 'string') host = document.querySelector(container);
+      else if (container instanceof HTMLElement) host = container;
+      if (!host) host = window.MathLabUtils?.getMountContainer ? window.MathLabUtils.getMountContainer(container) : document.getElementById('mathlab-view');
+      if (!host) host = document.getElementById('new-root') || document.getElementById('game-container');
+
+      if (!host) {
+        let createdHost = document.getElementById('pi-runner-force-host');
+        if (!createdHost) {
+          createdHost = document.createElement('div');
+          createdHost.id = 'pi-runner-force-host';
+          document.body.appendChild(createdHost);
+        }
+        host = createdHost;
+      }
+
+      const footerEl = document.querySelector('footer, #footer, .app-footer') || 
+                       Array.from(document.querySelectorAll('div, p, span')).find(el => el.textContent && el.textContent.includes('2026 기록조율사'));
+      if (footerEl && host.compareDocumentPosition(footerEl) & Node.DOCUMENT_POSITION_PRECEDING) {
+        footerEl.parentNode.insertBefore(host, footerEl);
+      }
+
+      host.style.display = '';
+
+      // 🌟 innerHTML 내 백틱 오류 완벽 수정 (`🟢 연습` -> [🟢 연습 모드])
+      host.innerHTML = `
+        <div class="game-pi-runner" id="pi-runner-app">
+          <!-- 상단 헤더 바 (조기 정산 & 명예의 전당 버튼 추가) -->
+          <div class="stats-bar">
+            <div class="title-group">
+              <div class="title-icon">🥧</div>
+              <div>
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <span class="title-text">원주율(π) 타이핑 러너</span>
+                  <span class="title-badge">실시간 명예의 전당 연동</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="header-actions">
+              <button class="btn-header home" onclick="PiRunner.goHome()">
+                <span>🏠 홈으로</span>
+              </button>
+              <button class="btn-header" onclick="PiRunner.showGuideModal()">
+                <span>📖 규칙 & 모드</span>
+              </button>
+              <button class="btn-header stop-save" onclick="PiRunner.manualStopAndSave()">
+                <span>🏁 조기 정산 & 기록</span>
+              </button>
+              <button class="btn-header hof" onclick="PiRunner.showRankingModal()">
+                <span>🏆 명예의 전당</span>
+              </button>
+              <button class="btn-header primary" onclick="PiRunner.resetGame()">
+                <span>🔄 새 도전</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 상태 인포 바 -->
+          <div class="status-panel">
+            <div class="mode-tabs">
+              <button class="mode-btn active" id="pr-btn-practice" onclick="PiRunner.setMode('PRACTICE')">🟢 연습 (힌트 노출)</button>
+              <button class="mode-btn" id="pr-btn-memory" onclick="PiRunner.setMode('MEMORY')">🔵 암기 (블라인드 3생명)</button>
+              <button class="mode-btn" id="pr-btn-sprint" onclick="PiRunner.setMode('SPRINT')">🟣 스프린트 (60초 스피드)</button>
+            </div>
+
+            <div class="info-group">
+              <div class="info-item">
+                <span>🏃 도달 자릿수:</span>
+                <span class="info-value" id="pr-idx-val">0번째</span>
+              </div>
+              <div class="info-item" id="pr-lives-wrap" style="display:none;">
+                <span>❤️ 남은 생명:</span>
+                <span class="info-value warn" id="pr-lives-val">❤️❤️❤️</span>
+              </div>
+              <div class="info-item" id="pr-timer-wrap" style="display:none;">
+                <span>⏱️ 남은 시간:</span>
+                <span class="info-value" id="pr-timer-val">60초</span>
+              </div>
+              <div class="info-item">
+                <span>⭐ 점수:</span>
+                <span class="info-value" id="pr-score-val">0점</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2D 캔버스 러너 트랙 -->
+          <div class="canvas-container">
+            <canvas id="pi-track-canvas" width="1000" height="180"></canvas>
+          </div>
+
+          <!-- 타이핑 디스플레이 보드 -->
+          <div class="display-board">
+            <span class="display-label">🎯 원주율 다음 자릿수를 숫자패드(또는 키보드)로 입력하세요</span>
+            <div class="pi-stream" id="pr-pi-stream">
+              <span class="pi-part done">3.</span>
+              <span class="pi-part current">?</span>
+            </div>
+            <div class="feedback-banner" id="pr-feedback" style="color:#38bdf8;">✨ 준비 완료! 첫 숫자 '1'을 눌러 질주를 시작하세요!</div>
+          </div>
+
+          <!-- 하단 0~9 키패드 -->
+          <div class="keypad-grid">
+            ${[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => `
+              <button class="num-btn" onclick="PiRunner.inputDigit(${n})">${n}</button>
+            `).join('')}
+          </div>
+
+          <!-- 🌟 하단 상시 노출 명예의 전당 보드 영역 -->
+          <div class="bottom-ranking-card">
+            <div class="ranking-header">
+              <div class="ranking-title">🏆 원주율 타이핑 러너 명예의 전당 (실시간 랭킹 보드)</div>
+              <button class="btn-header stop-save" onclick="PiRunner.manualStopAndSave()" style="font-size:0.82rem; padding:5px 10px;">
+                🏁 내 점수 정산 후 등록하기
+              </button>
+            </div>
+            <div id="board-pi-runner-bottom">
+              <p style="text-align:center; color:#94a3b8; padding:12px 0;">랭킹 데이터를 불러오는 중...</p>
+            </div>
+          </div>
+
+          <!-- 1. 규칙 안내 모달 (백틱 에러 원천 차단) -->
+          <div class="modal-backdrop" id="pr-guide-modal">
+            <div class="modal-box">
+              <h3 class="modal-title">📖 원주율(π) 타이핑 러너 안내</h3>
+              <ul class="rule-list">
+                <li><b>🏃 중앙 주인공 질주 연출</b>: 주인공이 화면 한가운데서 대기하며, 연속으로 빠르게 타이핑하면 <b>우측으로 강력하게 대쉬하며 바람 잔상 이펙트</b>가 터집니다! 오타를 치면 뒤(좌측)로 휘청이며 밀립니다.</li>
+                <li><b>🏁 조기 정산 & 명예의 전당</b>: 연습 모드(<b>🟢 연습 모드</b>)나 도전 도중 언제든 상단 <b>[🏁 조기 정산 & 기록]</b> 버튼을 누르면 현재까지 획득한 자릿수와 점수를 명예의 전당에 즉시 저장할 수 있습니다!</li>
+                <li><b>🟢 연습 모드 (힌트 노출)</b>: 다음 자릿수 5개가 희미하게 표시됩니다. 자연스럽게 π 자릿수를 손가락에 익히는 모드입니다.</li>
+                <li><b>🔵 암기 모드 (블라인드)</b>: 다음 자릿수가 가려진 상태에서 순수 암기로 도전합니다. 3번 틀리면 게임이 종료되고 랭킹 등록 창이 열립니다.</li>
+                <li><b>🟣 스프린트 모드 (60초 스피드)</b>: 60초 제한 시간 동안 최대한 멀리 질주합니다. 오타 시 생명 차감 대신 <b>-3점 감점</b>을 받습니다.</li>
+              </ul>
+              <button class="modal-close-btn" onclick="PiRunner.closeModals()">확인 및 게임 시작</button>
+            </div>
+          </div>
+
+          <!-- 2. 명예의 전당 등록 팝업 모달 -->
+          <div class="modal-backdrop" id="pr-ranking-modal">
+            <div class="modal-box">
+              <h3 class="modal-title" id="pr-ranking-modal-title">🏆 원주율 타이핑 러너 명예의 전당</h3>
+              <div id="pr-gameover-summary" style="background:#0f172a; padding:14px; border-radius:12px; border:1px solid #334155; margin-bottom:14px; text-align:center;"></div>
+              <div id="board-pi-runner">
+                <p style="text-align:center; color:#94a3b8;">랭킹 데이터를 불러오는 중...</p>
+              </div>
+              <div style="margin-top:16px; display:flex; gap:8px;">
+                <input type="text" id="pr-nickname-input" placeholder="도전자 닉네임 (예: 3반 김파이)" maxlength="18" style="flex:1; padding:12px; border-radius:10px; border:1px solid #334155; background:#0f172a; color:#f8fafc; font-weight:700; font-size:0.98rem; text-align:center;">
+                <button class="btn-header primary" onclick="PiRunner.submitRankScore()">등록</button>
+              </div>
+              <button class="modal-close-btn" onclick="PiRunner.closeModals()">창 닫기 (보드 확인)</button>
+            </div>
+          </div>
+        </div>
+      `;
+
+      window.removeEventListener('keydown', onKeyDown);
+      window.addEventListener('keydown', onKeyDown);
+
+      setMode('PRACTICE');
+      startAnimationLoop();
+      renderBottomLeaderboard();
+    }
+
+    function setMode(mode) {
+      currentMode = mode;
+      document.querySelectorAll('#pi-runner-app .mode-btn').forEach(btn => btn.classList.remove('active'));
+      const activeBtn = document.getElementById('pr-btn-' + mode.toLowerCase());
+      if (activeBtn) activeBtn.classList.add('active');
+
+      const livesWrap = document.getElementById('pr-lives-wrap');
+      const timerWrap = document.getElementById('pr-timer-wrap');
+
+      if (livesWrap) livesWrap.style.display = mode === 'MEMORY' ? 'flex' : 'none';
+      if (timerWrap) timerWrap.style.display = mode === 'SPRINT' ? 'flex' : 'none';
+
+      resetGame();
+    }
+
+    function resetGame() {
+      if (timerInterval) clearInterval(timerInterval);
+      timerInterval = null;
+
+      currentIdx = 0;
+      score = 0;
+      lives = 3;
+      timeRemaining = 60;
+      isGameOver = false;
+
+      runnerX = BASE_CENTER_X;
+      targetRunnerX = BASE_CENTER_X;
+      runnerSpeed = 0;
+      stumbleTime = 0;
+      milestonePop = 0;
+      particles = [];
+
+      if (currentMode === 'SPRINT') {
+        timerInterval = setInterval(() => {
+          if (isGameOver) return;
+          timeRemaining--;
+          if (timeRemaining <= 0) {
+            timeRemaining = 0;
+            triggerGameOver('⏰ 60초 스프린트 시간 종료!');
+          }
+          updateUI();
+        }, 1000);
+      }
+
+      updateUI();
+      showBanner('✨ 준비 완료! 숫자 키를 눌러 중앙에서 출발하세요!', '#38bdf8');
+    }
+
+    function inputDigit(num) {
+      if (isGameOver) return;
+      if (currentIdx >= PI_DIGITS.length) {
+        triggerGameOver('🎉 전설의 원주율 1,000자리 모두 완주 성공!!');
+        return;
+      }
+
+      const expectedStr = PI_DIGITS[currentIdx];
+      const expectedNum = parseInt(expectedStr, 10);
+
+      if (num === expectedNum) {
+        currentIdx++;
+        score += 2;
+        runnerSpeed = Math.min(26, runnerSpeed + 4.2);
+        targetRunnerX = Math.min(740, targetRunnerX + 32);
+
+        particles.push({
+          x: runnerX + 20, y: 95, text: '+2', color: '#34d399', vy: -2.2, life: 35
+        });
+
+        if (currentIdx % 10 === 0) {
+          score += 5;
+          milestonePop = 45;
+          particles.push({
+            x: runnerX + 20, y: 70, text: '🏁 +5 보너스!', color: '#facc15', vy: -2.8, life: 50
+          });
+          showBanner(`🏁 ${currentIdx}번째 이정표 돌파!! +5점 연속 보너스!`, '#facc15');
+        } else {
+          showBanner(`🏃 정답 질주 중! (${currentIdx}번째 자릿수 완료)`, '#34d399');
+        }
+      } else {
+        stumbleTime = 28;
+        runnerSpeed = -5.8;
+        targetRunnerX = Math.max(220, targetRunnerX - 85);
+
+        particles.push({
+          x: runnerX + 20, y: 88, text: '😵 오타!', color: '#ef4444', vy: -1.8, life: 40
+        });
+
+        if (currentMode === 'MEMORY') {
+          lives--;
+          if (lives <= 0) {
+            lives = 0;
+            updateUI();
+            triggerGameOver(`💥 오타 탈락! ${currentIdx + 1}번째 정답은 '${expectedStr}'이었습니다.`);
+            return;
+          } else {
+            showBanner(`⚠️ 오타! ${currentIdx + 1}번째 정답은 '${expectedStr}'입니다! (남은 생명: ${lives}개)`, '#ef4444');
+          }
+        } else if (currentMode === 'SPRINT') {
+          score = Math.max(0, score - 3);
+          showBanner(`⚠️ 오타 -3점 감점! 정답은 '${expectedStr}'입니다!`, '#ef4444');
+        } else {
+          showBanner(`💡 힌트: ${currentIdx + 1}번째 정답은 '${expectedStr}'입니다! 다시 쳐보세요.`, '#38bdf8');
+        }
+      }
+
+      updateUI();
+    }
+
+    function onKeyDown(e) {
+      if (isGameOver) return;
+      if (e.key >= '0' && e.key <= '9') {
+        e.preventDefault();
+        inputDigit(parseInt(e.key, 10));
+      }
+    }
+
+    function showBanner(msg, color) {
+      const banner = document.getElementById('pr-feedback');
+      if (banner) {
+        banner.textContent = msg;
+        banner.style.color = color || '#38bdf8';
+      }
+    }
+
+    function manualStopAndSave() {
+      triggerGameOver('🏁 조기 정산 완료! 멋진 완주입니다.');
+    }
+
+    function triggerGameOver(reasonMsg) {
+      if (isGameOver && !reasonMsg.includes('조기 정산')) return;
+      isGameOver = true;
+      if (timerInterval) clearInterval(timerInterval);
+
+      showBanner(reasonMsg, '#f87171');
+      setTimeout(() => {
+        showRankingModal(reasonMsg);
+      }, 500);
+    }
+
+    function updateUI() {
+      const idxVal = document.getElementById('pr-idx-val');
+      const livesVal = document.getElementById('pr-lives-val');
+      const timerVal = document.getElementById('pr-timer-val');
+      const scoreVal = document.getElementById('pr-score-val');
+      const streamEl = document.getElementById('pr-pi-stream');
+
+      if (idxVal) idxVal.textContent = `${currentIdx}번째`;
+      if (livesVal) livesVal.textContent = '❤️'.repeat(lives) + '🖤'.repeat(3 - lives);
+      if (timerVal) timerVal.textContent = `${timeRemaining}초`;
+      if (scoreVal) scoreVal.textContent = `${score}점`;
+
+      if (streamEl) {
+        let prefixStr = currentIdx > 0 ? PI_DIGITS.substring(Math.max(0, currentIdx - 3), currentIdx) : '';
+        let prefixHtml = prefixStr ? `<span class="pi-part done">${currentIdx > 3 ? '...' : '3.'}${prefixStr}</span>` : `<span class="pi-part done">3.</span>`;
+        let curHtml = `<span class="pi-part current">${currentMode === 'PRACTICE' ? PI_DIGITS[currentIdx] : '?'}</span>`;
+
+        let nextHtml = '';
+        if (currentMode === 'PRACTICE' && currentIdx + 1 < PI_DIGITS.length) {
+          let nextStr = PI_DIGITS.substring(currentIdx + 1, Math.min(PI_DIGITS.length, currentIdx + 5));
+          nextHtml = `<span class="pi-part next">${nextStr}</span>`;
+        } else if (currentMode !== 'PRACTICE') {
+          nextHtml = `<span class="pi-part hidden">----</span>`;
+        }
+
+        streamEl.innerHTML = `${prefixHtml}${curHtml}${nextHtml}`;
+      }
+    }
+
+    function startAnimationLoop() {
+      if (animId) cancelAnimationFrame(animId);
+      function loop() {
+        renderTrackCanvas();
+        animId = requestAnimationFrame(loop);
+      }
+      loop();
+    }
+
+    function renderTrackCanvas() {
+      const canvas = document.getElementById('pi-track-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+      grad.addColorStop(0, '#020617');
+      grad.addColorStop(1, '#1e293b');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      if (!isGameOver) {
+        if (runnerSpeed > 0.3) {
+          bgOffset += runnerSpeed * 0.5;
+          runnerSpeed *= 0.94;
+          if (targetRunnerX > BASE_CENTER_X) targetRunnerX -= (targetRunnerX - BASE_CENTER_X) * 0.035;
+        } else if (runnerSpeed < -0.3) {
+          bgOffset += runnerSpeed * 0.3;
+          runnerSpeed *= 0.90;
+          if (targetRunnerX < BASE_CENTER_X) targetRunnerX += (BASE_CENTER_X - targetRunnerX) * 0.06;
+        } else {
+          runnerSpeed = 0;
+          targetRunnerX += (BASE_CENTER_X - targetRunnerX) * 0.08;
+        }
+        runnerX += (targetRunnerX - runnerX) * 0.14;
+      }
+      if (stumbleTime > 0) stumbleTime--;
+      if (milestonePop > 0) milestonePop--;
+
+      ctx.save();
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+      for (let i = 0; i < 18; i++) {
+        let sx = (i * 137 - bgOffset * 0.25) % canvas.width;
+        if (sx < 0) sx += canvas.width;
+        let sy = (i * 43) % 90 + 12;
+        ctx.beginPath();
+        ctx.arc(sx, sy, (i % 2) + 1, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+
+      for (let i = 0; i < 8; i++) {
+        let tx = (i * 210 - bgOffset * 0.85) % canvas.width;
+        if (tx < -50) tx += canvas.width + 50;
+        ctx.fillStyle = '#064e3b';
+        ctx.beginPath();
+        ctx.moveTo(tx, 140);
+        ctx.lineTo(tx + 18, 95);
+        ctx.lineTo(tx + 36, 140);
+        ctx.fill();
+      }
+
+      ctx.fillStyle = '#334155';
+      ctx.fillRect(0, 140, canvas.width, 40);
+      ctx.strokeStyle = '#facc15';
+      ctx.lineWidth = 3;
+      ctx.setLineDash([20, 20]);
+      ctx.lineDashOffset = -bgOffset * 1.6;
+      ctx.beginPath();
+      ctx.moveTo(0, 160);
+      ctx.lineTo(canvas.width, 160);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      if (runnerSpeed > 5) {
+        ctx.save();
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.45)';
+        ctx.lineWidth = 2;
+        for (let i = 0; i < 6; i++) {
+          let ly = 100 + (i * 8);
+          let lx = runnerX - 25 - (i * 14 + (Date.now() * 0.8) % 40);
+          ctx.beginPath();
+          ctx.moveTo(lx, ly);
+          ctx.lineTo(lx - Math.min(60, runnerSpeed * 3), ly);
+          ctx.stroke();
+        }
+        ctx.restore();
+      }
+
+      if (milestonePop > 0) {
+        ctx.save();
+        ctx.font = '800 24px Pretendard, sans-serif';
+        ctx.fillStyle = '#facc15';
+        ctx.textAlign = 'center';
+        ctx.fillText(`🏁 ${currentIdx}번째 이정표 달성! (+5점)`, canvas.width / 2, 52 - (45 - milestonePop) * 0.4);
+        ctx.restore();
+      }
+
+      ctx.save();
+      let rx = runnerX;
+      let ry = 110;
+      if (stumbleTime > 0) {
+        rx += (Math.random() - 0.5) * 14;
+        ry += (Math.random() - 0.5) * 8;
+      } else if (runnerSpeed > 1) {
+        ry += Math.sin(Date.now() * 0.025) * 6;
+      }
+
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
+      ctx.beginPath();
+      ctx.ellipse(rx + 20, 145, 24, 6, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.font = '48px Pretendard, sans-serif';
+      ctx.fillText(stumbleTime > 0 ? '😵' : (runnerSpeed > 7 ? '🏃⚡' : '🏃'), rx, ry + 32);
+      ctx.restore();
+
+      for (let i = particles.length - 1; i >= 0; i--) {
+        let p = particles[i];
+        p.y += p.vy;
+        p.life--;
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, p.life / 35);
+        ctx.font = '800 17px Pretendard, sans-serif';
+        ctx.fillStyle = p.color;
+        ctx.fillText(p.text, p.x, p.y);
+        ctx.restore();
+        if (p.life <= 0) particles.splice(i, 1);
+      }
+
+      ctx.fillStyle = '#38bdf8';
+      ctx.font = '800 13px Pretendard, sans-serif';
+      ctx.fillText(`⚡ 속도: ${(Math.max(0, runnerSpeed) * 1.3).toFixed(1)} km/h`, 18, 26);
+    }
+
+    function showGuideModal() {
+      document.getElementById('pr-guide-modal')?.classList.add('open');
+    }
+
+    function showRankingModal(reasonMsg = '') {
+      document.getElementById('pr-ranking-modal')?.classList.add('open');
+      const titleEl = document.getElementById('pr-ranking-modal-title');
+      const sumEl = document.getElementById('pr-gameover-summary');
+
+      if (titleEl) {
+        titleEl.textContent = reasonMsg ? '🏁 원주율 타이핑 도달 점수 기록' : '🏆 원주율 타이핑 러너 명예의 전당';
+      }
+
+      if (sumEl) {
+        sumEl.innerHTML = `
+          <div style="font-size:1.15rem; font-weight:900; color:#f87171; margin-bottom:6px;">${reasonMsg || '명예의 전당 랭킹 조회'}</div>
+          <div style="font-size:1.25rem; font-weight:800; color:#38bdf8;">현재 달성 점수: ${score}점</div>
+          <div style="font-size:0.95rem; color:#cbd5e1; margin-top:4px;">현재 완주 위치: π 소수점 아래 <b>${currentIdx}번째</b> 자릿수</div>
+        `;
+      }
+
+      if (typeof loadGameLeaderboard === 'function') {
+        loadGameLeaderboard('원주율타이핑러너', true, 'board-pi-runner');
+      }
+    }
+
+    function renderBottomLeaderboard() {
+      if (typeof loadGameLeaderboard === 'function') {
+        loadGameLeaderboard('원주율타이핑러너', false, 'board-pi-runner-bottom');
+      } else {
+        try {
+          let list = JSON.parse(localStorage.getItem('mathlab_lb_pi_runner') || '[]');
+          const bottomEl = document.getElementById('board-pi-runner-bottom');
+          if (bottomEl) {
+            if (list.length === 0) {
+              bottomEl.innerHTML = '<p style="text-align:center; color:#94a3b8; padding:12px 0;">아직 등록된 명예의 전당 기록이 없습니다. 첫 번째 영광의 주인공이 되어보세요!</p>';
+            } else {
+              bottomEl.innerHTML = `
+                <div style="display:flex; flex-direction:column; gap:6px;">
+                  ${list.slice(0, 5).map((item, idx) => `
+                    <div style="display:flex; justify-content:space-between; align-items:center; background:#0f172a; padding:10px 14px; border-radius:10px; border:1px solid #334155;">
+                      <span style="font-weight:800; color:${idx === 0 ? '#facc15' : '#cbd5e1'};">
+                        ${idx === 0 ? '👑 1위' : `${idx + 1}위`} - ${escapeHTML(item.nickname)}
+                      </span>
+                      <span style="color:#38bdf8; font-weight:900;">${item.score}점 (완주: ${item.digits || 0}자릿수)</span>
+                    </div>
+                  `).join('')}
+                </div>
+              `;
+            }
+          }
+        } catch(e) {}
+      }
+    }
+
+    function closeModals() {
+      document.querySelectorAll('.game-pi-runner .modal-backdrop').forEach(el => el.classList.remove('open'));
+    }
+
+    function submitRankScore() {
+      const input = document.getElementById('pr-nickname-input');
+      const nickname = input ? input.value.trim() : '';
+      if (!nickname) {
+        const titleEl = document.getElementById('pr-ranking-modal-title');
+        if(titleEl) { titleEl.innerHTML = '<span style="color:#f87171;">⚠️ 닉네임을 입력해 주세요!</span>'; setTimeout(() => titleEl.textContent = '🏆 원주율 타이핑 러너 명예의 전당', 2000); }
+        return;
+      }
+
+      try {
+        let list = JSON.parse(localStorage.getItem('mathlab_lb_pi_runner') || '[]');
+        const dateStr = new Date().toLocaleDateString('ko-KR', { month: '2-digit', day: '2-digit' });
+        list.push({ nickname, score, date: dateStr, digits: currentIdx });
+        list.sort((a, b) => b.score - a.score);
+        localStorage.setItem('mathlab_lb_pi_runner', JSON.stringify(list.slice(0, 20)));
+      } catch (e) {}
+
+      if (typeof window.submitRanking === 'function') {
+        window.submitRanking('원주율타이핑러너', score, true, 'pr-nickname-input', 'board-pi-runner');
+      } else if (typeof window.parent?.submitRanking === 'function') {
+        window.parent.submitRanking('원주율타이핑러너', score, true, 'pr-nickname-input', 'board-pi-runner');
+      } else {
+        const titleEl = document.getElementById('pr-ranking-modal-title');
+        if(titleEl) { titleEl.innerHTML = '<span style="color:#34d399;">🎉 명예의 전당 등록 완료!</span>'; }
+        if (input) input.value = '';
+        setTimeout(() => closeModals(), 1500);
+      }
+
+      renderBottomLeaderboard();
+    }
+
+    function goHome() {
+      destroy();
+      if (window.LegacyBridge && typeof window.LegacyBridge.backHome === 'function') { try { window.LegacyBridge.backHome(); return; } catch(e) {} }
+      if (typeof window.renderLegacyDashboardHome === 'function') { try { window.renderLegacyDashboardHome(); return; } catch(e) {} }
+      if (typeof window.MathLabRenderHome === 'function') { try { window.MathLabRenderHome(); return; } catch(e) {} }
+
+      const mathlabRoot = document.getElementById('mathlab-root');
+      const legacyRoot = document.getElementById('legacy-root');
+      if (mathlabRoot) mathlabRoot.classList.add('hidden');
+      if (legacyRoot) legacyRoot.classList.remove('hidden');
+
+      const dashboard = document.getElementById('dashboard-screen');
+      if (dashboard) { dashboard.classList.add('active'); dashboard.style.display = ''; }
+      window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+    }
+
+    function destroy() {
+      if (timerInterval) clearInterval(timerInterval);
+      if (animId) cancelAnimationFrame(animId);
+      window.removeEventListener('keydown', onKeyDown);
+    }
+
+    return {
+      mount, resetGame, destroy, setMode, inputDigit, manualStopAndSave,
+      showGuideModal, showRankingModal, closeModals, submitRankScore, renderBottomLeaderboard, goHome
+    };
+  })();
+
+  /* games_pi_runner.html 맨 밑부분 교체 (안전 등록 및 하이브리드 실행) */
+  function registerPiRunner() {
+    if (typeof window.MathLabGames !== 'undefined' && typeof window.MathLabGames.register === 'function') {
+      if (!window.MathLabGames.get('pi-runner')) {
+        try {
+          window.MathLabGames.register({
+            id: 'pi-runner',
+            title: '원주율 타이핑 러너',
+            icon: '🥧',
+            sourceType: 'new',
+            mount(container, context) { PiRunner.mount(container, context); },
+            reset() { PiRunner.resetGame(); },
+            destroy() { PiRunner.destroy(); },
+            goHome() { PiRunner.goHome(); }
+          });
+        } catch (e) {
+          console.warn('pi-runner 안전 등록 방어:', e);
+        }
+      }
+    }
+  }
+
+  registerPiRunner();
+  window.addEventListener('DOMContentLoaded', registerPiRunner);
+  setTimeout(registerPiRunner, 100);
+  setTimeout(registerPiRunner, 500);
+
+  window.PiRunner = PiRunner;
+  window.initPiRunnerGame = function() {
+    const target = document.getElementById('game-pi-runner-app') || document.getElementById('mathlab-view');
+    PiRunner.mount(target);
+  };
+  window.launchPiRunnerGame = function() {
+    if (typeof window.MathLabGames !== 'undefined' && typeof window.MathLabGames.mount === 'function') {
+      try { window.MathLabGames.mount('pi-runner'); return; } catch(e) {}
+    }
+    PiRunner.mount();
+  };
+</script>

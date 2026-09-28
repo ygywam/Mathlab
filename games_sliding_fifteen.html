@@ -1,0 +1,1359 @@
+<style>
+  /* ==========================================================================
+     Gen-3 수학 실험실 표준 스타일 - 15-슬라이딩 퍼즐 (Sliding Fifteen)
+     모던 슬레이트 & 다크 네이비 프리미엄 테마 (#0f172a, #1e293b)
+     (고대비 금지: 눈이 편안한 고급 차콜 슬레이트 및 색약 배려 직관적 시각 요소)
+     ========================================================================== */
+  .game-sliding-fifteen {
+    width: 100%;
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: 18px;
+    background: #0f172a;
+    color: #e2e8f0;
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    border-radius: 24px;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.45);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    position: relative;
+    box-sizing: border-box;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  .game-sliding-fifteen * {
+    box-sizing: border-box;
+  }
+
+  /* 상단 헤더 바 */
+  .game-sliding-fifteen .stats-bar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    background: #1e293b;
+    border: 1px solid #334155;
+    padding: 12px 18px;
+    border-radius: 16px;
+  }
+
+  .game-sliding-fifteen .title-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .game-sliding-fifteen .title-icon {
+    font-size: 1.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    height: 46px;
+    background: rgba(56, 189, 248, 0.18);
+    border-radius: 12px;
+    color: #38bdf8;
+  }
+
+  .game-sliding-fifteen .title-text {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: #f8fafc;
+    letter-spacing: -0.02em;
+  }
+
+  .game-sliding-fifteen .title-badge {
+    font-size: 0.76rem;
+    font-weight: 700;
+    background: #0ea5e9;
+    color: #ffffff;
+    padding: 3px 8px;
+    border-radius: 6px;
+  }
+
+  .game-sliding-fifteen .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .game-sliding-fifteen .btn-header {
+    background: #334155;
+    color: #e2e8f0;
+    border: 1px solid #475569;
+    padding: 8px 14px;
+    border-radius: 10px;
+    font-size: 0.86rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+  }
+
+  .game-sliding-fifteen .btn-header:hover {
+    background: #475569;
+    color: #ffffff;
+    transform: translateY(-1px);
+  }
+
+  .game-sliding-fifteen .btn-header.primary {
+    background: #0ea5e9;
+    color: #ffffff;
+    border-color: #0284c7;
+  }
+
+  .game-sliding-fifteen .btn-header.primary:hover {
+    background: #0284c7;
+  }
+
+  .game-sliding-fifteen .btn-header.home {
+    background: rgba(16, 185, 129, 0.2);
+    color: #34d399;
+    border-color: #059669;
+  }
+
+  .game-sliding-fifteen .btn-header.home:hover {
+    background: #059669;
+    color: #ffffff;
+  }
+
+  .game-sliding-fifteen .btn-header.quiz {
+    background: rgba(245, 158, 11, 0.22);
+    color: #fbbf24;
+    border-color: #d97706;
+  }
+
+  .game-sliding-fifteen .btn-header.quiz:hover {
+    background: #d97706;
+    color: #ffffff;
+  }
+
+  /* 상태 바 */
+  .game-sliding-fifteen .status-panel {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    background: rgba(30, 41, 59, 0.75);
+    border: 1px solid #334155;
+    padding: 12px 18px;
+    border-radius: 14px;
+  }
+
+  .game-sliding-fifteen .mode-tabs {
+    display: flex;
+    gap: 6px;
+    background: #0f172a;
+    padding: 4px;
+    border-radius: 10px;
+    border: 1px solid #334155;
+    flex-wrap: wrap;
+  }
+
+  .game-sliding-fifteen .mode-btn {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    padding: 6px 14px;
+    border-radius: 7px;
+    font-size: 0.84rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .game-sliding-fifteen .mode-btn.active {
+    background: #0ea5e9;
+    color: #ffffff;
+    box-shadow: 0 2px 6px rgba(14, 165, 233, 0.35);
+  }
+
+  .game-sliding-fifteen .info-group {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    flex-wrap: wrap;
+  }
+
+  .game-sliding-fifteen .info-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.92rem;
+    color: #cbd5e1;
+  }
+
+  .game-sliding-fifteen .info-value {
+    font-weight: 800;
+    color: #38bdf8;
+  }
+
+  .game-sliding-fifteen .info-value.score {
+    color: #facc15;
+  }
+
+  /* 메인 게임 및 우측 패널 레이아웃 */
+  .game-sliding-fifteen .main-layout {
+    display: grid;
+    grid-template-columns: 1fr 330px;
+    gap: 20px;
+    align-items: start;
+  }
+
+  @media (max-width: 860px) {
+    .game-sliding-fifteen .main-layout {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* 보드 컨테이너 및 100% 동적 반응형 그리드 */
+  .game-sliding-fifteen .board-container {
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 18px;
+    padding: clamp(14px, 2.5vw, 24px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .game-sliding-fifteen .sliding-grid {
+    display: grid;
+    gap: clamp(4px, 1vw, 8px);
+    background: #0f172a;
+    padding: clamp(8px, 1.5vw, 14px);
+    border-radius: 16px;
+    border: 2px solid #334155;
+    width: 100%;
+    max-width: min(100%, 580px);
+    margin: 0 auto;
+    touch-action: none;
+  }
+
+  /* 셀 비율 유지 (aspect-ratio: 1/1) 및 애니메이션 */
+  .game-sliding-fifteen .tile {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    border-radius: clamp(8px, 1.5vw, 14px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: clamp(1.2rem, 3.8vw, 2.1rem);
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.14s cubic-bezier(0.2, 0.8, 0.3, 1), background-color 0.2s, box-shadow 0.2s;
+    overflow: hidden;
+    background: linear-gradient(145deg, #334155, #1e293b);
+    color: #f8fafc;
+    border: 2px solid #475569;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
+  }
+
+  .game-sliding-fifteen .tile:hover:not(.empty) {
+    border-color: #38bdf8;
+    background: linear-gradient(145deg, #3b4d66, #253347);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(56, 189, 248, 0.25);
+  }
+
+  /* 빈칸 (Empty Slot) */
+  .game-sliding-fifteen .tile.empty {
+    background: rgba(15, 23, 42, 0.65) !important;
+    border: 2px dashed #334155 !important;
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.5);
+    cursor: default;
+  }
+
+  /* 정위치에 도달한 타일 (Correct Position Accent) */
+  .game-sliding-fifteen .tile.correct {
+    border-color: #059669;
+    background: linear-gradient(145deg, rgba(16, 185, 129, 0.28), #1e293b);
+  }
+
+  .game-sliding-fifteen .tile.correct::after {
+    content: '✔️';
+    position: absolute;
+    top: 4px;
+    right: 6px;
+    font-size: clamp(0.55rem, 1.5vw, 0.75rem);
+    opacity: 0.85;
+  }
+
+  /* 힌트 및 추천 타일 하이라이트 */
+  .game-sliding-fifteen .tile.hint-pulse {
+    border-color: #facc15 !important;
+    background: linear-gradient(145deg, rgba(250, 204, 21, 0.35), #1e293b) !important;
+    box-shadow: 0 0 18px rgba(250, 204, 21, 0.65);
+    animation: sf-pulse 0.8s infinite alternate;
+  }
+
+  @keyframes sf-pulse {
+    from { transform: scale(1); }
+    to { transform: scale(1.05); }
+  }
+
+  /* 우측 제어 및 탐구 패널 */
+  .game-sliding-fifteen .side-panel {
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 18px;
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .game-sliding-fifteen .panel-title {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: #38bdf8;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .game-sliding-fifteen .control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .game-sliding-fifteen .btn-action {
+    background: #0f172a;
+    border: 1px solid #334155;
+    color: #e2e8f0;
+    padding: 12px 14px;
+    border-radius: 12px;
+    font-size: 0.92rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: all 0.18s;
+  }
+
+  .game-sliding-fifteen .btn-action:hover:not(:disabled) {
+    background: #334155;
+    border-color: #475569;
+    color: #ffffff;
+  }
+
+  .game-sliding-fifteen .btn-action:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  /* 홀짝성 탐구 미션 퀴즈 패널 */
+  .game-sliding-fifteen .quiz-box {
+    background: rgba(15, 23, 42, 0.9);
+    border: 2px solid #38bdf8;
+    border-radius: 14px;
+    padding: 14px;
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .game-sliding-fifteen .quiz-box.active {
+    display: flex;
+  }
+
+  .game-sliding-fifteen .quiz-title {
+    font-size: 0.92rem;
+    font-weight: 800;
+    color: #facc15;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .game-sliding-fifteen .quiz-desc {
+    font-size: 0.82rem;
+    color: #cbd5e1;
+    line-height: 1.5;
+  }
+
+  .game-sliding-fifteen .quiz-btns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 4px;
+  }
+
+  .game-sliding-fifteen .btn-quiz {
+    padding: 10px;
+    border-radius: 10px;
+    font-weight: 800;
+    font-size: 0.88rem;
+    cursor: pointer;
+    border: 1px solid;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: transform 0.15s;
+  }
+
+  .game-sliding-fifteen .btn-quiz:hover {
+    transform: scale(1.03);
+  }
+
+  .game-sliding-fifteen .btn-quiz.yes {
+    background: rgba(16, 185, 129, 0.22);
+    color: #34d399;
+    border-color: #059669;
+  }
+
+  .game-sliding-fifteen .btn-quiz.no {
+    background: rgba(239, 68, 68, 0.22);
+    color: #f87171;
+    border-color: #dc2626;
+  }
+
+  .game-sliding-fifteen .guide-box {
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 12px;
+    padding: 13px;
+    font-size: 0.84rem;
+    color: #cbd5e1;
+    line-height: 1.55;
+  }
+
+  .game-sliding-fifteen .guide-box b {
+    color: #facc15;
+  }
+
+  .game-sliding-fifteen .guide-box .hl {
+    color: #38bdf8;
+  }
+
+  /* 모달 팝업 */
+  .game-sliding-fifteen .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.78);
+    backdrop-filter: blur(5px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    padding: 20px;
+  }
+
+  .game-sliding-fifteen .modal-backdrop.open {
+    display: flex;
+  }
+
+  .game-sliding-fifteen .modal-box {
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 20px;
+    width: 100%;
+    max-width: 680px;
+    max-height: 88vh;
+    overflow-y: auto;
+    padding: 24px;
+    color: #e2e8f0;
+    box-shadow: 0 24px 50px rgba(0, 0, 0, 0.65);
+  }
+
+  .game-sliding-fifteen .modal-title {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: #f8fafc;
+    margin: 0 0 14px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .game-sliding-fifteen .modal-close-btn {
+    width: 100%;
+    background: #0ea5e9;
+    color: #ffffff;
+    border: none;
+    padding: 13px;
+    border-radius: 12px;
+    font-size: 0.96rem;
+    font-weight: 800;
+    cursor: pointer;
+    margin-top: 18px;
+    transition: background 0.2s;
+  }
+
+  .game-sliding-fifteen .modal-close-btn:hover {
+    background: #0284c7;
+  }
+
+  /* 치환 홀짝성 표 */
+  .game-sliding-fifteen .parity-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 12px;
+    font-size: 0.86rem;
+  }
+
+  .game-sliding-fifteen .parity-table th,
+  .game-sliding-fifteen .parity-table td {
+    border: 1px solid #334155;
+    padding: 8px 12px;
+    text-align: center;
+  }
+
+  .game-sliding-fifteen .parity-table th {
+    background: #0f172a;
+    color: #38bdf8;
+    font-weight: 800;
+  }
+</style>
+
+<script>
+  /* ==========================================================================
+     SlidingFifteen 모듈 - 15-슬라이딩 퍼즐 완결판
+     (1차원 절대 인덱스 슬라이딩 공식 및 안전 복원 엔진 & GAS 안전 홈)
+     ========================================================================== */
+  const SlidingFifteen = (function () {
+    let boardSize = 4; // 3(8-퍼즐), 4(15-퍼즐), 5(24-퍼즐)
+    let board = []; // 1 ~ N^2-1, 0=빈칸
+    let lastValidBoard = []; // 무결성 위반 시 이전 정상 보드로만 안전 복원
+    let movesCount = 0;
+    let score = 100;
+    let timerInterval = null;
+    let elapsedSeconds = 0;
+    let isCompleted = false;
+    let isQuizMode = false;
+    let currentQuizSolvable = true;
+    let quizAnswered = false;
+    let toastTimer = null;
+
+    const escapeHTML = (str) => {
+      if (!str) return '';
+      return String(str).replace(/[&<>"']/g, function(match) {
+        const escape = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+        return escape[match];
+      });
+    };
+
+    function showToast(msg, isError = false) {
+      let host = document.getElementById('sliding-fifteen-app');
+      if (!host) return;
+      let toast = host.querySelector('#sf-toast');
+      if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'sf-toast';
+        toast.style.cssText = 'position:absolute; top:20px; left:50%; transform:translateX(-50%); padding:12px 24px; border-radius:12px; font-weight:800; font-size:1rem; z-index:99999; box-shadow:0 10px 25px rgba(0,0,0,0.5); transition:all 0.3s; text-align:center; min-width:300px; pointer-events:none; opacity:0;';
+        host.appendChild(toast);
+      }
+      toast.style.background = isError ? '#ef4444' : '#10b981';
+      toast.style.color = isError ? '#ffffff' : '#0f172a';
+      toast.textContent = msg;
+      void toast.offsetWidth;
+      toast.style.opacity = '1';
+      toast.style.top = '20px';
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.top = '0px';
+      }, 3000);
+    }
+
+    // 동시 실행/이중 이벤트 차단용 원자적 락(Atomic Lock)
+    let isMoving = false;
+    let lastMoveTimestamp = 0;
+    let autoSlideTimer = null;
+
+    // 터치 스와이프 감지용
+    let touchStartX = 0;
+    let touchStartY = 0;
+
+    function mount(container, context) {
+      let target = null;
+      if (typeof container === 'string') target = document.querySelector(container);
+      else if (container instanceof HTMLElement) target = container;
+      if (!target) target = document.getElementById('mathlab-view') || document.getElementById('new-root') || document.getElementById('game-container');
+
+      if (!target || target === document.body) {
+        let host = document.getElementById('sliding-fifteen-force-host');
+        if (!host) {
+          host = document.createElement('div');
+          host.id = 'sliding-fifteen-force-host';
+          host.style.cssText = 'width:100%; max-width:1040px; margin:0 auto; padding:16px; box-sizing:border-box; z-index:999; position:relative; background:#0f172a; border-radius:24px;';
+          const footer = document.querySelector('footer, #footer, .app-footer');
+          if (footer && footer.parentNode) {
+            footer.parentNode.insertBefore(host, footer);
+          } else {
+            document.body.appendChild(host);
+          }
+        }
+        target = host;
+      }
+      // 🌟 스킬 표준 방어막: 과거 goHome 등으로 인라인 display:none이 남아있다면 즉시 복구 (재진입 빈 화면 방지)
+      if (target) {
+        target.style.display = '';
+      }
+      target.innerHTML = `
+        <div class="game-sliding-fifteen" id="sliding-fifteen-app">
+          <div class="stats-bar">
+            <div class="title-group">
+              <div class="title-icon">🔀</div>
+              <div>
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <span class="title-text">15-슬라이딩 퍼즐</span>
+                  <span class="title-badge">순열 & 치환의 홀짝성(Parity)</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="header-actions">
+              <button class="btn-header home" onclick="SlidingFifteen.goHome()">
+                <span>🏠 홈으로</span>
+              </button>
+              <button class="btn-header quiz" onclick="SlidingFifteen.startParityQuizMode()">
+                <span>🔍 홀짝성 가해성 판별 퀴즈</span>
+              </button>
+              <button class="btn-header" onclick="SlidingFifteen.showGuideModal()">
+                <span>📖 수학 원리 & 게임방법</span>
+              </button>
+              <button class="btn-header" onclick="SlidingFifteen.showRankingModal()">
+                <span>🏆 명예의 전당</span>
+              </button>
+              <button class="btn-header primary" onclick="SlidingFifteen.resetGame()">
+                <span>🔄 새 게임</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="status-panel">
+            <div class="mode-tabs">
+              <button class="mode-btn" id="sf-btn-3" onclick="SlidingFifteen.setDifficulty(3)">쉬움 (3×3 / 8-퍼즐)</button>
+              <button class="mode-btn active" id="sf-btn-4" onclick="SlidingFifteen.setDifficulty(4)">보통 (4×4 / 15-퍼즐)</button>
+              <button class="mode-btn" id="sf-btn-5" onclick="SlidingFifteen.setDifficulty(5)">도전 (5×5 / 24-퍼즐)</button>
+            </div>
+
+            <div class="info-group">
+              <div class="info-item">
+                <span>🔄 이동 횟수:</span>
+                <span class="info-value" id="sf-moves">0회</span>
+              </div>
+              <div class="info-item">
+                <span>⏱️ 시간:</span>
+                <span class="info-value" id="sf-timer">00:00</span>
+              </div>
+              <div class="info-item">
+                <span>⭐ 점수:</span>
+                <span class="info-value score" id="sf-score">100</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="main-layout">
+            <div class="board-container" id="sf-board-wrapper">
+              <div class="sliding-grid" id="sf-grid"></div>
+            </div>
+
+            <div class="side-panel">
+              <div class="panel-title">⚡ 퍼즐 제어 및 탐구 툴</div>
+
+              <!-- 홀짝성 탐구 미션 퀴즈 패널 -->
+              <div class="quiz-box" id="sf-quiz-panel">
+                <div class="quiz-title">🔍 [홀짝성 탐구 미션] 가해성 판별</div>
+                <div class="quiz-desc">
+                  현재 제시된 타일 배치는 치환의 홀짝성(Parity) 규칙상 빈칸을 움직여 <b>완벽한 1~15 정렬로 풀 수 있는 배치일까요?</b>
+                </div>
+                <div class="quiz-btns">
+                  <button class="btn-quiz yes" onclick="SlidingFifteen.submitQuizAnswer(true)">⭕ 풀 수 있다</button>
+                  <button class="btn-quiz no" onclick="SlidingFifteen.submitQuizAnswer(false)">❌ 풀 수 없다</button>
+                </div>
+              </div>
+
+              <div class="control-group">
+                <button class="btn-action" onclick="SlidingFifteen.useHintNextMove()">
+                  <span>💡 다음 추천 이동 (최단거리 휴리스틱)</span>
+                  <span style="font-size:0.8rem; color:#f87171;">-5점</span>
+                </button>
+                <button class="btn-action" onclick="SlidingFifteen.autoSlideStep()">
+                  <span>✨ 1칸 자동 정렬 시연</span>
+                  <span>▶</span>
+                </button>
+                <button class="btn-action" onclick="SlidingFifteen.showInversionAnalysis()">
+                  <span>📊 현재 배치 역전 수 & 홀짝성 분석</span>
+                  <span style="font-size:0.8rem; color:#38bdf8;">탐구</span>
+                </button>
+              </div>
+
+              <div class="guide-box">
+                <b>💡 15-슬라이딩 퍼즐 핵심 팁</b><br>
+                1. <b>행·열 다중 밀기</b>: 빈칸과 같은 가로줄/세로줄에 있는 타일을 클릭하면 <b>여러 장을 한 번에</b> 밀 수 있습니다.<br>
+                2. <b>키보드/터치</b>: 방향키(↑↓←→) 또는 타일 스와이프로 직관적 이동이 가능합니다.<br>
+                3. <b>홀짝성의 비밀</b>: 두 타일(예: 14와 15)만 맞바뀐 배치는 치환의 홀짝성(Parity)이 불일치하여 <b>영원히 풀 수 없습니다</b>!
+              </div>
+            </div>
+          </div>
+
+          <!-- 가이드 모달 -->
+          <div class="modal-backdrop" id="sf-guide-modal">
+            <div class="modal-box">
+              <h3 class="modal-title">📖 15-슬라이딩 퍼즐 수학 원리 & 게임방법</h3>
+              <p style="color:#cbd5e1; line-height:1.65; margin:0 0 14px 0;">
+                <b>1. 순열과 치환 (Permutations & Substitutions)</b><br>
+                타일들이 흩어진 상태에서 빈칸(0)과 자리를 맞바꿔 정렬하는 과정은 유한 집합의 원소 순서를 바꾸는 <b>치환(Permutation) 조작</b>입니다.<br><br>
+                <b>2. 치환의 홀짝성 (Parity)과 역전 수 (Inversion Count)</b><br>
+                - <b>역전 수(Inversion Count)</b>: 타일을 1번부터 차례대로 나열했을 때, 앞쪽에 더 큰 숫자가 뒤쪽의 작은 숫자보다 앞에 나오는 쌍의 개수입니다.<br>
+                - 빈칸이 좌우로 움직일 때는 타일들의 순서가 변하지 않으므로 역전 수의 홀짝성이 변하지 않습니다.<br>
+                - <b>가해성 판별 공식 (N이 짝수인 4×4 퍼즐 기준)</b>:<br>
+                  <span style="color:#facc15; font-weight:800;">(역전 수) + (빈칸이 아래쪽에서부터 몇 번째 행에 있는가)</span> 의 값이 <b>짝수</b>일 때만 정렬이 가능합니다!<br><br>
+                <b>3. 왜 '14와 15만 바뀐 퍼즐'은 못 풀까?</b><br>
+                단 두 타일만 맞바꾸면 역전 수가 딱 1 홀수만큼 변하기 때문에, 상하좌우 빈칸 이동만으로는 홀짝성이 엇갈려 절대로 정렬 상태에 도달할 수 없습니다.
+              </p>
+              <table class="parity-table">
+                <thead>
+                  <tr>
+                    <th>퍼즐 크기</th>
+                    <th>역전 수 (I)</th>
+                    <th>빈칸 행 위치 (R)</th>
+                    <th>풀 가능 여부 (가해성)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>3×3 (홀수 격자)</td>
+                    <td>짝수</td>
+                    <td>무관</td>
+                    <td style="color:#34d399; font-weight:800;">⭕ 풀 수 있음</td>
+                  </tr>
+                  <tr>
+                    <td>3×3 (홀수 격자)</td>
+                    <td>홀수</td>
+                    <td>무관</td>
+                    <td style="color:#f87171; font-weight:800;">❌ 절대 불가능</td>
+                  </tr>
+                  <tr>
+                    <td>4×4 (짝수 격자)</td>
+                    <td>I + R 합이 짝수</td>
+                    <td>아래부터 1, 2, 3, 4행</td>
+                    <td style="color:#34d399; font-weight:800;">⭕ 풀 수 있음</td>
+                  </tr>
+                  <tr>
+                    <td>4×4 (짝수 격자)</td>
+                    <td>I + R 합이 홀수</td>
+                    <td>아래부터 1, 2, 3, 4행</td>
+                    <td style="color:#f87171; font-weight:800;">❌ 절대 불가능</td>
+                  </tr>
+                </tbody>
+              </table>
+              <button class="modal-close-btn" onclick="SlidingFifteen.closeModals()">확인 및 퍼즐 도전</button>
+            </div>
+          </div>
+
+          <!-- 역전 수 분석 모달 -->
+          <div class="modal-backdrop" id="sf-inversion-modal">
+            <div class="modal-box">
+              <h3 class="modal-title">📊 현재 판 배치 역전 수 & 홀짝성 분석 결과</h3>
+              <div id="sf-inversion-content" style="color:#e2e8f0; font-size:0.92rem; line-height:1.65;"></div>
+              <button class="modal-close-btn" onclick="SlidingFifteen.closeModals()">닫기</button>
+            </div>
+          </div>
+
+          <!-- 명예의 전당 모달 -->
+          <div class="modal-backdrop" id="sf-ranking-modal">
+            <div class="modal-box">
+              <h3 class="modal-title">🏆 15-슬라이딩 퍼즐 명예의 전당 (Top 5)</h3>
+              <div id="board-sliding-fifteen">
+                <p style="text-align:center; color:#94a3b8;">랭킹 데이터를 불러오는 중...</p>
+              </div>
+              <div style="margin-top:16px; display:flex; gap:8px;">
+                <input type="text" id="sliding-fifteen-nickname-input" placeholder="닉네임 입력" style="flex:1; padding:10px 14px; border-radius:10px; border:1px solid #334155; background:#0f172a; color:#f8fafc; font-weight:700;">
+                <button class="btn-header primary" onclick="SlidingFifteen.submitRankScore()">등록</button>
+              </div>
+              <button class="modal-close-btn" onclick="SlidingFifteen.closeModals()">닫기</button>
+            </div>
+          </div>
+        </div>
+      `;
+
+      window.removeEventListener('keydown', onKeyDown);
+      window.addEventListener('keydown', onKeyDown);
+
+      setupTouchSwipe();
+      setDifficulty(4);
+    }
+
+        // 🌟 스킬 표준 안전 홈 버튼 (기본 상/하단 홈버튼과 100% 동일 동작)
+    function goHome() {
+      stopTimer();
+      if (autoSlideTimer) clearTimeout(autoSlideTimer);
+      window.removeEventListener('keydown', onKeyDown);
+
+      // 1. 표준 브리지 최우선 호출 (상단 로고/우측 하단 홈버튼과 완벽 동일 동작)
+      if (window.LegacyBridge && typeof window.LegacyBridge.backHome === 'function') {
+        try { window.LegacyBridge.backHome(); return; } catch(e) {}
+      }
+      if (typeof window.renderLegacyDashboardHome === 'function') {
+        try { window.renderLegacyDashboardHome(); return; } catch(e) {}
+      }
+      if (typeof window.MathLabRenderHome === 'function') {
+        try { window.MathLabRenderHome(); return; } catch(e) {}
+      }
+
+      // 2. 브리지 부재 시 폴백: 수동 루트 전환 및 대시보드 활성화
+      const mathlabRoot = document.getElementById('mathlab-root');
+      const legacyRoot = document.getElementById('legacy-root');
+      if (mathlabRoot) mathlabRoot.classList.add('hidden');
+      if (legacyRoot) legacyRoot.classList.remove('hidden');
+
+      const dashboard = document.getElementById('dashboard-screen');
+      if (dashboard) {
+        dashboard.classList.add('active');
+        dashboard.style.display = '';
+      }
+      window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+    }
+
+    function setDifficulty(sz) {
+      boardSize = sz;
+      document.querySelectorAll('#sliding-fifteen-app .mode-btn').forEach(btn => btn.classList.remove('active'));
+      const activeBtn = document.getElementById('sf-btn-' + sz);
+      if (activeBtn) activeBtn.classList.add('active');
+      isQuizMode = false;
+      document.getElementById('sf-quiz-panel')?.classList.remove('active');
+      resetGame();
+    }
+
+    function resetGame() {
+      stopTimer();
+      if (autoSlideTimer) clearTimeout(autoSlideTimer);
+      isCompleted = false;
+      isMoving = false;
+      movesCount = 0;
+      score = 100;
+      elapsedSeconds = 0;
+      quizAnswered = false;
+
+      generateShuffleBoard();
+      verifyBoardIntegrity();
+      lastValidBoard = [...board]; // 초기 정상 상태 저장
+      startTimer();
+      renderGrid();
+      updateStatusPanel();
+    }
+
+    function startTimer() {
+      stopTimer();
+      timerInterval = setInterval(() => {
+        elapsedSeconds++;
+        const min = String(Math.floor(elapsedSeconds / 60)).padStart(2, '0');
+        const sec = String(elapsedSeconds % 60).padStart(2, '0');
+        const timerEl = document.getElementById('sf-timer');
+        if (timerEl) timerEl.textContent = `${min}:${sec}`;
+      }, 1000);
+    }
+
+    function stopTimer() {
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+    }
+
+    // 보드 무결성 검증 및 안전 복원 엔진: 위반 시 절대 승리 상태로 가지 않고 직전 정상 상태(lastValidBoard)로 안전 복원
+    function verifyBoardIntegrity() {
+      const total = boardSize * boardSize;
+      const seen = new Set();
+      let isValid = true;
+
+      if (!board || board.length !== total) {
+        isValid = false;
+      } else {
+        for (let i = 0; i < total; i++) {
+          const v = board[i];
+          if (typeof v !== 'number' || isNaN(v) || v < 0 || v >= total || seen.has(v)) {
+            isValid = false;
+            break;
+          }
+          seen.add(v);
+        }
+      }
+
+      if (!isValid) {
+        console.warn('보드 무결성 위반 방어 작동! 직전 정상 보드 상태로 안전 복원합니다.');
+        if (lastValidBoard && lastValidBoard.length === total) {
+          board = [...lastValidBoard];
+        } else {
+          board = Array.from({ length: total }, (_, i) => (i + 1) % total);
+          generateShuffleBoard(); // 초기 셔플로 재생성하여 자동 완성 방지
+        }
+        return false;
+      }
+      return true;
+    }
+
+    function generateShuffleBoard() {
+      const total = boardSize * boardSize;
+      board = Array.from({ length: total }, (_, i) => (i + 1) % total); // 1..N^2-1, 0
+
+      if (isQuizMode && Math.random() < 0.5) {
+        currentQuizSolvable = false;
+        const idxA = total - 3;
+        const idxB = total - 2;
+        const temp = board[idxA];
+        board[idxA] = board[idxB];
+        board[idxB] = temp;
+      } else {
+        currentQuizSolvable = true;
+      }
+
+      const shuffleSteps = boardSize * boardSize * 24;
+      let emptyIdx = board.indexOf(0);
+
+      for (let step = 0; step < shuffleSteps; step++) {
+        const r = Math.floor(emptyIdx / boardSize);
+        const c = emptyIdx % boardSize;
+        const neighbors = [];
+        if (r > 0) neighbors.push(emptyIdx - boardSize);
+        if (r < boardSize - 1) neighbors.push(emptyIdx + boardSize);
+        if (c > 0) neighbors.push(emptyIdx - 1);
+        if (c < boardSize - 1) neighbors.push(emptyIdx + 1);
+
+        const targetIdx = neighbors[Math.floor(Math.random() * neighbors.length)];
+        board[emptyIdx] = board[targetIdx];
+        board[targetIdx] = 0;
+        emptyIdx = targetIdx;
+      }
+    }
+
+    function startParityQuizMode() {
+      isQuizMode = true;
+      document.getElementById('sf-quiz-panel')?.classList.add('active');
+      resetGame();
+      showToast('🔍 퀴즈 모드 시작!');
+    }
+
+    function submitQuizAnswer(playerGuessSolvable) {
+      if (quizAnswered) {
+        showToast('이미 정답을 제출하셨습니다.', true);
+        return;
+      }
+      quizAnswered = true;
+      if (playerGuessSolvable === currentQuizSolvable) {
+        score += 15;
+        updateStatusPanel();
+        showToast(`🎉 정답! (+15점)`);
+      } else {
+        showToast(`❌ 아쉽습니다! 정답은 [${currentQuizSolvable ? '풀 수 있는 배치' : '풀 수 없는 배치'}]입니다.`, true);
+      }
+      showInversionAnalysis();
+    }
+
+    // 🌟 100% 버그 없는 단일 인덱스 보간 슬라이딩 공식 (행/열 다중 이동 및 보존성 철저 보장)
+    function clickTile(idx) {
+      const now = Date.now();
+      if (isMoving || isCompleted || board[idx] === 0) return;
+      if (now - lastMoveTimestamp < 40) return;
+      isMoving = true;
+      lastMoveTimestamp = now;
+
+      try {
+        const emptyIdx = board.indexOf(0);
+        if (emptyIdx === -1) {
+          verifyBoardIntegrity();
+          isMoving = false;
+          return;
+        }
+
+        const r = Math.floor(idx / boardSize);
+        const c = idx % boardSize;
+        const er = Math.floor(emptyIdx / boardSize);
+        const ec = emptyIdx % boardSize;
+
+        let moved = false;
+        let stepDelta = 0;
+
+        if (r === er) {
+          stepDelta = idx < emptyIdx ? -1 : 1;
+        } else if (c === ec) {
+          stepDelta = idx < emptyIdx ? -boardSize : boardSize;
+        }
+
+        if (stepDelta !== 0) {
+          const nextBoard = [...board];
+          let curr = emptyIdx;
+          let stepCount = 0;
+
+          // 빈칸(emptyIdx)부터 클릭한 타일(idx)까지 순차적으로 1칸씩 당겨옴 (1차원 절대 인덱스 공식)
+          while (curr !== idx) {
+            nextBoard[curr] = nextBoard[curr + stepDelta];
+            curr += stepDelta;
+            stepCount++;
+          }
+          nextBoard[idx] = 0;
+
+          // 시뮬레이션 후 무결성이 정상일 때만 반영
+          const oldBoard = board;
+          board = nextBoard;
+          if (verifyBoardIntegrity()) {
+            lastValidBoard = [...board];
+            movesCount += stepCount;
+            moved = true;
+          } else {
+            board = oldBoard; // 이상 발생 시 시도 원천 취소
+          }
+        }
+
+        if (moved) {
+          renderGrid();
+          updateStatusPanel();
+          checkVictory();
+        }
+      } finally {
+        isMoving = false;
+      }
+    }
+
+    function onKeyDown(e) {
+      if (isCompleted || !document.getElementById('sliding-fifteen-app')) return;
+      const emptyIdx = board.indexOf(0);
+      const er = Math.floor(emptyIdx / boardSize);
+      const ec = emptyIdx % boardSize;
+
+      let targetIdx = -1;
+      if (e.key === 'ArrowUp' && er < boardSize - 1) targetIdx = emptyIdx + boardSize;
+      else if (e.key === 'ArrowDown' && er > 0) targetIdx = emptyIdx - boardSize;
+      else if (e.key === 'ArrowLeft' && ec < boardSize - 1) targetIdx = emptyIdx + 1;
+      else if (e.key === 'ArrowRight' && ec > 0) targetIdx = emptyIdx - 1;
+
+      if (targetIdx !== -1) {
+        e.preventDefault();
+        clickTile(targetIdx);
+      }
+    }
+
+    function setupTouchSwipe() {
+      const gridEl = document.getElementById('sf-board-wrapper');
+      if (!gridEl) return;
+
+      gridEl.addEventListener('touchstart', (e) => {
+        if (e.touches.length === 1) {
+          touchStartX = e.touches[0].clientX;
+          touchStartY = e.touches[0].clientY;
+        }
+      }, { passive: true });
+
+      gridEl.addEventListener('touchend', (e) => {
+        if (e.changedTouches.length === 1 && !isCompleted && !isMoving) {
+          const dx = e.changedTouches[0].clientX - touchStartX;
+          const dy = e.changedTouches[0].clientY - touchStartY;
+          const absDx = Math.abs(dx);
+          const absDy = Math.abs(dy);
+
+          if (Math.max(absDx, absDy) > 35) {
+            const emptyIdx = board.indexOf(0);
+            const er = Math.floor(emptyIdx / boardSize);
+            const ec = emptyIdx % boardSize;
+            let targetIdx = -1;
+
+            if (absDx > absDy) {
+              if (dx < 0 && ec < boardSize - 1) targetIdx = emptyIdx + 1;
+              else if (dx > 0 && ec > 0) targetIdx = emptyIdx - 1;
+            } else {
+              if (dy < 0 && er < boardSize - 1) targetIdx = emptyIdx + boardSize;
+              else if (dy > 0 && er > 0) targetIdx = emptyIdx - boardSize;
+            }
+
+            if (targetIdx !== -1) {
+              if (e.cancelable) e.preventDefault();
+              clickTile(targetIdx);
+            }
+          }
+        }
+      }, { passive: false });
+    }
+
+    function calculateParityInfo() {
+      const tiles = board.filter(n => n !== 0);
+      let inversions = 0;
+      for (let i = 0; i < tiles.length; i++) {
+        for (let j = i + 1; j < tiles.length; j++) {
+          if (tiles[i] > tiles[j]) inversions++;
+        }
+      }
+
+      const emptyIdx = board.indexOf(0);
+      const emptyRowFromBottom = boardSize - Math.floor(emptyIdx / boardSize);
+      
+      let isSolvable = false;
+      if (boardSize % 2 === 1) {
+        isSolvable = (inversions % 2 === 0);
+      } else {
+        isSolvable = ((inversions + emptyRowFromBottom) % 2 === 0);
+      }
+
+      return { inversions, emptyRowFromBottom, isSolvable };
+    }
+
+    function showInversionAnalysis() {
+      const info = calculateParityInfo();
+      const contentEl = document.getElementById('sf-inversion-content');
+      if (contentEl) {
+        contentEl.innerHTML = `
+          <div style="background:#0f172a; padding:16px; border-radius:14px; border:1px solid #334155; margin-bottom:14px;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+              <span>🔢 현재 타일들의 역전 수 (Inversions):</span>
+              <span style="font-weight:800; color:#38bdf8;">${info.inversions}개 (${info.inversions % 2 === 0 ? '짝수' : '홀수'})</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+              <span>⬜ 빈칸(0)의 하단부터 행 위치 (Row):</span>
+              <span style="font-weight:800; color:#facc15;">${info.emptyRowFromBottom}행</span>
+            </div>
+            <div style="border-top:1px dashed #334155; padding-top:10px; display:flex; justify-content:space-between;">
+              <span>🎯 최종 판정 가해성 (Solvability):</span>
+              <span style="font-weight:800; color:${info.isSolvable ? '#34d399' : '#f87171'}; font-size:1.05rem;">
+                ${info.isSolvable ? '⭕ 풀 수 있는 배치' : '❌ 풀 수 없는 불가능 배치'}
+              </span>
+            </div>
+          </div>
+          <p style="color:#cbd5e1; font-size:0.86rem; line-height:1.6;">
+            <b>💡 판별 원리 설명</b>: ${boardSize % 2 === 1 ?
+              `현재 보드가 홀수 격자(${boardSize}×${boardSize})이므로 역전 수의 홀짝성만으로 판별합니다. 역전 수(${info.inversions})가 ${info.inversions % 2 === 0 ? '짝수이므로 정렬 가능합니다.' : '홀수이므로 두 타일만 엇갈려 있어 절대 정렬할 수 없습니다.'}` :
+              `짝수 격자(${boardSize}×${boardSize})에서는 <b>(역전 수 + 아래부터 빈칸 행 번호)</b>의 합이 짝수여야 합니다. 현재 (${info.inversions} + ${info.emptyRowFromBottom} = ${info.inversions + info.emptyRowFromBottom})이 ${ (info.inversions + info.emptyRowFromBottom) % 2 === 0 ? '짝수이므로 100% 풀 수 있는 배치입니다.' : '홀수이므로 두 타일만 맞바뀐 상태와 같아 영원히 풀 수 없습니다!' }`
+            }
+          </p>
+        `;
+      }
+      document.getElementById('sf-inversion-modal')?.classList.add('open');
+    }
+
+    function useHintNextMove() {
+      if (isCompleted || isMoving) return;
+      const emptyIdx = board.indexOf(0);
+      const er = Math.floor(emptyIdx / boardSize);
+      const ec = emptyIdx % boardSize;
+
+      const neighbors = [];
+      if (er > 0) neighbors.push(emptyIdx - boardSize);
+      if (er < boardSize - 1) neighbors.push(emptyIdx + boardSize);
+      if (ec > 0) neighbors.push(emptyIdx - 1);
+      if (ec < boardSize - 1) neighbors.push(emptyIdx + 1);
+
+      let bestIdx = neighbors[0];
+      let minManhattan = 999999;
+
+      for (const nIdx of neighbors) {
+        const tempBoard = [...board];
+        tempBoard[emptyIdx] = tempBoard[nIdx];
+        tempBoard[nIdx] = 0;
+
+        let totalMD = 0;
+        for (let i = 0; i < tempBoard.length; i++) {
+          const val = tempBoard[i];
+          if (val !== 0) {
+            const targetIdx = val - 1;
+            const r = Math.floor(i / boardSize);
+            const c = i % boardSize;
+            const tr = Math.floor(targetIdx / boardSize);
+            const tc = targetIdx % boardSize;
+            totalMD += Math.abs(r - tr) + Math.abs(c - tc);
+          }
+        }
+
+        if (totalMD < minManhattan) {
+          minManhattan = totalMD;
+          bestIdx = nIdx;
+        }
+      }
+
+      score = Math.max(0, score - 5);
+      updateStatusPanel();
+
+      document.querySelectorAll('.game-sliding-fifteen .tile').forEach(el => el.classList.remove('hint-pulse'));
+      const tileEls = document.querySelectorAll('.game-sliding-fifteen .tile');
+      if (tileEls[bestIdx]) tileEls[bestIdx].classList.add('hint-pulse');
+    }
+
+    function autoSlideStep() {
+      if (isCompleted || isMoving) return;
+      if (autoSlideTimer) clearTimeout(autoSlideTimer);
+
+      const tileEls = document.querySelectorAll('.game-sliding-fifteen .tile');
+      let bestIdx = -1;
+      tileEls.forEach((el, idx) => {
+        if (el.classList.contains('hint-pulse')) bestIdx = idx;
+      });
+
+      if (bestIdx !== -1 && board[bestIdx] !== 0) {
+        clickTile(bestIdx);
+      } else {
+        useHintNextMove();
+        autoSlideTimer = setTimeout(() => {
+          const els = document.querySelectorAll('.game-sliding-fifteen .tile');
+          let bIdx = -1;
+          els.forEach((el, idx) => {
+            if (el.classList.contains('hint-pulse')) bIdx = idx;
+          });
+          if (bIdx !== -1 && board[bIdx] !== 0) clickTile(bIdx);
+        }, 320);
+      }
+    }
+
+    function renderGrid() {
+      const gridEl = document.getElementById('sf-grid');
+      if (!gridEl) return;
+
+      gridEl.style.gridTemplateColumns = `repeat(${boardSize}, minmax(0, 1fr))`;
+      gridEl.innerHTML = '';
+
+      const total = boardSize * boardSize;
+      for (let i = 0; i < total; i++) {
+        const val = board[i];
+        const tileEl = document.createElement('div');
+
+        if (val === 0) {
+          tileEl.className = 'tile empty';
+        } else {
+          const isCorrect = (val === i + 1);
+          tileEl.className = `tile ${isCorrect ? 'correct' : ''}`;
+          tileEl.textContent = val;
+          tileEl.onclick = () => clickTile(i);
+        }
+
+        gridEl.appendChild(tileEl);
+      }
+    }
+
+    function updateStatusPanel() {
+      const movesEl = document.getElementById('sf-moves');
+      const scoreEl = document.getElementById('sf-score');
+      if (movesEl) movesEl.textContent = `${movesCount}회`;
+      if (scoreEl) scoreEl.textContent = score;
+    }
+
+    function checkVictory() {
+      const total = boardSize * boardSize;
+      for (let i = 0; i < total - 1; i++) {
+        if (board[i] !== i + 1) return;
+      }
+      if (board[total - 1] !== 0) return;
+
+      isCompleted = true;
+      stopTimer();
+
+      const timeBonus = Math.max(0, 50 - Math.floor(elapsedSeconds / 4));
+      const moveBonus = Math.max(0, 40 - Math.floor(movesCount / 3));
+      score += 20 + timeBonus + moveBonus;
+      updateStatusPanel();
+
+      renderGrid();
+
+      setTimeout(() => {
+        showToast(`🎉 축하합니다! 완벽하게 정렬했습니다! (+${score}점)`);
+        showRankingModal();
+      }, 350);
+    }
+
+    function showGuideModal() {
+      document.getElementById('sf-guide-modal')?.classList.add('open');
+    }
+
+    function showRankingModal() {
+      document.getElementById('sf-ranking-modal')?.classList.add('open');
+      if (typeof loadGameLeaderboard === 'function') {
+        loadGameLeaderboard('15슬라이딩퍼즐', true, 'board-sliding-fifteen');
+      }
+    }
+
+    function closeModals() {
+      document.querySelectorAll('#sliding-fifteen-app .modal-backdrop').forEach(el => el.classList.remove('open'));
+    }
+
+        function submitRankScore() {
+      const input = document.getElementById('sliding-fifteen-nickname-input');
+      const nickname = input ? input.value.trim() : '';
+      if (!nickname) {
+        showToast('닉네임을 입력해 주세요.', true);
+        return;
+      }
+
+      try {
+        let list = JSON.parse(localStorage.getItem('mathlab_lb_sliding_fifteen') || '[]');
+        const dateStr = new Date().toLocaleDateString('ko-KR', { month: '2-digit', day: '2-digit' });
+        list.push({ nickname, score, date: dateStr });
+        list.sort((a, b) => b.score - a.score);
+        localStorage.setItem('mathlab_lb_sliding_fifteen', JSON.stringify(list.slice(0, 20)));
+      } catch (e) {}
+
+      if (typeof window.submitRanking === 'function') {
+        window.submitRanking('15슬라이딩퍼즐', score, true, 'sliding-fifteen-nickname-input', 'board-sliding-fifteen');
+      } else if (typeof window.parent?.submitRanking === 'function') {
+        window.parent.submitRanking('15슬라이딩퍼즐', score, true, 'sliding-fifteen-nickname-input', 'board-sliding-fifteen');
+      } else {
+        showToast(`🎉 명예의 전당 등록 완료!`);
+        if (input) input.value = '';
+        closeModals();
+      }
+    }
+
+    function destroy() {
+      stopTimer();
+      if (autoSlideTimer) clearTimeout(autoSlideTimer);
+      window.removeEventListener('keydown', onKeyDown);
+    }
+
+    return {
+      mount,
+      resetGame,
+      destroy,
+      setDifficulty,
+      clickTile,
+      goHome,
+      startParityQuizMode,
+      submitQuizAnswer,
+      showInversionAnalysis,
+      useHintNextMove,
+      autoSlideStep,
+      showGuideModal,
+      showRankingModal,
+      closeModals,
+      submitRankScore
+    };
+  })();
+
+  window.SlidingFifteen = SlidingFifteen;
+
+    // 🌟 스킬 표준 3중 자율 등록 (스크립트 로딩 순서 무관 100% 등록 보장)
+  function registerSlidingFifteen() {
+    if (typeof window.MathLabGames !== 'undefined' && typeof window.MathLabGames.register === 'function') {
+      if (!window.MathLabGames.get('sliding-fifteen')) {
+        window.MathLabGames.register({
+          id: 'sliding-fifteen',
+          title: '15-슬라이딩 퍼즐',
+          icon: '🔀',
+          sourceType: 'new',
+          mount(container, context) { SlidingFifteen.mount(container, context); },
+          reset() { SlidingFifteen.resetGame(); },
+          destroy() { SlidingFifteen.destroy(); }
+        });
+      }
+    }
+  }
+
+  registerSlidingFifteen();
+  window.addEventListener('DOMContentLoaded', registerSlidingFifteen);
+  setTimeout(registerSlidingFifteen, 100);
+  setTimeout(registerSlidingFifteen, 500);
+</script>

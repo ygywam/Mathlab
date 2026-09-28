@@ -1,0 +1,870 @@
+<style>
+  .game-quadratic-cannon {
+    width: 100%;
+    min-height: 100%;
+    padding: 28px;
+    box-sizing: border-box;
+    color: #172033;
+    background: linear-gradient(135deg, #eef2ff 0%, #fef3c7 100%);
+    border-radius: 24px;
+    font-family: inherit;
+  }
+
+  .game-quadratic-cannon * {
+    box-sizing: border-box;
+  }
+
+  .qc-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+
+  .qc-title h2 {
+    margin: 0 0 8px;
+    font-size: clamp(2rem, 4vw, 3rem);
+    line-height: 1.1;
+    color: #111827;
+  }
+
+  .qc-title p {
+    margin: 0;
+    color: #4b5563;
+    line-height: 1.6;
+    font-size: 1.05rem;
+  }
+
+  .qc-badge {
+    flex: 0 0 auto;
+    padding: 10px 14px;
+    border-radius: 999px;
+    color: #fff;
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    font-weight: 900;
+    box-shadow: 0 10px 22px rgba(79, 70, 229, 0.25);
+  }
+
+  .qc-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(300px, 0.75fr);
+    gap: 20px;
+    align-items: stretch;
+  }
+
+  .qc-card {
+    background: rgba(255, 255, 255, 0.94);
+    border: 1px solid rgba(99, 102, 241, 0.22);
+    border-radius: 22px;
+    padding: 22px;
+    box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
+  }
+
+  .qc-canvas-wrap {
+    position: relative;
+    width: 100%;
+    border-radius: 20px;
+    overflow: hidden;
+    background: linear-gradient(180deg, #dbeafe 0%, #eff6ff 62%, #bbf7d0 62%, #86efac 100%);
+    border: 2px solid #c7d2fe;
+  }
+
+  .qc-canvas {
+    display: block;
+    width: 100%;
+    height: 430px;
+  }
+
+  .qc-formula {
+    margin-top: 16px;
+    padding: 18px;
+    border-radius: 18px;
+    background: #111827;
+    color: #fff;
+    text-align: center;
+    font-size: clamp(1.25rem, 3vw, 2rem);
+    font-weight: 900;
+    letter-spacing: 0.02em;
+  }
+
+  .qc-status {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .qc-pill {
+    padding: 10px 13px;
+    border-radius: 999px;
+    background: #ede9fe;
+    color: #5b21b6;
+    font-weight: 900;
+  }
+
+  .qc-pill.score {
+    background: #dcfce7;
+    color: #166534;
+  }
+
+  .qc-pill.target {
+    background: #fef3c7;
+    color: #92400e;
+  }
+
+  .qc-controls {
+    display: grid;
+    gap: 16px;
+  }
+
+  .qc-control {
+    padding: 14px;
+    border-radius: 18px;
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+  }
+
+  .qc-control label {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    font-weight: 900;
+    color: #334155;
+    margin-bottom: 10px;
+  }
+
+  .qc-control input[type="range"] {
+  width: 100%;
+  accent-color: #4f46e5;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+  cursor: grab;
+}
+
+.qc-control input[type="range"]:active {
+  cursor: grabbing;
+}
+
+  .qc-value {
+    color: #4f46e5;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .qc-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 16px;
+  }
+
+  .qc-btn {
+    border: 0;
+    border-radius: 16px;
+    padding: 14px 16px;
+    font-size: 1.05rem;
+    font-weight: 900;
+    cursor: pointer;
+    color: #fff;
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    box-shadow: 0 10px 20px rgba(79, 70, 229, 0.22);
+    transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+  }
+
+  .qc-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 24px rgba(79, 70, 229, 0.3);
+  }
+
+  .qc-btn.secondary {
+    background: linear-gradient(135deg, #0f766e, #14b8a6);
+    box-shadow: 0 10px 20px rgba(20, 184, 166, 0.22);
+  }
+
+  .qc-btn.gray {
+    background: linear-gradient(135deg, #64748b, #334155);
+    box-shadow: 0 10px 20px rgba(51, 65, 85, 0.22);
+  }
+
+  .qc-message {
+    margin-top: 16px;
+    padding: 16px;
+    border-radius: 16px;
+    background: #eff6ff;
+    color: #1e40af;
+    font-weight: 800;
+    line-height: 1.55;
+    min-height: 78px;
+  }
+
+  .qc-message.hit {
+    background: #ecfdf5;
+    color: #047857;
+  }
+
+  .qc-message.miss {
+    background: #fff7ed;
+    color: #9a3412;
+  }
+
+  .qc-info h3 {
+    margin: 0 0 10px;
+    color: #111827;
+  }
+
+  .qc-info ul {
+    margin: 0;
+    padding-left: 20px;
+    color: #4b5563;
+    line-height: 1.7;
+  }
+
+  .qc-history {
+    max-height: 170px;
+    overflow: auto;
+    padding: 14px;
+    border-radius: 16px;
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+    color: #475569;
+    line-height: 1.55;
+  }
+
+  @media (max-width: 900px) {
+    .game-quadratic-cannon {
+      padding: 18px;
+      border-radius: 18px;
+    }
+
+    .qc-header,
+    .qc-layout {
+      display: block;
+    }
+
+    .qc-badge {
+      display: inline-block;
+      margin-top: 14px;
+    }
+
+    .qc-card + .qc-card {
+      margin-top: 18px;
+    }
+
+    .qc-canvas {
+      height: 340px;
+    }
+
+    .qc-buttons {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+(function () {
+  'use strict';
+
+  if (!window.MathLabGames) {
+    console.error('[MathLab] MathLabGames registry not found: quadratic-cannon');
+    return;
+  }
+
+  const QuadraticCannonGame = {
+  container: null,
+  canvas: null,
+  ctx: null,
+  state: null,
+  drawFrame: null,
+  drawPending: false,
+  canvasSize: { width: 0, height: 0, dpr: 1 },
+
+    mount(container, context) {
+      const view = document.getElementById('mathlab-view');
+
+      if (container && typeof container.innerHTML !== 'undefined') { this.container = container; } else if (view) { this.container = view; } else {
+        console.error('[QuadraticCannon] 렌더링할 #mathlab-view를 찾을 수 없습니다.', container);
+        return;
+      }
+
+      this.reset();
+      this.render();
+    },
+
+    reset() {
+      this.state = {
+        a: -0.18,
+        h: 10,
+        k: 8,
+        score: 0,
+        round: 1,
+        shots: 0,
+        target: this.makeTarget(),
+        lastShot: null,
+        messageType: 'normal',
+        message: 'a, h, k 값을 조절해 포물선이 목표물을 지나가도록 만들어 보세요.',
+        history: []
+      };
+    },
+
+    makeTarget() {
+      return {
+        x: randInt(13, 19),
+        y: randInt(3, 11)
+      };
+    },
+
+    render() {
+      if (!this.container || !this.state) return;
+
+      const messageClass = this.state.messageType === 'hit'
+        ? 'qc-message hit'
+        : this.state.messageType === 'miss'
+          ? 'qc-message miss'
+          : 'qc-message';
+
+      this.container.innerHTML = `
+        <div class="game-quadratic-cannon">
+          <div class="qc-header">
+            <div class="qc-title">
+              <h2>☄️ 이차함수 포물선 대포</h2>
+              <p>이차함수의 계수를 조절해 포물선 궤적으로 목표물을 맞히는 게임입니다.</p>
+            </div>
+            <div class="qc-badge">신규 Registry 게임 · quadratic</div>
+          </div>
+
+          <div class="qc-layout">
+            <div class="qc-card">
+              <div class="qc-status">
+                <div class="qc-pill score">점수: ${this.state.score}</div>
+                <div class="qc-pill">라운드: ${this.state.round}</div>
+                <div class="qc-pill">발사: ${this.state.shots}회</div>
+                <div class="qc-pill target">목표: (${this.state.target.x}, ${this.state.target.y})</div>
+              </div>
+
+              <div class="qc-canvas-wrap">
+                <canvas class="qc-canvas" data-qc-canvas></canvas>
+              </div>
+
+              <div class="qc-formula" data-qc-formula>
+  y = ${formatNumber(this.state.a)}(x - ${formatNumber(this.state.h)})² + ${formatNumber(this.state.k)}
+</div>
+
+              <div class="${messageClass}">
+                ${this.state.message}
+              </div>
+            </div>
+
+            <div class="qc-card">
+              <div class="qc-controls">
+                <div class="qc-control">
+                  <label>
+                    <span>a : 아래로 열린 정도</span>
+                    <span class="qc-value" data-qc-a-value>${formatNumber(this.state.a)}</span>
+                  </label>
+                  <input data-qc-a type="range" min="-0.45" max="-0.05" step="0.01" value="${this.state.a}">
+                </div>
+
+                <div class="qc-control">
+                  <label>
+                    <span>h : 대칭축 x = h</span>
+                    <span class="qc-value" data-qc-h-value>${formatNumber(this.state.h)}</span>
+                  </label>
+                  <input data-qc-h type="range" min="4" max="16" step="0.5" value="${this.state.h}">
+                </div>
+
+                <div class="qc-control">
+                  <label>
+                    <span>k : 꼭짓점의 높이</span>
+                    <span class="qc-value" data-qc-k-value>${formatNumber(this.state.k)}</span>
+                  </label>
+                  <input data-qc-k type="range" min="4" max="16" step="0.5" value="${this.state.k}">
+                </div>
+              </div>
+
+              <div class="qc-buttons">
+                <button class="qc-btn" type="button" data-qc-fire>발사하기</button>
+                <button class="qc-btn secondary" type="button" data-qc-next>새 목표</button>
+                <button class="qc-btn gray" type="button" data-qc-reset>다시 시작</button>
+                <button class="qc-btn gray" type="button" data-qc-home>홈으로</button>
+              </div>
+
+              <div class="qc-info" style="margin-top:18px;">
+                <h3>수업 포인트</h3>
+                <ul>
+                  <li><strong>a</strong>는 포물선의 폭과 방향에 영향을 줍니다.</li>
+                  <li><strong>h</strong>는 대칭축의 위치를 바꿉니다.</li>
+                  <li><strong>k</strong>는 꼭짓점의 높이를 바꿉니다.</li>
+                  <li>목표물의 x값을 식에 대입해 y값을 예측할 수 있습니다.</li>
+                </ul>
+              </div>
+
+              <div style="margin-top:18px;">
+                <h3 style="margin:0 0 10px;">진행 기록</h3>
+                <div class="qc-history">${this.renderHistory()}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      this.bindEvents();
+      this.drawScene();
+    },
+
+    bindEvents() {
+      const root =
+        this.container && typeof this.container.querySelector === 'function'
+          ? this.container.querySelector('.game-quadratic-cannon')
+          : document.querySelector('.game-quadratic-cannon');
+
+      const btnGuide = root.querySelector('#qc-btn-guide');
+      const btnCloseGuide = root.querySelector('#qc-close-guide');
+      const guideModal = root.querySelector('#qc-guide-modal');
+      if (btnGuide && guideModal) {
+        btnGuide.addEventListener('click', () => guideModal.style.display = 'flex');
+      }
+      if (btnCloseGuide && guideModal) {
+        btnCloseGuide.addEventListener('click', () => guideModal.style.display = 'none');
+      }
+
+      if (!root) {
+        console.error('[QuadraticCannon] .game-quadratic-cannon root를 찾을 수 없습니다.', this.container);
+        return;
+      }
+
+      this.canvas = root.querySelector('[data-qc-canvas]');
+      this.ctx = this.canvas ? this.canvas.getContext('2d') : null;
+
+      const aInput = root.querySelector('[data-qc-a]');
+      const hInput = root.querySelector('[data-qc-h]');
+      const kInput = root.querySelector('[data-qc-k]');
+
+      const updateFromInputs = () => {
+  this.state.a = Number(aInput.value);
+  this.state.h = Number(hInput.value);
+  this.state.k = Number(kInput.value);
+  this.state.lastShot = null;
+
+  this.updateLiveValues(root);
+  this.requestDraw();
+};
+
+      if (aInput) {
+  aInput.addEventListener('input', updateFromInputs);
+}
+
+if (hInput) {
+  hInput.addEventListener('input', updateFromInputs);
+}
+
+if (kInput) {
+  kInput.addEventListener('input', updateFromInputs);
+}
+
+      const fireButton = root.querySelector('[data-qc-fire]');
+      if (fireButton) {
+        fireButton.addEventListener('click', () => {
+          this.fire();
+        });
+      }
+
+      const nextButton = root.querySelector('[data-qc-next]');
+      if (nextButton) {
+        nextButton.addEventListener('click', () => {
+          this.nextTarget();
+        });
+      }
+
+      const resetButton = root.querySelector('[data-qc-reset]');
+      if (resetButton) {
+        resetButton.addEventListener('click', () => {
+          this.reset();
+          this.render();
+        });
+      }
+
+      const homeButton = root.querySelector('[data-qc-home]');
+      if (homeButton) {
+        homeButton.addEventListener('click', () => {
+          
+
+          if (typeof window.MathLabRenderLegacyDashboard === 'function') {
+            window.MathLabRenderLegacyDashboard();
+            return;
+          }
+
+          if (typeof window.MathLabRenderHome === 'function') {
+            window.MathLabRenderHome();
+            return;
+          }
+
+          if (typeof window.openApp === 'function') {
+            window.openApp('home');
+          }
+        });
+      }
+    },
+
+updateLiveValues(root) {
+  if (!root || !this.state) return;
+
+  const aValue = root.querySelector('[data-qc-a-value]');
+  const hValue = root.querySelector('[data-qc-h-value]');
+  const kValue = root.querySelector('[data-qc-k-value]');
+  const formula = root.querySelector('[data-qc-formula]');
+
+  if (aValue) aValue.textContent = formatNumber(this.state.a);
+  if (hValue) hValue.textContent = formatNumber(this.state.h);
+  if (kValue) kValue.textContent = formatNumber(this.state.k);
+
+  if (formula) {
+    formula.textContent =
+      `y = ${formatNumber(this.state.a)}(x - ${formatNumber(this.state.h)})² + ${formatNumber(this.state.k)}`;
+  }
+},
+
+requestDraw() {
+  if (this.drawPending) return;
+
+  this.drawPending = true;
+  this.drawFrame = window.requestAnimationFrame(() => {
+    this.drawPending = false;
+    this.drawFrame = null;
+    this.drawScene();
+  });
+},
+
+prepareCanvas(force) {
+  if (!this.canvas || !this.ctx) return null;
+
+  const rect = this.canvas.getBoundingClientRect();
+  const dpr = window.devicePixelRatio || 1;
+  const width = Math.max(1, Math.floor(rect.width));
+  const height = Math.max(1, Math.floor(rect.height));
+  const pixelWidth = Math.max(1, Math.floor(width * dpr));
+  const pixelHeight = Math.max(1, Math.floor(height * dpr));
+
+  const sizeChanged =
+    force ||
+    this.canvas.width !== pixelWidth ||
+    this.canvas.height !== pixelHeight ||
+    this.canvasSize.width !== pixelWidth ||
+    this.canvasSize.height !== pixelHeight ||
+    this.canvasSize.dpr !== dpr;
+
+  if (sizeChanged) {
+    this.canvas.width = pixelWidth;
+    this.canvas.height = pixelHeight;
+    this.canvasSize = { width: pixelWidth, height: pixelHeight, dpr: dpr };
+  }
+
+  this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+  return {
+    width: width,
+    height: height
+  };
+},
+
+    fire() {
+      const target = this.state.target;
+      const predictedY = this.getY(target.x);
+      const distance = Math.abs(predictedY - target.y);
+      const isHit = distance <= 1.1;
+
+      this.state.shots += 1;
+      this.state.lastShot = {
+        targetX: target.x,
+        predictedY: predictedY,
+        distance: distance,
+        hit: isHit
+      };
+
+      if (isHit) {
+        const bonus = Math.max(5, 20 - Math.round(distance * 8));
+        this.state.score += bonus;
+        this.state.messageType = 'hit';
+        this.state.message =
+          `명중! 목표 x=${target.x}에서 포물선의 y값은 약 ${formatNumber(predictedY)}입니다. 목표 높이 ${target.y}와의 차이는 ${formatNumber(distance)}입니다. +${bonus}점`;
+        this.state.history.unshift(
+          `라운드 ${this.state.round}: 명중 · y(${target.x}) ≈ ${formatNumber(predictedY)} · +${bonus}점`
+        );
+        this.state.round += 1;
+        this.state.target = this.makeTarget();
+      } else {
+        this.state.messageType = 'miss';
+        this.state.message =
+          `아쉽습니다. 목표 x=${target.x}에서 포물선의 y값은 약 ${formatNumber(predictedY)}입니다. 목표 높이 ${target.y}와 ${formatNumber(distance)}만큼 차이납니다.`;
+        this.state.history.unshift(
+          `라운드 ${this.state.round}: 실패 · y(${target.x}) ≈ ${formatNumber(predictedY)} · 차이 ${formatNumber(distance)}`
+        );
+      }
+
+      this.render();
+    },
+
+    nextTarget() {
+      this.state.round += 1;
+      this.state.target = this.makeTarget();
+      this.state.lastShot = null;
+      this.state.messageType = 'normal';
+      this.state.message = '새 목표가 나타났습니다. 그래프가 목표물을 지나가도록 계수를 조절하세요.';
+      this.render();
+    },
+
+    getY(x) {
+      return this.state.a * Math.pow(x - this.state.h, 2) + this.state.k;
+    },
+
+    drawScene() {
+  if (!this.canvas || !this.ctx) return;
+
+  const size = this.prepareCanvas(false);
+  if (!size) return;
+
+  const width = size.width;
+  const height = size.height;
+  const ctx = this.ctx;
+
+  ctx.clearRect(0, 0, width, height);
+
+  this.drawGrid(ctx, width, height);
+  this.drawAxes(ctx, width, height);
+  this.drawTarget(ctx, width, height);
+  this.drawCannon(ctx, width, height);
+  this.drawParabola(ctx, width, height);
+},
+
+    drawGrid(ctx, width, height) {
+      ctx.save();
+      ctx.strokeStyle = 'rgba(99, 102, 241, 0.16)';
+      ctx.lineWidth = 1;
+
+      for (let x = 0; x <= 20; x += 1) {
+        const px = this.toCanvasX(x, width);
+        ctx.beginPath();
+        ctx.moveTo(px, 0);
+        ctx.lineTo(px, height);
+        ctx.stroke();
+      }
+
+      for (let y = 0; y <= 16; y += 1) {
+        const py = this.toCanvasY(y, height);
+        ctx.beginPath();
+        ctx.moveTo(0, py);
+        ctx.lineTo(width, py);
+        ctx.stroke();
+      }
+
+      ctx.restore();
+    },
+
+    drawAxes(ctx, width, height) {
+      ctx.save();
+      ctx.strokeStyle = 'rgba(15, 23, 42, 0.42)';
+      ctx.lineWidth = 2;
+
+      const xAxisY = this.toCanvasY(0, height);
+      ctx.beginPath();
+      ctx.moveTo(0, xAxisY);
+      ctx.lineTo(width, xAxisY);
+      ctx.stroke();
+
+      const yAxisX = this.toCanvasX(0, width);
+      ctx.beginPath();
+      ctx.moveTo(yAxisX, 0);
+      ctx.lineTo(yAxisX, height);
+      ctx.stroke();
+
+      ctx.fillStyle = '#334155';
+      ctx.font = '700 12px sans-serif';
+
+      for (let x = 0; x <= 20; x += 5) {
+        ctx.fillText(String(x), this.toCanvasX(x, width) + 4, xAxisY - 6);
+      }
+
+      for (let y = 0; y <= 16; y += 4) {
+        ctx.fillText(String(y), yAxisX + 6, this.toCanvasY(y, height) - 4);
+      }
+
+      ctx.restore();
+    },
+
+    drawTarget(ctx, width, height) {
+      const target = this.state.target;
+      const x = this.toCanvasX(target.x, width);
+      const y = this.toCanvasY(target.y, height);
+
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(x, y, 19, 0, Math.PI * 2);
+      ctx.fillStyle = '#ef4444';
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.arc(x, y, 12, 0, Math.PI * 2);
+      ctx.fillStyle = '#fff';
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.arc(x, y, 6, 0, Math.PI * 2);
+      ctx.fillStyle = '#ef4444';
+      ctx.fill();
+
+      ctx.fillStyle = '#111827';
+      ctx.font = '900 13px sans-serif';
+      ctx.fillText(`(${target.x}, ${target.y})`, x - 24, y - 26);
+      ctx.restore();
+    },
+
+    drawCannon(ctx, width, height) {
+      const baseX = this.toCanvasX(0.8, width);
+      const baseY = this.toCanvasY(0, height);
+
+      ctx.save();
+      ctx.fillStyle = '#334155';
+      ctx.fillRect(baseX - 16, baseY - 20, 32, 20);
+
+      ctx.translate(baseX + 12, baseY - 18);
+      ctx.rotate(-0.45);
+      ctx.fillStyle = '#111827';
+      ctx.fillRect(0, -7, 54, 14);
+      ctx.restore();
+
+      ctx.save();
+      ctx.font = '28px sans-serif';
+      ctx.fillText('💥', baseX - 18, baseY - 28);
+      ctx.restore();
+    },
+
+    drawParabola(ctx, width, height) {
+      ctx.save();
+      ctx.lineWidth = 4;
+      ctx.strokeStyle = '#4f46e5';
+      ctx.beginPath();
+
+      let started = false;
+
+      for (let x = 0; x <= 20; x += 0.1) {
+        const y = this.getY(x);
+        const px = this.toCanvasX(x, width);
+        const py = this.toCanvasY(y, height);
+
+        if (!started) {
+          ctx.moveTo(px, py);
+          started = true;
+        } else {
+          ctx.lineTo(px, py);
+        }
+      }
+
+      ctx.stroke();
+
+      ctx.setLineDash([8, 6]);
+      ctx.strokeStyle = 'rgba(124, 58, 237, 0.55)';
+      const axisX = this.toCanvasX(this.state.h, width);
+      ctx.beginPath();
+      ctx.moveTo(axisX, 0);
+      ctx.lineTo(axisX, height);
+      ctx.stroke();
+
+      ctx.setLineDash([]);
+      ctx.fillStyle = '#7c3aed';
+      const vertexX = this.toCanvasX(this.state.h, width);
+      const vertexY = this.toCanvasY(this.state.k, height);
+      ctx.beginPath();
+      ctx.arc(vertexX, vertexY, 6, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#312e81';
+      ctx.font = '900 13px sans-serif';
+      ctx.fillText(`꼭짓점 (${formatNumber(this.state.h)}, ${formatNumber(this.state.k)})`, vertexX + 8, vertexY - 8);
+
+      if (this.state.lastShot) {
+        const targetX = this.state.lastShot.targetX;
+        const shotY = this.state.lastShot.predictedY;
+        const px = this.toCanvasX(targetX, width);
+        const py = this.toCanvasY(shotY, height);
+
+        ctx.beginPath();
+        ctx.arc(px, py, 9, 0, Math.PI * 2);
+        ctx.fillStyle = this.state.lastShot.hit ? '#22c55e' : '#f97316';
+        ctx.fill();
+
+        ctx.fillStyle = '#111827';
+        ctx.font = '900 13px sans-serif';
+        ctx.fillText(`y≈${formatNumber(shotY)}`, px + 10, py + 4);
+      }
+
+      ctx.restore();
+    },
+
+    toCanvasX(x, width) {
+      return (x / 20) * width;
+    },
+
+    toCanvasY(y, height) {
+      return height - (y / 16) * height;
+    },
+
+    renderHistory() {
+      if (!this.state.history.length) {
+        return '아직 발사 기록이 없습니다.';
+      }
+
+      return this.state.history
+        .slice(0, 7)
+        .map((item, index) => `<div><strong>${index + 1}.</strong> ${item}</div>`)
+        .join('');
+    },
+
+    destroy() {
+  if (this.drawFrame) {
+    window.cancelAnimationFrame(this.drawFrame);
+    this.drawFrame = null;
+  }
+  this.drawPending = false;
+  this.canvasSize = { width: 0, height: 0, dpr: 1 };
+
+  if (this.container) {
+    this.container.innerHTML = '';
+  }
+  this.container = null;
+  this.canvas = null;
+  this.ctx = null;
+  this.state = null;
+}
+  };
+
+  function randInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  function formatNumber(value) {
+    const number = Number(value);
+    if (!Number.isFinite(number)) return String(value);
+    return Number.isInteger(number) ? String(number) : number.toFixed(2).replace(/0+$/, '').replace(/\.$/, '');
+  }
+
+  window.MathLabGames.register({
+    id: 'quadratic-cannon',
+    title: '이차함수 포물선 대포',
+    icon: '☄️',
+    sourceType: 'new',
+
+    mount(container, context) {
+      QuadraticCannonGame.mount(container, context);
+    },
+
+    reset() {
+      QuadraticCannonGame.reset();
+      QuadraticCannonGame.render();
+    },
+
+    destroy() {
+      QuadraticCannonGame.destroy();
+    }
+  });
+})();
+</script>

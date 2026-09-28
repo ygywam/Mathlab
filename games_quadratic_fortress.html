@@ -1,0 +1,947 @@
+<style>
+  .game-quadratic-fortress {
+    width: 100%;
+    min-height: 100%;
+    padding: 20px;
+    box-sizing: border-box;
+    background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+    font-family: 'Pretendard', -apple-system, sans-serif;
+    color: #f8fafc;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    user-select: none;
+  }
+
+  .game-quadratic-fortress * { box-sizing: border-box; }
+
+  /* Header */
+  .qf-header {
+    width: 100%; max-width: 800px; display: flex; justify-content: space-between; align-items: center;
+    background: rgba(255, 255, 255, 0.08); padding: 14px 20px; border-radius: 16px; backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.15); margin-bottom: 16px;
+  }
+  .qf-title h1 { margin: 0; font-size: 1.5rem; font-weight: 900; color: #fff; display: flex; align-items: center; gap: 8px; }
+  .qf-badge { background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff; padding: 4px 10px; border-radius: 999px; font-size: 0.8rem; font-weight: 800; }
+  .qf-wind-box { background: rgba(0, 0, 0, 0.4); padding: 8px 16px; border-radius: 12px; border: 1px solid #38bdf8; font-size: 1.05rem; font-weight: bold; color: #38bdf8; text-align: center; }
+
+  /* Main Layout */
+  .qf-layout {
+    display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 16px; width: 100%; max-width: 800px;
+  }
+  @media (max-width: 768px) { .qf-layout { grid-template-columns: 1fr; } }
+  @media (max-width: 480px) {
+    .qf-title { flex-direction: column; gap: 10px; text-align: center; }
+    .qf-canvas { height: 300px; }
+    .qf-actions { flex-direction: column; }
+    .btn-fire, .btn-reroll { width: 100%; }
+  }
+
+  /* Canvas Card */
+  .qf-canvas-card {
+    background: rgba(15, 23, 42, 0.8); border: 2px solid #334155; border-radius: 18px; padding: 12px; display: flex; flex-direction: column; align-items: center; position: relative;
+  }
+  .qf-canvas {
+    width: 100%; height: 420px; background: linear-gradient(180deg, #1e293b 0%, #334155 60%, #1e293b 100%); border-radius: 12px; display: block; border: 1px solid #475569;
+  }
+
+  /* Tanks Status Bar */
+  .qf-tanks-bar {
+    display: flex; gap: 8px; width: 100%; margin-bottom: 10px; overflow-x: auto; padding-bottom: 4px;
+  }
+  .qf-tank-pill {
+    flex: 1; min-width: 100px; background: rgba(30, 41, 59, 0.9); border: 2px solid #475569; border-radius: 10px; padding: 8px; font-size: 0.85rem; transition: transform 0.2s, border-color 0.2s;
+  }
+  .qf-tank-pill.active { border-color: #facc15; transform: scale(1.03); box-shadow: 0 0 10px rgba(250, 204, 21, 0.4); }
+  .qf-tank-name { font-weight: bold; margin-bottom: 4px; display: flex; justify-content: space-between; }
+  .qf-hp-bar { width: 100%; height: 8px; background: #334155; border-radius: 4px; overflow: hidden; }
+  .qf-hp-fill { height: 100%; transition: width 0.3s; }
+
+  /* Control Panel */
+  .qf-controls-card {
+    background: rgba(30, 41, 59, 0.9); border: 1px solid #475569; border-radius: 18px; padding: 16px; display: flex; flex-direction: column; gap: 14px;
+  }
+  .qf-turn-info {
+    text-align: center; font-size: 1.15rem; font-weight: 900; color: #facc15; padding: 8px; background: rgba(0,0,0,0.3); border-radius: 10px; border: 1px dashed #facc15;
+  }
+
+  /* Sliders */
+  .qf-control { background: rgba(15, 23, 42, 0.6); padding: 10px 14px; border-radius: 12px; border: 1px solid #334155; }
+  .qf-control label { display: flex; justify-content: space-between; font-weight: bold; font-size: 0.9rem; margin-bottom: 6px; color: #e2e8f0; }
+  .qf-control input[type="range"] { width: 100%; accent-color: #38bdf8; cursor: pointer; touch-action: pan-x; user-select: none; -webkit-user-select: none; }
+  .qf-val { color: #38bdf8; font-weight: 900; }
+
+  /* Formula Display */
+  .qf-formula {
+    background: #0f172a; padding: 10px; border-radius: 10px; border: 1px solid #38bdf8; text-align: center; font-size: 1.05rem; font-weight: 900; color: #38bdf8;
+  }
+  .qf-desc { font-size: 0.8rem; color: #94a3b8; text-align: center; line-height: 1.4; }
+
+  /* Shop / Skills */
+  .qf-shop { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .btn-shop {
+    background: #1e293b; border: 1px solid #64748b; color: #cbd5e1; padding: 8px; border-radius: 8px; font-size: 0.8rem; font-weight: bold; cursor: pointer; transition: all 0.15s; display: flex; flex-direction: column; align-items: center; gap: 2px;
+  }
+  .btn-shop:hover:not(:disabled) { border-color: #38bdf8; background: #334155; }
+  .btn-shop.active { border-color: #f59e0b; background: rgba(245, 158, 11, 0.2); color: #f59e0b; }
+  .btn-shop:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  /* Action Buttons */
+  .qf-actions { display: flex; gap: 10px; margin-top: auto; }
+  .btn-fire {
+    flex: 2; background: linear-gradient(135deg, #ef4444, #dc2626); color: white; border: none; padding: 14px; border-radius: 12px; font-size: 1.15rem; font-weight: 900; cursor: pointer; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4); transition: transform 0.1s;
+  }
+  .btn-fire:active:not(:disabled) { transform: scale(0.96); }
+  .btn-fire:disabled { background: #64748b; cursor: not-allowed; box-shadow: none; }
+  .btn-reroll {
+    flex: 1; background: #334155; color: white; border: none; border-radius: 12px; font-weight: bold; cursor: pointer;
+  }
+
+  /* Overlays */
+  .qf-overlay {
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.94);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 20; border-radius: 16px; backdrop-filter: blur(8px); padding: 24px; text-align: center;
+  }
+  .qf-mode-btn {
+    width: 100%; max-width: 260px; padding: 14px; margin: 8px 0; background: #3b82f6; color: white; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: transform 0.1s;
+  }
+  .qf-mode-btn:hover { background: #2563eb; transform: translateY(-2px); }
+
+  /* Leaderboard Card */
+  .qf-lb-wrap {
+    width: 100%; max-width: 800px; margin-top: 20px; background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 16px;
+  }
+</style>
+
+<script>
+(function() {
+  const TANKS_CFG = [
+    { name: '1P 🔴 Red', color: '#ef4444', isAi: false, defaultX: 2.5 },
+    { name: '2P 🔵 Blue', color: '#3b82f6', isAi: true, defaultX: 17.5 },
+    { name: '3P 🟢 Green', color: '#10b981', isAi: true, defaultX: 7.5 },
+    { name: '4P 🟣 Purple', color: '#a855f7', isAi: true, defaultX: 12.5 }
+  ];
+
+  const QuadraticFortressGame = {
+    id: 'quadratic-fortress',
+    title: '이차함수 포트리스 대포',
+    icon: '💥',
+    
+    container: null,
+    canvas: null,
+    ctx: null,
+    animFrame: null,
+    timers: [],
+    
+    state: {
+      mode: null,          // '1P_AI', '2P', '3P', '4P'
+      tanks: [],
+      turnIdx: 0,
+      wind: 0,             // -5.0 to +5.0
+      terrain: [],         // Array of 200 y-values across x (0 to 20)
+      
+      // Sliders relative to tank
+      a: -0.20,
+      h: 6.0,              // Horizontal distance to vertex
+      k: 6.0,              // Vertical distance to vertex
+      
+      // Skills active for current shot
+      skillDouble: false,
+      skillMega: false,
+      skillWindShield: false,
+      
+      isFiring: false,
+      isGameOver: false,
+      round: 1
+    },
+
+    mount(container, context) {
+      const view = document.getElementById('mathlab-view');
+      this.container = view || container;
+      if (!this.container) return;
+      
+      this.renderInit();
+      this.showModeSelect();
+      this.loadLeaderboard();
+      
+      const btnGuide = this.container.querySelector('#qf-btn-guide');
+      const btnCloseGuide = this.container.querySelector('#qf-close-guide');
+      const guideModal = this.container.querySelector('#qf-guide-modal');
+      if (btnGuide && guideModal) btnGuide.addEventListener('click', () => guideModal.style.display = 'flex');
+      if (btnCloseGuide && guideModal) btnCloseGuide.addEventListener('click', () => guideModal.style.display = 'none');
+    },
+
+    renderInit() {
+      this.container.innerHTML = `
+        <div class="game-quadratic-fortress">
+          <div class="qf-header">
+            <div class="qf-title">
+              <h1>${this.icon} ${this.title}</h1>
+              <span class="qf-badge">턴제 대포 배틀</span>
+              <button id="qf-btn-guide" style="background:#4f46e5; color:#fff; font-size:14px; font-weight:bold; padding:6px 12px; border:none; border-radius:12px; cursor:pointer; margin-left:14px; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);">📖 게임 방법</button>
+              <button id="qf-btn-home" style="background:#ef4444; color:#fff; font-size:14px; font-weight:bold; padding:6px 12px; border:none; border-radius:12px; cursor:pointer; margin-left:8px; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);" onclick="QuadraticFortressGame.goHome()">🏠 홈으로</button>
+            </div>
+            <div class="qf-wind-box" id="qf-wind-txt">💨 바람: 0.0 m/s</div>
+          </div>
+          
+          
+          <!-- Guide Modal -->
+          <div id="qf-guide-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:99999; justify-content:center; align-items:center;">
+            <div style="background:#fff; width:90%; max-width:500px; border-radius:16px; padding:24px; box-shadow:0 10px 25px rgba(0,0,0,0.2); text-align:left; color:#1e293b;">
+              <h3 style="margin-top:0; color:#1e293b; border-bottom:1px solid #e2e8f0; padding-bottom:12px;">📖 게임 방법 (이차함수 포트리스)</h3>
+              <div style="color:#475569; font-size:1rem; line-height:1.6; margin-bottom:20px;">
+                1. <strong>포물선 조준</strong>: y = a(x - h)² + k 식에서 a(폭), h(가로이동), k(세로이동) 슬라이더를 조절하여 대포알의 궤적을 예측하세요.<br>
+                2. <strong>바람의 영향</strong>: 턴마다 부는 바람(💨)의 방향과 세기를 고려하여 h 값을 살짝 보정해야 합니다.<br>
+                3. <strong>스킬 숍 활용</strong>: 턴이 지날 때마다 골드가 쌓입니다. 2연발 포격, 메가 폭탄 등의 아이템을 구매해 적을 공격하세요!<br>
+                4. <strong>승리 조건</strong>: 마지막까지 살아남는 탱크가 최종 승리하며, 맞춘 데미지에 따라 랭킹 점수를 획득합니다.
+              </div>
+              <div style="text-align:right;">
+                <button id="qf-close-guide" style="background:#16a34a; color:#fff; border:none; padding:10px 20px; border-radius:8px; cursor:pointer; font-weight:bold;">확인</button>
+              </div>
+            </div>
+          </div>
+<div class="qf-layout">
+            <div style="display:flex; flex-direction:column; width:100%;">
+              <div class="qf-tanks-bar" id="qf-tanks-bar"></div>
+              <div class="qf-canvas-card">
+                <canvas class="qf-canvas" id="qf-canvas" width="600" height="420"></canvas>
+                <div id="qf-overlay-area"></div>
+              </div>
+            </div>
+            
+            <div class="qf-controls-card" id="qf-controls-card">
+              <div class="qf-turn-info" id="qf-turn-txt">게임 시작을 눌러주세요</div>
+              
+              <div class="qf-formula" id="qf-formula-txt">y = -0.20(x - h)² + k</div>
+              <div class="qf-desc">💡 탱크 위치에서 가로로 h, 세로로 k만큼 떨어진 곳이 포물선의 꼭짓점이 됩니다!</div>
+
+              <div class="qf-control">
+                <label><span>a : 폭과 방향 (위로/아래로)</span><span class="qf-val" id="val-a">-0.20</span></label>
+                <input type="range" id="slider-a" min="-0.50" max="-0.05" step="0.01" value="-0.20">
+              </div>
+              <div class="qf-control">
+                <label><span>h : 꼭짓점 가로 거리 (Δx)</span><span class="qf-val" id="val-h">+6.0</span></label>
+                <input type="range" id="slider-h" min="-12.0" max="12.0" step="0.5" value="6.0">
+              </div>
+              <div class="qf-control">
+                <label><span>k : 꼭짓점 높이 (Δy)</span><span class="qf-val" id="val-k">+6.0</span></label>
+                <input type="range" id="slider-k" min="1.0" max="14.0" step="0.5" value="6.0">
+              </div>
+
+              <div style="font-size:0.85rem; color:#cbd5e1; font-weight:bold; margin-top:4px;">🛒 스킬 숍 (보유 골드: <span id="qf-gold-txt" style="color:#facc15;">0</span>G)</div>
+              <div class="qf-shop">
+                <button class="btn-shop" id="shop-double">⚡ 2연발 포격 (30G)</button>
+                <button class="btn-shop" id="shop-mega">💣 메가 폭탄 (40G)</button>
+                <button class="btn-shop" id="shop-wind">🛡️ 바람 저항 (20G)</button>
+                <button class="btn-shop" id="shop-heal">🔧 긴급 수리 (30G)</button>
+              </div>
+
+              <div class="qf-actions">
+                <button class="btn-fire" id="qf-btn-fire">🚀 포격 발사!</button>
+                <button class="btn-reroll" id="qf-btn-mode">🎲 모드 변경</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="qf-lb-wrap">
+            <h3 style="margin:0 0 10px 0; font-size:1.1rem; color:#e2e8f0; text-align:center;">🏆 명예의 전당 (최종 다승/고득점 랭킹)</h3>
+            <div id="qf-lb-container"><p style="text-align:center;color:#64748b;">로딩 중...</p></div>
+          </div>
+        </div>
+      `;
+
+      this.canvas = this.container.querySelector('#qf-canvas');
+      this.ctx = this.canvas.getContext('2d');
+      this.bindEvents();
+    },
+
+    showModeSelect() {
+      const area = this.container.querySelector('#qf-overlay-area');
+      area.innerHTML = `
+        <div class="qf-overlay">
+          <h2 style="font-size:2rem; color:#facc15; margin:0 0 8px;">🚜 포트리스 게임 모드 선택</h2>
+          <p style="color:#cbd5e1; margin-bottom:20px;">이차함수 포물선을 조절하여 상대방 탱크를 맞혀보세요!</p>
+          <button class="qf-mode-btn" data-mode="1P_AI">👤 1인 vs 3 AI 대전</button>
+          <button class="qf-mode-btn" data-mode="2P">👥 2인 대전 (친구와 함께)</button>
+          <button class="qf-mode-btn" data-mode="3P">👥 3인 대전</button>
+          <button class="qf-mode-btn" data-mode="4P">👥 4인 대전</button>
+        </div>
+      `;
+      area.querySelectorAll('.qf-mode-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          this.initGame(btn.dataset.mode);
+          area.innerHTML = '';
+        });
+      });
+    },
+
+    initGame(mode) {
+      this.state.mode = mode;
+      this.state.isGameOver = false;
+      this.state.isFiring = false;
+      this.state.round = 1;
+      
+      let count = 4;
+      if (mode === '2P') count = 2;
+      if (mode === '3P') count = 3;
+      if (mode === '4P') count = 4;
+      
+      this.generateTerrain();
+      
+      this.state.tanks = [];
+      for (let i = 0; i < count; i++) {
+        const cfg = TANKS_CFG[i];
+        const isAi = (mode === '1P_AI') ? (i > 0) : false;
+        const x = cfg.defaultX;
+        const y = this.getTerrainY(x);
+        this.state.tanks.push({
+          id: i,
+          name: cfg.name,
+          color: cfg.color,
+          isAi: isAi,
+          hp: 100,
+          maxHp: 100,
+          gold: 50, // Start with 50 gold
+          score: 0,
+          x: x,
+          y: y
+        });
+      }
+      
+      this.state.turnIdx = 0;
+      this.changeWind();
+      this.startTurn();
+    },
+
+    generateTerrain() {
+      this.state.terrain = [];
+      // 200 points from x=0 to x=20
+      for (let i = 0; i <= 200; i++) {
+        const x = i * 0.1;
+        // Generate nice hills around y=3 to y=6
+        const y = 4.5 + Math.sin(x * 0.6) * 1.5 + Math.cos(x * 1.2) * 0.8;
+        this.state.terrain.push(y);
+      }
+    },
+
+    getTerrainY(x) {
+      const idx = Math.max(0, Math.min(200, Math.round(x * 10)));
+      return this.state.terrain[idx] || 4.0;
+    },
+
+    changeWind() {
+      this.state.wind = parseFloat((Math.random() * 8 - 4).toFixed(1));
+      const txt = this.container.querySelector('#qf-wind-txt');
+      if (txt) {
+        let arrow = this.state.wind > 0 ? '▶▶' : '◀◀';
+        if (Math.abs(this.state.wind) < 0.5) arrow = '--';
+        txt.textContent = `💨 풍속: ${arrow} ${this.state.wind > 0 ? '+' : ''}${this.state.wind} m/s`;
+      }
+    },
+
+    startTurn() {
+      if (this.state.isGameOver) return;
+      
+      // Find next alive tank
+      let attempts = 0;
+      while (this.state.tanks[this.state.turnIdx].hp <= 0 && attempts < 10) {
+        this.state.turnIdx = (this.state.turnIdx + 1) % this.state.tanks.length;
+        attempts++;
+      }
+      
+      const currentTank = this.state.tanks[this.state.turnIdx];
+      currentTank.y = this.getTerrainY(currentTank.x); // Align with terrain
+      currentTank.gold += 10; // Turn allowance
+      
+      this.state.skillDouble = false;
+      this.state.skillMega = false;
+      this.state.skillWindShield = false;
+      
+      this.updateUI();
+      
+      if (currentTank.isAi) {
+        this.container.querySelector('#qf-btn-fire').disabled = true;
+        setTimeout(() => this.executeAiTurn(), 1200);
+      } else {
+        this.container.querySelector('#qf-btn-fire').disabled = false;
+      }
+    },
+
+    executeAiTurn() {
+      if (this.state.isGameOver) return;
+      const aiTank = this.state.tanks[this.state.turnIdx];
+      
+      // Find a target (any alive human or enemy)
+      const enemies = this.state.tanks.filter(t => t.id !== aiTank.id && t.hp > 0);
+      if (enemies.length === 0) return;
+      const target = enemies[Math.floor(Math.random() * enemies.length)];
+      
+      // Calculate delta
+      const dx = target.x - aiTank.x;
+      const dy = target.y - aiTank.y;
+      
+      // Set reasonable a, h, k
+      const h = parseFloat((dx * 0.5).toFixed(1));
+      let k = parseFloat((Math.max(aiTank.y, target.y) + 4 + Math.random() * 2).toFixed(1));
+      let a = parseFloat(((dy - k) / (dx * dx * 0.25)).toFixed(2));
+      a = Math.max(-0.45, Math.min(-0.08, a));
+      
+      this.state.a = a;
+      this.state.h = h;
+      this.state.k = k - aiTank.y; // relative k
+      
+      // Reflect sliders
+      this.container.querySelector('#slider-a').value = this.state.a;
+      this.container.querySelector('#slider-h').value = this.state.h;
+      this.container.querySelector('#slider-k').value = this.state.k;
+      
+      this.updateUI();
+      setTimeout(() => this.fireCannon(), 800);
+    },
+
+    buySkill(type, cost) {
+      const tank = this.state.tanks[this.state.turnIdx];
+      if (tank.isAi || this.state.isFiring || tank.gold < cost) {
+        if (window.showToast) window.showToast('골드가 부족합니다!', true);
+        return;
+      }
+      
+      tank.gold -= cost;
+      if (type === 'double') this.state.skillDouble = true;
+      if (type === 'mega') this.state.skillMega = true;
+      if (type === 'wind') this.state.skillWindShield = true;
+      if (type === 'heal') {
+        tank.hp = Math.min(100, tank.hp + 30);
+        if (window.showToast) window.showToast('🔧 긴급 수리 완료! (+30 HP)');
+      }
+      
+      this.updateUI();
+    },
+
+    updateUI() {
+      const currentTank = this.state.tanks[this.state.turnIdx];
+      if (!currentTank) return;
+      
+      // Turn info
+      const turnTxt = this.container.querySelector('#qf-turn-txt');
+      if (turnTxt) {
+        turnTxt.textContent = `▶ ${currentTank.name} 의 턴!`;
+        turnTxt.style.color = currentTank.color;
+        turnTxt.style.borderColor = currentTank.color;
+      }
+      
+      // Sliders & formula
+      this.state.a = parseFloat(this.container.querySelector('#slider-a').value);
+      this.state.h = parseFloat(this.container.querySelector('#slider-h').value);
+      this.state.k = parseFloat(this.container.querySelector('#slider-k').value);
+      
+      this.container.querySelector('#val-a').textContent = this.state.a.toFixed(2);
+      this.container.querySelector('#val-h').textContent = (this.state.h > 0 ? '+' : '') + this.state.h.toFixed(1);
+      this.container.querySelector('#val-k').textContent = '+' + this.state.k.toFixed(1);
+      
+      const formulaTxt = this.container.querySelector('#qf-formula-txt');
+      if (formulaTxt) {
+        formulaTxt.textContent = `y = ${this.state.a.toFixed(2)}(x - (${currentTank.x.toFixed(1)} ${this.state.h >= 0 ? '+' : '-'} ${Math.abs(this.state.h).toFixed(1)}))² + (${currentTank.y.toFixed(1)} + ${this.state.k.toFixed(1)})`;
+      }
+      
+      this.container.querySelector('#qf-gold-txt').textContent = currentTank.gold;
+      
+      // Shop buttons
+      this.container.querySelector('#shop-double').classList.toggle('active', this.state.skillDouble);
+      this.container.querySelector('#shop-mega').classList.toggle('active', this.state.skillMega);
+      this.container.querySelector('#shop-wind').classList.toggle('active', this.state.skillWindShield);
+      
+      // Tanks HP bar
+      const bar = this.container.querySelector('#qf-tanks-bar');
+      if (bar) {
+        bar.innerHTML = this.state.tanks.map((t, idx) => `
+          <div class="qf-tank-pill ${idx === this.state.turnIdx ? 'active' : ''}" style="${t.hp <= 0 ? 'opacity:0.4;' : ''}">
+            <div class="qf-tank-name" style="color:${t.color};"><span>${t.name}</span><span>${Math.max(0, Math.round(t.hp))} HP</span></div>
+            <div class="qf-hp-bar"><div class="qf-hp-fill" style="width:${Math.max(0, t.hp)}%; background:${t.color};"></div></div>
+          </div>
+        `).join('');
+      }
+      
+      this.requestDraw();
+    },
+
+    requestDraw() {
+      if (this.drawPending) return;
+      this.drawPending = true;
+      requestAnimationFrame(() => {
+        this.drawPending = false;
+        this.drawScene();
+      });
+    },
+
+    // Coordinate conversions (Math X: 0~20 -> Canvas X: 40~560 | Math Y: 0~15 -> Canvas Y: 380~30)
+    toPx(x, y) {
+      return {
+        x: 40 + (x / 20.0) * 520,
+        y: 380 - (y / 15.0) * 350
+      };
+    },
+
+    drawScene(shell = null, explosion = null) {
+      if (!this.ctx) return;
+      const ctx = this.ctx;
+      ctx.clearRect(0, 0, 600, 420);
+      
+      // Draw Grid
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+      ctx.lineWidth = 1;
+      for (let x = 0; x <= 20; x += 2) {
+        const p = this.toPx(x, 0);
+        ctx.beginPath(); ctx.moveTo(p.x, 20); ctx.lineTo(p.x, 380); ctx.stroke();
+        ctx.fillStyle = '#64748b'; ctx.font = '10px sans-serif'; ctx.fillText(x, p.x - 4, 395);
+      }
+      for (let y = 0; y <= 15; y += 3) {
+        const p = this.toPx(0, y);
+        ctx.beginPath(); ctx.moveTo(40, p.y); ctx.lineTo(580, p.y); ctx.stroke();
+        ctx.fillStyle = '#64748b'; ctx.font = '10px sans-serif'; ctx.fillText(y, 18, p.y + 4);
+      }
+      
+      // Draw Terrain
+      ctx.beginPath();
+      const firstP = this.toPx(0, this.state.terrain[0]);
+      ctx.moveTo(firstP.x, firstP.y);
+      for (let i = 1; i <= 200; i++) {
+        const x = i * 0.1;
+        const p = this.toPx(x, this.state.terrain[i]);
+        ctx.lineTo(p.x, p.y);
+      }
+      ctx.lineTo(this.toPx(20, 0).x, 380);
+      ctx.lineTo(firstP.x, 380);
+      ctx.closePath();
+      ctx.fillStyle = '#1e293b';
+      ctx.fill();
+      ctx.strokeStyle = '#10b981';
+      ctx.lineWidth = 3;
+      ctx.stroke();
+      
+      // Draw Preview Dotted Parabola from Current Tank
+      const curTank = this.state.tanks[this.state.turnIdx];
+      if (curTank && curTank.hp > 0 && !this.state.isFiring) {
+        ctx.save();
+        ctx.strokeStyle = curTank.color;
+        ctx.lineWidth = 2;
+        ctx.setLineDash([6, 6]);
+        ctx.beginPath();
+        let started = false;
+        
+        const vx = curTank.x + this.state.h;
+        const vy = curTank.y + this.state.k;
+        
+        for (let x = 0; x <= 20; x += 0.2) {
+          const y = this.state.a * Math.pow(x - vx, 2) + vy;
+          if (y < 0 || y > 16) continue;
+          const p = this.toPx(x, y);
+          if (!started) { ctx.moveTo(p.x, p.y); started = true; }
+          else { ctx.lineTo(p.x, p.y); }
+        }
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      // Draw Glowing Flight Trail Arc
+      if (this.state.flightTrail && this.state.flightTrail.length > 1) {
+        ctx.save();
+        ctx.beginPath();
+        const firstP = this.toPx(this.state.flightTrail[0].x, this.state.flightTrail[0].y);
+        ctx.moveTo(firstP.x, firstP.y);
+        for (let i = 1; i < this.state.flightTrail.length; i++) {
+          const pt = this.toPx(this.state.flightTrail[i].x, this.state.flightTrail[i].y);
+          ctx.lineTo(pt.x, pt.y);
+        }
+        ctx.strokeStyle = '#facc15';
+        ctx.lineWidth = 3;
+        ctx.shadowColor = '#f59e0b';
+        ctx.shadowBlur = 12;
+        ctx.stroke();
+        ctx.restore();
+      }
+      
+      // Draw Futuristic Sci-Fi Artillery Tanks
+      this.state.tanks.forEach(t => {
+        if (t.hp <= 0) return;
+        const p = this.toPx(t.x, t.y);
+        ctx.save();
+        
+        // 1. Cannon Barrel (pointing along initial trajectory slope)
+        ctx.save();
+        ctx.translate(p.x, p.y - 8);
+        let barrelAngle = -Math.PI / 4; // Default 45 deg up
+        if (t.id === curTank.id) {
+          const m = -2 * this.state.a * (this.state.h);
+          barrelAngle = -Math.atan2(m, 1);
+        } else {
+          barrelAngle = (t.x < 10) ? -Math.PI / 4 : -Math.PI * 0.75;
+        }
+        ctx.rotate(barrelAngle);
+        
+        const barrelGrad = ctx.createLinearGradient(0, -4, 0, 4);
+        barrelGrad.addColorStop(0, '#94a3b8');
+        barrelGrad.addColorStop(0.5, '#f8fafc');
+        barrelGrad.addColorStop(1, '#475569');
+        ctx.fillStyle = barrelGrad;
+        ctx.fillRect(0, -4, 26, 8);
+        ctx.fillStyle = t.color;
+        ctx.fillRect(22, -5, 6, 10);
+        ctx.restore();
+        
+        // 2. Armored Treads
+        ctx.fillStyle = '#1e293b';
+        ctx.strokeStyle = '#475569';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.roundRect(p.x - 18, p.y - 6, 36, 10, 5);
+        ctx.fill();
+        ctx.stroke();
+        ctx.fillStyle = '#64748b';
+        for (let wx = -12; wx <= 12; wx += 8) {
+          ctx.beginPath(); ctx.arc(p.x + wx, p.y - 1, 3, 0, Math.PI * 2); ctx.fill();
+        }
+        
+        // 3. Armored Hull Dome
+        ctx.fillStyle = t.color;
+        ctx.shadowColor = t.color;
+        ctx.shadowBlur = 10;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y - 8, 12, Math.PI, 0, false);
+        ctx.closePath();
+        ctx.fill();
+        
+        // 4. Energy Core
+        ctx.fillStyle = '#ffffff';
+        ctx.shadowColor = '#ffffff'; ctx.shadowBlur = 8;
+        ctx.beginPath(); ctx.arc(p.x, p.y - 10, 4, 0, Math.PI * 2); ctx.fill();
+        ctx.restore();
+        
+        // 5. Floating HP Bar & Name
+        ctx.save();
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
+        ctx.fillRect(p.x - 20, p.y - 32, 40, 6);
+        const hpRatio = Math.max(0, t.hp / 100);
+        ctx.fillStyle = hpRatio > 0.5 ? '#10b981' : (hpRatio > 0.2 ? '#f59e0b' : '#ef4444');
+        ctx.fillRect(p.x - 20, p.y - 32, 40 * hpRatio, 6);
+        ctx.strokeStyle = '#64748b'; ctx.lineWidth = 1;
+        ctx.strokeRect(p.x - 20, p.y - 32, 40, 6);
+        
+        ctx.fillStyle = '#f8fafc';
+        ctx.font = 'bold 11px Pretendard, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(t.name, p.x, p.y - 36);
+        ctx.restore();
+      });
+      
+      // Draw Flying Missile Projectile
+      if (shell) {
+        const p = this.toPx(shell.x, shell.y);
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        
+        let angle = 0;
+        if (this.state.flightTrail && this.state.flightTrail.length > 1) {
+          const prev = this.state.flightTrail[this.state.flightTrail.length - 2];
+          const prevP = this.toPx(prev.x, prev.y);
+          angle = Math.atan2(p.y - prevP.y, p.x - prevP.x);
+        }
+        ctx.rotate(angle);
+        
+        // Exhaust Flame
+        ctx.fillStyle = '#ef4444';
+        ctx.shadowColor = '#f97316'; ctx.shadowBlur = 15;
+        ctx.beginPath(); ctx.moveTo(-14, -4); ctx.lineTo(-24, 0); ctx.lineTo(-14, 4); ctx.fill();
+        
+        // Missile Body
+        ctx.fillStyle = '#f8fafc';
+        ctx.beginPath();
+        ctx.roundRect(-14, -5, 20, 10, 4);
+        ctx.fill();
+        
+        // Red Warhead Tip
+        ctx.fillStyle = '#ef4444';
+        ctx.beginPath();
+        ctx.arc(6, 0, 5, -Math.PI/2, Math.PI/2);
+        ctx.fill();
+        ctx.restore();
+      }
+      
+      // Draw Multi-Stage Cinematic Explosion
+      if (explosion) {
+        const p = this.toPx(explosion.x, explosion.y);
+        const maxRadiusPx = (explosion.radius / 20.0) * 520;
+        const step = explosion.step || 0.5;
+        const progress = Math.min(1, step / 1.5);
+        const fade = Math.max(0, 1 - progress);
+        
+        ctx.save();
+        // Shockwave Ring
+        ctx.strokeStyle = `rgba(255, 255, 255, ${fade})`;
+        ctx.lineWidth = 4 * fade;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, maxRadiusPx * (0.5 + progress * 0.8), 0, Math.PI * 2);
+        ctx.stroke();
+        
+        // Fireball Core
+        const coreGrad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, maxRadiusPx * fade);
+        coreGrad.addColorStop(0, `rgba(255, 255, 255, ${fade})`);
+        coreGrad.addColorStop(0.3, `rgba(250, 204, 21, ${fade * 0.9})`);
+        coreGrad.addColorStop(0.7, `rgba(239, 68, 68, ${fade * 0.8})`);
+        coreGrad.addColorStop(1, 'rgba(15, 23, 42, 0)');
+        ctx.fillStyle = coreGrad;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, maxRadiusPx * fade, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Debris Sparks
+        ctx.fillStyle = '#facc15';
+        for (let i = 0; i < 12; i++) {
+          const ang = (i / 12) * Math.PI * 2 + step;
+          const dist = maxRadiusPx * progress * 1.3;
+          const dx = p.x + Math.cos(ang) * dist;
+          const dy = p.y + Math.sin(ang) * dist;
+          ctx.beginPath();
+          ctx.arc(dx, dy, Math.max(1, 4 * fade), 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.restore();
+      }
+    },
+
+    fireCannon() {
+      if (this.state.isFiring || this.state.isGameOver) return;
+      this.state.isFiring = true;
+      this.container.querySelector('#qf-btn-fire').disabled = true;
+      
+      const curTank = this.state.tanks[this.state.turnIdx];
+      const vx = curTank.x + this.state.h;
+      const vy = curTank.y + this.state.k;
+      const a = this.state.a;
+      
+      const shots = this.state.skillDouble ? 2 : 1;
+      let shotIdx = 0;
+      
+      const launchNextShot = () => {
+        let t = 0;
+        let shellX = curTank.x;
+        let shellY = curTank.y;
+        const windDrift = this.state.skillWindShield ? 0 : (this.state.wind * 0.015);
+        
+        this.state.flightTrail = [];
+        if (this.animFrame) cancelAnimationFrame(this.animFrame);
+        
+        const animateStep = () => {
+          t += 0.08;
+          const baseX = curTank.x + (this.state.h >= 0 ? t : -t) * 3.0;
+          shellX = baseX + windDrift * t * t;
+          shellY = a * Math.pow(shellX - vx, 2) + vy;
+          
+          this.state.flightTrail.push({ x: shellX, y: shellY });
+          this.drawScene({ x: shellX, y: shellY });
+          
+          // Collision Check
+          const terrainY = this.getTerrainY(shellX);
+          let hitTank = null;
+          this.state.tanks.forEach(tank => {
+            if (tank.hp > 0 && Math.hypot(tank.x - shellX, tank.y - shellY) < 1.2) {
+              hitTank = tank;
+            }
+          });
+          
+          if (shellY <= terrainY || hitTank || shellX < 0 || shellX > 20 || shellY < -5) {
+            // Explode!
+            const expRadius = this.state.skillMega ? 2.8 : 1.8;
+            const expDamage = this.state.skillMega ? 60 : 40;
+            
+            this.triggerExplosion(shellX, Math.max(terrainY, shellY), expRadius, expDamage, curTank);
+            
+            shotIdx++;
+            if (shotIdx < shots) {
+              setTimeout(launchNextShot, 600);
+            } else {
+              setTimeout(() => {
+                this.state.isFiring = false;
+                this.checkWinner();
+                if (!this.state.isGameOver) {
+                  this.state.turnIdx = (this.state.turnIdx + 1) % this.state.tanks.length;
+                  this.changeWind();
+                  this.startTurn();
+                }
+              }, 800);
+            }
+            return;
+          }
+          
+          this.animFrame = requestAnimationFrame(animateStep);
+        };
+        
+        this.animFrame = requestAnimationFrame(animateStep);
+      };
+      
+      launchNextShot();
+    },
+
+    triggerExplosion(x, y, radius, maxDamage, attackerTank) {
+      // Destroy terrain around x
+      const centerIdx = Math.round(x * 10);
+      const radIdx = Math.round(radius * 10);
+      for (let i = Math.max(0, centerIdx - radIdx); i <= Math.min(200, centerIdx + radIdx); i++) {
+        const dist = Math.abs(i - centerIdx) / 10.0;
+        if (dist < radius) {
+          const depth = Math.cos((dist / radius) * (Math.PI / 2)) * radius * 0.7;
+          this.state.terrain[i] = Math.max(0.5, this.state.terrain[i] - depth);
+        }
+      }
+      
+      // Damage tanks
+      this.state.tanks.forEach(tank => {
+        if (tank.hp <= 0) return;
+        const dist = Math.hypot(tank.x - x, tank.y - y);
+        if (dist < radius * 1.5) {
+          const dmg = Math.round(maxDamage * (1 - dist / (radius * 1.5)));
+          if (dmg > 0) {
+            tank.hp = Math.max(0, tank.hp - dmg);
+            if (tank.id !== attackerTank.id) {
+              attackerTank.gold += Math.round(dmg * 1.5);
+              attackerTank.score += dmg * 10;
+            }
+          }
+        }
+      });
+      
+      this.updateUI();
+      
+      // Animate Explosion Particles and Shockwave!
+      let expStep = 0;
+      const animateExplosion = () => {
+        expStep += 0.12;
+        if (expStep > 1.5) {
+          this.drawScene();
+          return;
+        }
+        this.drawScene(null, { x, y, radius, step: expStep });
+        requestAnimationFrame(animateExplosion);
+      };
+      animateExplosion();
+    },
+
+    checkWinner() {
+      const aliveTanks = this.state.tanks.filter(t => t.hp > 0);
+      if (aliveTanks.length <= 1) {
+        this.state.isGameOver = true;
+        const winner = aliveTanks[0] || this.state.tanks[0];
+        
+        const area = this.container.querySelector('#qf-overlay-area');
+        const canSubmit = typeof window.submitRanking === 'function' && !winner.isAi;
+        
+        area.innerHTML = `
+          <div class="qf-overlay">
+            <h2 style="font-size:2.4rem; color:#10b981; margin:0 0 8px;">🎉 ${winner.name} 최종 승리!!</h2>
+            <p style="color:#cbd5e1; font-size:1.1rem; margin-bottom:15px;">획득 점수: <strong style="color:#facc15; font-size:1.3rem;">${winner.score}</strong>점</p>
+            
+            ${canSubmit ? `
+            <div style="background:rgba(30,41,59,0.95); border:1px solid #38bdf8; border-radius:14px; padding:16px; width:100%; max-width:340px; margin-bottom:15px;">
+              <h3 style="margin:0 0 8px; color:#fbbf24; font-size:1rem;">🏆 명예의 전당 (Top 5) 랭킹 등록</h3>
+              <div style="display:flex; gap:8px;">
+                <input type="text" id="qf-nick-input" placeholder="닉네임 (예: 기록조율사)" maxlength="10" style="flex:1; padding:10px; border-radius:8px; border:1px solid #475569; background:#0f172a; color:white; font-size:0.95rem; text-align:center; outline:none;">
+                <button id="qf-submit-btn" style="background:#fbbf24; color:#0f172a; font-weight:800; border:none; padding:0 16px; border-radius:8px; cursor:pointer;">등록</button>
+              </div>
+              <div id="qf-rank-msg" style="font-size:0.85rem; color:#10b981; margin-top:8px; font-weight:bold;"></div>
+            </div>
+            ` : ''}
+
+            <button class="btn-fire" id="qf-restart-btn" style="max-width:260px;">🔄 모드 재선택</button>
+          </div>
+        `;
+
+        area.querySelector('#qf-restart-btn').addEventListener('click', () => {
+          this.showModeSelect();
+        });
+
+        if (canSubmit) {
+          const inputEl = area.querySelector('#qf-nick-input');
+          const submitBtn = area.querySelector('#qf-submit-btn');
+          const msgEl = area.querySelector('#qf-rank-msg');
+
+          const doSubmit = () => {
+            const nick = inputEl.value.trim();
+            if (!nick) { msgEl.textContent = '⚠️ 닉네임을 입력해주세요!'; msgEl.style.color = '#f87171'; return; }
+            submitBtn.disabled = true; inputEl.disabled = true;
+            msgEl.style.color = '#38bdf8'; msgEl.textContent = '⏳ 서버에 랭킹 등록 중...';
+            window.submitRanking('이차함수 포트리스 대포', winner.score, true, nick, 'qf-lb-container');
+            setTimeout(() => { msgEl.style.color = '#10b981'; msgEl.textContent = '✅ 명예의 전당 등록 완료!'; this.loadLeaderboard(); }, 1000);
+          };
+
+          submitBtn.addEventListener('click', doSubmit);
+          inputEl.addEventListener('keypress', (e) => { if (e.key === 'Enter') doSubmit(); });
+        }
+      }
+    },
+
+    bindEvents() {
+      const c = this.container;
+      c.querySelector('#slider-a').addEventListener('input', () => this.updateUI());
+      c.querySelector('#slider-h').addEventListener('input', () => this.updateUI());
+      c.querySelector('#slider-k').addEventListener('input', () => this.updateUI());
+      
+      c.querySelector('#qf-btn-fire').addEventListener('click', () => this.fireCannon());
+      c.querySelector('#qf-btn-mode').addEventListener('click', () => {
+        if (confirm('현재 대전을 종료하고 모드 선택 화면으로 돌아가시겠습니까?')) this.showModeSelect();
+      });
+      
+      c.querySelector('#shop-double').addEventListener('click', () => this.buySkill('double', 30));
+      c.querySelector('#shop-mega').addEventListener('click', () => this.buySkill('mega', 40));
+      c.querySelector('#shop-wind').addEventListener('click', () => this.buySkill('wind', 20));
+      c.querySelector('#shop-heal').addEventListener('click', () => this.buySkill('heal', 30));
+    },
+
+    destroy() {
+      if (this.animFrame) cancelAnimationFrame(this.animFrame);
+      if (window.MathLabCleanup) window.MathLabCleanup.clearTimers(this.timers);
+      this.timers.forEach(clearTimeout);
+      if (this.container) this.container.innerHTML = '';
+    },
+
+    loadLeaderboard() {
+      try {
+        if (typeof window.loadGameLeaderboard === 'function') {
+          window.loadGameLeaderboard('이차함수 포트리스 대포', true, 'qf-lb-container');
+          return;
+        }
+        const lb = this.container.querySelector('#qf-lb-container');
+        if (lb) lb.innerHTML = '<p style="color:#64748b; text-align:center;">명예의 전당 오프라인</p>';
+      } catch (e) {
+        console.error('[QuadraticFortress] Leaderboard error:', e);
+      }
+    },
+    goHome() {
+        const topBottomHome = document.getElementById('mathlab-floating-home') || document.querySelector('#legacy-back-home-btn');
+        if (topBottomHome) topBottomHome.click();
+        else if (typeof window.MathLabRenderHome === 'function') window.MathLabRenderHome();
+        else if (typeof window.goHome === 'function') window.goHome();
+        else location.reload();
+    }
+  };
+
+  window.QuadraticFortressGame = QuadraticFortressGame;
+
+  if (typeof window.MathLabGames === 'undefined') {
+    window.MathLabGames = {
+      _registry: {},
+      register(game) { this._registry[game.id] = game; },
+      mount(id, container, context) {
+        const game = this._registry[id];
+        if (!game) throw new Error('Unknown game: ' + id);
+        if (typeof game.mount === 'function') game.mount(container, context);
+      }
+    };
+  }
+
+  if (typeof window.MathLabGames.register === 'function') {
+    window.MathLabGames.register(QuadraticFortressGame);
+  } else if (window.MathLabGames._registry) {
+    window.MathLabGames._registry['quadratic-fortress'] = QuadraticFortressGame;
+  }
+})();
+</script>
