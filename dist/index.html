@@ -1550,7 +1550,6 @@
           💬 소통 창구
           <span id="feedback-new-badge" style="display:none; position:absolute; top:-6px; right:-6px; background:#ef4444; color:#ffffff; font-size:0.65rem; font-weight:900; padding:2px 6px; border-radius:999px; box-shadow:0 2px 6px rgba(239, 68, 68, 0.5); letter-spacing:0.5px; animation: pulseBadge 1.5s infinite;">NEW</span>
         </button>
-        <button class="home-btn" data-launch-app="settings" style="margin-bottom:0; background:var(--mathlab-panel, #fff); border-color:var(--mathlab-line, #e2e8f0); padding: 8px 12px; color:var(--mathlab-text);">⚙️ 설정</button>
       </div>
     </div>
     <p class="dash-subtitle" style="text-align:left; margin-bottom:30px; color: var(--mathlab-text);">눈으로 보고 직접 조작하며 깨닫는 수학</p>
@@ -1980,10 +1979,6 @@ function openApp(appId) {
     const savedTheme = localStorage.getItem('math_lab_theme') || 'default';
     document.body.className = ''; 
     if(savedTheme !== 'default') document.body.classList.add('theme-' + savedTheme);
-
-    const key = localStorage.getItem('math_lab_api_key');
-    const sheet = localStorage.getItem('math_lab_sheet_id');
-    if(!key || !sheet) setTimeout(() => showToast("⚙️ 설정 메뉴에서 AI 키와 시트 ID를 등록해 주세요.", true), 1000);
 
     if (typeof katex !== 'undefined') {
       document.querySelectorAll('.highlight-msg, .card-desc, .survey-result').forEach(el => {
@@ -2557,35 +2552,7 @@ window.openFeedbackModal = function() {
       duration: '확인필요',
       keywords: ['설정', '환경설정', 'API', 'Key', '시트', 'Spreadsheet', '관리']
     },
-    {
-      id: 'settings',
-      curriculumSchool: '운영',
-      curriculumSubject: '관리',
-      curriculumUnit: '시스템',
-      title: '환경 설정',
-      icon: '⚙️',
-      description: '수학 실험실의 각종 환경 설정을 관리합니다.',
-
-      appType: 'admin',
-      topApp: '관리/운영',
-      sourceType: 'gen3',
-      launchType: 'mathLabGame',
-      launchId: 'settings',
-      fileName: 'admin_settings.html',
-      status: '배포완료',
-      enabled: true,
-
-      schoolLevel: [],
-      gradeBand: [],
-      curriculumArea: ['관리/운영'],
-      unit: ['환경 설정'],
-      concepts: ['설정', '관리'],
-
-      classroomUse: [],
-      difficulty: '확인필요',
-      duration: '확인필요',
-      keywords: ['설정', '환경설정', 'API', 'Key', '시트', 'Spreadsheet', '관리']
-    },
+    
 
     {
       id: 'leaderboard-admin',
