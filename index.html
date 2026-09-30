@@ -6262,7 +6262,35 @@ window.openFeedbackModal = function() {
   tags: ['경제수학', '미분과경제', '한계비용', '한계수입', '이윤극대화', '가격탄력성', '개념탐구'],
   keywords: ['경제수학', '미분과경제', '한계비용', '이윤극대화', '가격탄력성', 'MR=MC', 'econ-calc-opt']
 }
-  ];
+  ,
+  {
+    id: 'prime-factorization-hunter',
+    curriculumSchool: '중학교',
+    curriculumSubject: '수학1',
+    curriculumUnit: '소인수분해',
+    title: '소인수분해 헌터',
+    icon: '🪓',
+    appType: 'game',
+    topApp: '수학 게임',
+    sourceType: 'new',
+    launchType: 'mathLabGame',
+    launchId: 'prime-factorization-hunter',
+    fileName: 'games_prime_factorization_hunter.html',
+    status: '서비스중',
+    enabled: true,
+    gradeLevel: '중학',
+    targetAudience: '중학교 1학년',
+    summary: '떨어지는 합성수를 슬라이스하여 가장 작은 소수들로 쪼개는 액션 퍼즐',
+    description: '마우스나 터치로 화면을 슬라이스하여 합성수를 두 수로 쪼개세요! 더 이상 쪼개지지 않는 소수만 남을 때까지 분해해야 합니다. 소수를 자르면 생명이 깎이니 조심하세요.',
+    concepts: ['소수', '합성수', '소인수분해', '약수', '배수'],
+    useCases: ['수업 전 흥미 유발', '연산 연습', '전자칠판 2인 대결'],
+    difficulty: '보통',
+    duration: '3분',
+    multiplayer: '1~2인',
+    tags: ['소인수분해', '소수', '합성수', '액션', '슬라이스', '게임'],
+    keywords: ['소인수분해', '소수', '합성수', '헌터', '과일닌자', '약수']
+  }
+];
 
   const existingIds = new Set(
     window.MathLabMetadata
@@ -124986,3 +125014,539 @@ window.MathLabRenderLegacyDashboard = renderHome;
   🏠 홈으로</button>
 </body>
 </html>
+
+<style>
+  .pf-hunter {
+    --pf-bg: #f8fafc;
+    --pf-surface: #ffffff;
+    --pf-text: #0f172a;
+    --pf-primary: #0284c7;
+    --pf-accent: #f59e0b;
+    --pf-danger: #ef4444;
+    --pf-success: #10b981;
+    --pf-border: #cbd5e1;
+    font-family: 'Pretendard', sans-serif;
+    color: var(--pf-text);
+    padding-bottom: 2rem;
+  }
+  .pf-header {
+    background: var(--pf-surface); padding: 1rem; border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 1rem;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .pf-title-area h2 { margin:0; font-size: 1.5rem; color: var(--pf-text); display:flex; align-items:center; gap:8px;}
+  .pf-title-area h2 span.badge { font-size:0.8rem; background:#e74c3c; color:#fff; padding:3px 8px; border-radius:8px; font-weight:800; }
+  .pf-mode-bar { display:flex; gap:10px; margin-bottom:10px; }
+  .pf-mode-btn {
+    flex:1; padding:12px; border:none; border-radius:8px; background:var(--pf-surface);
+    color:var(--pf-text); font-weight:700; cursor:pointer; box-shadow:0 2px 4px rgba(0,0,0,0.05);
+    transition: all 0.2s; border:2px solid transparent;
+  }
+  .pf-mode-btn.active { border-color: var(--pf-primary); background: #f0f9ff; color: var(--pf-primary); }
+  .pf-arena-container {
+    display: grid; gap: 16px; min-height: 500px;
+  }
+  .pf-arena {
+    background: #1e293b; border-radius: 12px; position: relative; overflow: hidden;
+    box-shadow: inset 0 4px 10px rgba(0,0,0,0.2); touch-action: none;
+  }
+  .pf-hud {
+    position: absolute; top: 16px; left: 16px; color: #fff; z-index: 10;
+    pointer-events: none; font-weight: 700; text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+  }
+  .pf-hud-score { color: #38bdf8; font-size: 1.2rem; }
+  .pf-hud-life { color: #f87171; font-size: 1.2rem; margin-top:4px; }
+  .pf-game-over {
+    position: absolute; top:0; left:0; right:0; bottom:0;
+    background: rgba(15,23,42,0.8); display:flex; flex-direction:column;
+    align-items:center; justify-content:center; color:#fff; z-index:20;
+    opacity: 0; pointer-events: none; transition: opacity 0.3s;
+  }
+  .pf-game-over.show { opacity: 1; pointer-events: auto; }
+  .pf-game-over h3 { font-size: 2rem; margin:0 0 10px 0; color:#f87171; }
+  .pf-game-over p { font-size: 1.2rem; margin:0 0 20px 0; }
+  .pf-btn {
+    background: var(--pf-primary); color: #fff; border: none; padding: 10px 24px;
+    border-radius: 8px; font-weight: 700; font-size: 1.1rem; cursor: pointer;
+  }
+  .pf-btn:hover { opacity: 0.9; }
+  canvas.pf-canvas {
+    width: 100%; height: 100%; display: block;
+  }
+  .pf-bottom-ranking-card {
+    background: var(--pf-surface); padding: 1rem; border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-top: 1rem; border:1px solid var(--pf-border);
+  }
+  .pf-ranking-header { font-size:1.2rem; font-weight:800; color:var(--pf-text); margin-bottom:12px; }
+</style>
+
+<div class="pf-hunter" id="pf-hunter-root">
+  <div class="pf-header">
+    <div class="pf-title-area">
+      <h2>🪓 소인수분해 헌터 <span class="badge">👥 1~2인</span></h2>
+    </div>
+    <div style="display:flex; gap:8px;">
+      <button class="pf-btn" style="background:#10b981;" onclick="PrimeFactorHunterModule.showGuide()">📖 게임 방법</button>
+      <button class="pf-btn" style="background:#f59e0b;" onclick="PrimeFactorHunterModule.submitScoreManually()">🏆 명예의 전당</button>
+    </div>
+  </div>
+
+  <div class="pf-mode-bar">
+    <button class="pf-mode-btn active" id="pf-mode-1p" onclick="PrimeFactorHunterModule.setMode('1p')">👤 1인 카운트다운/생존 모드</button>
+    <button class="pf-mode-btn" id="pf-mode-2p" onclick="PrimeFactorHunterModule.setMode('2p')">👥 2인 전자칠판 VS 대결 모드</button>
+  </div>
+
+  <div class="pf-arena-container" id="pf-arena-container" style="grid-template-columns: 1fr;">
+    
+    <div class="pf-arena" id="pf-arena-1p">
+      <div class="pf-hud">
+        <div class="pf-hud-score">💯 점수: <span id="pf-score-1p">0</span></div>
+        <div class="pf-hud-life">❤️ 생명: <span id="pf-life-1p">3</span></div>
+      </div>
+      <canvas class="pf-canvas" id="pf-canvas-1p"></canvas>
+      <div class="pf-game-over" id="pf-go-1p">
+        <h3>Game Over!</h3>
+        <p>최종 점수: <span id="pf-final-score-1p">0</span>점</p>
+        <button class="pf-btn" onclick="PrimeFactorHunterModule.startGame()">다시하기</button>
+      </div>
+    </div>
+    
+    
+    <div class="pf-arena" id="pf-arena-2p" style="display:none;">
+      <div class="pf-hud">
+        <div class="pf-hud-score">💯 P2 점수: <span id="pf-score-2p">0</span></div>
+        <div class="pf-hud-life">❤️ P2 생명: <span id="pf-life-2p">3</span></div>
+      </div>
+      <canvas class="pf-canvas" id="pf-canvas-2p"></canvas>
+      <div class="pf-game-over" id="pf-go-2p">
+        <h3>Game Over!</h3>
+        <p>최종 점수: <span id="pf-final-score-2p">0</span>점</p>
+        <button class="pf-btn" onclick="PrimeFactorHunterModule.startGame()">다시하기</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="pf-bottom-ranking-card">
+    <div class="pf-ranking-header">🏆 명예의 전당 (실시간 랭킹 보드)</div>
+    <div id="board-prime-factor-hunter-bottom">
+      <p style="text-align:center; color:#94a3b8; padding:12px 0;">랭킹 데이터를 불러오는 중...</p>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const IS_DEV = false;
+  let animId = null;
+  let gameMode = '1p'; // '1p' or '2p'
+  let spawnInterval = null;
+  
+  const COLORS = {
+    composite: '#facc15', // yellow
+    prime: '#38bdf8', // blue
+    slice: '#ffffff',
+    bg: '#1e293b'
+  };
+
+  function isPrime(n) {
+    if(n<=1) return false;
+    if(n<=3) return true;
+    if(n%2===0 || n%3===0) return false;
+    for(let i=5; i*i<=n; i+=6) {
+      if(n%i===0 || n%(i+2)===0) return false;
+    }
+    return true;
+  }
+
+  function getFactors(n) {
+    for(let i=2; i*i<=n; i++) {
+      if(n%i===0) return [i, n/i];
+    }
+    return [n, 1];
+  }
+
+  class Orb {
+    constructor(x, y, val, vx=0, vy=0, radius=35) {
+      this.x = x; this.y = y; this.val = val; this.r = radius;
+      this.vx = vx; this.vy = vy;
+      this.prime = isPrime(val);
+      this.color = this.prime ? COLORS.prime : COLORS.composite;
+      this.life = 1; // For particle fade out
+    }
+    update(dt, h) {
+      this.x += this.vx * dt;
+      this.y += this.vy * dt;
+      this.vy += 150 * dt; // Gravity
+      
+      // Bounce off walls horizontally
+      if (this.x < this.r) { this.x = this.r; this.vx *= -1; }
+      else if (this.x > 800 - this.r) { this.x = 800 - this.r; this.vx *= -1; } // Assuming max width roughly 800 for canvas logic
+
+      if(this.y - this.r > h) this.life = 0; // Out of bounds
+    }
+    draw(ctx) {
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.r, 0, Math.PI*2);
+      ctx.fillStyle = this.color;
+      ctx.fill();
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 3;
+      ctx.stroke();
+
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold ' + Math.max(16, this.r * 0.7) + 'px Pretendard';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(this.val, this.x, this.y);
+    }
+  }
+
+  class Particle {
+    constructor(x, y, color) {
+      this.x = x; this.y = y; this.color = color;
+      this.vx = (Math.random()-0.5)*300;
+      this.vy = (Math.random()-0.5)*300;
+      this.life = 1;
+      this.r = Math.random()*4 + 2;
+    }
+    update(dt) {
+      this.x += this.vx * dt; this.y += this.vy * dt;
+      this.life -= dt * 2;
+    }
+    draw(ctx) {
+      ctx.globalAlpha = Math.max(0, this.life);
+      ctx.beginPath(); ctx.arc(this.x, this.y, this.r, 0, Math.PI*2);
+      ctx.fillStyle = this.color; ctx.fill();
+      ctx.globalAlpha = 1;
+    }
+  }
+
+  class Arena {
+    constructor(pid, canvasId) {
+      this.pid = pid;
+      this.canvas = document.getElementById(canvasId);
+      this.ctx = this.canvas.getContext('2d');
+      this.orbs = [];
+      this.particles = [];
+      this.trail = [];
+      this.score = 0;
+      this.life = 3;
+      this.active = false;
+      this.width = 800;
+      
+      this.bindEvents();
+    }
+    resize() {
+      const rect = this.canvas.parentElement.getBoundingClientRect();
+      this.canvas.width = rect.width;
+      this.canvas.height = rect.height;
+      this.width = rect.width;
+    }
+    bindEvents() {
+      let isDrawing = false;
+      const getPos = (e) => {
+        const rect = this.canvas.getBoundingClientRect();
+        if(e.touches && e.touches.length > 0) {
+          return {x: e.touches[0].clientX - rect.left, y: e.touches[0].clientY - rect.top};
+        }
+        return {x: e.clientX - rect.left, y: e.clientY - rect.top};
+      };
+      
+      const start = (e) => { if(!this.active) return; isDrawing = true; this.trail = [getPos(e)]; e.preventDefault(); };
+      const move = (e) => {
+        if(!isDrawing || !this.active) return;
+        const p = getPos(e);
+        this.trail.push(p);
+        if(this.trail.length > 15) this.trail.shift();
+        this.checkSlice(this.trail[this.trail.length-2], p);
+        e.preventDefault();
+      };
+      const end = (e) => { isDrawing = false; this.trail = []; };
+
+      this.canvas.addEventListener('mousedown', start);
+      this.canvas.addEventListener('mousemove', move);
+      window.addEventListener('mouseup', end);
+      this.canvas.addEventListener('touchstart', start, {passive:false});
+      this.canvas.addEventListener('touchmove', move, {passive:false});
+      this.canvas.addEventListener('touchend', end);
+    }
+    
+    // Check line segment intersection with circle
+    checkSlice(p1, p2) {
+      if(!p1 || !p2) return;
+      for(let i = this.orbs.length - 1; i >= 0; i--) {
+        const orb = this.orbs[i];
+        // Dist from line segment to orb center
+        const l2 = (p2.x - p1.x)**2 + (p2.y - p1.y)**2;
+        let t = 0;
+        if (l2 !== 0) {
+          t = ((orb.x - p1.x)*(p2.x - p1.x) + (orb.y - p1.y)*(p2.y - p1.y)) / l2;
+          t = Math.max(0, Math.min(1, t));
+        }
+        const proj = { x: p1.x + t*(p2.x-p1.x), y: p1.y + t*(p2.y-p1.y) };
+        const dist2 = (orb.x - proj.x)**2 + (orb.y - proj.y)**2;
+        
+        if (dist2 <= orb.r**2) {
+          this.sliceOrb(i);
+        }
+      }
+    }
+
+    sliceOrb(idx) {
+      const orb = this.orbs[idx];
+      this.orbs.splice(idx, 1);
+      
+      // Particles
+      for(let k=0; k<15; k++) this.particles.push(new Particle(orb.x, orb.y, orb.color));
+      
+      if(orb.prime) {
+        this.life--;
+        this.updateHUD();
+        // Red flash
+        this.ctx.fillStyle = 'rgba(239, 68, 68, 0.4)';
+        this.ctx.fillRect(0,0,this.canvas.width, this.canvas.height);
+        
+        if(this.life <= 0) this.gameOver();
+      } else {
+        const [a, b] = getFactors(orb.val);
+        this.score += 10;
+        this.updateHUD();
+        
+        // Split into two
+        const nx1 = orb.x - 15; const ny1 = orb.y - 10;
+        const nx2 = orb.x + 15; const ny2 = orb.y - 10;
+        const newV1 = -100 - (Math.random()*50);
+        const newV2 = 100 + (Math.random()*50);
+        const newVy = -150; // Bounce up slightly
+        
+        this.orbs.push(new Orb(nx1, ny1, a, newV1, newVy, Math.max(25, orb.r-5)));
+        this.orbs.push(new Orb(nx2, ny2, b, newV2, newVy, Math.max(25, orb.r-5)));
+      }
+    }
+    
+    update(dt) {
+      if(!this.active) return;
+      this.orbs.forEach(o => o.update(dt, this.canvas.height));
+      this.orbs = this.orbs.filter(o => o.life > 0);
+      
+      this.particles.forEach(p => p.update(dt));
+      this.particles = this.particles.filter(p => p.life > 0);
+    }
+
+    draw() {
+      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+      this.orbs.forEach(o => o.draw(this.ctx));
+      this.particles.forEach(p => p.draw(this.ctx));
+      
+      // Draw trail
+      if(this.trail.length > 1) {
+        this.ctx.beginPath();
+        this.ctx.moveTo(this.trail[0].x, this.trail[0].y);
+        for(let i=1; i<this.trail.length; i++) this.ctx.lineTo(this.trail[i].x, this.trail[i].y);
+        this.ctx.strokeStyle = COLORS.slice;
+        this.ctx.lineWidth = 5;
+        this.ctx.lineCap = 'round';
+        this.ctx.lineJoin = 'round';
+        this.ctx.stroke();
+      }
+    }
+
+    spawn(val) {
+      const x = 50 + Math.random()*(this.canvas.width-100);
+      const vy = 50 + Math.random()*100; // Falling speed
+      const r = val > 50 ? 45 : (val > 20 ? 40 : 35);
+      this.orbs.push(new Orb(x, -50, val, (Math.random()-0.5)*50, vy, r));
+    }
+
+    updateHUD() {
+      document.getElementById('pf-score-' + this.pid).textContent = this.score;
+      document.getElementById('pf-life-' + this.pid).textContent = this.life;
+    }
+
+    gameOver() {
+      this.active = false;
+      document.getElementById('pf-go-' + this.pid).classList.add('show');
+      document.getElementById('pf-final-score-' + this.pid).textContent = this.score;
+      
+      // Submit ranking if 1P mode
+      if(this.pid === '1p' && gameMode === '1p' && typeof showRankingModal === 'function') {
+        setTimeout(() => showRankingModal('prime-factorization-hunter', this.score), 500);
+      }
+    }
+
+    reset() {
+      this.orbs = []; this.particles = []; this.trail = [];
+      this.score = 0; this.life = 3; this.active = true;
+      this.updateHUD();
+      document.getElementById('pf-go-' + this.pid).classList.remove('show');
+    }
+  }
+
+  let arena1, arena2;
+  let lastTime = 0;
+
+  function loop(time) {
+    if(!lastTime) lastTime = time;
+    const dt = Math.min((time - lastTime)/1000, 0.1);
+    lastTime = time;
+
+    if(arena1) { arena1.update(dt); arena1.draw(); }
+    if(arena2 && gameMode === '2p') { arena2.update(dt); arena2.draw(); }
+    
+    animId = requestAnimationFrame(loop);
+  }
+
+  function spawnRandomNumber() {
+    let val;
+    if(Math.random() < 0.3) {
+      // Spawn Prime
+      const primes = [2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,97];
+      val = primes[Math.floor(Math.random()*primes.length)];
+    } else {
+      // Spawn Composite
+      const primes = [2,3,5,7];
+      const p1 = primes[Math.floor(Math.random()*primes.length)];
+      const p2 = Math.floor(Math.random()*10)+2; // 2 to 11
+      val = p1 * p2;
+    }
+    
+    if(arena1 && arena1.active) arena1.spawn(val);
+    if(arena2 && arena2.active && gameMode === '2p') arena2.spawn(val); // Spawn same for P2
+  }
+
+  window.PrimeFactorHunterModule = {
+    mount(container) {
+      let host = typeof container === 'string' ? document.querySelector(container) : container;
+      if(!host) host = document.getElementById('mathlab-global-modal-content') || document.getElementById('mathlab-view');
+      if(!host) {
+        let createdHost = document.getElementById('pf-hunter-force-host');
+        if(!createdHost) { createdHost = document.createElement('div'); createdHost.id = 'pf-hunter-force-host'; document.body.appendChild(createdHost); }
+        host = createdHost;
+      }
+      
+      const footerEl = document.querySelector('footer, #footer, .app-footer');
+      if (footerEl && host && typeof host.compareDocumentPosition === 'function' && (host.compareDocumentPosition(footerEl) & Node.DOCUMENT_POSITION_PRECEDING)) {
+        footerEl.parentNode.insertBefore(host, footerEl);
+      }
+
+      host.style.display = ''; host.style.visibility = 'visible';
+      let parent = host.parentElement;
+      while(parent && parent !== document.body && parent !== document.documentElement) {
+        if(parent.style && parent.style.display === 'none') parent.style.display = 'block';
+        if(parent.style && parent.style.visibility === 'hidden') parent.style.visibility = 'visible';
+        parent = parent.parentElement;
+      }
+      document.querySelectorAll('header, .navbar, #floating-home-btn').forEach(el => { if(el && el.style) el.style.display = ''; });
+
+      const template = document.getElementById('pf-hunter-root');
+      if(template) {
+        host.innerHTML = '';
+        host.appendChild(template);
+      }
+
+      if(!arena1) arena1 = new Arena('1p', 'pf-canvas-1p');
+      if(!arena2) arena2 = new Arena('2p', 'pf-canvas-2p');
+      
+      this.setMode('1p');
+      this.renderRanking();
+    },
+    setMode(mode) {
+      gameMode = mode;
+      document.getElementById('pf-mode-1p').classList.toggle('active', mode === '1p');
+      document.getElementById('pf-mode-2p').classList.toggle('active', mode === '2p');
+      
+      const container = document.getElementById('pf-arena-container');
+      const a2 = document.getElementById('pf-arena-2p');
+      if(mode === '2p') {
+        container.style.gridTemplateColumns = '1fr 1fr';
+        a2.style.display = 'block';
+      } else {
+        container.style.gridTemplateColumns = '1fr';
+        a2.style.display = 'none';
+      }
+      
+      setTimeout(() => {
+        if(arena1) arena1.resize();
+        if(arena2) arena2.resize();
+      }, 100);
+      
+      this.startGame();
+    },
+    startGame() {
+      if(animId) cancelAnimationFrame(animId);
+      if(spawnInterval) clearInterval(spawnInterval);
+      
+      if(arena1) { arena1.resize(); arena1.reset(); }
+      if(arena2 && gameMode === '2p') { arena2.resize(); arena2.reset(); }
+      
+      lastTime = 0;
+      animId = requestAnimationFrame(loop);
+      spawnInterval = setInterval(spawnRandomNumber, 1200); // spawn every 1.2s
+    },
+    showGuide() {
+      if(typeof showToast === 'function') {
+        showToast('마우스를 드래그하여 떨어지는 합성수를 두 수로 쪼개세요! 더 이상 쪼개지지 않는 소수가 되면 통과합니다. 소수를 자르면 생명이 깎입니다.', 'info');
+      } else {
+        alert('마우스를 드래그하여 떨어지는 합성수를 두 수로 쪼개세요! 더 이상 쪼개지지 않는 소수가 되면 통과합니다. 소수를 자르면 생명이 깎입니다.');
+      }
+    },
+    submitScoreManually() {
+      if(typeof showRankingModal === 'function') showRankingModal('prime-factorization-hunter', arena1 ? arena1.score : 0);
+    },
+    renderRanking() {
+      if (typeof loadGameLeaderboard === 'function') {
+        loadGameLeaderboard('prime-factorization-hunter', true, 'board-prime-factor-hunter-bottom');
+      } else {
+        document.getElementById('board-prime-factor-hunter-bottom').innerHTML = '<p style="text-align:center; color:#94a3b8; padding:12px 0;">아직 등록된 기록이 없습니다. 첫 번째 도전을 완료해보세요!</p>';
+      }
+    },
+    destroy() {
+      if(animId) cancelAnimationFrame(animId);
+      if(spawnInterval) clearInterval(spawnInterval);
+      const root = document.getElementById('pf-hunter-root');
+      if(root) root.remove();
+    },
+    goHome() {
+      this.destroy();
+      if(typeof LegacyBridge !== 'undefined' && LegacyBridge.backHome) LegacyBridge.backHome();
+    }
+  };
+
+  function registerApp() {
+    if (typeof window.MathLabGames !== 'undefined' && typeof window.MathLabGames.register === 'function') {
+      if (!window.MathLabGames.get('prime-factorization-hunter')) {
+        try {
+          window.MathLabGames.register({
+            id: 'prime-factorization-hunter',
+            title: '소인수분해 헌터',
+            icon: '🪓',
+            sourceType: 'new',
+            players: '1~2인',
+            isMultiplayer: true,
+            mount(container) { PrimeFactorHunterModule.mount(container); },
+            reset() { PrimeFactorHunterModule.startGame(); },
+            destroy() { PrimeFactorHunterModule.destroy(); },
+            goHome() { PrimeFactorHunterModule.goHome(); }
+          });
+        } catch(e){}
+      }
+    }
+  }
+  registerApp();
+  window.addEventListener('DOMContentLoaded', registerApp);
+  setTimeout(registerApp, 100);
+  
+  window.initPrimeFactorizationHunterGame = function() {
+    registerApp();
+    if (window.LegacyBridge && typeof window.LegacyBridge.hideAllLegacySections === 'function') {
+      window.LegacyBridge.hideAllLegacySections(); window.LegacyBridge.showNewRoot();
+    }
+    if (typeof window.MathLabGames !== 'undefined' && typeof window.MathLabGames.mount === 'function') {
+      try { window.MathLabGames.mount('prime-factorization-hunter'); return; } catch(e) {}
+    }
+    PrimeFactorHunterModule.mount();
+  };
+  window.launchPrimeFactorizationHunterGame = window.initPrimeFactorizationHunterGame;
+})();
+</script>
+
