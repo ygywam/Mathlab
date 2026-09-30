@@ -125080,60 +125080,6 @@ window.MathLabRenderLegacyDashboard = renderHome;
   .pf-ranking-header { font-size:1.2rem; font-weight:800; color:var(--pf-text); margin-bottom:12px; }
 </style>
 
-<div class="pf-hunter" id="pf-hunter-root">
-  <div class="pf-header">
-    <div class="pf-title-area">
-      <h2>🪓 소인수분해 헌터 <span class="badge">👥 1~2인</span></h2>
-    </div>
-    <div style="display:flex; gap:8px;">
-      <button class="pf-btn" style="background:#10b981;" onclick="PrimeFactorHunterModule.showGuide()">📖 게임 방법</button>
-      <button class="pf-btn" style="background:#f59e0b;" onclick="PrimeFactorHunterModule.submitScoreManually()">🏆 명예의 전당</button>
-    </div>
-  </div>
-
-  <div class="pf-mode-bar">
-    <button class="pf-mode-btn active" id="pf-mode-1p" onclick="PrimeFactorHunterModule.setMode('1p')">👤 1인 카운트다운/생존 모드</button>
-    <button class="pf-mode-btn" id="pf-mode-2p" onclick="PrimeFactorHunterModule.setMode('2p')">👥 2인 전자칠판 VS 대결 모드</button>
-  </div>
-
-  <div class="pf-arena-container" id="pf-arena-container" style="grid-template-columns: 1fr;">
-    
-    <div class="pf-arena" id="pf-arena-1p">
-      <div class="pf-hud">
-        <div class="pf-hud-score">💯 점수: <span id="pf-score-1p">0</span></div>
-        <div class="pf-hud-life">❤️ 생명: <span id="pf-life-1p">3</span></div>
-      </div>
-      <canvas class="pf-canvas" id="pf-canvas-1p"></canvas>
-      <div class="pf-game-over" id="pf-go-1p">
-        <h3>Game Over!</h3>
-        <p>최종 점수: <span id="pf-final-score-1p">0</span>점</p>
-        <button class="pf-btn" onclick="PrimeFactorHunterModule.startGame()">다시하기</button>
-      </div>
-    </div>
-    
-    
-    <div class="pf-arena" id="pf-arena-2p" style="display:none;">
-      <div class="pf-hud">
-        <div class="pf-hud-score">💯 P2 점수: <span id="pf-score-2p">0</span></div>
-        <div class="pf-hud-life">❤️ P2 생명: <span id="pf-life-2p">3</span></div>
-      </div>
-      <canvas class="pf-canvas" id="pf-canvas-2p"></canvas>
-      <div class="pf-game-over" id="pf-go-2p">
-        <h3>Game Over!</h3>
-        <p>최종 점수: <span id="pf-final-score-2p">0</span>점</p>
-        <button class="pf-btn" onclick="PrimeFactorHunterModule.startGame()">다시하기</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="pf-bottom-ranking-card">
-    <div class="pf-ranking-header">🏆 명예의 전당 (실시간 랭킹 보드)</div>
-    <div id="board-prime-factor-hunter-bottom">
-      <p style="text-align:center; color:#94a3b8; padding:12px 0;">랭킹 데이터를 불러오는 중...</p>
-    </div>
-  </div>
-</div>
-
 <script>
 (function(){
   const IS_DEV = false;
@@ -125438,11 +125384,59 @@ window.MathLabRenderLegacyDashboard = renderHome;
       }
       document.querySelectorAll('header, .navbar, #floating-home-btn').forEach(el => { if(el && el.style) el.style.display = ''; });
 
-      const template = document.getElementById('pf-hunter-root');
-      if(template) {
-        host.innerHTML = '';
-        host.appendChild(template);
-      }
+      host.innerHTML = `<div class="pf-hunter" id="pf-hunter-root">
+  <div class="pf-header">
+    <div class="pf-title-area">
+      <h2>🪓 소인수분해 헌터 <span class="badge">👥 1~2인</span></h2>
+    </div>
+    <div style="display:flex; gap:8px;">
+      <button class="pf-btn" style="background:#10b981;" onclick="PrimeFactorHunterModule.showGuide()">📖 게임 방법</button>
+      <button class="pf-btn" style="background:#f59e0b;" onclick="PrimeFactorHunterModule.submitScoreManually()">🏆 명예의 전당</button>
+    </div>
+  </div>
+
+  <div class="pf-mode-bar">
+    <button class="pf-mode-btn active" id="pf-mode-1p" onclick="PrimeFactorHunterModule.setMode('1p')">👤 1인 카운트다운/생존 모드</button>
+    <button class="pf-mode-btn" id="pf-mode-2p" onclick="PrimeFactorHunterModule.setMode('2p')">👥 2인 전자칠판 VS 대결 모드</button>
+  </div>
+
+  <div class="pf-arena-container" id="pf-arena-container" style="grid-template-columns: 1fr;">
+    
+    <div class="pf-arena" id="pf-arena-1p">
+      <div class="pf-hud">
+        <div class="pf-hud-score">💯 점수: <span id="pf-score-1p">0</span></div>
+        <div class="pf-hud-life">❤️ 생명: <span id="pf-life-1p">3</span></div>
+      </div>
+      <canvas class="pf-canvas" id="pf-canvas-1p"></canvas>
+      <div class="pf-game-over" id="pf-go-1p">
+        <h3>Game Over!</h3>
+        <p>최종 점수: <span id="pf-final-score-1p">0</span>점</p>
+        <button class="pf-btn" onclick="PrimeFactorHunterModule.startGame()">다시하기</button>
+      </div>
+    </div>
+    
+    
+    <div class="pf-arena" id="pf-arena-2p" style="display:none;">
+      <div class="pf-hud">
+        <div class="pf-hud-score">💯 P2 점수: <span id="pf-score-2p">0</span></div>
+        <div class="pf-hud-life">❤️ P2 생명: <span id="pf-life-2p">3</span></div>
+      </div>
+      <canvas class="pf-canvas" id="pf-canvas-2p"></canvas>
+      <div class="pf-game-over" id="pf-go-2p">
+        <h3>Game Over!</h3>
+        <p>최종 점수: <span id="pf-final-score-2p">0</span>점</p>
+        <button class="pf-btn" onclick="PrimeFactorHunterModule.startGame()">다시하기</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="pf-bottom-ranking-card">
+    <div class="pf-ranking-header">🏆 명예의 전당 (실시간 랭킹 보드)</div>
+    <div id="board-prime-factor-hunter-bottom">
+      <p style="text-align:center; color:#94a3b8; padding:12px 0;">랭킹 데이터를 불러오는 중...</p>
+    </div>
+  </div>
+</div>`;
 
       if(!arena1) arena1 = new Arena('1p', 'pf-canvas-1p');
       if(!arena2) arena2 = new Arena('2p', 'pf-canvas-2p');
