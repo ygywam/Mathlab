@@ -2517,3574 +2517,2017 @@ window.openFeedbackModal = function() {
 </script>
 <script>
 (function () {
-  window.MathLabMetadata = window.MathLabMetadata || [];
-
-  const metadataItems = [
-  {
-    "id": "poly-concept",
-    "title": "다항함수 해부학",
-    "icon": "📈",
-    "appType": "concept",
-    "topApp": "교과 수학 개념",
-    "curriculumSchool": "고등학교",
-    "schoolLevel": [
-      "고등학교"
-    ],
-    "curriculumSubject": "미적분1",
-    "curriculumArea": [
-      "미적분1",
-      "도함수의 활용"
-    ],
-    "curriculumUnit": "도함수의 활용",
-    "description": "삼차·사차함수 비율관계와 극값, 그래프 개형을 동적으로 조작하며 탐구합니다.",
-    "tags": [
-      "다항함수",
-      "삼차함수",
-      "사차함수",
-      "도함수",
-      "극값",
-      "비율관계"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "poly-concept",
-    "fileName": "concept_poly_logic.html"
-  },
-  {
-    "id": "cubic-anatomy-2",
-    "title": "다항함수 해부학 2",
-    "icon": "📈",
-    "appType": "concept",
-    "topApp": "교과 수학 개념",
-    "curriculumSchool": "고등학교",
-    "schoolLevel": [
-      "고등학교"
-    ],
-    "curriculumSubject": "미적분1",
-    "curriculumArea": [
-      "미적분1",
-      "도함수의 활용"
-    ],
-    "curriculumUnit": "도함수의 활용",
-    "description": "삼차함수와 도함수의 실시간 상하 캔버스 동적 연동 및 접선, 극대·극소 개형 탐구",
-    "tags": [
-      "삼차함수",
-      "도함수",
-      "접선의방정식",
-      "극대극소",
-      "변곡점"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "cubic-anatomy-2",
-    "fileName": "games_cubic_anatomy_2.html"
-  },
-  {
-    "id": "extrema-coaster",
-    "title": "극대·극소 롤러코스터",
-    "icon": "🎢",
-    "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "고등학교",
-    "schoolLevel": [
-      "고등학교"
-    ],
-    "curriculumSubject": "미적분1",
-    "curriculumArea": [
-      "미적분1",
-      "도함수의 활용"
-    ],
-    "curriculumUnit": "도함수의 활용",
-    "description": "다항함수의 극댓값·극솟값 및 롤러코스터 궤도의 접선 기울기 곡률 동적 시뮬레이터",
-    "tags": [
-      "극대극소",
-      "변곡점",
-      "도함수",
-      "곡률",
-      "롤러코스터"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "extrema-coaster",
-    "fileName": "games_extrema_coaster.html"
-  },
-  {
-    "id": "func-limit-continuity",
-    "title": "함수의 극한과 연속성",
-    "icon": "👁️",
-    "appType": "concept",
-    "topApp": "교과 수학 개념",
-    "curriculumSchool": "고등학교",
-    "schoolLevel": [
-      "고등학교"
-    ],
-    "curriculumSubject": "미적분1",
-    "curriculumArea": [
-      "미적분1",
-      "함수의 극한"
-    ],
-    "curriculumUnit": "함수의 극한",
-    "description": "좌극한, 우극한 및 엡실론-델타 논법의 직관적 시각화와 불연속점 탐구",
-    "tags": [
-      "함수의극한",
-      "연속성",
-      "좌극한",
-      "우극한",
-      "수렴과발산"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "func-limit-continuity",
-    "fileName": "games_func_limit_continuity.html"
-  },
-  {
-    "id": "tangent-shooter",
-    "title": "미분계수 접선 슈터",
-    "icon": "📐",
-    "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "고등학교",
-    "schoolLevel": [
-      "고등학교"
-    ],
-    "curriculumSubject": "미적분1",
-    "curriculumArea": [
-      "미적분1",
-      "미분계수와 도함수"
-    ],
-    "curriculumUnit": "미분계수와 도함수",
-    "description": "곡선 위의 한 점에서의 미분계수(접선의 기울기)를 실시간으로 조준하여 타겟을 격파합니다.",
-    "tags": [
-      "미분계수",
-      "접선",
-      "도함수",
-      "기울기",
-      "미적분1"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "tangent-shooter",
-    "fileName": "games_tangent_shooter.html"
-  },
-  {
-    "id": "limit-shooting",
-    "title": "극한값 타겟 슈팅",
-    "icon": "🎯",
-    "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "고등학교",
-    "schoolLevel": [
-      "고등학교"
-    ],
-    "curriculumSubject": "미적분1",
-    "curriculumArea": [
-      "미적분1",
-      "수열의 극한"
-    ],
-    "curriculumUnit": "수열의 극한",
-    "description": "수열 an의 n이 무한대로 갈 때의 극한값을 예측하여 과녁에 명중시키는 수학 슈팅",
-    "tags": [
-      "극한값",
-      "수열의극한",
-      "수렴",
-      "발산",
-      "미적분1"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "limit-shooting",
-    "fileName": "games_limit_shooting.html"
-  },
-  {
-    "id": "integral-tetris",
-    "title": "적분 면적 테트리스",
-    "icon": "🧱",
-    "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "고등학교",
-    "schoolLevel": [
-      "고등학교"
-    ],
-    "curriculumSubject": "미적분1",
-    "curriculumArea": [
-      "미적분1",
-      "정적분"
-    ],
-    "curriculumUnit": "정적분",
-    "description": "리만 합과 구분구적법으로 곡선 아래의 면적을 직사각형 블록으로 채워 정적분값을 구합니다.",
-    "tags": [
-      "정적분",
-      "구분구적법",
-      "리만합",
-      "면적",
-      "미적분1"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "integral-tetris",
-    "fileName": "games_integral_tetris.html"
-  },
-  {
-    "id": "gradient-descent",
-    "title": "경사하강법 골짜기 탐구",
-    "icon": "📉",
-    "appType": "concept",
-    "topApp": "교과 수학 개념",
-    "curriculumSchool": "고등학교",
-    "schoolLevel": [
-      "고등학교"
-    ],
-    "curriculumSubject": "미적분1",
-    "curriculumArea": [
-      "미적분1",
-      "도함수의 활용"
-    ],
-    "curriculumUnit": "도함수의 활용",
-    "description": "인공지능 최적화의 핵심인 경사하강법(Gradient Descent)의 학습률과 기울기를 시뮬레이션합니다.",
-    "tags": [
-      "경사하강법",
-      "인공지능수학",
-      "미분",
-      "최적화",
-      "기울기"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "gradient-descent",
-    "fileName": "games_gradient_descent.html"
-  },
-  {
-    "id": "newton-raphson",
-    "title": "뉴턴-랩슨 실근 추적",
-    "icon": "🎯",
-    "appType": "concept",
-    "topApp": "교과 수학 개념",
-    "curriculumSchool": "고등학교",
-    "schoolLevel": [
-      "고등학교"
-    ],
-    "curriculumSubject": "미적분1",
-    "curriculumArea": [
-      "미적분1",
-      "도함수의 활용"
-    ],
-    "curriculumUnit": "도함수의 활용",
-    "description": "접선의 x절편을 반복하여 방정식의 실근을 초고속으로 근사하는 뉴턴-랩슨 수치해석 알고리즘",
-    "tags": [
-      "뉴턴랩슨",
-      "수치해석",
-      "실근근사",
-      "접선",
-      "미적분"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "newton-raphson",
-    "fileName": "games_newton_raphson.html"
-  },
-  {
-    "id": "taylor-series",
-    "title": "테일러 급수 다항 근사",
-    "icon": "📐",
-    "appType": "concept",
-    "topApp": "교과 수학 개념",
-    "curriculumSchool": "고등학교",
-    "schoolLevel": [
-      "고등학교"
-    ],
-    "curriculumSubject": "미적분2",
-    "curriculumArea": [
-      "미적분2",
-      "급수와 근사"
-    ],
-    "curriculumUnit": "급수와 근사",
-    "description": "초월함수(sin, cos, exp)를 다항식으로 근사하는 테일러 다항식 동적 시뮬레이션",
-    "tags": [
-      "테일러급수",
-      "맥클로린급수",
-      "다항근사",
-      "미적분2"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "taylor-series",
-    "fileName": "games_taylor_series.html"
-  },
-  {
-    "id": "implicit-laser",
-    "title": "음함수 레이저 가이드",
-    "icon": "⚡",
-    "appType": "concept",
-    "topApp": "교과 수학 개념",
-    "curriculumSchool": "고등학교",
-    "schoolLevel": [
-      "고등학교"
-    ],
-    "curriculumSubject": "기하",
-    "curriculumArea": [
-      "기하",
-      "이차곡선"
-    ],
-    "curriculumUnit": "이차곡선",
-    "description": "원, 타원, 쌍곡선 등 음함수 곡선 위의 접선과 법선 벡터를 레이저로 탐구합니다.",
-    "tags": [
-      "음함수",
-      "이차곡선",
-      "법선",
-      "접선",
-      "레이저",
-      "기하"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "implicit-laser",
-    "fileName": "games_implicit_laser.html"
-  },
-  {
-    "id": "asymptote-escape",
-    "title": "유리함수 점근선 탐구",
-    "icon": "📐",
-    "appType": "concept",
-    "topApp": "교과 수학 개념",
-    "curriculumSchool": "고등학교",
-    "schoolLevel": [
-      "고등학교"
-    ],
-    "curriculumSubject": "공통수학2",
-    "curriculumArea": [
-      "공통수학2",
-      "함수와 그래프"
-    ],
-    "curriculumUnit": "함수와 그래프",
-    "description": "유리함수 y=k/(x-a)+b 의 점근선과 대칭 중심, 대칭축의 동적 변화를 직관적으로 탐구합니다.",
-    "tags": [
-      "유리함수",
-      "점근선",
-      "대칭중심",
-      "대칭축",
-      "공통수학2"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "asymptote-escape",
-    "fileName": "games_asymptote_escape.html"
-  },
-  {
-    "id": "rat-irr-concept",
-    "title": "유리·무리함수 공작소",
-    "icon": "🪞",
-    "appType": "concept",
-    "topApp": "교과 수학 개념",
-    "curriculumSchool": "고등학교",
-    "schoolLevel": [
-      "고등학교"
-    ],
-    "curriculumSubject": "공통수학2",
-    "curriculumArea": [
-      "공통수학2",
-      "함수와 그래프"
-    ],
-    "curriculumUnit": "함수와 그래프",
-    "description": "유리함수와 무리함수의 표준형 및 평행이동, 점근선과 정의역·치역의 기하학적 변화 탐구",
-    "tags": [
-      "유리함수",
-      "무리함수",
-      "점근선",
-      "정의역",
-      "치역",
-      "공통수학2"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "rat-irr-concept",
-    "fileName": "concepts_rat_irr_logic.html"
-  },
-  {
-    "id": "trig-concept",
-    "title": "삼각함수 DJ",
-    "icon": "🌊",
-    "appType": "concept",
-    "topApp": "교과 수학 개념",
-    "curriculumSchool": "고등학교",
-    "schoolLevel": [
-      "고등학교"
-    ],
-    "curriculumSubject": "대수",
-    "curriculumArea": [
-      "대수",
-      "삼각함수"
-    ],
-    "curriculumUnit": "삼각함수",
-    "description": "사인, 코사인, 탄젠트 파동의 진폭, 주기, 위상을 조율하며 그래프의 변화를 관찰합니다.",
-    "tags": [
-      "삼각함수",
-      "사인",
-      "코사인",
-      "진폭",
-      "주기",
-      "파동",
-      "대수"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "trig-concept",
-    "fileName": "concept_trig_logic.html"
-  },
-  {
-    "id": "sine-surfing",
-    "title": "사인파 서핑 파도타기",
-    "icon": "🏄‍♂️",
-    "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "고등학교",
-    "schoolLevel": [
-      "고등학교"
-    ],
-    "curriculumSubject": "대수",
-    "curriculumArea": [
-      "대수",
-      "삼각함수"
-    ],
-    "curriculumUnit": "삼각함수",
-    "description": "목표 사인파와 진폭 A, 각주파수 ω를 일치시켜 파도를 타는 삼각함수 매칭 시뮬레이터",
-    "tags": [
-      "사인파",
-      "삼각함수",
-      "진폭",
-      "주기",
-      "각주파수",
-      "대수"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "sine-surfing",
-    "fileName": "games_sine_surfing.html"
-  },
+  window.MathLabMetadata = [
   {
     "id": "concept-angle",
     "title": "각변환 마법사",
     "icon": "🧙‍♂️",
     "appType": "concept",
-    "topApp": "교과 수학 개념",
-    "curriculumSchool": "고등학교",
-    "schoolLevel": [
-      "고등학교"
-    ],
-    "curriculumSubject": "대수",
-    "curriculumArea": [
-      "대수",
-      "삼각함수"
-    ],
-    "curriculumUnit": "삼각함수",
-    "description": "3단계 마법 공식으로 90°±θ, 180°±θ 등 복잡한 삼각함수 각변환을 완벽히 정복합니다.",
-    "tags": [
-      "각변환",
-      "삼각함수",
-      "동경",
-      "호도법",
-      "대수"
-    ],
+    "fileName": "concept_angle_logic.html",
     "launchType": "mathLabGame",
     "launchId": "concept-angle",
-    "fileName": "concept_angle_logic.html"
+    "multiplayer": null,
+    "description": "3단계 마법으로 삼각함수 변환하기",
+    "topApp": "교과수학개념",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
   },
   {
     "id": "exp-log-concept",
     "title": "지수·로그 롤러코스터",
     "icon": "🎢",
-    "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "고등학교",
-    "schoolLevel": [
-      "고등학교"
-    ],
-    "curriculumSubject": "대수",
-    "curriculumArea": [
-      "대수",
-      "지수함수와 로그함수"
-    ],
-    "curriculumUnit": "지수함수와 로그함수",
-    "description": "밑의 크기에 따른 지수함수와 로그함수의 역함수 대칭성(y=x)과 점근선 변화를 체험합니다.",
-    "tags": [
-      "지수함수",
-      "로그함수",
-      "역함수",
-      "점근선",
-      "대수"
-    ],
+    "appType": "concept",
+    "fileName": "concept_exp_log_logic.html",
     "launchType": "mathLabGame",
     "launchId": "exp-log-concept",
-    "fileName": "concept_exp_log_logic.html"
-  },
-  {
-    "id": "log-scale-voyage",
-    "title": "로그 스케일 상용로그 항해",
-    "icon": "⛵",
-    "appType": "concept",
-    "topApp": "교과 수학 개념",
-    "curriculumSchool": "고등학교",
-    "schoolLevel": [
-      "고등학교"
-    ],
-    "curriculumSubject": "대수",
-    "curriculumArea": [
-      "대수",
-      "상용로그"
-    ],
-    "curriculumUnit": "상용로그",
-    "description": "지진 규모(리히터), 소음 데시벨, 산도 pH 등 상용로그 스케일의 압축 원리를 항해합니다.",
-    "tags": [
-      "상용로그",
-      "로그스케일",
-      "지진규모",
-      "데시벨",
-      "대수"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "log-scale-voyage",
-    "fileName": "games_log_scale_voyage.html"
-  },
-  {
-    "id": "synthetic-division",
-    "title": "다항식 조립제법 탐구",
-    "icon": "🧮",
-    "appType": "concept",
-    "topApp": "교과 수학 개념",
-    "curriculumSchool": "고등학교",
-    "schoolLevel": [
-      "고등학교"
-    ],
-    "curriculumSubject": "공통수학1",
-    "curriculumArea": [
-      "공통수학1",
-      "다항식"
-    ],
-    "curriculumUnit": "다항식",
-    "description": "조립제법의 계수 곱셈과 덧셈 알고리즘 과정을 캔버스 단계별 시각화로 이해합니다.",
-    "tags": [
-      "조립제법",
-      "인수분해",
-      "나머지정리",
-      "공통수학1"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "synthetic-division",
-    "fileName": "games_synthetic_division.html"
+    "multiplayer": null,
+    "description": "급격한 성장과 반전",
+    "topApp": "교과수학개념",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
   },
   {
     "id": "formula-roots-concept",
-    "title": "근의 공식 실험실",
+    "title": "이차방정식",
     "icon": "🪄",
     "appType": "concept",
-    "topApp": "교과 수학 개념",
-    "curriculumSchool": "중학교",
-    "schoolLevel": [
-      "중학교",
-      "고등학교"
-    ],
-    "curriculumSubject": "공통수학1",
-    "curriculumArea": [
-      "공통수학1",
-      "이차방정식"
-    ],
-    "curriculumUnit": "이차방정식",
-    "description": "이차·삼차·사차방정식의 판별식과 복소근, 카르다노·페라리 해법을 탐구합니다.",
-    "tags": [
-      "근의공식",
-      "이차방정식",
-      "삼차방정식",
-      "판별식",
-      "복소근",
-      "공통수학1"
-    ],
+    "fileName": "concept_formula_roots.html",
     "launchType": "mathLabGame",
     "launchId": "formula-roots-concept",
-    "fileName": "concept_formula_roots.html"
-  },
-  {
-    "id": "mbti-concept",
-    "title": "나와 닮은 함수는 (함수 MBTI)",
-    "icon": "👤",
-    "appType": "concept",
-    "topApp": "교과 수학 개념",
+    "multiplayer": null,
+    "description": "이차·삼차·사차방정식의 근을 공식과 계산으로 탐구합니다",
+    "topApp": "교과수학개념",
     "curriculumSchool": "중학교",
-    "schoolLevel": [
-      "중학교",
-      "고등학교"
-    ],
-    "curriculumSubject": "공통수학2",
-    "curriculumArea": [
-      "공통수학2",
-      "함수"
-    ],
-    "curriculumUnit": "함수",
-    "description": "성격 유형 질문을 통해 일차, 이차, 지수, 로그, 삼각함수 중 나와 닮은 함수를 찾아냅니다.",
-    "tags": [
-      "함수",
-      "MBTI",
-      "일차함수",
-      "이차함수",
-      "그래프",
-      "공통수학2"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "mbti-concept",
-    "fileName": "concept_mbti_logic.html"
+    "curriculumSubject": "공통수학1"
   },
   {
-    "id": "matrix-concept",
-    "title": "행렬의 마법사",
-    "icon": "🌐",
+    "id": "poly-concept",
+    "title": "다항함수 해부학",
+    "icon": "📈",
     "appType": "concept",
-    "topApp": "교과 수학 개념",
-    "curriculumSchool": "고등학교",
-    "schoolLevel": [
-      "고등학교"
-    ],
-    "curriculumSubject": "공통수학1",
-    "curriculumArea": [
-      "공통수학1",
-      "행렬"
-    ],
-    "curriculumUnit": "행렬",
-    "description": "2×2 행렬의 곱셈과 일차변환에 따른 2D 평면 격자의 기하학적 왜곡과 회전을 탐구합니다.",
-    "tags": [
-      "행렬",
-      "일차변환",
-      "행렬곱셈",
-      "기하",
-      "공통수학1"
-    ],
+    "fileName": "concept_poly_logic.html",
     "launchType": "mathLabGame",
-    "launchId": "matrix-concept",
-    "fileName": "concepts_matrix_logic.html"
+    "launchId": "poly-concept",
+    "multiplayer": null,
+    "description": "삼차·사차함수 비율관계 실험",
+    "topApp": "교과수학개념",
+    "curriculumSchool": "중학교",
+    "curriculumSubject": "공통수학1"
   },
   {
     "id": "poly-net-concept",
     "title": "3D 도형 공작소",
     "icon": "📦",
     "appType": "concept",
-    "topApp": "교과 수학 개념",
-    "curriculumSchool": "중학교",
-    "schoolLevel": [
-      "초등학교",
-      "중학교"
-    ],
-    "curriculumSubject": "기하",
-    "curriculumArea": [
-      "기하",
-      "입체도형"
-    ],
-    "curriculumUnit": "입체도형",
-    "description": "정다면체 5종과 각기둥, 각뿔의 3차원 전개도가 실시간으로 접히고 펴지는 애니메이션",
-    "tags": [
-      "다면체",
-      "입체도형",
-      "전개도",
-      "기하",
-      "3D도형"
-    ],
+    "fileName": "concept_poly_net_logic.html",
     "launchType": "mathLabGame",
     "launchId": "poly-net-concept",
-    "fileName": "concept_poly_net_logic.html"
+    "multiplayer": null,
+    "description": "정다면체 전개도 애니메이션",
+    "topApp": "교과수학개념",
+    "curriculumSchool": "중학교",
+    "curriculumSubject": "기하"
   },
   {
-    "id": "survey-concept",
-    "title": "삼각측량 탐험대",
-    "icon": "🗺️",
+    "id": "trig-concept",
+    "title": "삼각함수 DJ",
+    "icon": "🌊",
     "appType": "concept",
-    "topApp": "교과 수학 개념",
-    "curriculumSchool": "중학교",
-    "schoolLevel": [
-      "중학교",
-      "고등학교"
-    ],
-    "curriculumSubject": "대수",
-    "curriculumArea": [
-      "대수",
-      "삼각비"
-    ],
-    "curriculumUnit": "삼각비",
-    "description": "사인법칙과 제2코사인법칙을 활용하여 먼 섬이나 산의 높이를 측정하는 기하학적 탐구",
-    "tags": [
-      "삼각측량",
-      "사인법칙",
-      "코사인법칙",
-      "삼각비",
-      "거리측정",
-      "대수"
-    ],
+    "fileName": "concept_trig_logic.html",
     "launchType": "mathLabGame",
-    "launchId": "survey-concept",
-    "fileName": "concept_survey_logic.html"
+    "launchId": "trig-concept",
+    "multiplayer": null,
+    "description": "파동의 그래프 조율하기",
+    "topApp": "교과수학개념",
+    "curriculumSchool": "중학교",
+    "curriculumSubject": "공통수학1"
   },
   {
-    "id": "triangle-centers",
-    "title": "삼각형의 중심 조준경",
-    "icon": "🔺",
+    "id": "matrix-concept",
+    "title": "행렬의 마법사",
+    "icon": "🌐",
     "appType": "concept",
-    "topApp": "교과 수학 개념",
-    "curriculumSchool": "중학교",
-    "schoolLevel": [
-      "중학교"
-    ],
-    "curriculumSubject": "공통수학2",
-    "curriculumArea": [
-      "공통수학2",
-      "도형의 성질"
-    ],
-    "curriculumUnit": "도형의 성질",
-    "description": "외심, 내심, 무게중심, 수심, 방심 등 오심(5심)의 성질과 오일러 직선을 탐구합니다.",
-    "tags": [
-      "외심",
-      "내심",
-      "무게중심",
-      "수심",
-      "오일러직선",
-      "도형"
-    ],
+    "fileName": "concepts_matrix_logic.html",
     "launchType": "mathLabGame",
-    "launchId": "triangle-centers",
-    "fileName": "games_triangle_centers.html"
+    "launchId": "matrix-concept",
+    "multiplayer": null,
+    "description": "세상을 움직이는 숫자 배열",
+    "topApp": "교과수학개념",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "rat-irr-concept",
+    "title": "유리·무리함수 공작소",
+    "icon": "🪞",
+    "appType": "concept",
+    "fileName": "concepts_rat_irr_logic.html",
+    "launchType": "mathLabGame",
+    "launchId": "rat-irr-concept",
+    "multiplayer": null,
+    "description": "점근선과 곡선의 마법",
+    "topApp": "교과수학개념",
+    "curriculumSchool": "중학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "fractal-tree",
+    "title": "fractal tree",
+    "icon": "🌳",
+    "appType": "concept",
+    "fileName": "games_fractal_tree.html",
+    "launchType": "mathLabGame",
+    "launchId": "fractal-tree",
+    "multiplayer": null,
+    "description": "자기닮음과 기하급수적 증가(2ⁿ, 3ⁿ)를 시각적으로 탐구하는 교과수학 개념 앱",
+    "topApp": "교과수학개념",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "integral-tetris",
+    "title": "적분 면적 탐구",
+    "icon": "⛲",
+    "appType": "concept",
+    "fileName": "games_integral_tetris.html",
+    "launchType": "mathLabGame",
+    "launchId": "integral-tetris",
+    "multiplayer": null,
+    "description": "리만 합으로 정적분을 실험하는 구분구적법 개념 탐구 도구",
+    "topApp": "교과수학개념",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
   },
   {
     "id": "similarity-scaler",
     "title": "닮음비 크기 조정기",
-    "icon": "📐",
+    "icon": "📏",
     "appType": "concept",
-    "topApp": "교과 수학 개념",
-    "curriculumSchool": "중학교",
-    "schoolLevel": [
-      "중학교"
-    ],
-    "curriculumSubject": "기하",
-    "curriculumArea": [
-      "기하",
-      "도형의 닮음"
-    ],
-    "curriculumUnit": "도형의 닮음",
-    "description": "길이비 m:n 에 따른 넓이비 m²:n² 및 부피비 m³:n³의 기하급수적 변화를 시각화합니다.",
-    "tags": [
-      "닮음비",
-      "길이비",
-      "넓이비",
-      "부피비",
-      "도형",
-      "기하"
-    ],
+    "fileName": "games_similarity_scaler.html",
     "launchType": "mathLabGame",
     "launchId": "similarity-scaler",
-    "fileName": "games_similarity_scaler.html"
+    "multiplayer": null,
+    "description": "목표 닮음비에 정확히 맞도록 조절 바로 도형 크기를 조정하는 교과수학 개념 앱",
+    "topApp": "교과수학개념",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
   },
   {
-    "id": "complex-orienteering",
-    "title": "복소평면 오리엔티어링",
-    "icon": "🧭",
-    "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "고등학교",
-    "schoolLevel": [
-      "고등학교"
-    ],
-    "curriculumSubject": "공통수학1",
-    "curriculumArea": [
-      "공통수학1",
-      "복소수"
-    ],
-    "curriculumUnit": "복소수",
-    "description": "복소수의 곱셈(회전과 크기 변환) 및 오일러 공식을 나침반 삼아 복소평면 목표를 탐험합니다.",
-    "tags": [
-      "복소수",
-      "복소평면",
-      "회전변환",
-      "오일러공식",
-      "극형식",
-      "공통수학1"
-    ],
+    "id": "std",
+    "title": "통계 개념 탐구실",
+    "icon": "📈",
+    "appType": "concept",
+    "fileName": "games_stats_concept_lab.html",
     "launchType": "mathLabGame",
-    "launchId": "complex-orienteering",
-    "fileName": "games_complex_orienteering.html"
+    "launchId": "std",
+    "topApp": "교과수학개념",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "확률과통계"
   },
   {
-    "id": "vector-racing",
-    "title": "벡터 레이싱",
-    "icon": "🏎️",
-    "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "고등학교",
-    "schoolLevel": [
-      "고등학교"
-    ],
-    "curriculumSubject": "기하",
-    "curriculumArea": [
-      "기하",
-      "평면벡터"
-    ],
-    "curriculumUnit": "평면벡터",
-    "description": "속도 벡터의 덧셈과 방향 조정을 통해 관성을 제어하며 서킷을 완주하는 벡터 물리 게임",
-    "tags": [
-      "벡터",
-      "속도벡터",
-      "벡터덧셈",
-      "내적",
-      "기하"
-    ],
+    "id": "asymptote-escape",
+    "title": "📐 유리함수와 점근선의 개념",
+    "icon": "🧩",
+    "appType": "concept",
+    "fileName": "games_asymptote_escape.html",
     "launchType": "mathLabGame",
-    "launchId": "vector-racing",
-    "fileName": "games_vector_racing.html"
+    "launchId": "asymptote-escape",
+    "topApp": "교과수학개념",
+    "curriculumSchool": "중학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "exp",
+    "title": "♾️ 테일러 급수(Taylor Series) 개념 소개",
+    "icon": "🧩",
+    "appType": "concept",
+    "fileName": "games_taylor_series.html",
+    "launchType": "mathLabGame",
+    "launchId": "exp",
+    "topApp": "교과수학개념",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "mbti-concept",
+    "title": "나와 닮은 함수는?",
+    "icon": "📐",
+    "appType": "concept",
+    "description": "나의 수학 함수 성격 유형 테스트",
+    "multiplayer": null,
+    "launchType": "mathLabGame",
+    "launchId": "mbti-concept",
+    "topApp": "교과수학개념",
+    "curriculumSchool": "중학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "abacus-logic",
+    "title": "주산 마스터",
+    "icon": "🧮",
+    "appType": "concept",
+    "description": "알을 튕기며 배우는 사칙연산",
+    "multiplayer": null,
+    "launchType": "mathLabGame",
+    "launchId": "abacus-logic",
+    "topApp": "교과수학개념",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
   },
   {
     "id": "stats-concept-lab",
     "title": "통계 개념 탐구실",
-    "icon": "📊",
+    "icon": "📈",
     "appType": "concept",
-    "topApp": "교과 수학 개념",
-    "curriculumSchool": "고등학교",
-    "schoolLevel": [
-      "고등학교"
-    ],
-    "curriculumSubject": "확률과통계",
-    "curriculumArea": [
-      "확률과통계",
-      "통계적 추정"
-    ],
-    "curriculumUnit": "통계적 추정",
-    "description": "표본평균의 분포, 중심극한정리, 신뢰구간 95%와 모평균 추정을 대량 몬테카를로로 실험합니다.",
-    "tags": [
-      "통계",
-      "표본평균",
-      "신뢰구간",
-      "중심극한정리",
-      "정규분포",
-      "확률과통계"
-    ],
+    "description": "표준화·정규근사·표본평균·n−1·신뢰구간을 시뮬레이션으로 확인하는 통계 개념 탐구 앱",
+    "multiplayer": null,
     "launchType": "mathLabGame",
     "launchId": "stats-concept-lab",
-    "fileName": "games_stats_concept_lab.html"
+    "topApp": "교과수학개념",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "확률과통계"
   },
   {
-    "id": "z-score-survival",
-    "title": "정규분포 z점수 서바이벌",
-    "icon": "🚨",
-    "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "고등학교",
-    "schoolLevel": [
-      "고등학교"
-    ],
-    "curriculumSubject": "확률과통계",
-    "curriculumArea": [
-      "확률과통계",
-      "정규분포"
-    ],
-    "curriculumUnit": "정규분포",
-    "description": "평균 μ와 표준편차 σ를 이용해 원점수를 표준정규분포 Z값으로 변환하며 살아남는 퀴즈",
-    "tags": [
-      "정규분포",
-      "Z점수",
-      "표준정규분포",
-      "확률과통계",
-      "표준편차"
-    ],
+    "id": "markov-weather-chain",
+    "title": "마르코프 날씨 체인 도박",
+    "icon": "🌦️",
+    "appType": "concept",
+    "description": "전이 확률 표를 분석해 며칠 뒤 날씨를 예측·베팅하는 마르코프 체인 게임",
+    "multiplayer": null,
     "launchType": "mathLabGame",
-    "launchId": "z-score-survival",
-    "fileName": "games_z_score_survival.html"
+    "launchId": "markov-weather-chain",
+    "topApp": "교과수학개념",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
   },
   {
-    "id": "galton-board",
-    "title": "골톤 보드 구슬 드롭",
-    "icon": "📊",
-    "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "고등학교",
-    "schoolLevel": [
-      "고등학교"
-    ],
-    "curriculumSubject": "확률과통계",
-    "curriculumArea": [
-      "확률과통계",
-      "이항분포와 정규분포"
-    ],
-    "curriculumUnit": "이항분포와 정규분포",
-    "description": "핀 사이로 떨어지는 구슬들의 누적을 통해 이항분포 B(n, p)가 정규분포 곡선으로 수렴함을 확인합니다.",
-    "tags": [
-      "골톤보드",
-      "이항분포",
-      "정규분포",
-      "확률과통계",
-      "정규곡선"
-    ],
+    "id": "circle-shooter",
+    "title": "원의 방정식 타겟 슈터",
+    "icon": "⭕",
+    "appType": "concept",
+    "description": "원의 방정식 계수(a, b, r)를 조작해 타겟을 포획하는 좌표기하 게임",
+    "multiplayer": null,
     "launchType": "mathLabGame",
-    "launchId": "galton-board",
-    "fileName": "games_galton_board.html"
-  },
-  {
-    "id": "scatter-r-guesser",
-    "title": "산점도 상관계수 추측기",
-    "icon": "📉",
-    "appType": "game",
-    "topApp": "수학 게임",
+    "launchId": "circle-shooter",
+    "topApp": "교과수학개념",
     "curriculumSchool": "중학교",
-    "schoolLevel": [
-      "중학교",
-      "고등학교"
-    ],
-    "curriculumSubject": "공통수학1",
-    "curriculumArea": [
-      "공통수학1",
-      "상관관계"
-    ],
-    "curriculumUnit": "상관관계",
-    "description": "x, y 데이터의 흩어짐(산점도)을 보고 피어슨 상관계수 r(-1 ~ +1)을 추측하는 감각 훈련",
-    "tags": [
-      "산점도",
-      "상관계수",
-      "양의상관",
-      "음의상관",
-      "통계",
-      "공통수학1"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "scatter-r-guesser",
-    "fileName": "games_scatter_r_guesser.html"
-  },
-  {
-    "id": "boxplot-mismatch",
-    "title": "상자수염 그림 미스매치",
-    "icon": "📦",
-    "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "중학교",
-    "schoolLevel": [
-      "중학교",
-      "고등학교"
-    ],
-    "curriculumSubject": "공통수학1",
-    "curriculumArea": [
-      "공통수학1",
-      "대푯값과 산포도"
-    ],
-    "curriculumUnit": "대푯값과 산포도",
-    "description": "최솟값, Q1, 중앙값, Q3, 최댓값 및 사분위범위(IQR)와 히스토그램을 올바르게 매칭합니다.",
-    "tags": [
-      "상자수염그림",
-      "사분위수",
-      "IQR",
-      "중앙값",
-      "통계",
-      "공통수학1"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "boxplot-mismatch",
-    "fileName": "games_boxplot_mismatch.html"
-  },
-  {
-    "id": "confidence-interval-fishing",
-    "title": "모평균 신뢰구간 낚시",
-    "icon": "🎣",
-    "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "고등학교",
-    "schoolLevel": [
-      "고등학교"
-    ],
-    "curriculumSubject": "확률과통계",
-    "curriculumArea": [
-      "확률과통계",
-      "통계적 추정"
-    ],
-    "curriculumUnit": "통계적 추정",
-    "description": "표본에서 추출한 신뢰구간 막대가 진짜 모평균(물고기)을 품을 확률 95%의 의미를 체득합니다.",
-    "tags": [
-      "신뢰구간",
-      "모평균",
-      "추정",
-      "오차의한계",
-      "확률과통계"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "confidence-interval-fishing",
-    "fileName": "games_confidence_interval_fishing.html"
-  },
-  {
-    "id": "topology-rings",
-    "title": "위상 링 풀기",
-    "icon": "🪢",
-    "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "고등학교",
-    "schoolLevel": [
-      "고등학교"
-    ],
-    "curriculumSubject": "기하",
-    "curriculumArea": [
-      "기하",
-      "위상수학"
-    ],
-    "curriculumUnit": "위상수학",
-    "description": "보로메오 고리와 매듭 이론, 오일러 지표를 기반으로 연결된 위상 고리를 공간적으로 풉니다.",
-    "tags": [
-      "위상수학",
-      "매듭이론",
-      "보로메오링",
-      "기하",
-      "공간감각"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "topology-rings",
-    "fileName": "games_topology_rings.html"
+    "curriculumSubject": "공통수학1"
   },
   {
     "id": "four-color-map",
     "title": "4색 정리 맵 컬러링",
     "icon": "🎨",
-    "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "중학교",
-    "schoolLevel": [
-      "중학교",
-      "고등학교"
-    ],
-    "curriculumSubject": "기하",
-    "curriculumArea": [
-      "기하",
-      "평면도형"
-    ],
-    "curriculumUnit": "평면도형",
-    "description": "어떤 평면 지도라도 인접한 국경을 서로 다른 4가지 색상만으로 칠할 수 있음을 실험합니다.",
-    "tags": [
-      "4색정리",
-      "지도칠하기",
-      "그래프이론",
-      "기하",
-      "평면도형"
-    ],
+    "appType": "concept",
+    "description": "4가지 색만으로 지도를 칠하며 사색정리를 체험하는 그래프 퍼즐",
+    "multiplayer": null,
     "launchType": "mathLabGame",
     "launchId": "four-color-map",
-    "fileName": "games_four_color_map.html"
+    "topApp": "교과수학개념",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "make10",
+    "title": "텐 메이커",
+    "icon": "🔟",
+    "appType": "concept",
+    "description": "숫자 타일을 움직여 합이 10이 되는 조합을 만드는 수 감각 퍼즐",
+    "multiplayer": null,
+    "launchType": "mathLabGame",
+    "launchId": "make10",
+    "topApp": "교과수학개념",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "rubiks2d",
+    "title": "2D 루빅스 펼치기",
+    "icon": "🧊",
+    "appType": "concept",
+    "description": "색상 격자를 회전하며 순서 조작과 역연산을 익히는 2D 루빅스 퍼즐",
+    "multiplayer": null,
+    "launchType": "mathLabGame",
+    "launchId": "rubiks2d",
+    "topApp": "교과수학개념",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "ken-ken",
+    "title": "켄켄 퍼즐 마스터",
+    "icon": "🔢",
+    "appType": "concept",
+    "description": "사칙연산 케이지 조건을 만족하는 숫자를 채우는 논리 퍼즐",
+    "multiplayer": null,
+    "launchType": "mathLabGame",
+    "launchId": "ken-ken",
+    "topApp": "교과수학개념",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "liar-village",
+    "title": "거짓말쟁이 마을 추리",
+    "icon": "🕵️",
+    "appType": "concept",
+    "description": "마을 사람들의 참말과 거짓말을 분석해 범인을 추리합니다",
+    "multiplayer": null,
+    "launchType": "mathLabGame",
+    "launchId": "liar-village",
+    "topApp": "교과수학개념",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "yahtzee",
+    "title": "야추 다이스",
+    "icon": "🎲",
+    "appType": "concept",
+    "description": "주사위를 굴리고 점수판을 채우며 확률과 전략을 겨루는 턴제 수학 게임",
+    "multiplayer": null,
+    "launchType": "mathLabGame",
+    "launchId": "yahtzee",
+    "topApp": "교과수학개념",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "numcount-logic",
+    "title": "넘버 카운트다운",
+    "icon": "🎯",
+    "appType": "concept",
+    "description": "6개의 숫자를 조합해 타겟 숫자 만들기",
+    "multiplayer": null,
+    "launchType": "mathLabGame",
+    "launchId": "numcount-logic",
+    "topApp": "교과수학개념",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "game-gugudan-app",
+    "title": "구구단 카운트다운\n  👥 1~2인",
+    "icon": "🚀",
+    "appType": "concept",
+    "description": "떨어지는 곱셈 블록을 타자로 격파!",
+    "multiplayer": "👥 1~2인",
+    "launchType": "mathLabGame",
+    "launchId": "game-gugudan-app",
+    "topApp": "교과수학개념",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "game-wordle-app",
+    "title": "매스 워들",
+    "icon": "🟩",
+    "appType": "concept",
+    "description": "매 턴 제한시간 내에 7자리 수식을 맞혀 고득점에 도전하라!",
+    "multiplayer": null,
+    "launchType": "mathLabGame",
+    "launchId": "game-wordle-app",
+    "topApp": "교과수학개념",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "game-sym-app",
+    "title": "대칭 매칭👥 1~2인",
+    "icon": "🦋",
+    "appType": "concept",
+    "description": "거울 속 완벽한 대칭을 찾아라",
+    "multiplayer": "👥 1~2인",
+    "launchType": "mathLabGame",
+    "launchId": "game-sym-app",
+    "topApp": "교과수학개념",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "index.entry",
+    "title": "index.entry",
+    "icon": "🧩",
+    "appType": "concept",
+    "fileName": "index.entry.html",
+    "launchType": "mathLabGame",
+    "launchId": "index.entry",
+    "topApp": "교과수학개념",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "econ-calc-opt",
+    "title": "문제 1) 삼차함수 도함수 및 극값 후보",
+    "icon": "🎯",
+    "appType": "concept",
+    "fileName": "games_econ_calc_opt.html",
+    "launchType": "mathLabGame",
+    "launchId": "econ-calc-opt",
+    "topApp": "교과수학개념",
+    "curriculumSchool": "중학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "econ-func-market",
+    "title": "문제 1) 총수입·이윤 함수 및 특정 생산량 이윤",
+    "icon": "📈",
+    "appType": "concept",
+    "fileName": "games_econ_func_market.html",
+    "launchType": "mathLabGame",
+    "launchId": "econ-func-market",
+    "topApp": "교과수학개념",
+    "curriculumSchool": "중학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "econ-seq-finance",
+    "title": "문제 1) 단리 원리합계 기본 계산",
+    "icon": "🏦",
+    "appType": "concept",
+    "fileName": "games_econ_seq_finance.html",
+    "launchType": "mathLabGame",
+    "launchId": "econ-seq-finance",
+    "topApp": "교과수학개념",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "econ-math-life",
+    "title": "문제 1) 상품 가격 증감액과 증감률",
+    "icon": "💱",
+    "appType": "concept",
+    "fileName": "games_econ_math_life.html",
+    "launchType": "mathLabGame",
+    "launchId": "econ-math-life",
+    "topApp": "교과수학개념",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "func-limit-continuity",
+    "title": "함수의 극한·연속·미분 시각화",
+    "icon": "📈",
+    "appType": "concept",
+    "fileName": "games_func_limit_continuity.html",
+    "launchType": "mathLabGame",
+    "launchId": "func-limit-continuity",
+    "topApp": "교과수학개념",
+    "curriculumSchool": "고등학교",
+    "curriculumSubject": "미적분"
+  },
+  {
+    "id": "terms-of-service",
+    "title": "terms of service",
+    "icon": "🧩",
+    "appType": "concept",
+    "fileName": "app_terms_of_service.html",
+    "launchType": "mathLabGame",
+    "launchId": "terms-of-service",
+    "topApp": "교과수학개념",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "extrema-coaster",
+    "title": "🎢 극대·극소(Extrema)와 도함수의 부호 판정",
+    "icon": "🧩",
+    "appType": "concept",
+    "fileName": "games_extrema_coaster.html",
+    "launchType": "mathLabGame",
+    "launchId": "extrema-coaster",
+    "topApp": "교과수학개념",
+    "curriculumSchool": "중학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "intersection-sniper",
+    "title": "📡 그래프의 교점과 방정식 실근의 등가성",
+    "icon": "🧩",
+    "appType": "concept",
+    "fileName": "games_intersection_sniper.html",
+    "launchType": "mathLabGame",
+    "launchId": "intersection-sniper",
+    "topApp": "교과수학개념",
+    "curriculumSchool": "중학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "cubic-anatomy-2",
+    "title": "📈 다항함수 해부학 2 탐구 소개",
+    "icon": "🧩",
+    "appType": "concept",
+    "fileName": "games_cubic_anatomy_2.html",
+    "launchType": "mathLabGame",
+    "launchId": "cubic-anatomy-2",
+    "topApp": "교과수학개념",
+    "curriculumSchool": "중학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "implicit-laser",
+    "title": "🔦 음함수 레이저 가이드란?",
+    "icon": "🧩",
+    "appType": "concept",
+    "fileName": "games_implicit_laser.html",
+    "launchType": "mathLabGame",
+    "launchId": "implicit-laser",
+    "topApp": "교과수학개념",
+    "curriculumSchool": "중학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "exponential-zombies",
+    "title": "🧟 지수적 확산(Exponential Growth)이란?",
+    "icon": "🧩",
+    "appType": "concept",
+    "fileName": "games_exponential_zombies.html",
+    "launchType": "mathLabGame",
+    "launchId": "exponential-zombies",
+    "topApp": "교과수학개념",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "sine-surfing",
+    "title": "🏄 삼각함수 사인파(Sine Wave)란?",
+    "icon": "🧩",
+    "appType": "concept",
+    "fileName": "games_sine_surfing.html",
+    "launchType": "mathLabGame",
+    "launchId": "sine-surfing",
+    "topApp": "교과수학개념",
+    "curriculumSchool": "중학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "log-scale-voyage",
+    "title": "🚀 로그 스케일(Logarithmic Scale)이란?",
+    "icon": "🧩",
+    "appType": "concept",
+    "fileName": "games_log_scale_voyage.html",
+    "launchType": "mathLabGame",
+    "launchId": "log-scale-voyage",
+    "topApp": "교과수학개념",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "synthetic-division",
+    "title": "➗ 조립제법(Synthetic Division)이란?",
+    "icon": "🧩",
+    "appType": "concept",
+    "fileName": "games_synthetic_division.html",
+    "launchType": "mathLabGame",
+    "launchId": "synthetic-division",
+    "topApp": "교과수학개념",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "data-center-spy",
+    "title": "🕶️ 이상치(Outlier)와 대푯값이란?",
+    "icon": "🧩",
+    "appType": "concept",
+    "fileName": "games_data_center_spy.html",
+    "launchType": "mathLabGame",
+    "launchId": "data-center-spy",
+    "topApp": "교과수학개념",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "chaos-game-gasket",
+    "title": "🔺 카오스 게임(Chaos Game)이란?",
+    "icon": "🧩",
+    "appType": "concept",
+    "fileName": "games_chaos_game_gasket.html",
+    "launchType": "mathLabGame",
+    "launchId": "chaos-game-gasket",
+    "topApp": "교과수학개념",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "bayes-bag-detective",
+    "title": "🎒 베이즈 정리와 정보 갱신이란?",
+    "icon": "🧩",
+    "appType": "concept",
+    "fileName": "games_bayes_bag_detective.html",
+    "launchType": "mathLabGame",
+    "launchId": "bayes-bag-detective",
+    "topApp": "교과수학개념",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "matching-pennies",
+    "title": "🪙 동전 맞추기 게임이란?",
+    "icon": "🧩",
+    "appType": "concept",
+    "fileName": "games_matching_pennies.html",
+    "launchType": "mathLabGame",
+    "launchId": "matching-pennies",
+    "topApp": "교과수학개념",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "random-walk-stock",
+    "title": "Q1. 도박사의 오류와 독립 시행의 확률",
+    "icon": "🧩",
+    "appType": "concept",
+    "fileName": "games_random_walk_stock.html",
+    "launchType": "mathLabGame",
+    "launchId": "random-walk-stock",
+    "topApp": "교과수학개념",
+    "curriculumSchool": "중학교",
+    "curriculumSubject": "확률과통계"
+  },
+  {
+    "id": "tft",
+    "title": "1. 기후 변화 협약 (국제 환경 협력)",
+    "icon": "🧩",
+    "appType": "concept",
+    "fileName": "games_prisoners_dilemma_ai.html",
+    "launchType": "mathLabGame",
+    "launchId": "tft",
+    "topApp": "교과수학개념",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "pigeonhole-fruit",
+    "title": "문제 1: 13명의 학생 중 같은 달에 태어난 학생",
+    "icon": "🧩",
+    "appType": "concept",
+    "fileName": "games_pigeonhole_fruit.html",
+    "launchType": "mathLabGame",
+    "launchId": "pigeonhole-fruit",
+    "topApp": "교과수학개념",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "dice-rect-connect",
+    "title": "🟥 주사위 직사각형 연결",
+    "icon": "🧩",
+    "appType": "concept",
+    "fileName": "games_dice_rect_connect.html",
+    "launchType": "mathLabGame",
+    "launchId": "dice-rect-connect",
+    "topApp": "교과수학개념",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "gradient-descent",
+    "title": "경사하강법 골짜기 탈출",
+    "icon": "🧩",
+    "appType": "concept",
+    "fileName": "games_gradient_descent.html",
+    "launchType": "mathLabGame",
+    "launchId": "gradient-descent",
+    "topApp": "교과수학개념",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "newton-raphson",
+    "title": "뉴턴-랩슨 루트 파인더",
+    "icon": "🧩",
+    "appType": "concept",
+    "fileName": "games_newton_raphson.html",
+    "launchType": "mathLabGame",
+    "launchId": "newton-raphson",
+    "topApp": "교과수학개념",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "js-application-registry",
+    "title": "js application registry",
+    "icon": "🧩",
+    "appType": "concept",
+    "fileName": "js_application_registry.html",
+    "launchType": "mathLabGame",
+    "launchId": "js-application-registry",
+    "topApp": "교과수학개념",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "zero-trip",
+    "title": "정수 탈출",
+    "icon": "🧗",
+    "appType": "concept",
+    "fileName": "games_zero_trip.html",
+    "launchType": "mathLabGame",
+    "launchId": "zero-trip",
+    "multiplayer": null,
+    "description": "양수·음수 발판을 밟으며 누적 합을 0으로 만들어 탈출하는 정수 연산 게임",
+    "topApp": "교과수학개념",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
   },
   {
     "id": "dijkstra-delivery",
     "title": "다익스트라 택배 배달",
     "icon": "🚚",
     "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "고등학교",
-    "schoolLevel": [
-      "고등학교"
-    ],
-    "curriculumSubject": "공통수학1",
-    "curriculumArea": [
-      "공통수학1",
-      "그래프와 최단경로"
-    ],
-    "curriculumUnit": "그래프와 최단경로",
-    "description": "가중치 그래프 네트워크에서 출발지부터 모든 목적지까지의 최단 경로 알고리즘을 체험합니다.",
-    "tags": [
-      "다익스트라",
-      "최단경로",
-      "가중치그래프",
-      "알고리즘",
-      "인공지능수학"
-    ],
+    "fileName": "games_dijkstra_delivery.html",
     "launchType": "mathLabGame",
     "launchId": "dijkstra-delivery",
-    "fileName": "games_dijkstra_delivery.html"
-  },
-  {
-    "id": "markov-weather-chain",
-    "title": "마르코프 날씨 체인",
-    "icon": "☀️",
-    "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "고등학교",
-    "schoolLevel": [
-      "고등학교"
-    ],
-    "curriculumSubject": "확률과통계",
-    "curriculumArea": [
-      "확률과통계",
-      "전이확률"
-    ],
-    "curriculumUnit": "전이확률",
-    "description": "오늘의 날씨에 따른 전이행렬과 상태확률이 정상상태(Stationary Distribution)로 수렴함을 시뮬레이션",
-    "tags": [
-      "마르코프체인",
-      "전이행렬",
-      "상태확률",
-      "확률과통계",
-      "정상분포"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "markov-weather-chain",
-    "fileName": "games_markov_weather_chain.html"
-  },
-  {
-    "id": "intersection-sniper",
-    "title": "두 그래프 교점 스나이퍼",
-    "icon": "🎯",
-    "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "고등학교",
-    "schoolLevel": [
-      "고등학교"
-    ],
-    "curriculumSubject": "공통수학1",
-    "curriculumArea": [
-      "공통수학1",
-      "방정식과 함수"
-    ],
-    "curriculumUnit": "방정식과 함수",
-    "description": "일차함수와 이차함수의 연립방정식 및 판별식 D에 따른 교점의 개수와 실근 위치를 저격합니다.",
-    "tags": [
-      "교점",
-      "연립방정식",
-      "판별식",
-      "이차함수",
-      "실근",
-      "공통수학1"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "intersection-sniper",
-    "fileName": "games_intersection_sniper.html"
-  },
-  {
-    "id": "circle-shooter",
-    "title": "원의 방정식 타겟 슈터",
-    "icon": "🎯",
-    "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "고등학교",
-    "schoolLevel": [
-      "고등학교"
-    ],
-    "curriculumSubject": "공통수학2",
-    "curriculumArea": [
-      "공통수학2",
-      "도형의 방정식"
-    ],
-    "curriculumUnit": "도형의 방정식",
-    "description": "중심 (a, b)와 반지름 r을 조작하여 원 (x-a)²+(y-b)²=r² 위에 타겟들을 정확히 올리는 기하 슈팅",
-    "tags": [
-      "원의방정식",
-      "반지름",
-      "중심좌표",
-      "공통수학2",
-      "도형"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "circle-shooter",
-    "fileName": "games_circle_shooter.html",
-    "multiplayer": "1~2인"
-  },
-  {
-    "id": "coordinate-treasure",
-    "title": "좌표 평면 보물찾기",
-    "icon": "🗺️",
-    "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "중학교",
-    "schoolLevel": [
-      "중학교"
-    ],
-    "curriculumSubject": "공통수학1",
-    "curriculumArea": [
-      "공통수학1",
-      "좌표평면과 그래프"
-    ],
-    "curriculumUnit": "좌표평면과 그래프",
-    "description": "사분면과 순서쌍 (x, y) 거리 공식을 이용해 숨겨진 보물의 거리를 좁혀가는 탐색 퍼즐",
-    "tags": [
-      "좌표평면",
-      "사분면",
-      "순서쌍",
-      "점과점사이거리",
-      "보물찾기"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "coordinate-treasure",
-    "fileName": "games_coordinate_treasure.html"
-  },
-  {
-    "id": "graph-runner",
-    "title": "함수 그래프 러너",
-    "icon": "🛹",
-    "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "중학교",
-    "schoolLevel": [
-      "중학교",
-      "고등학교"
-    ],
-    "curriculumSubject": "공통수학1",
-    "curriculumArea": [
-      "공통수학1",
-      "함수"
-    ],
-    "curriculumUnit": "함수와 그래프",
-    "description": "일차, 이차, 분수함수 곡선 위를 스케이트보드로 질주하며 그래프 개형과 기울기 변화를 체득합니다.",
-    "tags": [
-      "함수",
-      "그래프",
-      "일차함수",
-      "이차함수",
-      "기울기"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "graph-runner",
-    "fileName": "games_graph_runner.html"
-  },
-  {
-    "id": "equation-seesaw",
-    "title": "방정식 시소 밸런스",
-    "icon": "⚖️",
-    "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "중학교",
-    "schoolLevel": [
-      "중학교"
-    ],
-    "curriculumSubject": "공통수학1",
-    "curriculumArea": [
-      "공통수학1",
-      "일차방정식"
-    ],
-    "curriculumUnit": "일차방정식",
-    "description": "등식의 성질(양변에 같은 수를 더하고 빼고 곱하고 나누기)을 시소의 수평 평형으로 학습합니다.",
-    "tags": [
-      "방정식",
-      "등식의성질",
-      "시소",
-      "수평밸런스",
-      "일차방정식"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "equation-seesaw",
-    "fileName": "games_equation_seesaw.html"
-  },
-  {
-    "id": "factor-breaker",
-    "title": "다항식 인수분해 브레이커",
-    "icon": "🧨",
-    "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "중학교",
-    "schoolLevel": [
-      "중학교",
-      "고등학교"
-    ],
-    "curriculumSubject": "공통수학1",
-    "curriculumArea": [
-      "공통수학1",
-      "인수분해"
-    ],
-    "curriculumUnit": "인수분해",
-    "description": "이차다항식을 일차식의 곱으로 빠르게 인수분해하여 블록을 격파하는 수학 액션",
-    "tags": [
-      "인수분해",
-      "이차식",
-      "다항식",
-      "공통수학1"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "factor-breaker",
-    "fileName": "games_factor_breaker.html"
-  },
-  {
-    "id": "fractal-tree",
-    "title": "프랙탈 트리 키우기",
-    "icon": "🌲",
-    "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "고등학교",
-    "schoolLevel": [
-      "고등학교"
-    ],
-    "curriculumSubject": "대수",
-    "curriculumArea": [
-      "대수",
-      "수열"
-    ],
-    "curriculumUnit": "수열",
-    "description": "자기유사성과 등비수열의 합 원리를 활용해 프랙탈 나뭇가지의 세대별 분기 패턴을 키웁니다.",
-    "tags": [
-      "프랙탈",
-      "등비수열",
-      "자기유사성",
-      "시에르핀스키",
-      "대수"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "fractal-tree",
-    "fileName": "games_fractal_tree.html"
-  },
-  {
-    "id": "chaos-game-gasket",
-    "title": "카오스 게임 프랙탈 구조",
-    "icon": "🌀",
-    "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "고등학교",
-    "schoolLevel": [
-      "고등학교"
-    ],
-    "curriculumSubject": "확률과통계",
-    "curriculumArea": [
-      "확률과통계",
-      "확률과 기하"
-    ],
-    "curriculumUnit": "확률과 기하",
-    "description": "주사위를 던져 꼭짓점을 향해 절반씩 점을 찍어 시에르핀스키 가스켓을 생성하는 카오스 게임",
-    "tags": [
-      "카오스게임",
-      "프랙탈",
-      "확률",
-      "시에르핀스키",
-      "기하"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "chaos-game-gasket",
-    "fileName": "games_chaos_game_gasket.html"
-  },
-  {
-    "id": "pigeonhole-fruit",
-    "title": "비둘기집 원리",
-    "icon": "🕊️",
-    "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "중학교",
-    "schoolLevel": [
-      "중학교",
-      "고등학교"
-    ],
-    "curriculumSubject": "공통수학1",
-    "curriculumArea": [
-      "공통수학1",
-      "경우의 수"
-    ],
-    "curriculumUnit": "경우의 수",
-    "description": "n+1개의 과일을 n개의 바구니에 담을 때 반드시 겹치는 수학적 비둘기집 원리를 체득합니다.",
-    "tags": [
-      "비둘기집원리",
-      "경우의수",
-      "이산수학",
-      "공통수학1"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "pigeonhole-fruit",
-    "fileName": "games_pigeonhole_fruit.html"
-  },
-  {
-    "id": "dice-rect-connect",
-    "title": "주사위 직사각형 연결",
-    "icon": "🔬",
-    "appType": "game",
-    "topApp": "수학 게임",
+    "multiplayer": null,
+    "description": "가중치 그래프 지도에서 최소 비용 배달 경로를 찾는 최단 경로 게임",
+    "topApp": "수학게임",
     "curriculumSchool": "초등학교",
-    "schoolLevel": [
-      "초등학교"
-    ],
-    "curriculumSubject": "공통수학1",
-    "curriculumArea": [
-      "초등수학",
-      "도형과 측정"
-    ],
-    "curriculumUnit": "도형과 측정",
-    "description": "두 주사위의 눈으로 가로·세로 직사각형을 만들어 그리드 평면을 채우는 면적 분할 탐구",
-    "tags": [
-      "직사각형",
-      "넓이",
-      "면적",
-      "주사위",
-      "초등수학"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "dice-rect-connect",
-    "fileName": "games_dice_rect_connect.html",
-    "multiplayer": "1~2인"
-  },
-  {
-    "id": "pythagoras-blocks",
-    "title": "피타고라스 블록 퍼즐",
-    "icon": "🧱",
-    "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "중학교",
-    "schoolLevel": [
-      "중학교"
-    ],
-    "curriculumSubject": "기하",
-    "curriculumArea": [
-      "기하",
-      "피타고라스 정리"
-    ],
-    "curriculumUnit": "피타고라스 정리",
-    "description": "직각삼각형의 세 변에 붙은 정사각형 넓이 a²+b²=c² 증명 블록 맞추기",
-    "tags": [
-      "피타고라스",
-      "직각삼각형",
-      "정사각형",
-      "기하",
-      "증명"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "pythagoras-blocks",
-    "fileName": "games_pythagoras_blocks.html"
-  },
-  {
-    "id": "polyhedron-maze",
-    "title": "정다면체 면 타기 미로",
-    "icon": "🎲",
-    "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "중학교",
-    "schoolLevel": [
-      "중학교"
-    ],
-    "curriculumSubject": "기하",
-    "curriculumArea": [
-      "기하",
-      "다면체"
-    ],
-    "curriculumUnit": "다면체",
-    "description": "정사면체, 정육면체, 정팔면체, 정십이면체, 정이십면체의 면을 이동하며 오일러 다면체 정리 V-E+F=2를 체험",
-    "tags": [
-      "정다면체",
-      "오일러공식",
-      "입체도형",
-      "미로탈출",
-      "기하"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "polyhedron-maze",
-    "fileName": "games_polyhedron_maze.html",
-    "multiplayer": "1~2인"
-  },
-  {
-    "id": "euler-path",
-    "title": "한붓그리기 (오일러 경로)",
-    "icon": "✏️",
-    "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "중학교",
-    "schoolLevel": [
-      "중학교"
-    ],
-    "curriculumSubject": "공통수학1",
-    "curriculumArea": [
-      "공통수학1",
-      "그래프 이론"
-    ],
-    "curriculumUnit": "그래프 이론",
-    "description": "쾨니히스베르크 다리 건너기 문제와 꼭짓점의 홀수 차수 개수를 이용한 한붓그리기 탐구",
-    "tags": [
-      "한붓그리기",
-      "오일러경로",
-      "홀수점",
-      "그래프이론",
-      "이산수학"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "euler-path",
-    "fileName": "games_euler_path.html"
-  },
-  {
-    "id": "area-conquest",
-    "title": "넓이 땅따먹기",
-    "icon": "🟩",
-    "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "초등학교",
-    "schoolLevel": [
-      "초등학교",
-      "중학교"
-    ],
-    "curriculumSubject": "공통수학1",
-    "curriculumArea": [
-      "초등수학",
-      "평면도형의 넓이"
-    ],
-    "curriculumUnit": "평면도형의 넓이",
-    "description": "격자점 좌표를 연결하여 삼각형, 직사각형의 넓이를 계산하고 영토를 점령하는 기하 대결",
-    "tags": [
-      "넓이",
-      "면적",
-      "좌표",
-      "격자점",
-      "기하"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "area-conquest",
-    "fileName": "games_area_conquest.html"
-  },
-  {
-    "id": "1024-master",
-    "title": "1024 마스터",
-    "icon": "🕹️",
-    "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "초등학교",
-    "schoolLevel": [
-      "초등학교"
-    ],
-    "curriculumSubject": "초등수학",
-    "curriculumArea": [
-      "초등수학"
-    ],
-    "curriculumUnit": "수학 퍼즐과 게임",
-    "description": "1024 마스터 수학적 사고력 및 두뇌 훈련 게임",
-    "tags": [
-      "1024",
-      "2048",
-      "거듭제곱",
-      "블록게임"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "1024-master",
-    "fileName": "games_1024_logic.html",
-    "enabled": true,
-    "status": "배포완료",
-    "multiplayer": "1~2인"
-  },
-  {
-    "id": "fruit-drop-2048",
-    "title": "2048 과일 드롭",
-    "icon": "🍉",
-    "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "초등학교",
-    "schoolLevel": [
-      "초등학교"
-    ],
-    "curriculumSubject": "초등수학",
-    "curriculumArea": [
-      "초등수학"
-    ],
-    "curriculumUnit": "수학 퍼즐과 게임",
-    "description": "2048 과일 드롭 수학적 사고력 및 두뇌 훈련 게임",
-    "tags": [
-      "2048",
-      "과일드롭",
-      "수박게임",
-      "거듭제곱"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "fruit-drop-2048",
-    "fileName": "games_fruit_drop_2048.html",
-    "enabled": true,
-    "status": "배포완료",
-    "multiplayer": "1~2인"
-  },
-  {
-    "id": "game-prime-app",
-    "title": "소수 헌터",
-    "icon": "🎯",
-    "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "중학교",
-    "schoolLevel": [
-      "중학교"
-    ],
-    "curriculumSubject": "공통수학1",
-    "curriculumArea": [
-      "공통수학1"
-    ],
-    "curriculumUnit": "수학 퍼즐과 게임",
-    "description": "소수 헌터 수학적 사고력 및 두뇌 훈련 게임",
-    "tags": [
-      "소수",
-      "합성수",
-      "소인수분해",
-      "소수헌터"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "game-prime-app",
-    "fileName": "games_prime_logic.html",
-    "enabled": true,
-    "status": "배포완료",
-    "multiplayer": "1~2인"
-  },
-  {
-    "id": "game-gugudan-app",
-    "title": "구구단 카운트다운",
-    "icon": "🚀",
-    "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "초등학교",
-    "schoolLevel": [
-      "초등학교"
-    ],
-    "curriculumSubject": "초등수학",
-    "curriculumArea": [
-      "초등수학"
-    ],
-    "curriculumUnit": "수학 퍼즐과 게임",
-    "description": "구구단 카운트다운 수학적 사고력 및 두뇌 훈련 게임",
-    "tags": [
-      "구구단",
-      "곱셈구구",
-      "연산게임",
-      "초등수학"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "game-gugudan-app",
-    "fileName": "games_gugudan_logic.html",
-    "enabled": true,
-    "status": "배포완료",
-    "multiplayer": "1~2인"
-  },
-  {
-    "id": "game-make24-app",
-    "title": "Make 24",
-    "icon": "🃏",
-    "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "초등학교",
-    "schoolLevel": [
-      "초등학교"
-    ],
-    "curriculumSubject": "초등수학",
-    "curriculumArea": [
-      "초등수학"
-    ],
-    "curriculumUnit": "수학 퍼즐과 게임",
-    "description": "Make 24 수학적 사고력 및 두뇌 훈련 게임",
-    "tags": [
-      "Make24",
-      "사칙연산",
-      "연산퍼즐",
-      "수감각"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "game-make24-app",
-    "fileName": "games_make24_logic.html",
-    "enabled": true,
-    "status": "배포완료",
-    "multiplayer": "1~2인"
-  },
-  {
-    "id": "game-wordle-app",
-    "title": "매스 워들 마스터",
-    "icon": "🔤",
-    "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "초등학교",
-    "schoolLevel": [
-      "초등학교"
-    ],
-    "curriculumSubject": "초등수학",
-    "curriculumArea": [
-      "초등수학"
-    ],
-    "curriculumUnit": "수학 퍼즐과 게임",
-    "description": "매스 워들 마스터 수학적 사고력 및 두뇌 훈련 게임",
-    "tags": [
-      "워들",
-      "수식워들",
-      "수학퍼즐"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "game-wordle-app",
-    "fileName": "games_wordle_logic.html",
-    "enabled": true,
-    "status": "배포완료",
-    "multiplayer": "1~2인"
-  },
-  {
-    "id": "game-abacus",
-    "title": "주산 마스터",
-    "icon": "🧮",
-    "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "초등학교",
-    "schoolLevel": [
-      "초등학교"
-    ],
-    "curriculumSubject": "초등수학",
-    "curriculumArea": [
-      "초등수학"
-    ],
-    "curriculumUnit": "수학 퍼즐과 게임",
-    "description": "주산 마스터 수학적 사고력 및 두뇌 훈련 게임",
-    "tags": [
-      "주산",
-      "주판",
-      "암산",
-      "수감각"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "game-abacus",
-    "fileName": "games_abacus_logic.html",
-    "enabled": true,
-    "status": "배포완료"
-  },
-  {
-    "id": "game-sym-app",
-    "title": "대칭 매칭",
-    "icon": "🦋",
-    "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "초등학교",
-    "schoolLevel": [
-      "초등학교"
-    ],
-    "curriculumSubject": "초등수학",
-    "curriculumArea": [
-      "초등수학"
-    ],
-    "curriculumUnit": "수학 퍼즐과 게임",
-    "description": "대칭 매칭 수학적 사고력 및 두뇌 훈련 게임",
-    "tags": [
-      "선대칭",
-      "점대칭",
-      "도형",
-      "대칭"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "game-sym-app",
-    "fileName": "games_symmetry_logic.html",
-    "enabled": true,
-    "status": "배포완료",
-    "multiplayer": "1~2인"
-  },
-  {
-    "id": "game-numcount",
-    "title": "넘버카운트",
-    "icon": "🔢",
-    "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "초등학교",
-    "schoolLevel": [
-      "초등학교"
-    ],
-    "curriculumSubject": "초등수학",
-    "curriculumArea": [
-      "초등수학"
-    ],
-    "curriculumUnit": "수학 퍼즐과 게임",
-    "description": "넘버카운트 수학적 사고력 및 두뇌 훈련 게임",
-    "tags": [
-      "넘버카운트",
-      "연산게임",
-      "사칙연산"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "game-numcount",
-    "fileName": "games_numcount_logic.html",
-    "enabled": true,
-    "status": "배포완료",
-    "multiplayer": "1~2인"
-  },
-  {
-    "id": "minesweeper",
-    "title": "마인스위퍼 리메이크",
-    "icon": "💣",
-    "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "중학교",
-    "schoolLevel": [
-      "중학교"
-    ],
-    "curriculumSubject": "공통수학1",
-    "curriculumArea": [
-      "공통수학1"
-    ],
-    "curriculumUnit": "수학 퍼즐과 게임",
-    "description": "마인스위퍼 리메이크 수학적 사고력 및 두뇌 훈련 게임",
-    "tags": [
-      "지뢰찾기",
-      "논리퍼즐",
-      "확률"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "minesweeper",
-    "fileName": "games_minesweeper.html",
-    "enabled": true,
-    "status": "배포완료"
-  },
-  {
-    "id": "sudoku-classic",
-    "title": "스도쿠 클래식",
-    "icon": "🔢",
-    "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "중학교",
-    "schoolLevel": [
-      "중학교"
-    ],
-    "curriculumSubject": "공통수학1",
-    "curriculumArea": [
-      "공통수학1"
-    ],
-    "curriculumUnit": "수학 퍼즐과 게임",
-    "description": "스도쿠 클래식 수학적 사고력 및 두뇌 훈련 게임",
-    "tags": [
-      "스도쿠",
-      "논리퍼즐",
-      "숫자배치"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "sudoku-classic",
-    "fileName": "games_sudoku_classic.html",
-    "enabled": true,
-    "status": "배포완료"
-  },
-  {
-    "id": "killer-sudoku",
-    "title": "킬러 스도쿠",
-    "icon": "🧩",
-    "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "중학교",
-    "schoolLevel": [
-      "중학교"
-    ],
-    "curriculumSubject": "공통수학1",
-    "curriculumArea": [
-      "공통수학1"
-    ],
-    "curriculumUnit": "수학 퍼즐과 게임",
-    "description": "킬러 스도쿠 수학적 사고력 및 두뇌 훈련 게임",
-    "tags": [
-      "킬러스도쿠",
-      "합분할",
-      "스도쿠"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "killer-sudoku",
-    "fileName": "games_killer_sudoku.html",
-    "enabled": true,
-    "status": "배포완료"
-  },
-  {
-    "id": "kenken",
-    "title": "켄켄 퍼즐 마스터",
-    "icon": "🔲",
-    "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "초등학교",
-    "schoolLevel": [
-      "초등학교"
-    ],
-    "curriculumSubject": "초등수학",
-    "curriculumArea": [
-      "초등수학"
-    ],
-    "curriculumUnit": "수학 퍼즐과 게임",
-    "description": "켄켄 퍼즐 마스터 수학적 사고력 및 두뇌 훈련 게임",
-    "tags": [
-      "켄켄",
-      "사칙연산",
-      "라틴방진"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "kenken",
-    "fileName": "games_kenken.html",
-    "enabled": true,
-    "status": "배포완료"
-  },
-  {
-    "id": "kakuro",
-    "title": "카쿠로 (Kakuro)",
-    "icon": "✏️",
-    "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "중학교",
-    "schoolLevel": [
-      "중학교"
-    ],
-    "curriculumSubject": "공통수학1",
-    "curriculumArea": [
-      "공통수학1"
-    ],
-    "curriculumUnit": "수학 퍼즐과 게임",
-    "description": "카쿠로 (Kakuro) 수학적 사고력 및 두뇌 훈련 게임",
-    "tags": [
-      "카쿠로",
-      "합분할",
-      "크로스넘버"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "kakuro",
-    "fileName": "games_kakuro.html",
-    "enabled": true,
-    "status": "배포완료"
-  },
-  {
-    "id": "nonogram",
-    "title": "네모네모 로직 (Nonogram)",
-    "icon": "🟦",
-    "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "중학교",
-    "schoolLevel": [
-      "중학교"
-    ],
-    "curriculumSubject": "공통수학1",
-    "curriculumArea": [
-      "공통수학1"
-    ],
-    "curriculumUnit": "수학 퍼즐과 게임",
-    "description": "네모네모 로직 (Nonogram) 수학적 사고력 및 두뇌 훈련 게임",
-    "tags": [
-      "네모네모로직",
-      "노노그램",
-      "픽셀아트"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "nonogram",
-    "fileName": "games_nonogram.html",
-    "enabled": true,
-    "status": "배포완료"
-  },
-  {
-    "id": "knight-tour",
-    "title": "나이트 투어",
-    "icon": "♞",
-    "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "중학교",
-    "schoolLevel": [
-      "중학교"
-    ],
-    "curriculumSubject": "공통수학1",
-    "curriculumArea": [
-      "공통수학1"
-    ],
-    "curriculumUnit": "수학 퍼즐과 게임",
-    "description": "나이트 투어 수학적 사고력 및 두뇌 훈련 게임",
-    "tags": [
-      "나이트투어",
-      "체스",
-      "해밀턴경로"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "knight-tour",
-    "fileName": "games_knight_tour.html",
-    "enabled": true,
-    "status": "배포완료"
-  },
-  {
-    "id": "eight-queens",
-    "title": "8-Queens 챌린지",
-    "icon": "👑",
-    "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "중학교",
-    "schoolLevel": [
-      "중학교"
-    ],
-    "curriculumSubject": "공통수학1",
-    "curriculumArea": [
-      "공통수학1"
-    ],
-    "curriculumUnit": "수학 퍼즐과 게임",
-    "description": "8-Queens 챌린지 수학적 사고력 및 두뇌 훈련 게임",
-    "tags": [
-      "8퀸",
-      "체스",
-      "백트래킹",
-      "경우의수"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "eight-queens",
-    "fileName": "games_eight_queens.html",
-    "enabled": true,
-    "status": "배포완료"
-  },
-  {
-    "id": "sliding-fifteen",
-    "title": "15-슬라이딩 퍼즐",
-    "icon": "🔢",
-    "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "초등학교",
-    "schoolLevel": [
-      "초등학교"
-    ],
-    "curriculumSubject": "초등수학",
-    "curriculumArea": [
-      "초등수학"
-    ],
-    "curriculumUnit": "수학 퍼즐과 게임",
-    "description": "15-슬라이딩 퍼즐 수학적 사고력 및 두뇌 훈련 게임",
-    "tags": [
-      "15퍼즐",
-      "슬라이딩",
-      "치환군",
-      "우열"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "sliding-fifteen",
-    "fileName": "games_sliding_fifteen.html",
-    "enabled": true,
-    "status": "배포완료"
-  },
-  {
-    "id": "rubiks-2d",
-    "title": "2D 루빅스 펼치기",
-    "icon": "🧊",
-    "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "초등학교",
-    "schoolLevel": [
-      "초등학교"
-    ],
-    "curriculumSubject": "초등수학",
-    "curriculumArea": [
-      "초등수학"
-    ],
-    "curriculumUnit": "수학 퍼즐과 게임",
-    "description": "2D 루빅스 펼치기 수학적 사고력 및 두뇌 훈련 게임",
-    "tags": [
-      "루빅스큐브",
-      "2D루빅스",
-      "공간지각"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "rubiks-2d",
-    "fileName": "games_rubiks_2d.html",
-    "enabled": true,
-    "status": "배포완료",
-    "multiplayer": "1~4인"
-  },
-  {
-    "id": "tangram",
-    "title": "칠교놀이 탕그램",
-    "icon": "🧱",
-    "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "초등학교",
-    "schoolLevel": [
-      "초등학교"
-    ],
-    "curriculumSubject": "초등수학",
-    "curriculumArea": [
-      "초등수학"
-    ],
-    "curriculumUnit": "수학 퍼즐과 게임",
-    "description": "칠교놀이 탕그램 수학적 사고력 및 두뇌 훈련 게임",
-    "tags": [
-      "칠교놀이",
-      "탕그램",
-      "도형분할",
-      "기하"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "tangram",
-    "fileName": "games_tangram.html",
-    "enabled": true,
-    "status": "배포완료"
+    "curriculumSubject": "공통수학1"
   },
   {
     "id": "tessellation-tiler",
-    "title": "테셀레이션 타일러",
+    "title": "라운드 1: 기본 채우기",
     "icon": "🧩",
     "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "중학교",
-    "schoolLevel": [
-      "중학교"
-    ],
-    "curriculumSubject": "기하",
-    "curriculumArea": [
-      "기하"
-    ],
-    "curriculumUnit": "수학 퍼즐과 게임",
-    "description": "테셀레이션 타일러 수학적 사고력 및 두뇌 훈련 게임",
-    "tags": [
-      "테셀레이션",
-      "타일링",
-      "평면채우기"
-    ],
+    "fileName": "games_tessellation_tiler.html",
     "launchType": "mathLabGame",
     "launchId": "tessellation-tiler",
-    "fileName": "games_tessellation_tiler.html",
-    "enabled": true,
-    "status": "배포완료"
-  },
-  {
-    "id": "pentomino",
-    "title": "펜토미노 평면 분할",
-    "icon": "🧩",
-    "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "중학교",
-    "schoolLevel": [
-      "중학교"
-    ],
-    "curriculumSubject": "기하",
-    "curriculumArea": [
-      "기하"
-    ],
-    "curriculumUnit": "수학 퍼즐과 게임",
-    "description": "펜토미노 평면 분할 수학적 사고력 및 두뇌 훈련 게임",
-    "tags": [
-      "펜토미노",
-      "도형맞추기",
-      "공간퍼즐"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "pentomino",
-    "fileName": "games_pentomino.html",
-    "enabled": true,
-    "status": "배포완료",
-    "multiplayer": "1~2인"
-  },
-  {
-    "id": "slitherlink",
-    "title": "슬리더링크",
-    "icon": "🔁",
-    "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "중학교",
-    "schoolLevel": [
-      "중학교"
-    ],
-    "curriculumSubject": "공통수학1",
-    "curriculumArea": [
-      "공통수학1"
-    ],
-    "curriculumUnit": "수학 퍼즐과 게임",
-    "description": "슬리더링크 수학적 사고력 및 두뇌 훈련 게임",
-    "tags": [
-      "슬리더링크",
-      "루프",
-      "논리퍼즐"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "slitherlink",
-    "fileName": "games_slitherlink.html",
-    "enabled": true,
-    "status": "배포완료",
-    "multiplayer": "1~2인"
-  },
-  {
-    "id": "akari",
-    "title": "아카리 (전구 켜기)",
-    "icon": "💡",
-    "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "중학교",
-    "schoolLevel": [
-      "중학교"
-    ],
-    "curriculumSubject": "공통수학1",
-    "curriculumArea": [
-      "공통수학1"
-    ],
-    "curriculumUnit": "수학 퍼즐과 게임",
-    "description": "아카리 (전구 켜기) 수학적 사고력 및 두뇌 훈련 게임",
-    "tags": [
-      "아카리",
-      "전구켜기",
-      "빛과벽",
-      "논리퍼즐"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "akari",
-    "fileName": "games_akari.html",
-    "enabled": true,
-    "status": "배포완료"
-  },
-  {
-    "id": "binary-tree-maze",
-    "title": "이진 트리 미로 탈출",
-    "icon": "🌿",
-    "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "중학교",
-    "schoolLevel": [
-      "중학교"
-    ],
-    "curriculumSubject": "공통수학1",
-    "curriculumArea": [
-      "공통수학1"
-    ],
-    "curriculumUnit": "수학 퍼즐과 게임",
-    "description": "이진 트리 미로 탈출 수학적 사고력 및 두뇌 훈련 게임",
-    "tags": [
-      "이진트리",
-      "미로탈출",
-      "자료구조",
-      "그래프"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "binary-tree-maze",
-    "fileName": "games_binary_tree_maze.html",
-    "enabled": true,
-    "status": "배포완료"
-  },
-  {
-    "id": "nim",
-    "title": "님 게임 (Nim)",
-    "icon": "🥢",
-    "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "중학교",
-    "schoolLevel": [
-      "중학교"
-    ],
-    "curriculumSubject": "공통수학1",
-    "curriculumArea": [
-      "공통수학1"
-    ],
-    "curriculumUnit": "수학 퍼즐과 게임",
-    "description": "님 게임 (Nim) 수학적 사고력 및 두뇌 훈련 게임",
-    "tags": [
-      "님게임",
-      "이진법",
-      "XOR합",
-      "필승전략"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "nim",
-    "fileName": "games_nim.html",
-    "enabled": true,
-    "status": "배포완료",
-    "multiplayer": "1~2인"
-  },
-  {
-    "id": "hanoi-tower",
-    "title": "하노이의 탑 챌린지",
-    "icon": "🗼",
-    "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "중학교",
-    "schoolLevel": [
-      "중학교"
-    ],
-    "curriculumSubject": "대수",
-    "curriculumArea": [
-      "대수"
-    ],
-    "curriculumUnit": "수학 퍼즐과 게임",
-    "description": "하노이의 탑 챌린지 수학적 사고력 및 두뇌 훈련 게임",
-    "tags": [
-      "하노이의탑",
-      "재귀",
-      "점화식",
-      "등비수열"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "hanoi-tower",
-    "fileName": "games_hanoi_tower.html",
-    "enabled": true,
-    "status": "배포완료"
-  },
-  {
-    "id": "einstein-logic",
-    "title": "아인슈타인 로직 퍼즐",
-    "icon": "🧠",
-    "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "중학교",
-    "schoolLevel": [
-      "중학교"
-    ],
-    "curriculumSubject": "공통수학1",
-    "curriculumArea": [
-      "공통수학1"
-    ],
-    "curriculumUnit": "수학 퍼즐과 게임",
-    "description": "아인슈타인 로직 퍼즐 수학적 사고력 및 두뇌 훈련 게임",
-    "tags": [
-      "아인슈타인퍼즐",
-      "논리추론",
-      "조건매칭"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "einstein-logic",
-    "fileName": "games_einstein_logic.html",
-    "enabled": true,
-    "status": "배포완료"
-  },
-  {
-    "id": "liar-village",
-    "title": "진실과 거짓의 마을",
-    "icon": "🎭",
-    "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "중학교",
-    "schoolLevel": [
-      "중학교"
-    ],
-    "curriculumSubject": "공통수학2",
-    "curriculumArea": [
-      "공통수학2"
-    ],
-    "curriculumUnit": "수학 퍼즐과 게임",
-    "description": "진실과 거짓의 마을 수학적 사고력 및 두뇌 훈련 게임",
-    "tags": [
-      "명제",
-      "진리표",
-      "논리추론",
-      "공통수학2"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "liar-village",
-    "fileName": "games_liar_village.html",
-    "enabled": true,
-    "status": "배포완료"
-  },
-  {
-    "id": "bridges",
-    "title": "다리 놓기 (Bridges)",
-    "icon": "🌉",
-    "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "중학교",
-    "schoolLevel": [
-      "중학교"
-    ],
-    "curriculumSubject": "공통수학1",
-    "curriculumArea": [
-      "공통수학1"
-    ],
-    "curriculumUnit": "수학 퍼즐과 게임",
-    "description": "다리 놓기 (Bridges) 수학적 사고력 및 두뇌 훈련 게임",
-    "tags": [
-      "다리놓기",
-      "그래프",
-      "차수",
-      "연결성"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "bridges",
-    "fileName": "games_bridges.html",
-    "enabled": true,
-    "status": "배포완료"
-  },
-  {
-    "id": "magic-square",
-    "title": "마방진 마스터",
-    "icon": "✨",
-    "appType": "game",
-    "topApp": "수학 게임",
+    "multiplayer": null,
+    "description": "정다각형 타일로 평면을 빈틈없이 채우며 각의 합과 대칭을 탐구하는 기하 게임",
+    "topApp": "수학게임",
     "curriculumSchool": "초등학교",
-    "schoolLevel": [
-      "초등학교"
-    ],
-    "curriculumSubject": "초등수학",
-    "curriculumArea": [
-      "초등수학"
-    ],
-    "curriculumUnit": "수학 퍼즐과 게임",
-    "description": "마방진 마스터 수학적 사고력 및 두뇌 훈련 게임",
-    "tags": [
-      "마방진",
-      "가로세로대각선",
-      "합분할"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "magic-square",
-    "fileName": "games_magic_square.html",
-    "enabled": true,
-    "status": "배포완료"
+    "curriculumSubject": "공통수학1"
   },
   {
-    "id": "operator-sniper",
-    "title": "연산자 스나이퍼",
-    "icon": "🎯",
+    "id": "topology-rings",
+    "title": "위상 링 풀기",
+    "icon": "🪢",
     "appType": "game",
-    "topApp": "수학 게임",
+    "fileName": "games_topology_rings.html",
+    "launchType": "mathLabGame",
+    "launchId": "topology-rings",
+    "multiplayer": "👥 1~2인",
+    "description": "뒤엉킨 선들을 드래그로 풀어 교차 0을 만드는 위상수학 평면 그래프 퍼즐",
+    "topApp": "수학게임",
     "curriculumSchool": "초등학교",
-    "schoolLevel": [
-      "초등학교"
-    ],
-    "curriculumSubject": "초등수학",
-    "curriculumArea": [
-      "초등수학"
-    ],
-    "curriculumUnit": "수학 퍼즐과 게임",
-    "description": "연산자 스나이퍼 수학적 사고력 및 두뇌 훈련 게임",
-    "tags": [
-      "연산자",
-      "사칙연산",
-      "괄호",
-      "등식완성"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "operator-sniper",
-    "fileName": "games_operator_sniper.html",
-    "enabled": true,
-    "status": "배포완료"
-  },
-  {
-    "id": "roman-puzzle",
-    "title": "로마 숫자 퍼즐",
-    "icon": "🏛️",
-    "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "초등학교",
-    "schoolLevel": [
-      "초등학교"
-    ],
-    "curriculumSubject": "초등수학",
-    "curriculumArea": [
-      "초등수학"
-    ],
-    "curriculumUnit": "수학 퍼즐과 게임",
-    "description": "로마 숫자 퍼즐 수학적 사고력 및 두뇌 훈련 게임",
-    "tags": [
-      "로마숫자",
-      "기수법",
-      "감산법칙"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "roman-puzzle",
-    "fileName": "games_roman_puzzle.html",
-    "enabled": true,
-    "status": "배포완료"
-  },
-  {
-    "id": "change-tycoon",
-    "title": "거스름돈 타이쿤",
-    "icon": "🪙",
-    "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "초등학교",
-    "schoolLevel": [
-      "초등학교"
-    ],
-    "curriculumSubject": "초등수학",
-    "curriculumArea": [
-      "초등수학"
-    ],
-    "curriculumUnit": "수학 퍼즐과 게임",
-    "description": "거스름돈 타이쿤 수학적 사고력 및 두뇌 훈련 게임",
-    "tags": [
-      "거스름돈",
-      "동전교환",
-      "그리디알고리즘"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "change-tycoon",
-    "fileName": "games_change_tycoon.html",
-    "enabled": true,
-    "status": "배포완료"
-  },
-  {
-    "id": "fake-coin-detective",
-    "title": "가짜 동전 탐정",
-    "icon": "⚖️",
-    "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "중학교",
-    "schoolLevel": [
-      "중학교"
-    ],
-    "curriculumSubject": "공통수학1",
-    "curriculumArea": [
-      "공통수학1"
-    ],
-    "curriculumUnit": "수학 퍼즐과 게임",
-    "description": "가짜 동전 탐정 수학적 사고력 및 두뇌 훈련 게임",
-    "tags": [
-      "양팔저울",
-      "이진탐색",
-      "정보이론",
-      "가짜동전"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "fake-coin-detective",
-    "fileName": "games_fake_coin_detective.html",
-    "enabled": true,
-    "status": "배포완료",
-    "multiplayer": "1~2인"
-  },
-  {
-    "id": "ready-set-match",
-    "title": "레디셋고 짝꿍 매치",
-    "icon": "🔴",
-    "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "초등학교",
-    "schoolLevel": [
-      "초등학교"
-    ],
-    "curriculumSubject": "초등수학",
-    "curriculumArea": [
-      "초등수학"
-    ],
-    "curriculumUnit": "수학 퍼즐과 게임",
-    "description": "레디셋고 짝꿍 매치 수학적 사고력 및 두뇌 훈련 게임",
-    "tags": [
-      "짝꿍매치",
-      "기억력",
-      "카드게임"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "ready-set-match",
-    "fileName": "games_ready_set_match.html",
-    "enabled": true,
-    "status": "배포완료",
-    "multiplayer": "1~4인"
+    "curriculumSubject": "공통수학1"
   },
   {
     "id": "tractor-shengji",
     "title": "升级 (Sheng Ji) • 拖拉机",
     "icon": "🚜",
     "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "고등학교",
-    "schoolLevel": [
-      "고등학교"
-    ],
-    "curriculumSubject": "공통수학1",
-    "curriculumArea": [
-      "공통수학1"
-    ],
-    "curriculumUnit": "수학 퍼즐과 게임",
-    "description": "升级 (Sheng Ji) • 拖拉机 수학적 사고력 및 두뇌 훈련 게임",
-    "tags": [
-      "트랙터",
-      "카드게임",
-      "트릭테이킹",
-      "확률"
-    ],
+    "fileName": "games_tractor_shengji.html",
     "launchType": "mathLabGame",
     "launchId": "tractor-shengji",
-    "fileName": "games_tractor_shengji.html",
-    "enabled": true,
-    "status": "배포완료",
-    "multiplayer": "1~4인"
-  },
-  {
-    "id": "comparison-scale-battle",
-    "title": "크기 비교 저울 배틀",
-    "icon": "⚖️",
-    "appType": "game",
-    "topApp": "수학 게임",
+    "multiplayer": null,
+    "description": "중국 전통 2덱 4인 2:2 팀전! 으뜸패 규칙으로 점수 카드를 사냥하고 카운팅을 훈련하는 대결",
+    "topApp": "수학게임",
     "curriculumSchool": "초등학교",
-    "schoolLevel": [
-      "초등학교"
-    ],
-    "curriculumSubject": "초등수학",
-    "curriculumArea": [
-      "초등수학"
-    ],
-    "curriculumUnit": "수학 퍼즐과 게임",
-    "description": "크기 비교 저울 배틀 수학적 사고력 및 두뇌 훈련 게임",
-    "tags": [
-      "부등호",
-      "무게비교",
-      "저울"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "comparison-scale-battle",
-    "fileName": "games_comparison_scale_battle.html",
-    "enabled": true,
-    "status": "배포완료",
-    "multiplayer": "1~2인"
+    "curriculumSubject": "공통수학1"
   },
   {
-    "id": "make-10",
-    "title": "텐 메이커 (10 만들기)",
-    "icon": "🔟",
+    "id": "triangle-centers",
+    "title": "삼각형의 중심 조준경",
+    "icon": "🔺",
     "appType": "game",
-    "topApp": "수학 게임",
+    "fileName": "games_triangle_centers.html",
+    "launchType": "mathLabGame",
+    "launchId": "triangle-centers",
+    "multiplayer": null,
+    "description": "힌트를 보고 외심·내심·무게중심의 위치를 정확히 조준해 클릭하는 게임",
+    "topApp": "수학게임",
     "curriculumSchool": "초등학교",
-    "schoolLevel": [
-      "초등학교"
-    ],
-    "curriculumSubject": "초등수학",
-    "curriculumArea": [
-      "초등수학"
-    ],
-    "curriculumUnit": "수학 퍼즐과 게임",
-    "description": "텐 메이커 (10 만들기) 수학적 사고력 및 두뇌 훈련 게임",
-    "tags": [
-      "10만들기",
-      "보수",
-      "초등연산"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "make-10",
-    "fileName": "games_make_10.html",
-    "enabled": true,
-    "status": "배포완료"
+    "curriculumSubject": "공통수학1"
   },
   {
-    "id": "eratosthenes-sieve",
-    "title": "에라토스테네스의 체 정화",
-    "icon": "🧹",
+    "id": "triangulation-gps",
+    "title": "GPS 탐정",
+    "icon": "🛰️",
     "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "중학교",
-    "schoolLevel": [
-      "중학교"
-    ],
-    "curriculumSubject": "공통수학1",
-    "curriculumArea": [
-      "공통수학1"
-    ],
-    "curriculumUnit": "수학 퍼즐과 게임",
-    "description": "에라토스테네스의 체 정화 수학적 사고력 및 두뇌 훈련 게임",
-    "tags": [
-      "에라토스테네스의체",
-      "소수",
-      "배수지우기"
-    ],
+    "fileName": "games_triangulation_gps.html",
     "launchType": "mathLabGame",
-    "launchId": "eratosthenes-sieve",
-    "fileName": "games_eratosthenes_sieve.html",
-    "enabled": true,
-    "status": "배포완료"
-  },
-  {
-    "id": "zero-trip",
-    "title": "정수 탈출 (합이 0)",
-    "icon": "0️⃣",
-    "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "중학교",
-    "schoolLevel": [
-      "중학교"
-    ],
-    "curriculumSubject": "공통수학1",
-    "curriculumArea": [
-      "공통수학1"
-    ],
-    "curriculumUnit": "수학 퍼즐과 게임",
-    "description": "정수 탈출 (합이 0) 수학적 사고력 및 두뇌 훈련 게임",
-    "tags": [
-      "정수와유리수",
-      "부호있는수",
-      "합이0"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "zero-trip",
-    "fileName": "games_zero_trip.html",
-    "enabled": true,
-    "status": "배포완료"
-  },
-  {
-    "id": "factor-multiple-chain",
-    "title": "약수 배수 체인",
-    "icon": "🔗",
-    "appType": "game",
-    "topApp": "수학 게임",
+    "launchId": "triangulation-gps",
+    "multiplayer": null,
+    "description": "세 기지국의 거리 원을 그려 겹치는 지점에서 범인을 찾는 삼각측량 게임",
+    "topApp": "수학게임",
     "curriculumSchool": "초등학교",
-    "schoolLevel": [
-      "초등학교"
-    ],
-    "curriculumSubject": "초등수학",
-    "curriculumArea": [
-      "초등수학"
-    ],
-    "curriculumUnit": "수학 퍼즐과 게임",
-    "description": "약수 배수 체인 수학적 사고력 및 두뇌 훈련 게임",
-    "tags": [
-      "약수",
-      "배수",
-      "체인게임",
-      "초등수학"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "factor-multiple-chain",
-    "fileName": "games_factor_multiple_chain.html",
-    "enabled": true,
-    "status": "배포완료"
-  },
-  {
-    "id": "fraction-pizza-tycoon",
-    "title": "분수 피자 타이쿤",
-    "icon": "🍕",
-    "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "초등학교",
-    "schoolLevel": [
-      "초등학교"
-    ],
-    "curriculumSubject": "초등수학",
-    "curriculumArea": [
-      "초등수학"
-    ],
-    "curriculumUnit": "수학 퍼즐과 게임",
-    "description": "분수 피자 타이쿤 수학적 사고력 및 두뇌 훈련 게임",
-    "tags": [
-      "분수",
-      "통분",
-      "피자나누기",
-      "초등수학"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "fraction-pizza-tycoon",
-    "fileName": "games_fraction_pizza_tycoon.html",
-    "enabled": true,
-    "status": "배포완료"
-  },
-  {
-    "id": "binary-defense",
-    "title": "바이너리 디펜스 (2진법)",
-    "icon": "🛡️",
-    "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "중학교",
-    "schoolLevel": [
-      "중학교"
-    ],
-    "curriculumSubject": "공통수학1",
-    "curriculumArea": [
-      "공통수학1"
-    ],
-    "curriculumUnit": "수학 퍼즐과 게임",
-    "description": "바이너리 디펜스 (2진법) 수학적 사고력 및 두뇌 훈련 게임",
-    "tags": [
-      "이진법",
-      "2진수",
-      "비트연산",
-      "디펜스"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "binary-defense",
-    "fileName": "games_binary_defense.html",
-    "enabled": true,
-    "status": "배포완료",
-    "multiplayer": "1~2인"
-  },
-  {
-    "id": "yahtzee",
-    "title": "야추 다이스",
-    "icon": "🎲",
-    "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "고등학교",
-    "schoolLevel": [
-      "고등학교"
-    ],
-    "curriculumSubject": "확률과통계",
-    "curriculumArea": [
-      "확률과통계"
-    ],
-    "curriculumUnit": "수학 퍼즐과 게임",
-    "description": "야추 다이스 수학적 사고력 및 두뇌 훈련 게임",
-    "tags": [
-      "야추",
-      "주사위게임",
-      "족보",
-      "확률과통계"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "yahtzee",
-    "fileName": "games_yahtzee.html",
-    "enabled": true,
-    "status": "배포완료",
-    "multiplayer": "1~2인"
-  },
-  {
-    "id": "card-master",
-    "title": "순열 조합 카드 마스터",
-    "icon": "🃏",
-    "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "고등학교",
-    "schoolLevel": [
-      "고등학교"
-    ],
-    "curriculumSubject": "공통수학1",
-    "curriculumArea": [
-      "공통수학1"
-    ],
-    "curriculumUnit": "수학 퍼즐과 게임",
-    "description": "순열 조합 카드 마스터 수학적 사고력 및 두뇌 훈련 게임",
-    "tags": [
-      "순열",
-      "조합",
-      "경우의수",
-      "카드게임"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "card-master",
-    "fileName": "games_card_master.html",
-    "enabled": true,
-    "status": "배포완료"
-  },
-  {
-    "id": "large-numbers-betting",
-    "title": "대수의 법칙 베팅 챌린지",
-    "icon": "🎲",
-    "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "고등학교",
-    "schoolLevel": [
-      "고등학교"
-    ],
-    "curriculumSubject": "확률과통계",
-    "curriculumArea": [
-      "확률과통계"
-    ],
-    "curriculumUnit": "수학 퍼즐과 게임",
-    "description": "대수의 법칙 베팅 챌린지 수학적 사고력 및 두뇌 훈련 게임",
-    "tags": [
-      "대수의법칙",
-      "베팅",
-      "상대도수",
-      "수학적확률"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "large-numbers-betting",
-    "fileName": "games_large_numbers_betting.html",
-    "enabled": true,
-    "status": "배포완료"
-  },
-  {
-    "id": "sequence-racing",
-    "title": "수열 규칙 레이싱",
-    "icon": "🏁",
-    "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "고등학교",
-    "schoolLevel": [
-      "고등학교"
-    ],
-    "curriculumSubject": "대수",
-    "curriculumArea": [
-      "대수"
-    ],
-    "curriculumUnit": "수학 퍼즐과 게임",
-    "description": "수열 규칙 레이싱 수학적 사고력 및 두뇌 훈련 게임",
-    "tags": [
-      "등차수열",
-      "등비수열",
-      "수열규칙",
-      "레이싱"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "sequence-racing",
-    "fileName": "games_sequence_racing.html",
-    "enabled": true,
-    "status": "배포완료",
-    "multiplayer": "1~2인"
-  },
-  {
-    "id": "sequence-pop",
-    "title": "수열크러시",
-    "icon": "🎈",
-    "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "고등학교",
-    "schoolLevel": [
-      "고등학교"
-    ],
-    "curriculumSubject": "대수",
-    "curriculumArea": [
-      "대수"
-    ],
-    "curriculumUnit": "수학 퍼즐과 게임",
-    "description": "수열크러시 수학적 사고력 및 두뇌 훈련 게임",
-    "tags": [
-      "수열",
-      "피보나치",
-      "등차등비",
-      "퍼즐"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "sequence-pop",
-    "fileName": "games_sequence_pop.html",
-    "enabled": true,
-    "status": "배포완료"
-  },
-  {
-    "id": "quadratic-cannon",
-    "title": "이차함수 포물선 대포",
-    "icon": "🚀",
-    "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "중학교",
-    "schoolLevel": [
-      "중학교"
-    ],
-    "curriculumSubject": "공통수학1",
-    "curriculumArea": [
-      "공통수학1"
-    ],
-    "curriculumUnit": "수학 퍼즐과 게임",
-    "description": "이차함수 포물선 대포 수학적 사고력 및 두뇌 훈련 게임",
-    "tags": [
-      "이차함수",
-      "포물선",
-      "꼭짓점",
-      "대포슈팅"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "quadratic-cannon",
-    "fileName": "games_quadratic_cannon.html",
-    "enabled": true,
-    "status": "배포완료",
-    "multiplayer": "1~4인"
-  },
-  {
-    "id": "quadratic-fortress",
-    "title": "이차함수 포트리스 대포",
-    "icon": "💥",
-    "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "중학교",
-    "schoolLevel": [
-      "중학교"
-    ],
-    "curriculumSubject": "공통수학1",
-    "curriculumArea": [
-      "공통수학1"
-    ],
-    "curriculumUnit": "수학 퍼즐과 게임",
-    "description": "이차함수 포트리스 대포 수학적 사고력 및 두뇌 훈련 게임",
-    "tags": [
-      "이차함수",
-      "포트리스",
-      "포물선궤적"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "quadratic-fortress",
-    "fileName": "games_quadratic_fortress.html",
-    "enabled": true,
-    "status": "배포완료",
-    "multiplayer": "1~4인"
-  },
-  {
-    "id": "matching-pennies",
-    "title": "동전 맞추기 게임이론",
-    "icon": "🪙",
-    "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "고등학교",
-    "schoolLevel": [
-      "고등학교"
-    ],
-    "curriculumSubject": "확률과통계",
-    "curriculumArea": [
-      "확률과통계"
-    ],
-    "curriculumUnit": "수학 퍼즐과 게임",
-    "description": "동전 맞추기 게임이론 수학적 사고력 및 두뇌 훈련 게임",
-    "tags": [
-      "게임이론",
-      "내시균형",
-      "동전맞추기",
-      "제로섬"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "matching-pennies",
-    "fileName": "games_matching_pennies.html",
-    "enabled": true,
-    "status": "배포완료",
-    "multiplayer": "1~2인"
-  },
-  {
-    "id": "prisoners-dilemma-ai",
-    "title": "죄수의 딜레마 AI 대결",
-    "icon": "⚖️",
-    "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "고등학교",
-    "schoolLevel": [
-      "고등학교"
-    ],
-    "curriculumSubject": "확률과통계",
-    "curriculumArea": [
-      "확률과통계"
-    ],
-    "curriculumUnit": "수학 퍼즐과 게임",
-    "description": "죄수의 딜레마 AI 대결 수학적 사고력 및 두뇌 훈련 게임",
-    "tags": [
-      "죄수의딜레마",
-      "게임이론",
-      "팃포탯",
-      "내시균형"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "prisoners-dilemma-ai",
-    "fileName": "games_prisoners_dilemma_ai.html",
-    "enabled": true,
-    "status": "배포완료",
-    "multiplayer": "1~2인"
-  },
-  {
-    "id": "absolute-value-runner",
-    "title": "절댓값 서핑 러너",
-    "icon": "🏄‍♂️",
-    "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "중학교",
-    "schoolLevel": [
-      "중학교"
-    ],
-    "curriculumSubject": "공통수학1",
-    "curriculumArea": [
-      "공통수학1"
-    ],
-    "curriculumUnit": "수학 퍼즐과 게임",
-    "description": "절댓값 서핑 러너 수학적 사고력 및 두뇌 훈련 게임",
-    "tags": [
-      "절댓값",
-      "수직선",
-      "거리",
-      "러너게임"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "absolute-value-runner",
-    "fileName": "games_absolute_value_runner.html",
-    "enabled": true,
-    "status": "배포완료"
-  },
-  {
-    "id": "angle-artillery",
-    "title": "각도 포병 대포",
-    "icon": "🎯",
-    "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "중학교",
-    "schoolLevel": [
-      "중학교"
-    ],
-    "curriculumSubject": "대수",
-    "curriculumArea": [
-      "대수"
-    ],
-    "curriculumUnit": "수학 퍼즐과 게임",
-    "description": "각도 포병 대포 수학적 사고력 및 두뇌 훈련 게임",
-    "tags": [
-      "각도",
-      "삼각비",
-      "포병대포",
-      "탄도학"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "angle-artillery",
-    "fileName": "games_angle_artillery.html",
-    "enabled": true,
-    "status": "배포완료"
-  },
-  {
-    "id": "pi-runner",
-    "title": "원주율 타이핑 러너",
-    "icon": "🥧",
-    "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "초등학교",
-    "schoolLevel": [
-      "초등학교"
-    ],
-    "curriculumSubject": "초등수학",
-    "curriculumArea": [
-      "초등수학"
-    ],
-    "curriculumUnit": "수학 퍼즐과 게임",
-    "description": "원주율 타이핑 러너 수학적 사고력 및 두뇌 훈련 게임",
-    "tags": [
-      "원주율",
-      "파이",
-      "3.141592",
-      "타이핑"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "pi-runner",
-    "fileName": "games_pi_runner.html",
-    "enabled": true,
-    "status": "배포완료"
+    "curriculumSubject": "공통수학1"
   },
   {
     "id": "trig-detective",
     "title": "시청각실 건물 높이 측정",
     "icon": "🕵️",
     "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "중학교",
-    "schoolLevel": [
-      "중학교"
-    ],
-    "curriculumSubject": "대수",
-    "curriculumArea": [
-      "대수"
-    ],
-    "curriculumUnit": "수학 퍼즐과 게임",
-    "description": "시청각실 건물 높이 측정 수학적 사고력 및 두뇌 훈련 게임",
-    "tags": [
-      "삼각비",
-      "탄젠트",
-      "높이측정",
-      "실생활수학"
-    ],
+    "fileName": "games_trig_detective.html",
     "launchType": "mathLabGame",
     "launchId": "trig-detective",
-    "fileName": "games_trig_detective.html",
-    "enabled": true,
-    "status": "배포완료"
+    "multiplayer": null,
+    "description": "거리와 앙각을 단서로 삼각비로 건물 높이를 추론하는 탐정 게임",
+    "topApp": "수학게임",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
   },
   {
-    "id": "exponential-zombies",
-    "title": "지수적 좀비 확산 디펜스",
-    "icon": "🧟",
+    "id": "vector-racing",
+    "title": "벡터 레이싱",
+    "icon": "🏎️",
     "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "고등학교",
-    "schoolLevel": [
-      "고등학교"
-    ],
-    "curriculumSubject": "대수",
-    "curriculumArea": [
-      "대수"
-    ],
-    "curriculumUnit": "수학 퍼즐과 게임",
-    "description": "지수적 좀비 확산 디펜스 수학적 사고력 및 두뇌 훈련 게임",
-    "tags": [
-      "지수함수",
-      "기하급수",
-      "디펜스",
-      "감염확산"
-    ],
+    "fileName": "games_vector_racing.html",
     "launchType": "mathLabGame",
-    "launchId": "exponential-zombies",
-    "fileName": "games_exponential_zombies.html",
-    "enabled": true,
-    "status": "배포완료"
+    "launchId": "vector-racing",
+    "multiplayer": null,
+    "description": "매 턴 속도 벡터에 가속 벡터를 더해 트랙을 이탈 없이 완주하는 턴제 레이싱",
+    "topApp": "수학게임",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "기하"
+  },
+  {
+    "id": "z-score-survival",
+    "title": "정규분포 z점수 서바이벌",
+    "icon": "🚨",
+    "appType": "game",
+    "fileName": "games_z_score_survival.html",
+    "launchType": "mathLabGame",
+    "launchId": "z-score-survival",
+    "multiplayer": null,
+    "description": "z값을 계산해 정규분포 재난에서 안전 지대로 대피하는 생존 게임",
+    "topApp": "수학게임",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "gemini-tutor",
+    "title": "제미나이 수학과외",
+    "icon": "🤖",
+    "appType": "game",
+    "fileName": "tutor_gemini.html",
+    "launchType": "mathLabGame",
+    "launchId": "gemini-tutor",
+    "topApp": "수학게임",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "leaderboard-admin",
+    "title": "admin leaderboard",
+    "icon": "🧩",
+    "appType": "game",
+    "fileName": "admin_leaderboard.html",
+    "launchType": "mathLabGame",
+    "launchId": "leaderboard-admin",
+    "topApp": "수학게임",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "settings",
+    "title": "환경 설정",
+    "icon": "⚙️",
+    "appType": "game",
+    "fileName": "admin_settings.html",
+    "launchType": "mathLabGame",
+    "launchId": "settings",
+    "topApp": "수학게임",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "version",
+    "title": "버전 기록실",
+    "icon": "🧾",
+    "appType": "game",
+    "fileName": "admin_version.html",
+    "launchType": "mathLabGame",
+    "launchId": "version",
+    "topApp": "수학게임",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "privacy-policy",
+    "title": "privacy policy",
+    "icon": "🧩",
+    "appType": "game",
+    "fileName": "app_privacy_policy.html",
+    "launchType": "mathLabGame",
+    "launchId": "privacy-policy",
+    "topApp": "수학게임",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "일차함수는 $y = ax+b$처럼 기울기가 일정하게 유지되는 가장 정직하고 규칙적인 그래프입니다.",
+    "title": "일차함수",
+    "icon": "🧪",
+    "appType": "game",
+    "fileName": "concept_mbti_logic.html",
+    "launchType": "mathLabGame",
+    "launchId": "일차함수는 $y = ax+b$처럼 기울기가 일정하게 유지되는 가장 정직하고 규칙적인 그래프입니다.",
+    "topApp": "수학게임",
+    "curriculumSchool": "중학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "survey-concept",
+    "title": "삼각측량 탐험대",
+    "icon": "🗺️",
+    "appType": "game",
+    "fileName": "concept_survey_logic.html",
+    "launchType": "mathLabGame",
+    "launchId": "survey-concept",
+    "topApp": "수학게임",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "game-1024",
+    "title": "1024 마스터",
+    "icon": "&#127918;",
+    "appType": "game",
+    "fileName": "games_1024_logic.html",
+    "launchType": "mathLabGame",
+    "launchId": "game-1024",
+    "multiplayer": "👥 1~2인",
+    "description": "밀어서 완성하는 등비수열 퍼즐",
+    "topApp": "수학게임",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "game-abacus",
+    "title": "🧮 Lv.01~02: 주판 구조 & 기본 알 놓기",
+    "icon": "🧮",
+    "appType": "game",
+    "fileName": "games_abacus_logic.html",
+    "launchType": "mathLabGame",
+    "launchId": "game-abacus",
+    "topApp": "수학게임",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "absolute-value-runner",
+    "title": "absolute value runner",
+    "icon": "🧩",
+    "appType": "game",
+    "fileName": "games_absolute_value_runner.html",
+    "launchType": "mathLabGame",
+    "launchId": "absolute-value-runner",
+    "multiplayer": null,
+    "description": "수직선 위에서 절댓값 거리를 판단해 알맞은 좌표로 점프하는 러너 게임",
+    "topApp": "수학게임",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "akari",
+    "title": "아카리 (전구 켜기)",
+    "icon": "🍉",
+    "appType": "game",
+    "fileName": "games_akari.html",
+    "launchType": "mathLabGame",
+    "launchId": "akari",
+    "multiplayer": null,
+    "description": "벽 숫자 조건을 지키며 전구를 놓아 상하좌우로 모든 칸을 밝히는 이진 논리 퍼즐",
+    "topApp": "수학게임",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "angle-artillery",
+    "title": "angle artillery",
+    "icon": "🧩",
+    "appType": "game",
+    "fileName": "games_angle_artillery.html",
+    "launchType": "mathLabGame",
+    "launchId": "angle-artillery",
+    "multiplayer": null,
+    "description": "발사 각도를 조절해 장애물 너머의 타겟을 맞추는 각도 감각 게임",
+    "topApp": "수학게임",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "area-conquest",
+    "title": "넓이 땅따먹기",
+    "icon": "🟩",
+    "appType": "game",
+    "fileName": "games_area_conquest.html",
+    "launchType": "mathLabGame",
+    "launchId": "area-conquest",
+    "multiplayer": null,
+    "description": "목표 넓이에 맞는 도형을 그려 격자판 땅을 차지하는 넓이 전략 게임",
+    "topApp": "수학게임",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "binary-defense",
+    "title": "바이너리 디펜스",
+    "icon": "🛡️",
+    "appType": "game",
+    "fileName": "games_binary_defense.html",
+    "launchType": "mathLabGame",
+    "launchId": "binary-defense",
+    "multiplayer": "👥 1~2인",
+    "description": "다가오는 2진수 몬스터를 10진수로 변환해 막아내는 진법 타임어택 게임",
+    "topApp": "수학게임",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "binary-tree-maze",
+    "title": "이진 트리 미로 탈출",
+    "icon": "🌳",
+    "appType": "game",
+    "fileName": "games_binary_tree_maze.html",
+    "launchType": "mathLabGame",
+    "launchId": "binary-tree-maze",
+    "multiplayer": null,
+    "description": "좌/우 선택으로 루트에서 잎까지 최적 경로를 찾는 이진 트리 미로",
+    "topApp": "수학게임",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "birthday-paradox",
+    "title": "birthday paradox",
+    "icon": "🧩",
+    "appType": "game",
+    "fileName": "games_birthday_paradox.html",
+    "launchType": "mathLabGame",
+    "launchId": "birthday-paradox",
+    "multiplayer": null,
+    "description": "같은 생일이 나올 확률을 예측하고 시뮬레이션으로 확인하는 확률 방 탈출 게임",
+    "topApp": "수학게임",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "boxplot-mismatch",
+    "title": "상자수염 그림 미스매치",
+    "icon": "📦",
+    "appType": "game",
+    "fileName": "games_boxplot_mismatch.html",
+    "launchType": "mathLabGame",
+    "launchId": "boxplot-mismatch",
+    "topApp": "수학게임",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "bridges",
+    "title": "다리 놓기 (Bridges)",
+    "icon": "🌉",
+    "appType": "game",
+    "fileName": "games_bridges.html",
+    "launchType": "mathLabGame",
+    "launchId": "bridges",
+    "multiplayer": null,
+    "description": "섬의 숫자만큼 다리를 교차 없이 연결하는 그래프 이론 퍼즐",
+    "topApp": "수학게임",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "card-master",
+    "title": "순열 조합 카드 마스터",
+    "icon": "🃏",
+    "appType": "game",
+    "fileName": "games_card_master.html",
+    "launchType": "mathLabGame",
+    "launchId": "card-master",
+    "multiplayer": null,
+    "description": "상황에 맞는 순열·조합 값을 계산해 공격력을 얻는 매칭 카드 RPG",
+    "topApp": "수학게임",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "change-tycoon",
+    "title": "change tycoon",
+    "icon": "💵",
+    "appType": "game",
+    "fileName": "games_change_tycoon.html",
+    "launchType": "mathLabGame",
+    "launchId": "change-tycoon",
+    "multiplayer": null,
+    "description": "최소 개수의 동전과 지폐로 거스름돈을 거슬러 주는 가게 운영 게임",
+    "topApp": "수학게임",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "F1",
+    "title": "원의 방정식 타겟 슈터",
+    "icon": "⭕",
+    "appType": "game",
+    "fileName": "games_circle_shooter.html",
+    "launchType": "mathLabGame",
+    "launchId": "F1",
+    "topApp": "수학게임",
+    "curriculumSchool": "중학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "comparison-scale-battle",
+    "title": "크기 비교 저울 배틀",
+    "icon": "⚖️",
+    "appType": "game",
+    "fileName": "games_comparison_scale_battle.html",
+    "launchType": "mathLabGame",
+    "launchId": "comparison-scale-battle",
+    "multiplayer": null,
+    "description": "분수·소수·백분율 카드를 저울에 올려 크기를 비교하고 동치 감각을 익히는 대결",
+    "topApp": "수학게임",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "complex-orienteering",
+    "title": "복소평면 오리엔티어링",
+    "icon": "\\ud83e\\udded",
+    "appType": "game",
+    "fileName": "games_complex_orienteering.html",
+    "launchType": "mathLabGame",
+    "launchId": "complex-orienteering",
+    "multiplayer": null,
+    "description": "i 곱셈 회전으로 복소평면 미로를 통과하는 탐험 게임",
+    "topApp": "수학게임",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "confidence-interval-fishing",
+    "title": "모평균 신뢰구간 낚시",
+    "icon": "🎣",
+    "appType": "game",
+    "fileName": "games_confidence_interval_fishing.html",
+    "launchType": "mathLabGame",
+    "launchId": "confidence-interval-fishing",
+    "topApp": "수학게임",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "coordinate-treasure",
+    "title": "좌표평면 보물찾기",
+    "icon": "🗺️",
+    "appType": "game",
+    "fileName": "games_coordinate_treasure.html",
+    "launchType": "mathLabGame",
+    "launchId": "coordinate-treasure",
+    "multiplayer": null,
+    "description": "거리 힌트와 사분면 정보를 바탕으로 좌표를 추리하여 숨겨진 보물을 발굴하는 게임",
+    "topApp": "수학게임",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "eight-queens",
+    "title": "8-Queens 챌린지",
+    "icon": "♛",
+    "appType": "game",
+    "fileName": "games_eight_queens.html",
+    "launchType": "mathLabGame",
+    "launchId": "eight-queens",
+    "multiplayer": null,
+    "description": "서로 공격하지 않게 퀸을 배치하며 백트래킹을 체험하는 퍼즐",
+    "topApp": "수학게임",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "einstein-logic",
+    "title": "아인슈타인 로직 퍼즐",
+    "icon": "🧠",
+    "appType": "game",
+    "fileName": "games_einstein_logic.html",
+    "launchType": "mathLabGame",
+    "launchId": "einstein-logic",
+    "multiplayer": null,
+    "description": "힌트 문장을 해석해 논리 격자표를 채우는 명제 논리 추리 게임",
+    "topApp": "수학게임",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "equation-seesaw",
+    "title": "방정식 시소 밸런스",
+    "icon": "⚖️",
+    "appType": "game",
+    "fileName": "games_equation_seesaw.html",
+    "launchType": "mathLabGame",
+    "launchId": "equation-seesaw",
+    "multiplayer": null,
+    "description": "등식 저울의 균형을 지키며 x의 값을 구하는 일차방정식 퍼즐",
+    "topApp": "수학게임",
+    "curriculumSchool": "중학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "eratosthenes-sieve",
+    "title": "에라토스테네스의 체 정화",
+    "icon": "🧹",
+    "appType": "game",
+    "fileName": "games_eratosthenes_sieve.html",
+    "launchType": "mathLabGame",
+    "launchId": "eratosthenes-sieve",
+    "multiplayer": null,
+    "description": "합성수를 걸러내고 소수만 남기며 소수 판별 원리를 익히는 격자형 게임",
+    "topApp": "수학게임",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "euler-path",
+    "title": "한붓그리기",
+    "icon": "✏️",
+    "appType": "game",
+    "fileName": "games_euler_path.html",
+    "launchType": "mathLabGame",
+    "launchId": "euler-path",
+    "multiplayer": null,
+    "description": "모든 선을 한 번씩만 지나 목표 경로를 완성합니다",
+    "topApp": "수학게임",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "factor-breaker",
+    "title": "다항식 인수분해 브레이커",
+    "icon": "🧨",
+    "appType": "game",
+    "fileName": "games_factor_breaker.html",
+    "launchType": "mathLabGame",
+    "launchId": "factor-breaker",
+    "multiplayer": null,
+    "description": "날아오는 다항식 블록을 인수분해로 파괴하는 액션 퍼즐",
+    "topApp": "수학게임",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "factor-multiple-chain",
+    "title": "약수 배수 체인",
+    "icon": "⛓️",
+    "appType": "game",
+    "fileName": "games_factor_multiple_chain.html",
+    "launchType": "mathLabGame",
+    "launchId": "factor-multiple-chain",
+    "multiplayer": null,
+    "description": "약수 또는 배수 관계인 숫자 카드를 이어 붙이는 수 관계 체인 게임",
+    "topApp": "수학게임",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "fake-coin-detective",
+    "title": "가짜 동전 찾기",
+    "icon": "🕵️‍♂️",
+    "appType": "game",
+    "fileName": "games_fake_coin_detective.html",
+    "launchType": "mathLabGame",
+    "launchId": "fake-coin-detective",
+    "multiplayer": null,
+    "description": "양팔저울 비교를 최소 횟수로 사용해 무게가 다른 가짜 동전을 찾는 이진 탐색 추리 게임",
+    "topApp": "수학게임",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "stage-0",
+    "title": "4색 정리 맵 컬러링",
+    "icon": "🎨",
+    "appType": "game",
+    "fileName": "games_four_color_map.html",
+    "launchType": "mathLabGame",
+    "launchId": "stage-0",
+    "topApp": "수학게임",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "fraction-pizza-tycoon",
+    "title": "분수 피자 타이쿤",
+    "icon": "🍕",
+    "appType": "game",
+    "fileName": "games_fraction_pizza_tycoon.html",
+    "launchType": "mathLabGame",
+    "launchId": "fraction-pizza-tycoon",
+    "multiplayer": null,
+    "description": "손님이 주문한 분수만큼 피자 조각을 골라 서빙하는 분수 감각 게임",
+    "topApp": "수학게임",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "fruit-drop-2048",
+    "title": "과일 2048 드롭",
+    "icon": "🍉",
+    "appType": "game",
+    "fileName": "games_fruit_drop_2048.html",
+    "launchType": "mathLabGame",
+    "launchId": "fruit-drop-2048",
+    "multiplayer": "👥 1~2인",
+    "description": "과일을 떨어뜨려 같은 과일을 합치며 수박에 도전하는 2의 거듭제곱 퍼즐",
+    "topApp": "수학게임",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "galton-board",
+    "title": "갈톤 보드 구슬 드롭",
+    "icon": "📊",
+    "appType": "game",
+    "fileName": "games_galton_board.html",
+    "launchType": "mathLabGame",
+    "launchId": "galton-board",
+    "multiplayer": null,
+    "description": "구슬이 못을 타고 내려와 정규분포 곡선을 만드는 이항분포 시뮬레이터",
+    "topApp": "수학게임",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "graph-runner",
+    "title": "함수 그래프 러너",
+    "icon": "🛹",
+    "appType": "game",
+    "fileName": "games_graph_runner.html",
+    "launchType": "mathLabGame",
+    "launchId": "graph-runner",
+    "multiplayer": null,
+    "description": "기울기와 절편을 조절해 일차함수 길 위를 달리는 러너 게임",
+    "topApp": "수학게임",
+    "curriculumSchool": "중학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "gugudan",
+    "title": "구구단 카운트다운",
+    "icon": "🚀",
+    "appType": "game",
+    "fileName": "games_gugudan_logic.html",
+    "launchType": "mathLabGame",
+    "launchId": "gugudan",
+    "topApp": "수학게임",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "hanoi-tower",
+    "title": "하노이의 탑 챌린지",
+    "icon": "🗼",
+    "appType": "game",
+    "fileName": "games_hanoi_tower.html",
+    "launchType": "mathLabGame",
+    "launchId": "hanoi-tower",
+    "multiplayer": null,
+    "description": "원반을 최소 이동으로 옮기며 2ⁿ-1의 규칙과 재귀를 발견하는 퍼즐",
+    "topApp": "수학게임",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "kakuro",
+    "title": "가쿠로 (Kakuro)",
+    "icon": "🧮",
+    "appType": "game",
+    "fileName": "games_kakuro.html",
+    "launchType": "mathLabGame",
+    "launchId": "kakuro",
+    "multiplayer": null,
+    "description": "합 힌트에 맞춰 1~9 숫자를 중복 없이 채우는 크로스워드형 연산 논리 퍼즐",
+    "topApp": "수학게임",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "kenken",
+    "title": "켄켄 퍼즐 마스터",
+    "icon": "🔲",
+    "appType": "game",
+    "fileName": "games_kenken.html",
+    "launchType": "mathLabGame",
+    "launchId": "kenken",
+    "topApp": "수학게임",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "killer-sudoku",
+    "title": "킬러 스도쿠",
+    "icon": "➕",
+    "appType": "game",
+    "fileName": "games_killer_sudoku.html",
+    "launchType": "mathLabGame",
+    "launchId": "killer-sudoku",
+    "multiplayer": null,
+    "description": "케이지 합 조건이 더해진 고난도 스도쿠로 논리와 연산을 동시에 단련",
+    "topApp": "수학게임",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "knight-tour",
+    "title": "나이트 투어",
+    "icon": "♞",
+    "appType": "game",
+    "fileName": "games_knight_tour.html",
+    "launchType": "mathLabGame",
+    "launchId": "knight-tour",
+    "multiplayer": null,
+    "description": "나이트로 체스판 모든 칸을 한 번씩 방문하며 해밀턴 경로와 휴리스틱을 탐구하는 퍼즐",
+    "topApp": "수학게임",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "large-numbers-betting",
+    "title": "대수의 법칙 베팅 챌린지",
+    "icon": "🎲",
+    "appType": "game",
+    "fileName": "games_large_numbers_betting.html",
+    "launchType": "mathLabGame",
+    "launchId": "large-numbers-betting",
+    "multiplayer": null,
+    "description": "상대도수가 이론적 확률에 수렴함을 이용해 자산을 베팅하는 확률 게임",
+    "topApp": "수학게임",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "easy-000",
+    "title": "첫 규칙 확인",
+    "icon": "🤥",
+    "appType": "game",
+    "fileName": "games_liar_village.html",
+    "launchType": "mathLabGame",
+    "launchId": "easy-000",
+    "topApp": "수학게임",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "limit-shooting",
+    "title": "극한값 타겟 슈팅",
+    "icon": "\\ud83c\\udff9",
+    "appType": "game",
+    "fileName": "games_limit_shooting.html",
+    "launchType": "mathLabGame",
+    "launchId": "limit-shooting",
+    "multiplayer": null,
+    "description": "수열의 극한값을 과녁에 명중시키는 극한 개념 게임",
+    "topApp": "수학게임",
+    "curriculumSchool": "고등학교",
+    "curriculumSubject": "미적분"
+  },
+  {
+    "id": "magic-square",
+    "title": "magic square",
+    "icon": "🧩",
+    "appType": "game",
+    "fileName": "games_magic_square.html",
+    "launchType": "mathLabGame",
+    "launchId": "magic-square",
+    "multiplayer": null,
+    "description": "가로·세로·대각선의 합이 같아지도록 숫자를 배치하는 마방진 퍼즐",
+    "topApp": "수학게임",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "make-10",
+    "title": "텐 메이커",
+    "icon": "🔟",
+    "appType": "game",
+    "fileName": "games_make_10.html",
+    "launchType": "mathLabGame",
+    "launchId": "make-10",
+    "topApp": "수학게임",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "make-24",
+    "title": "메이크 24",
+    "icon": "🃏",
+    "appType": "game",
+    "fileName": "games_make24.html",
+    "launchType": "mathLabGame",
+    "launchId": "make-24",
+    "multiplayer": null,
+    "description": "4장의 카드와 사칙연산으로 24 만들기",
+    "topApp": "수학게임",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "sunny",
+    "title": "markov weather chain",
+    "icon": "☀️",
+    "appType": "game",
+    "fileName": "games_markov_weather_chain.html",
+    "launchType": "mathLabGame",
+    "launchId": "sunny",
+    "topApp": "수학게임",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
   },
   {
     "id": "matrix-distortion",
     "title": "행렬 변환 디스토션",
     "icon": "🌀",
     "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "고등학교",
-    "schoolLevel": [
-      "고등학교"
-    ],
-    "curriculumSubject": "공통수학1",
-    "curriculumArea": [
-      "공통수학1"
-    ],
-    "curriculumUnit": "수학 퍼즐과 게임",
-    "description": "행렬 변환 디스토션 수학적 사고력 및 두뇌 훈련 게임",
-    "tags": [
-      "행렬",
-      "일차변환",
-      "기하",
-      "변환게임"
-    ],
+    "fileName": "games_matrix_distortion.html",
     "launchType": "mathLabGame",
     "launchId": "matrix-distortion",
-    "fileName": "games_matrix_distortion.html",
-    "enabled": true,
-    "status": "배포완료"
+    "multiplayer": null,
+    "description": "행렬 원소를 조정해 왜곡된 이미지를 복구하는 일차변환 퍼즐",
+    "topApp": "수학게임",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "minesweeper",
+    "title": "마인스위퍼 리메이크",
+    "icon": "💣",
+    "appType": "game",
+    "fileName": "games_minesweeper.html",
+    "launchType": "mathLabGame",
+    "launchId": "minesweeper",
+    "multiplayer": null,
+    "description": "주변 지뢰 개수 힌트를 논리 추론으로 풀어내는 지뢰찾기 리메이크",
+    "topApp": "수학게임",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "monty-hall-show",
+    "title": "몬티홀 딜레마 쇼",
+    "icon": "🎬",
+    "appType": "game",
+    "fileName": "games_monty_hall_show.html",
+    "launchType": "mathLabGame",
+    "launchId": "monty-hall-show",
+    "multiplayer": "👥 1~2인",
+    "description": "문을 고르고 바꿀지 말지 결정하며 조건부 확률을 체험하는 팀전 쇼 게임",
+    "topApp": "수학게임",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
   },
   {
     "id": "net-master",
     "title": "정육면체 전개도 마스터",
     "icon": "📦",
     "appType": "game",
-    "topApp": "수학 게임",
-    "curriculumSchool": "초등학교",
-    "schoolLevel": [
-      "초등학교"
-    ],
-    "curriculumSubject": "초등수학",
-    "curriculumArea": [
-      "초등수학"
-    ],
-    "curriculumUnit": "수학 퍼즐과 게임",
-    "description": "정육면체 전개도 마스터 수학적 사고력 및 두뇌 훈련 게임",
-    "tags": [
-      "정육면체",
-      "전개도11종",
-      "공간감각"
-    ],
+    "fileName": "games_net_master.html",
     "launchType": "mathLabGame",
     "launchId": "net-master",
-    "fileName": "games_net_master.html",
-    "enabled": true,
-    "status": "배포완료"
+    "multiplayer": null,
+    "description": "2D 전개도를 접었을 때 완성될 3D 도형과 마주보는 면을 판별하는 공간 감각 퍼즐",
+    "topApp": "수학게임",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
   },
   {
-    "id": "econ-math-life",
-    "title": "생애 주기 소득·소비 곡선",
-    "icon": "💳",
-    "appType": "concept",
-    "topApp": "교과 수학 개념",
-    "curriculumSchool": "고등학교",
-    "schoolLevel": [
-      "고등학교"
-    ],
-    "curriculumSubject": "경제수학",
-    "curriculumArea": [
-      "경제수학",
-      "생애 주기"
-    ],
-    "curriculumUnit": "생애 주기 모델링",
-    "description": "모딜리아니 생애주기가설에 기반하여 청년기·장년기·노년기의 소득과 소비, 흑자·적자 구간을 시뮬레이션",
-    "tags": [
-      "경제수학",
-      "생애주기",
-      "소득소비",
-      "금융",
-      "적자흑자"
-    ],
+    "id": "nim",
+    "title": "님 게임 (Nim Game)",
+    "icon": "🪨",
+    "appType": "game",
+    "fileName": "games_nim.html",
     "launchType": "mathLabGame",
-    "launchId": "econ-math-life",
-    "fileName": "games_econ_math_life.html"
+    "launchId": "nim",
+    "multiplayer": "👥 1~2인",
+    "description": "돌을 1~3개씩 가져가며 마지막 돌을 노리는 턴제 2인 전략 게임",
+    "topApp": "수학게임",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
   },
   {
-    "id": "econ-seq-finance",
-    "title": "수열과 저축·연금 이자",
-    "icon": "🏦",
-    "appType": "concept",
-    "topApp": "교과 수학 개념",
-    "curriculumSchool": "고등학교",
-    "schoolLevel": [
-      "고등학교"
-    ],
-    "curriculumSubject": "경제수학",
-    "curriculumArea": [
-      "경제수학",
-      "수열과 금융"
-    ],
-    "curriculumUnit": "수열과 금융",
-    "description": "등비수열의 합 원리를 활용한 기수불·기말불 정기적금 원리합계와 연금의 현재가치를 계산합니다.",
-    "tags": [
-      "경제수학",
-      "원리합계",
-      "등비수열",
-      "적금",
-      "연금",
-      "복리"
-    ],
+    "id": "nonogram",
+    "title": "하트 ❤️",
+    "icon": "🖼️",
+    "appType": "game",
+    "fileName": "games_nonogram.html",
     "launchType": "mathLabGame",
-    "launchId": "econ-seq-finance",
-    "fileName": "games_econ_seq_finance.html"
+    "launchId": "nonogram",
+    "multiplayer": null,
+    "description": "행·열 가장자리의 숫자 단서를 조합해 격자를 칠하며 숨은 그림을 완성하는 이산수학 퍼즐",
+    "topApp": "수학게임",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
   },
   {
-    "id": "econ-func-market",
-    "title": "수요·공급곡선과 시장 균형",
-    "icon": "⚖️",
-    "appType": "concept",
-    "topApp": "교과 수학 개념",
-    "curriculumSchool": "고등학교",
-    "schoolLevel": [
-      "고등학교"
-    ],
-    "curriculumSubject": "경제수학",
-    "curriculumArea": [
-      "경제수학",
-      "함수와 경제"
-    ],
-    "curriculumUnit": "함수와 경제",
-    "description": "수요함수 Qd(P)와 공급함수 Qs(P)의 연립방정식으로 시장 균형가격과 소비자·생산자 잉여를 분석",
-    "tags": [
-      "경제수학",
-      "수요공급",
-      "시장균형",
-      "균형가격",
-      "잉여분석"
-    ],
+    "id": "game-numcount",
+    "title": "넘버카운트",
+    "icon": "&#127918;",
+    "appType": "game",
+    "fileName": "games_numcount_logic.html",
     "launchType": "mathLabGame",
-    "launchId": "econ-func-market",
-    "fileName": "games_econ_func_market.html"
+    "launchId": "game-numcount",
+    "topApp": "수학게임",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
   },
   {
-    "id": "econ-calc-opt",
-    "title": "한계비용과 이윤 극대화",
-    "icon": "📊",
-    "appType": "concept",
-    "topApp": "교과 수학 개념",
-    "curriculumSchool": "고등학교",
-    "schoolLevel": [
-      "고등학교"
-    ],
-    "curriculumSubject": "경제수학",
-    "curriculumArea": [
-      "경제수학",
-      "미분과 경제"
-    ],
-    "curriculumUnit": "미분과 경제",
-    "description": "총수입 R(q)과 총비용 C(q)의 도함수인 한계수입 MR과 한계비용 MC가 일치(MR=MC)하는 최적 생산량 탐구",
-    "tags": [
-      "경제수학",
-      "한계비용",
-      "한계수입",
-      "이윤극대화",
-      "미분"
-    ],
+    "id": "operator-sniper",
+    "title": "operator sniper",
+    "icon": "🧩",
+    "appType": "game",
+    "fileName": "games_operator_sniper.html",
     "launchType": "mathLabGame",
-    "launchId": "econ-calc-opt",
-    "fileName": "games_econ_calc_opt.html"
+    "launchId": "operator-sniper",
+    "multiplayer": null,
+    "description": "물음표에 숨은 연산자를 저격해 등식을 완성하는 우선순위 게임",
+    "topApp": "수학게임",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "pentomino",
+    "title": "스테이지 1: 3×5 평면 분할 (3개 블록)",
+    "icon": "🧩",
+    "appType": "game",
+    "fileName": "games_pentomino.html",
+    "launchType": "mathLabGame",
+    "launchId": "pentomino",
+    "multiplayer": null,
+    "description": "12종 펜토미노 블록을 회전·반전하며 판을 빈틈없이 채우는 퍼즐",
+    "topApp": "수학게임",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "pi-runner",
+    "title": "원주율 타이핑 러너",
+    "icon": "🥧",
+    "appType": "game",
+    "fileName": "games_pi_runner.html",
+    "launchType": "mathLabGame",
+    "launchId": "pi-runner",
+    "multiplayer": null,
+    "description": "π 자릿수를 입력할수록 멀리 달리는 암기·타이핑 러닝 게임",
+    "topApp": "수학게임",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "polyhedron-maze",
+    "title": "다면체 면 타기 미로",
+    "icon": "🎲",
+    "appType": "game",
+    "fileName": "games_polyhedron_maze.html",
+    "launchType": "mathLabGame",
+    "launchId": "polyhedron-maze",
+    "multiplayer": null,
+    "description": "정다면체 표면을 면 단위로 누비며 아이템을 모으는 입체도형 탐험 미로",
+    "topApp": "수학게임",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "prime-logic",
+    "title": "소수 헌터",
+    "icon": "🪓",
+    "appType": "game",
+    "fileName": "games_prime_logic.html",
+    "launchType": "mathLabGame",
+    "launchId": "prime-logic",
+    "multiplayer": "👥 1~2인",
+    "description": "숫자를 쪼개고 소수를 수집하라!",
+    "topApp": "수학게임",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "pythagoras-blocks",
+    "title": "피타고라스 블록 퍼즐",
+    "icon": "🧱",
+    "appType": "game",
+    "fileName": "games_pythagoras_blocks.html",
+    "launchType": "mathLabGame",
+    "launchId": "pythagoras-blocks",
+    "multiplayer": null,
+    "description": "블록 채우기로 a²+b²=c²을 확인하며 남은 변을 계산하는 퍼즐",
+    "topApp": "수학게임",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "quadratic-cannon",
+    "title": "이차함수 포물선 대포",
+    "icon": "🚀",
+    "appType": "game",
+    "fileName": "games_quadratic_cannon.html",
+    "launchType": "mathLabGame",
+    "launchId": "quadratic-cannon",
+    "multiplayer": null,
+    "description": "이차함수의 계수를 조절해 포물선 궤적으로 목표물을 맞히는 수학 게임",
+    "topApp": "수학게임",
+    "curriculumSchool": "중학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "quadratic-fortress",
+    "title": "이차함수 포트리스 대포",
+    "icon": "💥",
+    "appType": "game",
+    "fileName": "games_quadratic_fortress.html",
+    "launchType": "mathLabGame",
+    "launchId": "quadratic-fortress",
+    "multiplayer": "👥 1~4인",
+    "description": "이차함수 포물선 그래프의 평행이동과 바람을 보정해 상대방 탱크를 맞히는 턴제 대전 게임",
+    "topApp": "수학게임",
+    "curriculumSchool": "중학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "ready-set-match",
+    "title": "레디셋고 짝꿍 매치",
+    "icon": "🔴",
+    "appType": "game",
+    "fileName": "games_ready_set_match.html",
+    "launchType": "mathLabGame",
+    "launchId": "ready-set-match",
+    "multiplayer": "👥 1~4인",
+    "description": "Ready→Set→Go! 제시어와 아이콘이 같으면 누르고 다르면 참는 2~4인 동시 반응 억제 게임",
+    "topApp": "수학게임",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "roman-puzzle",
+    "title": "roman puzzle",
+    "icon": "🧩",
+    "appType": "game",
+    "fileName": "games_roman_puzzle.html",
+    "launchType": "mathLabGame",
+    "launchId": "roman-puzzle",
+    "multiplayer": null,
+    "description": "로마 숫자 수식을 해독해 고대 금고의 자물쇠를 여는 퍼즐 게임",
+    "topApp": "수학게임",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "rubiks-2d",
+    "title": "2D 루빅스 펼치기",
+    "icon": "🧊",
+    "appType": "game",
+    "fileName": "games_rubiks_2d.html",
+    "launchType": "mathLabGame",
+    "launchId": "rubiks-2d",
+    "topApp": "수학게임",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "scatter-r-guesser",
+    "title": "산점도 상관계수 추측기",
+    "icon": "📉",
+    "appType": "game",
+    "fileName": "games_scatter_r_guesser.html",
+    "launchType": "mathLabGame",
+    "launchId": "scatter-r-guesser",
+    "topApp": "수학게임",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "sequence-pop",
+    "title": "수열크러시",
+    "icon": "🎈",
+    "appType": "game",
+    "fileName": "games_sequence_pop.html",
+    "launchType": "mathLabGame",
+    "launchId": "sequence-pop",
+    "multiplayer": null,
+    "description": "등차수열 규칙을 만족하는 숫자들을 이어서 터뜨리는 수열 패턴 액션 퍼즐",
+    "topApp": "수학게임",
+    "curriculumSchool": "고등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "sequence-racing",
+    "title": "수열 규칙 레이싱",
+    "icon": "🏁",
+    "appType": "game",
+    "fileName": "games_sequence_racing.html",
+    "launchType": "mathLabGame",
+    "launchId": "sequence-racing",
+    "multiplayer": "👥 1~2인",
+    "description": "수열의 다음 항을 맞히며 결승선을 향해 달리는 턴제 2인 수학 게임",
+    "topApp": "수학게임",
+    "curriculumSchool": "고등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "sliding-fifteen",
+    "title": "15-슬라이딩 퍼즐",
+    "icon": "🔀",
+    "appType": "game",
+    "fileName": "games_sliding_fifteen.html",
+    "launchType": "mathLabGame",
+    "launchId": "sliding-fifteen",
+    "multiplayer": null,
+    "description": "타일을 밀어 정렬하며 순열과 홀짝성의 비밀을 발견하는 퍼즐",
+    "topApp": "수학게임",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "slitherlink",
+    "title": "슬리더링크",
+    "icon": "🔁",
+    "appType": "game",
+    "fileName": "games_slitherlink.html",
+    "launchType": "mathLabGame",
+    "launchId": "slitherlink",
+    "multiplayer": null,
+    "description": "숫자 힌트에 맞게 선을 연결해 하나의 닫힌 루프를 완성하는 논리 퍼즐",
+    "topApp": "수학게임",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "monty-app",
+    "title": "몬티홀 딜레마",
+    "icon": "🚪",
+    "appType": "application",
+    "fileName": "applications_monty_logic.html",
+    "launchType": "openApp",
+    "launchId": "monty-app",
+    "multiplayer": null,
+    "description": "당신의 선택을 바꾸시겠습니까?",
+    "topApp": "실생활응용",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "coin-app",
+    "title": "큰 수의 법칙",
+    "icon": "🎲",
+    "appType": "application",
+    "fileName": "applications_coin_logic.html",
+    "launchType": "openApp",
+    "launchId": "coin-app",
+    "multiplayer": null,
+    "description": "동전 던지기 시뮬레이션으로 시행 횟수와 상대도수의 관계를 탐구합니다",
+    "topApp": "실생활응용",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
   },
   {
     "id": "finance-app",
     "title": "금융 수학 타임머신",
     "icon": "💰",
     "appType": "application",
-    "topApp": "실생활 응용",
-    "curriculumSchool": "고등학교",
-    "schoolLevel": [
-      "고등학교"
-    ],
-    "curriculumSubject": "경제수학",
-    "curriculumArea": [
-      "경제수학",
-      "금융과 수열"
-    ],
-    "curriculumUnit": "단리와 복리",
-    "description": "단리와 복리의 차이, 72의 법칙, 인플레이션에 따른 실질 화폐 가치 변화를 시뮬레이션합니다.",
-    "tags": [
-      "금융수학",
-      "단리",
-      "복리",
-      "72의법칙",
-      "경제수학"
-    ],
-    "launchType": "mathLabGame",
+    "fileName": "applications_finance_logic.html",
+    "launchType": "openApp",
     "launchId": "finance-app",
-    "fileName": "applications_finance_logic.html"
+    "multiplayer": null,
+    "description": "원리합계와 복리의 마법",
+    "topApp": "실생활응용",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "경제수학"
   },
   {
     "id": "loan-app",
     "title": "대출 상환 시뮬레이터",
     "icon": "🏦",
     "appType": "application",
-    "topApp": "실생활 응용",
-    "curriculumSchool": "고등학교",
-    "schoolLevel": [
-      "고등학교"
-    ],
-    "curriculumSubject": "경제수학",
-    "curriculumArea": [
-      "경제수학",
-      "금융과 수열"
-    ],
-    "curriculumUnit": "대출과 상환",
-    "description": "원리금균등분할상환, 원금균등상환, 만기일시상환에 따른 월 납입금과 총 이자 부담을 한눈에 비교",
-    "tags": [
-      "대출상환",
-      "원리금균등",
-      "원금균등",
-      "금융수학",
-      "경제수학"
-    ],
-    "launchType": "mathLabGame",
+    "fileName": "applications_loan_logic.html",
+    "launchType": "openApp",
     "launchId": "loan-app",
-    "fileName": "applications_loan_logic.html"
+    "multiplayer": null,
+    "description": "나에게 유리한 상환 방식은?",
+    "topApp": "실생활응용",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
   },
   {
     "id": "tax-elec-app",
-    "title": "생활 속 함수 (전기요금 & 세금)",
+    "title": "생활 속 함수",
     "icon": "💳",
     "appType": "application",
-    "topApp": "실생활 응용",
-    "curriculumSchool": "중학교",
-    "schoolLevel": [
-      "중학교",
-      "고등학교"
-    ],
-    "curriculumSubject": "공통수학1",
-    "curriculumArea": [
-      "공통수학1",
-      "함수"
-    ],
-    "curriculumUnit": "구간별 정의된 함수",
-    "description": "구간별 누진세율과 주택용 전기요금 누진제 계산식을 구간별 정의된 함수 그래프로 탐구합니다.",
-    "tags": [
-      "구간별함수",
-      "전기요금",
-      "누진세",
-      "실생활함수",
-      "공통수학1"
-    ],
-    "launchType": "mathLabGame",
+    "fileName": "applications_tax_elec_logic.html",
+    "launchType": "openApp",
     "launchId": "tax-elec-app",
-    "fileName": "applications_tax_elec_logic.html"
-  },
-  {
-    "id": "lotto-simulator",
-    "title": "인생 역전 로또 시뮬레이터",
-    "icon": "🎰",
-    "appType": "application",
-    "topApp": "실생활 응용",
-    "curriculumSchool": "고등학교",
-    "schoolLevel": [
-      "고등학교"
-    ],
-    "curriculumSubject": "확률과통계",
-    "curriculumArea": [
-      "확률과통계",
-      "조합과 확률"
-    ],
-    "curriculumUnit": "조합과 확률",
-    "description": "45개 중 6개를 맞추는 1/8,145,060의 극악한 확률과 기댓값 손실을 10만 회 초고속 드롭으로 체감",
-    "tags": [
-      "로또",
-      "조합",
-      "확률",
-      "기댓값",
-      "대수의법칙",
-      "확률과통계"
-    ],
-    "launchType": "mathLabGame",
-    "launchId": "lotto-simulator",
-    "fileName": "games_lotto_simulator.html"
+    "multiplayer": null,
+    "description": "세금과 누진세의 마법",
+    "topApp": "실생활응용",
+    "curriculumSchool": "중학교",
+    "curriculumSubject": "공통수학1"
   },
   {
     "id": "lotto-network",
     "title": "로또 숫자 관계망 분석기",
     "icon": "🔗",
     "appType": "application",
-    "topApp": "실생활 응용",
-    "curriculumSchool": "고등학교",
-    "schoolLevel": [
-      "고등학교"
-    ],
-    "curriculumSubject": "확률과통계",
-    "curriculumArea": [
-      "확률과통계",
-      "데이터 분석"
-    ],
-    "curriculumUnit": "네트워크 분석",
-    "description": "역대 로또 당첨 번호들의 동시 출현 빈도를 노드-링크 네트워크 그래프로 시각화 분석합니다.",
-    "tags": [
-      "로또",
-      "네트워크그래프",
-      "동시출현",
-      "데이터분석",
-      "확률과통계"
-    ],
+    "fileName": "games_lotto_network.html",
     "launchType": "mathLabGame",
     "launchId": "lotto-network",
-    "fileName": "games_lotto_network.html"
+    "multiplayer": null,
+    "description": "가상 추첨으로 숫자 간 동반 출현 관계를 Force-directed 그래프로 실시간 탐구",
+    "topApp": "실생활응용",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
   },
   {
-    "id": "monty-hall-show",
-    "title": "몬티홀 딜레마 쇼",
-    "icon": "🚪",
+    "id": "lotto-simulator",
+    "title": "인생 역전 로또 시뮬레이터",
+    "icon": "☕",
     "appType": "application",
-    "topApp": "실생활 응용",
-    "curriculumSchool": "중학교",
-    "schoolLevel": [
-      "중학교",
-      "고등학교"
-    ],
-    "curriculumSubject": "확률과통계",
-    "curriculumArea": [
-      "확률과통계",
-      "조건부 확률"
-    ],
-    "curriculumUnit": "조건부 확률",
-    "description": "선택을 바꿨을 때 승리 확률이 1/3에서 2/3로 2배 증가하는 유명한 몬티홀 역설의 반복 표본 검증",
-    "tags": [
-      "몬티홀",
-      "조건부확률",
-      "표본공간",
-      "확률의역설",
-      "확률과통계"
-    ],
+    "fileName": "games_lotto_simulator.html",
     "launchType": "mathLabGame",
-    "launchId": "monty-hall-show",
-    "fileName": "games_monty_hall_show.html",
-    "multiplayer": "1~2인"
+    "launchId": "lotto-simulator",
+    "multiplayer": null,
+    "description": "대량 로또 시뮬레이션으로 조합·확률·기댓값·큰 수의 법칙을 직접 관찰하는 탐구 도구",
+    "topApp": "실생활응용",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
   },
   {
-    "id": "birthday-paradox",
-    "title": "생일 역설 시뮬레이터",
-    "icon": "🎂",
+    "id": "ones",
+    "title": "야추 다이스",
+    "icon": "🎲",
     "appType": "application",
-    "topApp": "실생활 응용",
-    "curriculumSchool": "고등학교",
-    "schoolLevel": [
-      "고등학교"
-    ],
-    "curriculumSubject": "확률과통계",
-    "curriculumArea": [
-      "확률과통계",
-      "여사건의 확률"
-    ],
-    "curriculumUnit": "여사건의 확률",
-    "description": "단 23명만 모여도 2명의 생일이 같을 확률이 50%를 넘는 생일 문제(Birthday Paradox) 시뮬레이션",
-    "tags": [
-      "생일역설",
-      "여사건",
-      "확률",
-      "순열과조합",
-      "확률과통계"
-    ],
+    "fileName": "games_yahtzee.html",
     "launchType": "mathLabGame",
-    "launchId": "birthday-paradox",
-    "fileName": "games_birthday_paradox.html"
+    "launchId": "ones",
+    "topApp": "실생활응용",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
   },
   {
-    "id": "random-walk-stock",
-    "title": "무작위 행보 주식 시장",
-    "icon": "📈",
+    "id": "wordle",
+    "title": "매스 워들 마스터",
+    "icon": "🔤",
     "appType": "application",
-    "topApp": "실생활 응용",
-    "curriculumSchool": "고등학교",
-    "schoolLevel": [
-      "고등학교"
-    ],
-    "curriculumSubject": "확률과통계",
-    "curriculumArea": [
-      "확률과통계",
-      "랜덤워크"
-    ],
-    "curriculumUnit": "랜덤워크",
-    "description": "브라운 운동과 무작위 행보(Random Walk)를 이용한 주가 변동 시계열 모델링 및 수익률 분포",
-    "tags": [
-      "랜덤워크",
-      "주식시장",
-      "브라운운동",
-      "정규분포",
-      "확률과통계"
-    ],
+    "fileName": "games_wordle_logic.html",
     "launchType": "mathLabGame",
-    "launchId": "random-walk-stock",
-    "fileName": "games_random_walk_stock.html"
+    "launchId": "wordle",
+    "topApp": "실생활응용",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
   },
   {
-    "id": "bayes-bag-detective",
-    "title": "베이즈 정리와 조건부 확률",
-    "icon": "🔍",
+    "id": "L1",
+    "title": "tangram",
+    "icon": "🧩",
     "appType": "application",
-    "topApp": "실생활 응용",
-    "curriculumSchool": "고등학교",
-    "schoolLevel": [
-      "고등학교"
-    ],
-    "curriculumSubject": "확률과통계",
-    "curriculumArea": [
-      "확률과통계",
-      "조건부 확률"
-    ],
-    "curriculumUnit": "베이즈 정리",
-    "description": "질병 양성 판정 시 실제 유병률, 스팸 메일 필터링 등 사전확률이 사후확률로 갱신되는 베이즈 추론",
-    "tags": [
-      "베이즈정리",
-      "조건부확률",
-      "사전확률",
-      "사후확률",
-      "확률과통계"
-    ],
+    "fileName": "games_tangram.html",
     "launchType": "mathLabGame",
-    "launchId": "bayes-bag-detective",
-    "fileName": "games_bayes_bag_detective.html"
+    "launchId": "L1",
+    "topApp": "실생활응용",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
   },
   {
-    "id": "data-center-spy",
-    "title": "이상치 검출 데이터 탐정",
-    "icon": "🕵️",
+    "id": "tangent-shooter",
+    "title": "미분계수 접선 슈터",
+    "icon": "\\ud83d\\udcd0",
     "appType": "application",
-    "topApp": "실생활 응용",
-    "curriculumSchool": "고등학교",
-    "schoolLevel": [
-      "고등학교"
-    ],
-    "curriculumSubject": "확률과통계",
-    "curriculumArea": [
-      "확률과통계",
-      "데이터 분석"
-    ],
-    "curriculumUnit": "이상치 검출",
-    "description": "3-시그마 규칙과 사분위범위(1.5×IQR)를 적용하여 데이터셋에서 비정상 이상치를 탐지하는 머신러닝 기초",
-    "tags": [
-      "이상치",
-      "3시그마",
-      "IQR",
-      "데이터분석",
-      "인공지능수학"
-    ],
+    "fileName": "games_tangent_shooter.html",
     "launchType": "mathLabGame",
-    "launchId": "data-center-spy",
-    "fileName": "games_data_center_spy.html"
+    "launchId": "tangent-shooter",
+    "multiplayer": null,
+    "description": "접선의 기울기로 타겟을 맞추는 미분 개념 슈팅 게임",
+    "topApp": "실생활응용",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "symmetry-logic",
+    "title": "대칭 매칭",
+    "icon": "🦋",
+    "appType": "application",
+    "fileName": "games_symmetry_logic.html",
+    "launchType": "mathLabGame",
+    "launchId": "symmetry-logic",
+    "topApp": "실생활응용",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
+  },
+  {
+    "id": "sudoku-classic",
+    "title": "스도쿠 클래식",
+    "icon": "9️⃣",
+    "appType": "application",
+    "fileName": "games_sudoku_classic.html",
+    "launchType": "mathLabGame",
+    "launchId": "sudoku-classic",
+    "multiplayer": null,
+    "description": "행·열·박스 중복 없이 숫자를 채우는 라틴 방진 구조와 배제 논리 퍼즐",
+    "topApp": "실생활응용",
+    "curriculumSchool": "초등학교",
+    "curriculumSubject": "공통수학1"
   }
 ];
-
-  window.MathLabMetadata = metadataItems;
-  window.MATH_APP_METADATA = metadataItems;
 })();
 </script>
-
 <script>
   window.MathLabGames = (function () {
     const games = new Map();
@@ -124576,18 +123019,19 @@ document.addEventListener('DOMContentLoaded', function () {
             app.curriculumSchool,
             ...(app.schoolLevel || []),
             ...(app.gradeBand || [])
-          ].map(norm);
-          return schools.some(s => s.includes(targetQ) || targetQ.includes(s) || 
-            (targetQ.includes('초등') && s.includes('초등')) || 
-            (targetQ.includes('중학') && s.includes('중학')) || 
-            (targetQ.includes('고등') && s.includes('고등')));
+          ].map(norm).filter(Boolean);
+          
+          return schools.some(s => s === targetQ || 
+            (targetQ === '초등학교' && s.includes('초등')) || 
+            (targetQ === '중학교' && s.includes('중학')) || 
+            (targetQ === '고등학교' && s.includes('고등')));
         } else if (filterType === 'subject') {
           const subjects = [
             app.curriculumSubject,
             ...(app.curriculumArea || []),
             ...(app.tags || [])
-          ].map(norm);
-          return subjects.some(s => s.includes(targetQ) || targetQ.includes(s));
+          ].map(norm).filter(Boolean);
+          return subjects.some(s => s === targetQ);
         } else {
           const text = [
             app.title, 
@@ -124639,15 +123083,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const multiTagCorner = app.multiplayer ? `<span class="card-multi-corner" style="position:absolute; top:5px; right:5px; font-size:0.65rem; background:#e74c3c; color:#ffffff; padding:2px 6px; border-radius:6px; font-weight:800; box-shadow:0 2px 4px rgba(231,76,60,0.3); z-index:3; pointer-events:none;">👥 ${app.multiplayer}</span>` : '';
 
-        const multiTitleBadge = app.multiplayer ? ` <span style="font-size:0.7rem; background:#e74c3c; color:#fff; padding:1px 5px; border-radius:4px; vertical-align:middle; display:inline-block; font-weight:bold;">👥 ${app.multiplayer}</span>` : '';
-
         const tooltipHTML = `[${app.curriculumSchool || '전연령'} - ${app.curriculumSubject || '창의수학'} - ${app.curriculumUnit || '일반'}]<br><span style="font-weight:400; font-size:0.8rem; margin-top:4px; display:inline-block; color:#475569;">${app.description || ''}</span>`;
 
         return `
           <button class="app-card" data-launch-type="${app.launchType}" data-launch-id="${app.launchId}" style="position:relative;">
             ${multiTagCorner}
             <div class="card-icon">${app.icon || '📌'}</div>
-            <h3 class="card-title">${app.title}${multiTitleBadge}</h3>
+            <h3 class="card-title">${app.title}</h3>
             <p class="card-desc">${tooltipHTML}</p>
             ${badgeHtml}
           </button>
